@@ -472,6 +472,7 @@ class ProfileFrontend(BaseModel):
     # Lista de modelos do LLM picker — só relevante quando enableLlmSelector=true.
     # Alimentada no editor pelos modelos realmente deployed no OpenAI do cliente.
     llmModels: List[str] = Field(default_factory=list)
+    aiDisclosure: ProfileAiDisclosure = Field(default_factory=ProfileAiDisclosure)
 
 
 # ─────────────────────────────────────────────────────────────────────────────
@@ -499,7 +500,6 @@ class ClientProfileSchema(BaseModel):
     product_identification: ProfileProductIdentification = Field(default_factory=ProfileProductIdentification)
     brand_safety: ProfileBrandSafety = Field(default_factory=ProfileBrandSafety)
     system_prompt_disclaimers: List[str] = Field(default_factory=list)
-    ai_disclosure: ProfileAiDisclosure = Field(default_factory=ProfileAiDisclosure)
     tools: ProfileTools = Field(default_factory=ProfileTools)
     tool_limits: ProfileToolLimits = Field(default_factory=ProfileToolLimits)
     retrieval: ProfileRetrieval = Field(default_factory=ProfileRetrieval)
