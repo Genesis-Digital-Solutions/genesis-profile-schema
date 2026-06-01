@@ -464,6 +464,11 @@ class ProfileFrontend(BaseModel):
     sttSilenceTimeoutMs: int = Field(default=3500, ge=0)
     starterPrompts: List[StarterPrompt] = Field(default_factory=list)
     ttsPhoneticMap: Dict[str, str] = Field(default_factory=dict)
+    ttsVoiceMap: Dict[str, str] = Field(default_factory=lambda: {
+        "pt": "pt-PT-RaquelNeural",
+        "en": "en-US-Ava:DragonHDLatestNeural",
+        "es": "es-ES-ElviraNeural",
+    })
     # Lista de modelos do LLM picker — só relevante quando enableLlmSelector=true.
     # Alimentada no editor pelos modelos realmente deployed no OpenAI do cliente.
     llmModels: List[str] = Field(default_factory=list)
