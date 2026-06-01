@@ -430,6 +430,7 @@ class ProfileFrontendFeatures(BaseModel):
     enablePdfExport: bool = True
     enableFeedback: bool = True
     enableSourcesPreview: bool = True
+    enableInlineCitations: bool = True
     enablePipelineTrace: bool = True   # on: transparência + resumo de explainability
     showHistory: bool = True
     enableStarterPrompts: bool = True
