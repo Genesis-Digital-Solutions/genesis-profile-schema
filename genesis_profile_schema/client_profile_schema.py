@@ -413,7 +413,6 @@ class ProfileFrontendFeatures(BaseModel):
         json_schema_extra={"requires_field": "frontend.llmModels"},
     )
     enableShare: bool = False
-    enableHybridSearch: bool = True
     enableDocumentUpload: bool = Field(
         default=False,
         json_schema_extra={"requires_tool": "read_attached_document"},
@@ -428,8 +427,7 @@ class ProfileFrontendFeatures(BaseModel):
         json_schema_extra={"requires_tool": "transcribe_audio"},
     )
     enablePdfExport: bool = True
-    enableFeedback: bool = True
-    enableSourcesPreview: bool = True
+    enableSourcePreview: bool = True
     enableInlineCitations: bool = True
     enablePipelineTrace: bool = True   # on: transparência + resumo de explainability
     showHistory: bool = True
@@ -437,6 +435,9 @@ class ProfileFrontendFeatures(BaseModel):
     enableDarkMode: bool = False
     # REMOVIDOS (campos mortos, nenhum componente os lia):
     #   showQuestionsMenu, enableFollowupSuggestions
+    # REMOVIDO enableFeedback: feedback é sempre-on no frontend, sem flag.
+    # REMOVIDO enableHybridSearch: hybrid search (vetorial+keyword) é sempre-on
+    #   no retrieval do backend, sem flag — desligá-lo só piora a qualidade.
 
 
 class StarterPrompt(BaseModel):
