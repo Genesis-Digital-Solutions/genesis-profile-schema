@@ -359,6 +359,18 @@ class ProfileFrontendThemeMode(BaseModel):
     codeBg: Optional[str] = Field(default=None, pattern=_HEX_COLOR_REGEX)
     codeText: Optional[str] = Field(default=None, pattern=_HEX_COLOR_REGEX)
 
+    # ── Tokens de COMPONENTE (override fino; None = herda do semântico) ──
+    headerBg: Optional[str] = Field(default=None, pattern=_HEX_COLOR_REGEX)
+    inputBg: Optional[str] = Field(default=None, pattern=_HEX_COLOR_REGEX)
+    traceBubbleBg: Optional[str] = Field(default=None, pattern=_HEX_COLOR_REGEX)
+    sourcesBubbleBg: Optional[str] = Field(default=None, pattern=_HEX_COLOR_REGEX)
+    sourceCardBg: Optional[str] = Field(default=None, pattern=_HEX_COLOR_REGEX)
+    welcomeCardBg: Optional[str] = Field(default=None, pattern=_HEX_COLOR_REGEX)
+    bgSidebarCollapsed: Optional[str] = Field(default=None, pattern=_HEX_COLOR_REGEX)
+    iconSidebarColor: Optional[str] = Field(default=None, pattern=_HEX_COLOR_REGEX)
+    iconHeaderColor: Optional[str] = Field(default=None, pattern=_HEX_COLOR_REGEX)
+    iconInputColor: Optional[str] = Field(default=None, pattern=_HEX_COLOR_REGEX)
+
     bgSidebar: Optional[str] = Field(default=None, pattern=_HEX_COLOR_REGEX)
     bgSidebarSubtle: Optional[str] = Field(default=None, pattern=_HEX_COLOR_REGEX)
     textSidebarPrimary: Optional[str] = Field(default=None, pattern=_HEX_COLOR_REGEX)
@@ -392,6 +404,11 @@ class ProfileFrontendBranding(BaseModel):
     logoDark: str = ""
     logoRail: str = ""
     favicon: str = ""
+    # Texto ao lado do logo no header (ex.: "Antonius"). Multilingue (data-driven);
+    # cor/tamanho opcionais (vazios = default do tema).
+    headerText: I18nMap = Field(default_factory=dict)
+    headerTextColor: Optional[str] = Field(default=None, pattern=_HEX_COLOR_REGEX)
+    headerTextSize: str = ""   # ex.: "20px" / "1.25rem"
     disclaimer: str = ""   # rodapé geral (≠ ai_disclosure, que é o aviso legal)
     disclaimerI18n: I18nMap = Field(default_factory=dict)   # mapa {lang:texto}; prevalece sobre `disclaimer`
     theme: ProfileFrontendTheme = Field(default_factory=ProfileFrontendTheme)
@@ -507,6 +524,7 @@ class ProfileFrontend(BaseModel):
     aiDisclosure: ProfileAiDisclosure = Field(default_factory=ProfileAiDisclosure)
     # Título de boas-vindas do empty-state — mapa i18n {lang:texto}.
     welcomeMessage: I18nMap = Field(default_factory=dict)
+    welcomeMessageSize: str = ""   # tamanho da fonte do título de boas-vindas (ex.: "1.5rem")
     # Género gramatical do assistente (afeta artigos nas labels fixas do FE).
     assistantGender: Literal["feminine", "masculine", "neutral"] = "masculine"
 
