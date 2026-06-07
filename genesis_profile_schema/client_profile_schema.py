@@ -35,7 +35,7 @@ warnings.filterwarnings(
 )
 
 from typing import Any, Dict, List, Literal, Optional
-from pydantic import BaseModel, ConfigDict, Field
+from pydantic import BaseModel, ConfigDict, Field, model_validator
 
 
 # ─────────────────────────────────────────────────────────────────────────────
@@ -93,6 +93,10 @@ _DEFAULT_VOICES_BY_LOCALE: Dict[str, str] = {
 }
 
 _DEFAULT_AI_DISCLOSURE = "Está a comunicar com um assistente de inteligência artificial."
+
+# Mapa i18n data-driven: { "pt": "...", "en": "...", "fr": "..." }. As chaves
+# sao codigos de lingua; para suportar uma nova lingua basta acrescentar a chave.
+I18nMap = Dict[str, str]
 
 
 # ─────────────────────────────────────────────────────────────────────────────
@@ -243,6 +247,7 @@ class ProfileAiDisclosure(BaseModel):
 
     enabled: bool = True
     text: str = _DEFAULT_AI_DISCLOSURE
+    textI18n: I18nMap = Field(default_factory=dict)   # mapa {lang:texto}; prevalece sobre `text`
 
 
 # ─────────────────────────────────────────────────────────────────────────────
@@ -388,6 +393,7 @@ class ProfileFrontendBranding(BaseModel):
     logoRail: str = ""
     favicon: str = ""
     disclaimer: str = ""   # rodapé geral (≠ ai_disclosure, que é o aviso legal)
+    disclaimerI18n: I18nMap = Field(default_factory=dict)   # mapa {lang:texto}; prevalece sobre `disclaimer`
     theme: ProfileFrontendTheme = Field(default_factory=ProfileFrontendTheme)
 
 
@@ -441,14 +447,39 @@ class ProfileFrontendFeatures(BaseModel):
 
 
 class StarterPrompt(BaseModel):
-    """Sugestão de prompt no ecrã inicial. Bilíngue PT/EN."""
+    """
+    Sugestão de prompt no ecrã inicial. i18n DATA-DRIVEN: `title` e `prompt` são
+    mapas {lang:texto} ({ "pt": "...", "en": "...", ... }) que suportam N línguas.
+    Retrocompat: se vierem os campos legacy (titlePT/titleEN/titleES/promptPT/…),
+    são convertidos para os mapas (sem os remover, para não partir leitores antigos).
+    """
     model_config = ConfigDict(extra="allow")
 
     iconName: str = ""   # editor: picker visual (manifesto de ícones do frontend)
-    titlePT: str = ""
-    titleEN: str = ""
-    promptPT: str = ""
-    promptEN: str = ""
+    title: I18nMap = Field(default_factory=dict)    # {lang:texto}
+    prompt: I18nMap = Field(default_factory=dict)   # {lang:texto}
+
+    @model_validator(mode="before")
+    @classmethod
+    def _i18n_from_legacy(cls, data):
+        """Constrói title/prompt (mapas) a partir dos campos legacy se ausentes."""
+        if not isinstance(data, dict):
+            return data
+        if not data.get("title"):
+            t = {}
+            if data.get("titlePT"): t["pt"] = data["titlePT"]
+            if data.get("titleEN"): t["en"] = data["titleEN"]
+            if data.get("titleES"): t["es"] = data["titleES"]
+            if t:
+                data["title"] = t
+        if not data.get("prompt"):
+            pr = {}
+            if data.get("promptPT"): pr["pt"] = data["promptPT"]
+            if data.get("promptEN"): pr["en"] = data["promptEN"]
+            if data.get("promptES"): pr["es"] = data["promptES"]
+            if pr:
+                data["prompt"] = pr
+        return data
 
 
 class ProfileFrontend(BaseModel):
@@ -474,6 +505,10 @@ class ProfileFrontend(BaseModel):
     # Alimentada no editor pelos modelos realmente deployed no OpenAI do cliente.
     llmModels: List[str] = Field(default_factory=list)
     aiDisclosure: ProfileAiDisclosure = Field(default_factory=ProfileAiDisclosure)
+    # Título de boas-vindas do empty-state — mapa i18n {lang:texto}.
+    welcomeMessage: I18nMap = Field(default_factory=dict)
+    # Género gramatical do assistente (afeta artigos nas labels fixas do FE).
+    assistantGender: Literal["feminine", "masculine", "neutral"] = "masculine"
 
 
 # ─────────────────────────────────────────────────────────────────────────────
