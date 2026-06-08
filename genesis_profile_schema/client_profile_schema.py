@@ -525,6 +525,8 @@ class ProfileFrontend(BaseModel):
     # Título de boas-vindas do empty-state — mapa i18n {lang:texto}.
     welcomeMessage: I18nMap = Field(default_factory=dict)
     welcomeMessageSize: str = ""   # tamanho da fonte do título de boas-vindas (ex.: "1.5rem")
+    welcomeSubtitle: I18nMap = Field(default_factory=dict)   # subtítulo de apresentação abaixo do título (markdown, multilingue)
+    legalNotice: I18nMap = Field(default_factory=dict)   # aviso legal recolhível no ecrã inicial (markdown, multilingue)
     # Género gramatical do assistente (afeta artigos nas labels fixas do FE).
     assistantGender: Literal["feminine", "masculine", "neutral"] = "masculine"
 
