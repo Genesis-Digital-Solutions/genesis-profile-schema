@@ -193,6 +193,7 @@ class ProfileRetrieval(BaseModel):
     topicality_gate: bool = True                               # KB_TOPICALITY_GATE
     force_diversity: bool = False                              # KB_FORCE_DIVERSITY
     fuzzy_correction: bool = False                             # KB_FUZZY_CORRECTION_ENABLED
+    faithfulness_overlap_skip: float = Field(default=0.65, ge=0.0, le=1.0)  # FAITHFULNESS_JUDGE_OVERLAP_SKIP
 
 
 class ProfileRuntime(BaseModel):
