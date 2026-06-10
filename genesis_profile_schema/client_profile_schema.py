@@ -528,6 +528,11 @@ class ProfileFrontend(BaseModel):
     welcomeMessageSize: str = ""   # tamanho da fonte do título de boas-vindas (ex.: "1.5rem")
     welcomeSubtitle: I18nMap = Field(default_factory=dict)   # subtítulo de apresentação abaixo do título (markdown, multilingue)
     legalNotice: I18nMap = Field(default_factory=dict)   # aviso legal recolhível no ecrã inicial (markdown, multilingue)
+    # Política de privacidade DO CLIENTE (GDPR) — substitui o placeholder
+    # genérico do modal de login. Precedência no FE: privacyPolicyUrl (abre
+    # nova aba) → privacyPolicyI18n (markdown no modal) → texto default.
+    privacyPolicyUrl: str = ""                            # URL da política do cliente (recomendado)
+    privacyPolicyI18n: I18nMap = Field(default_factory=dict)  # alternativa: texto markdown multilingue no modal
     # Género gramatical do assistente (afeta artigos nas labels fixas do FE).
     assistantGender: Literal["feminine", "masculine", "neutral"] = "masculine"
 
