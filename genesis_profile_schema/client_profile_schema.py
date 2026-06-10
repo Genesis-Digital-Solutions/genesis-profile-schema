@@ -138,6 +138,12 @@ class ProfileResponse(BaseModel):
     suggest_followups: bool = False
     followup_count: int = Field(default=3, ge=0)
     extractive_mode: bool = False
+    # Explainability summary (EU AI Act — transparência/Art. 13 p/ deployments
+    # de risco; diferenciador de confiança nos restantes): fase opcional
+    # pós-geração em que o INTERNAL_MODEL consome o pipeline_trace e explica em
+    # 2-3 frases como a resposta foi produzida. Emitido por SSE separado
+    # ({"explainability": ...}) — não atrasa a resposta. Off por defeito.
+    explainability_summary: bool = False
 
 
 class ProfileGuardrails(BaseModel):
