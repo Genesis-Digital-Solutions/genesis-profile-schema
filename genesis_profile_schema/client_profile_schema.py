@@ -572,6 +572,64 @@ class ProfileFrontend(BaseModel):
 
 
 # ─────────────────────────────────────────────────────────────────────────────
+# Compliance — EU AI Act (metadata de conformidade por deployment)
+# ─────────────────────────────────────────────────────────────────────────────
+
+class ProfileComplianceClassification(BaseModel):
+    """
+    Classificação de risco EU AI Act por deployment (Anexo III).
+
+    Preenchida pela checklist do Console (tab Conformidade). O default
+    `unclassified` torna visível no Dashboard o trabalho por fazer.
+    `annex_iii_answers` guarda as respostas (área → bool) para auditoria
+    e comparação em re-avaliações.
+    """
+    model_config = ConfigDict(extra="allow")
+
+    risk_level: Literal["minimal", "limited", "high", "unclassified"] = "unclassified"
+    justification: str = ""          # justificação humana (auto-gerada + editável)
+    annex_iii_answers: Dict[str, bool] = Field(default_factory=dict)
+    classified_by: str = ""          # quem classificou (nome/email)
+    classified_at: str = ""          # ISO datetime
+    reviewed_by_legal: bool = False  # jurista validou (opcional; não bloqueia `limited`)
+    legal_review_date: str = ""
+    legal_reviewer: str = ""
+    next_review_due: str = ""        # re-avaliar anualmente / em mudança de uso
+
+
+class ProfileComplianceHighRisk(BaseModel):
+    """
+    Obrigações extra SÓ para deployments high-risk (Arts. 11/12/14/73).
+    O Console exige `enabled=True` + campos preenchidos antes de prod
+    quando risk_level == "high". Sem efeito funcional no genai-core (v1).
+    """
+    model_config = ConfigDict(extra="allow")
+
+    enabled: bool = False
+    log_retention_days: int = Field(default=365, ge=180)  # Art. 12 — mínimo legal 6 meses
+    human_oversight_contact: str = ""    # Art. 14 — responsável humano designado
+    oversight_procedure_url: str = ""    # link p/ procedimento interno
+    serious_incident_contact: str = ""   # Art. 73 — reporting de incidentes graves
+
+
+class ProfileCompliance(BaseModel):
+    """
+    Bloco de conformidade EU AI Act — metadata, sem efeito funcional no
+    data plane (v1). Fonte de verdade para o badge ⚖️ do Dashboard, a tab
+    Conformidade do editor e o gerador de documentação Anexo IV.
+    """
+    model_config = ConfigDict(extra="allow")
+
+    classification: ProfileComplianceClassification = Field(default_factory=ProfileComplianceClassification)
+    high_risk: ProfileComplianceHighRisk = Field(default_factory=ProfileComplianceHighRisk)
+    # Transparência Art. 50 — responsabilidade do conteúdo indexado é do
+    # deployer (cliente), formalizada por cláusula contratual.
+    deployer_content_responsibility: bool = True
+    annex_iv_doc_url: str = ""        # link p/ documentação técnica gerada (blob)
+    annex_iv_generated_at: str = ""   # ISO datetime da última geração
+
+
+# ─────────────────────────────────────────────────────────────────────────────
 # Schema root
 # ─────────────────────────────────────────────────────────────────────────────
 
@@ -606,6 +664,10 @@ class ClientProfileSchema(BaseModel):
     voices: ProfileVoices = Field(default_factory=ProfileVoices)
     query_cache: ProfileQueryCache = Field(default_factory=ProfileQueryCache)
     language: ProfileLanguage = Field(default_factory=ProfileLanguage)
+
+    # Bloco de conformidade EU AI Act — metadata (Console/auditoria), sem
+    # efeito funcional no genai-core (v1).
+    compliance: ProfileCompliance = Field(default_factory=ProfileCompliance)
 
     # Bloco frontend — consumido pelo /client-config.
     frontend: ProfileFrontend = Field(default_factory=ProfileFrontend)
