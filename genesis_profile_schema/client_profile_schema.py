@@ -506,6 +506,33 @@ class StarterPrompt(BaseModel):
         return data
 
 
+class ProfileFrontendWidget(BaseModel):
+    """
+    Widget embebível (épico widget core-único, Jun 2026) — configura o
+    `assets/widget.js` genérico servido pela SWA do próprio cliente.
+    O site do cliente cola UMA linha de script; tudo o resto vem daqui
+    (via /client-config ou do snapshot assets/client-config.json).
+    """
+    model_config = ConfigDict(extra="allow")
+
+    enabled: bool = False
+    mode: Literal["bubble", "inline"] = "bubble"
+    position: Literal["bottom-right", "bottom-left"] = "bottom-right"
+    offset_x_px: int = Field(20, ge=0)                   # afinar ao pixel (cookie banners etc.)
+    offset_y_px: int = Field(20, ge=0)
+    # None → cai em branding.primaryColor (nunca '' — padrão das cores do schema)
+    bubble_color: Optional[str] = Field(None, pattern=r"^#[0-9A-Fa-f]{6}$")
+    bubble_icon_url: str = ""                            # "" → favicon/logoRail do branding
+    bubble_label: I18nMap = Field(default_factory=dict)  # pill de texto na bolha (opcional)
+    greeting: I18nMap = Field(default_factory=dict)      # balão de saudação proativa (default OFF: vazio)
+    greeting_delay_s: int = Field(3, ge=0)
+    panel_width_px: int = Field(420, ge=320)
+    panel_height_px: int = Field(640, ge=480)
+    # [] = qualquer site https pode embeber (frame-ancestors https:);
+    # não-vazio → o creator escreve frame-ancestors 'self' + estas origens.
+    allowed_origins: List[str] = Field(default_factory=list)
+
+
 class ProfileFrontend(BaseModel):
     """
     Sub-bloco PÚBLICO do profile — consumido pelo endpoint /client-config.
@@ -516,6 +543,7 @@ class ProfileFrontend(BaseModel):
     branding: ProfileFrontendBranding = Field(default_factory=ProfileFrontendBranding)
     language: ProfileFrontendLanguage = Field(default_factory=ProfileFrontendLanguage)
     features: ProfileFrontendFeatures = Field(default_factory=ProfileFrontendFeatures)
+    widget: ProfileFrontendWidget = Field(default_factory=ProfileFrontendWidget)
     sttPhraseList: List[str] = Field(default_factory=list)
     sttSilenceTimeoutMs: int = Field(default=3500, ge=0)
     starterPrompts: List[StarterPrompt] = Field(default_factory=list)
