@@ -202,6 +202,25 @@ class ProfileRetrieval(BaseModel):
     faithfulness_overlap_skip: float = Field(default=0.65, ge=0.0, le=1.0)  # FAITHFULNESS_JUDGE_OVERLAP_SKIP
 
 
+class ProfileOrchestration(BaseModel):
+    """Estratégia de orquestração de tools por cliente.
+
+    Traduzida em texto pelo prompt_builder (`_build_tools_guidance_block`),
+    SEMPRE por capability (grounded source / web) — nunca por nome de tool.
+    `grounded_first` = comportamento histórico (KB primeiro, web fallback);
+    é o default, garante paridade com perfis que não definam esta secção.
+    """
+    model_config = ConfigDict(extra="allow")
+
+    # grounded_first: KB primeiro, web só como fallback/temporal (default)
+    # web_first:      web primeiro, KB a complementar (ex. cliente de notícias)
+    # parallel:       KB e web em paralelo, resultados combinados
+    retrieval_strategy: Literal["grounded_first", "web_first", "parallel"] = "grounded_first"
+
+    # Permite a tool de web na orquestração. False = web nunca entra no guidance.
+    allow_web: bool = True
+
+
 class ProfileRuntime(BaseModel):
     """Runtime do agente. Antes env vars (AGENT_*, SUMMARY_*)."""
     model_config = ConfigDict(extra="allow")
@@ -657,6 +676,7 @@ class ClientProfileSchema(BaseModel):
     tools: ProfileTools = Field(default_factory=ProfileTools)
     tool_limits: ProfileToolLimits = Field(default_factory=ProfileToolLimits)
     retrieval: ProfileRetrieval = Field(default_factory=ProfileRetrieval)
+    orchestration: ProfileOrchestration = Field(default_factory=ProfileOrchestration)
     runtime: ProfileRuntime = Field(default_factory=ProfileRuntime)
     memory: ProfileMemory = Field(default_factory=ProfileMemory)
     mcp: ProfileMCP = Field(default_factory=ProfileMCP)
