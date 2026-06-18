@@ -341,6 +341,11 @@ class ProfileMCP(BaseModel):
     enabled: bool = False
     discovery_cache_ttl_seconds: int = Field(default=3600, ge=60, le=86400)
     servers: List[ProfileMCPServer] = Field(default_factory=list)
+    # Gate de confirmação de ações MCP (write/destructive). Lido pelo runtime
+    # do genai-core (_confirm_actions_policy). "all_writes" = pede confirmação em
+    # qualquer tool não-readonly; "destructive_only" = só nas marcadas destrutivas;
+    # "never" = sem gate. Default no lado seguro.
+    confirm_actions: Literal["all_writes", "destructive_only", "never"] = "all_writes"
 
 
 class ProfileLanguage(BaseModel):
