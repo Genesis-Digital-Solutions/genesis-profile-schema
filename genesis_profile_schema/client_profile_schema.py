@@ -579,6 +579,7 @@ class ProfileAuthProvider(BaseModel):
     required_scope: str = ""                                # scope obrigatório (vazio → não exige)
     tenant_id: str = ""                                     # tid esperado (MS; vazio → não valida)
     label: str = ""                                         # rótulo amigável para a UI do Console
+    primary: bool = False                                   # emissor primário → user_id puro (oid/sub); adicionais ficam namespaced (issuer|sub). Sem nenhum marcado, o 1.º da lista é o primário.
 
 
 class ProfileWidgetIdentity(BaseModel):
