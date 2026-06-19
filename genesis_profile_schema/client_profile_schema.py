@@ -332,6 +332,12 @@ class ProfileMCPServer(BaseModel):
     tool_prefix: Optional[str] = None  # default = name
     timeout_seconds: int = Field(default=30, ge=5, le=300)
     enabled: bool = True
+    # trusted — o operador declara confiança neste server. A spec MCP trata
+    # descrições/annotations do server como não-confiáveis salvo server de
+    # confiança; quando True, a description de cada tool é exposta ao modelo
+    # (higienizada); quando False (default seguro), usa-se descrição neutra.
+    # Consumido no genai-core (tool_loader) ao construir as MCPTool.
+    trusted: bool = False
 
 
 class ProfileMCP(BaseModel):
