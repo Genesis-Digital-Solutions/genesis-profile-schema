@@ -563,6 +563,70 @@ class ProfileFrontendWidget(BaseModel):
     allowed_origins: List[str] = Field(default_factory=list)
 
 
+class ProfileAuthProvider(BaseModel):
+    """
+    Emissor OIDC confiável para o genai-core VALIDAR tokens (L1, multi-IdP).
+    O `issuer` é a chave de pinning. Lido do perfil pelo backend; NÃO vai ao
+    runtime-config do FE. `extra='allow'` para evolução sem migração.
+    """
+    model_config = ConfigDict(extra="allow")
+
+    id: str = ""                                            # identificador interno do provider
+    type: Literal["oidc", "msal"] = "oidc"
+    issuer: str = ""                                        # iss esperado (pinning)
+    audience: str = ""                                      # aud esperado (vazio → não valida aud)
+    jwks_uri: str = ""                                      # vazio → discovery via .well-known do issuer
+    required_scope: str = ""                                # scope obrigatório (vazio → não exige)
+    tenant_id: str = ""                                     # tid esperado (MS; vazio → não valida)
+    label: str = ""                                         # rótulo amigável para a UI do Console
+
+
+class ProfileWidgetIdentity(BaseModel):
+    """
+    Identidade de widget por token assinado (L2). O segredo HMAC vive no Key
+    Vault do cliente (`secret_ref`); o genai-core valida assinatura + idade.
+    Backend-only — não vai ao runtime-config do FE.
+    """
+    model_config = ConfigDict(extra="allow")
+
+    enabled: bool = False
+    secret_ref: str = ""                                    # nome do secret no Key Vault do cliente
+    algo: Literal["HS256", "HS384", "HS512"] = "HS256"
+    max_age_s: int = Field(default=300, ge=1)               # idade máxima do token (anti-replay)
+
+
+class ProfileFrontendAuth(BaseModel):
+    """
+    Autenticação do frontend + identidade (épico multi-IdP, Jun 2026).
+
+    Campos FE (escritos no runtime-config.json da SWA, por cliente):
+      - msal: clientId / tenantId / tenantMode / apiScopes / loginType
+      - oidc: authority / clientId / scope
+    Campos backend (lidos pelo genai-core do PERFIL; NÃO vão ao runtime-config):
+      - providers[]      → validação multi-issuer com pinning (L1)
+      - widget_identity  → identidade de widget por token assinado (L2)
+    """
+    model_config = ConfigDict(extra="allow")
+
+    mode: Literal["none", "optional", "required"] = "optional"
+    provider: Literal["msal", "oidc"] = "msal"
+
+    # MSAL (Microsoft)
+    tenantMode: Literal["single", "multi"] = "single"
+    clientId: str = ""
+    tenantId: str = ""
+    apiScopes: List[str] = Field(default_factory=list)
+    loginType: Literal["redirect", "popup"] = "redirect"
+
+    # OIDC genérico (login do FE)
+    authority: str = ""                                     # URL do IdP (authority/issuer)
+    scope: str = ""                                         # vazio → default seguro no FE
+
+    # Backend — validação de tokens (L1) e identidade de widget (L2)
+    providers: List[ProfileAuthProvider] = Field(default_factory=list)
+    widget_identity: ProfileWidgetIdentity = Field(default_factory=ProfileWidgetIdentity)
+
+
 class ProfileFrontend(BaseModel):
     """
     Sub-bloco PÚBLICO do profile — consumido pelo endpoint /client-config.
@@ -574,6 +638,9 @@ class ProfileFrontend(BaseModel):
     language: ProfileFrontendLanguage = Field(default_factory=ProfileFrontendLanguage)
     features: ProfileFrontendFeatures = Field(default_factory=ProfileFrontendFeatures)
     widget: ProfileFrontendWidget = Field(default_factory=ProfileFrontendWidget)
+    # Auth/identidade. Opcional (= None quando ausente) para NÃO materializar um
+    # bloco em perfis que caíam no default do environment — retrocompat total.
+    auth: Optional[ProfileFrontendAuth] = None
     sttPhraseList: List[str] = Field(default_factory=list)
     sttSilenceTimeoutMs: int = Field(default=3500, ge=0)
     starterPrompts: List[StarterPrompt] = Field(default_factory=list)
