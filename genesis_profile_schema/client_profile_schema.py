@@ -230,6 +230,23 @@ class ProfileRuntime(BaseModel):
     max_history_items: int = Field(default=20, ge=0)          # AGENT_MAX_HISTORY_ITEMS
     summary_every_n_turns: int = Field(default=10, ge=0)      # SUMMARY_EVERY_N_TURNS
 
+    # ── Modelos servidos pelo perfil (substituem AGENT_MODEL / INTERNAL_MODEL) ──
+    # Resolução no genai-core: perfil → env → default. Vazio = comportamento
+    # actual intacto (lê das env vars). Os nomes TÊM de corresponder a
+    # deployments reais no OpenAI/Foundry do cliente (o Console garante isso).
+    # Embeddings NUNCA são geridos aqui (parte o índice AI Search).
+    agent_model: str = ""        # deployment GPT-5.x do agent (ex.: "gpt-5.4"); AGENT_MODEL
+    internal_model: str = ""     # deployment do mini interno (ex.: "gpt-5.4-mini"); INTERNAL_MODEL
+
+    # Esforço de raciocínio DEFAULT do agent, usado quando o request não traz
+    # um modo do LLM picker. Mapeado no genai-core para reasoning_effort (GPT-5):
+    #   fast → floor (none p/ 5.1+, minimal p/ 5.0) · balanced → medium · thinking → high
+    # "auto": reservado para Azure Model Router — pressupõe que `agent_model` é
+    # um deployment de router; o genai-core passa-lhe um effort base e deixa o
+    # router escolher o modelo subjacente. Só aplicável ao agent (o interno é
+    # sempre tratado como "fast").
+    agent_mode: Literal["auto", "fast", "balanced", "thinking"] = "balanced"
+
 
 class ProfileMemory(BaseModel):
     """Memória de utilizador (factos). Antes env vars (USER_MEMORY_*)."""
