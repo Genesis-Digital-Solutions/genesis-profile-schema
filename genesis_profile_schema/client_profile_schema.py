@@ -182,6 +182,89 @@ class ProfileTools(BaseModel):
     config: Dict[str, Dict[str, Any]] = Field(default_factory=dict)
 
 
+class ProfileSourcePriority(BaseModel):
+    """
+    Priorização de fontes por nível de autoridade (interno → legal → externo),
+    montando o contexto por prioridade de tier em vez de só por score. OFF por
+    defeito (paridade total com a frota actual).
+
+    Como se obtém o tier de cada chunk — `strategy`:
+      - "field": lê um campo de metadados do índice (`tier_field`, ex.: "tier").
+                 Via limpa para clientes novos que etiquetam autoridade na
+                 ingestão. Degrada em segurança se o campo não existir (sem-tier).
+      - "path":  deriva o tier do caminho da fonte (campo `source`) — `internal_markers`
+                 marcam interno; `legal_allowlist` marca legal; o resto é externo.
+                 NÃO exige reindexação (lê o `source` que já está no índice). É a
+                 via usada por clientes legacy migrados sem mexer no índice.
+
+    O motor a jusante (reordenação por tier) é o MESMO nas duas estratégias; só
+    muda a forma de obter o tier de cada chunk. Preferir peso suave a filtro duro:
+    o externo é deprioritizado, não removido.
+    """
+    model_config = ConfigDict(extra="allow")
+
+    enabled: bool = False
+    strategy: Literal["field", "path"] = "field"
+
+    # strategy="field"
+    tier_field: str = "tier"            # campo de metadados que traz o nível de autoridade
+
+    # strategy="path"
+    internal_markers: List[str] = Field(default_factory=list)      # ex.: ["/01_documentos/", "/02_modelos/"]
+    legal_allowlist: List[str] = Field(default_factory=list)       # caminhos/prefixos de fontes legais/reguladoras
+    label_overrides: Dict[str, str] = Field(default_factory=dict)  # entrada da allowlist → rótulo legível
+
+    # Salvaguarda de relevância (escala reranker 0–4): fontes de nível superior
+    # com score abaixo do piso são adiadas para depois das de nível inferior que
+    # estejam acima do piso. None/0 = desativado. Sem limite superior (na dúvida, subir).
+    reranker_floor: Optional[float] = Field(default=None, ge=0.0)
+
+    # Quando o utilizador pede explicitamente fontes externas, manter ordem de
+    # relevância pura (não forçar a prioridade por tier).
+    respect_external_request: bool = True
+
+
+class ProfileLatestVersion(BaseModel):
+    """
+    Routing "última versão de X" — para perguntas pela versão mais recente de
+    uma família de documentos (ex.: "qual o último RASARP?"), restringe o
+    contexto à versão mais recente em vez de misturar anos. OFF por defeito.
+
+    Como se determina a data/versão — `strategy`:
+      - "field": lê um campo datetime/string do índice (`date_field`/`version_field`).
+                 O indexer do Studio já escreve `source_last_modified` e
+                 `doc_version`, pelo que esta via funciona sem trabalho de ingestão
+                 adicional. "A mais recente" é resolvida deterministicamente pelo
+                 retrieval — o modelo NÃO adivinha datas.
+      - "path":  deriva o ano do caminho da fonte via `year_segment_regex`
+                 (ex.: "/2025/"). Via para clientes legacy cuja estrutura de
+                 pastas codifica o ano; não exige reindexação.
+
+    `intent_patterns` deteta a intenção de "última versão" na pergunta (regex,
+    qualquer estratégia). `family_field` (strategy="field") agrupa por família de
+    documento; vazio = derivar da própria pergunta/categoria.
+    """
+    model_config = ConfigDict(extra="allow")
+
+    enabled: bool = False
+    strategy: Literal["field", "path"] = "field"
+
+    intent_patterns: List[str] = Field(default_factory=list)   # ex.: "últim[oa]s?", "mais recentes?", "latest"
+
+    # strategy="field"
+    date_field: str = "source_last_modified"   # campo datetime no índice (já escrito pelo indexer)
+    version_field: str = "doc_version"         # campo de versão no índice (já escrito pelo indexer)
+    family_field: str = ""                     # campo de família/série; vazio = derivar
+
+    # strategy="path"
+    year_segment_regex: str = r"/(19\d{2}|20\d{2})/"   # extrai o ano de um segmento do caminho
+
+    # Pool de candidatos = top_k * multiplier (cap 50 pelo limite do reranker
+    # semântico do Azure). Mais candidatos = melhor hipótese de apanhar o ano
+    # recente subrepresentado em nº de chunks. Regra: nunca reduzir; na dúvida, subir.
+    candidate_multiplier: int = Field(default=4, ge=1)
+
+
 class ProfileRetrieval(BaseModel):
     """
     Knobs de RAG/retrieval por cliente. Antes só env vars (KB_*, RAG_*) — logo
@@ -200,6 +283,18 @@ class ProfileRetrieval(BaseModel):
     force_diversity: bool = False                              # KB_FORCE_DIVERSITY
     fuzzy_correction: bool = False                             # KB_FUZZY_CORRECTION_ENABLED
     faithfulness_overlap_skip: float = Field(default=0.65, ge=0.0, le=1.0)  # FAITHFULNESS_JUDGE_OVERLAP_SKIP
+
+    # Priorização por tier e routing de "última versão" — capacidades de
+    # retrieval por cliente, OFF por defeito (paridade com a frota). Só
+    # coerentes com a tool de KB ligada.
+    source_priority: ProfileSourcePriority = Field(
+        default_factory=ProfileSourcePriority,
+        json_schema_extra={"requires_tool": "search_knowledge_base"},
+    )
+    latest_version: ProfileLatestVersion = Field(
+        default_factory=ProfileLatestVersion,
+        json_schema_extra={"requires_tool": "search_knowledge_base"},
+    )
 
 
 class ProfileOrchestration(BaseModel):
