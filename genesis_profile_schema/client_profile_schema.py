@@ -613,6 +613,13 @@ class ProfileFrontendFeatures(BaseModel):
     )
     enablePdfExport: bool = True
     enableSourcePreview: bool = True
+    # Ação ao clicar numa fonte (substitui o all-or-nothing do enableSourcePreview):
+    #   inline → painel de preview embebido (default; equivale a enableSourcePreview=true)
+    #   newtab → abre a fonte em nova tab (browser decide preview/download pelo Content-Type)
+    #   none   → fontes visíveis mas NÃO clicáveis (equivale a enableSourcePreview=false)
+    # enableSourcePreview é mantido em sincronia pelo validator abaixo, para builds
+    # antigos do fecore que ainda leem o booleano.
+    sourceClickAction: Literal["inline", "newtab", "none"] = "inline"
     enableInlineCitations: bool = True
     enablePipelineTrace: bool = True   # on: transparência + resumo de explainability
     showHistory: bool = True
@@ -623,6 +630,21 @@ class ProfileFrontendFeatures(BaseModel):
     # REMOVIDO enableFeedback: feedback é sempre-on no frontend, sem flag.
     # REMOVIDO enableHybridSearch: hybrid search (vetorial+keyword) é sempre-on
     #   no retrieval do backend, sem flag — desligá-lo só piora a qualidade.
+
+    @model_validator(mode="before")
+    @classmethod
+    def _source_click_coherence(cls, data):
+        """Mantém sourceClickAction ↔ enableSourcePreview coerentes.
+        Novo campo manda; se ausente, deriva do legacy (true→inline, false→none).
+        Assim perfis antigos (só booleano) e builds antigos (só booleano) funcionam."""
+        if not isinstance(data, dict):
+            return data
+        action = data.get("sourceClickAction")
+        if action in ("inline", "newtab", "none"):
+            data["enableSourcePreview"] = (action == "inline")
+        elif "enableSourcePreview" in data:
+            data["sourceClickAction"] = "inline" if data.get("enableSourcePreview") else "none"
+        return data
 
 
 class StarterPrompt(BaseModel):
