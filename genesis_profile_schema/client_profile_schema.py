@@ -281,6 +281,13 @@ class ProfileRetrieval(BaseModel):
     # matar variância por excesso de contexto. Distinto de top_k (recall) e
     # rerank_top_k (cap do GPT rerank, só em force_diversity).
     context_top_k: int = Field(default=0, ge=0)                # KB_CONTEXT_TOP_K
+    # Injeta no contexto de cada chunk as linhas Source:/Url:/Page:/Tier:/
+    # Entity: (estilo legacy format_docs), ANTES do Content:. Alimenta as
+    # custom_instructions do cliente que formatam o CAMINHO da fonte como
+    # link (ex.: Indaqua). False = contexto da frota intacto (comportamento
+    # histórico). Opt-in por cliente. Tier/Entity vêm do classify_source
+    # (mesma lógica do source_priority).
+    context_include_source_fields: bool = False               # KB_CONTEXT_SOURCE_FIELDS
     min_score: float = Field(default=0.15, ge=0.0, le=1.0)     # KB_MIN_SCORE
     enable_rerank: bool = True                                  # KB_ENABLE_RERANK
     chars_per_chunk: int = Field(default=5000, ge=0)           # KB_CHARS_PER_CHUNK
