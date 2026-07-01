@@ -219,10 +219,6 @@ class ProfileSourcePriority(BaseModel):
     # estejam acima do piso. None/0 = desativado. Sem limite superior (na dúvida, subir).
     reranker_floor: Optional[float] = Field(default=None, ge=0.0)
 
-    # Quando o utilizador pede explicitamente fontes externas, manter ordem de
-    # relevância pura (não forçar a prioridade por tier).
-    respect_external_request: bool = True
-
 
 class ProfileLatestVersion(BaseModel):
     """
@@ -258,11 +254,6 @@ class ProfileLatestVersion(BaseModel):
 
     # strategy="path"
     year_segment_regex: str = r"/(19\d{2}|20\d{2})/"   # extrai o ano de um segmento do caminho
-
-    # Pool de candidatos = top_k * multiplier (cap 50 pelo limite do reranker
-    # semântico do Azure). Mais candidatos = melhor hipótese de apanhar o ano
-    # recente subrepresentado em nº de chunks. Regra: nunca reduzir; na dúvida, subir.
-    candidate_multiplier: int = Field(default=4, ge=1)
 
 
 class ProfileRetrieval(BaseModel):
