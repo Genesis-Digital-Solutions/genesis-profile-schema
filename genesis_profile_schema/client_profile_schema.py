@@ -275,6 +275,12 @@ class ProfileRetrieval(BaseModel):
     model_config = ConfigDict(extra="allow")
 
     top_k: int = Field(default=20, ge=1)                       # KB_TOP_K
+    # Corte final de contexto: nº de chunks (ordenados por reranker_score,
+    # determinístico) que passam ao modelo ANTES da expansão de vizinhos.
+    # 0 = OFF (passa todos, comportamento histórico). Opt-in por cliente para
+    # matar variância por excesso de contexto. Distinto de top_k (recall) e
+    # rerank_top_k (cap do GPT rerank, só em force_diversity).
+    context_top_k: int = Field(default=0, ge=0)                # KB_CONTEXT_TOP_K
     min_score: float = Field(default=0.15, ge=0.0, le=1.0)     # KB_MIN_SCORE
     enable_rerank: bool = True                                  # KB_ENABLE_RERANK
     chars_per_chunk: int = Field(default=5000, ge=0)           # KB_CHARS_PER_CHUNK
