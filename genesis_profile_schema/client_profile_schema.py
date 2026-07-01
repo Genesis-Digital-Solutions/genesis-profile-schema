@@ -256,6 +256,23 @@ class ProfileLatestVersion(BaseModel):
     year_segment_regex: str = r"/(19\d{2}|20\d{2})/"   # extrai o ano de um segmento do caminho
 
 
+class ProfileNeighborExpansion(BaseModel):
+    """
+    Expansão de vizinhos por cliente (antes só env vars de frota:
+    KB_EXPAND_NEIGHBORS/KB_NEIGHBOR_*). Traz os chunks adjacentes
+    (chunk_index ±window) das melhores âncoras, para respostas que
+    atravessam fronteiras de chunk (tabelas, cláusulas, procedimentos).
+    Campos a None = fallback às envs (comportamento de frota intacto).
+    Alto valor em contratos/manuais/tabelas; ruído potencial em FAQs curtas.
+    """
+    model_config = ConfigDict(extra="allow")
+
+    enabled: Optional[bool] = None      # None = env KB_EXPAND_NEIGHBORS (default ON)
+    window: Optional[int] = Field(default=None, ge=1)       # KB_NEIGHBOR_WINDOW (1)
+    top_anchors: Optional[int] = Field(default=None, ge=1)  # KB_NEIGHBOR_TOP_ANCHORS (5)
+    max_added: Optional[int] = Field(default=None, ge=0)    # KB_NEIGHBOR_MAX_ADDED (12)
+
+
 class ProfileRetrieval(BaseModel):
     """
     Knobs de RAG/retrieval por cliente. Antes só env vars (KB_*, RAG_*) — logo
@@ -287,6 +304,12 @@ class ProfileRetrieval(BaseModel):
     force_diversity: bool = False                              # KB_FORCE_DIVERSITY
     fuzzy_correction: bool = False                             # KB_FUZZY_CORRECTION_ENABLED
     faithfulness_overlap_skip: float = Field(default=0.65, ge=0.0, le=1.0)  # FAITHFULNESS_JUDGE_OVERLAP_SKIP
+
+    # Expansão de vizinhos por cliente. Campos None = envs de frota.
+    neighbor_expansion: ProfileNeighborExpansion = Field(
+        default_factory=ProfileNeighborExpansion,
+        json_schema_extra={"requires_tool": "search_knowledge_base"},
+    )
 
     # Priorização por tier e routing de "última versão" — capacidades de
     # retrieval por cliente, OFF por defeito (paridade com a frota). Só
