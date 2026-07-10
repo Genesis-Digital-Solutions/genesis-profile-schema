@@ -34,7 +34,7 @@ warnings.filterwarnings(
     category=UserWarning,
 )
 
-from typing import Any, Dict, List, Literal, Optional
+from typing import Any, Dict, List, Literal, Optional, Union
 from pydantic import BaseModel, ConfigDict, Field, model_validator
 
 
@@ -590,6 +590,43 @@ class ProfileFrontendBranding(BaseModel):
     theme: ProfileFrontendTheme = Field(default_factory=ProfileFrontendTheme)
 
 
+class ProfileFrontendQuickInsightQuestion(BaseModel):
+    """Pergunta dentro de um quick insight expansível (accordion).
+    `prompt` omitido → a label é enviada como pergunta."""
+    model_config = ConfigDict(extra="allow")
+
+    label: Union[str, I18nMap] = ""
+    prompt: Optional[Union[str, I18nMap]] = None
+
+
+class ProfileFrontendQuickInsight(BaseModel):
+    """Atalho fixo do painel de insights. Dois modos:
+    `prompt` = atalho direto (1 clique); `questions` = card expansível
+    com perguntas dentro (mockup Live Insights). i18n em label/prompt."""
+    model_config = ConfigDict(extra="allow")
+
+    id: str = ""
+    label: Union[str, I18nMap] = ""
+    prompt: Optional[Union[str, I18nMap]] = None
+    questions: List[ProfileFrontendQuickInsightQuestion] = Field(default_factory=list)
+    icon: str = ""
+
+
+class ProfileFrontendInsightsPanel(BaseModel):
+    """Painel de insights (épico "Painel como dashboard", Jul 2026).
+
+    `panelTypes` é lido pelo BACKEND (política de placement: visuais destes
+    tipos são projetados no painel em vez de inline); o resto é consumido
+    pelo fecore via /client-config. Secção pensada para crescer com os
+    agentes de ERP (Xero/PHC/SAP)."""
+    model_config = ConfigDict(extra="allow")
+
+    title: Union[str, I18nMap] = ""
+    openOnLoad: bool = False
+    panelTypes: List[str] = Field(default_factory=list)
+    quickInsights: List[ProfileFrontendQuickInsight] = Field(default_factory=list)
+
+
 class ProfileFrontendLanguage(BaseModel):
     model_config = ConfigDict(extra="allow")
 
@@ -798,6 +835,10 @@ class ProfileFrontend(BaseModel):
 
     branding: ProfileFrontendBranding = Field(default_factory=ProfileFrontendBranding)
     language: ProfileFrontendLanguage = Field(default_factory=ProfileFrontendLanguage)
+    # Painel de insights: None quando ausente (não materializa em perfis que
+    # não o usam — mesmo padrão do `auth`). Tipado desde Jul 2026; perfis
+    # anteriores com a secção via extra="allow" continuam válidos.
+    insightsPanel: Optional[ProfileFrontendInsightsPanel] = None
     features: ProfileFrontendFeatures = Field(default_factory=ProfileFrontendFeatures)
     widget: ProfileFrontendWidget = Field(default_factory=ProfileFrontendWidget)
     # Auth/identidade. Opcional (= None quando ausente) para NÃO materializar um
