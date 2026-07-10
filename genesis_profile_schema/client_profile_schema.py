@@ -612,6 +612,17 @@ class ProfileFrontendQuickInsight(BaseModel):
     icon: str = ""
 
 
+class ProfileFrontendProviderBadge(BaseModel):
+    """Pill de provider no header do painel (ex.: "Xero · Ligado").
+    Estado é CONFIGURADO (a integração existe no perfil), não health-check —
+    evolução para estado real-time anotada no fecore. `label` i18n; `icon`
+    opcional (emoji). Fecha a dívida declarada da sessão Xero (v0.1.25)."""
+    model_config = ConfigDict(extra="allow")
+
+    label: Union[str, I18nMap] = ""
+    icon: Optional[str] = None
+
+
 class ProfileFrontendInsightsPanel(BaseModel):
     """Painel de insights (épico "Painel como dashboard", Jul 2026).
 
@@ -625,6 +636,7 @@ class ProfileFrontendInsightsPanel(BaseModel):
     openOnLoad: bool = False
     panelTypes: List[str] = Field(default_factory=list)
     quickInsights: List[ProfileFrontendQuickInsight] = Field(default_factory=list)
+    providerBadge: Optional[ProfileFrontendProviderBadge] = None
 
 
 class ProfileFrontendLanguage(BaseModel):
@@ -676,6 +688,10 @@ class ProfileFrontendFeatures(BaseModel):
     showHistory: bool = True
     enableStarterPrompts: bool = True
     enableDarkMode: bool = False
+    # Fila de revisão human-in-the-loop (Jul 2026) — rota /fila do fecore.
+    # Exige REVIEW_QUEUE_ENABLED=true no genai-core do cliente + container
+    # Cosmos `review_queue`. Default false: só liga onde for contratado.
+    reviewQueue: bool = False
     # REMOVIDOS (campos mortos, nenhum componente os lia):
     #   showQuestionsMenu, enableFollowupSuggestions
     # REMOVIDO enableFeedback: feedback é sempre-on no frontend, sem flag.
