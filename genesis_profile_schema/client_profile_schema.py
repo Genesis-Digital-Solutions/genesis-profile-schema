@@ -172,6 +172,69 @@ class ProfileBrandSafety(BaseModel):
     redirect_to: str = ""
 
 
+# ── Configs tipadas de tools conhecidas (v0.1.26) ────────────────────────────
+# `tools.config` continua um Dict aberto (cada tool define o seu — nunca
+# restringimos tools novas), mas as tools com config CONHECIDA ganham um model
+# tipado, usado pelo validator de ProfileTools para apanhar formatos errados
+# no /admin/profile/validate ANTES de irem para o Blob. extra="allow" em todos:
+# campos novos de versões futuras do genai-core passam sem migração.
+
+class ProfileToolSearchWebConfig(BaseModel):
+    """tools.config.search_web — agente de pesquisa web (Azure AI Foundry)."""
+    model_config = ConfigDict(extra="allow")
+
+    project_endpoint: str = ""
+    web_agent_id: str = ""
+    web_agent_name: str = ""
+    mode: Literal["agent", "native", ""] = "agent"  # "" tolerado (editor antigo); native = web_search da Responses API
+    temperature: Union[float, str] = ""            # "" = default do agente
+    allowed_domains: List[str] = Field(default_factory=list)
+
+
+class ProfileToolGenerateImageConfig(BaseModel):
+    """tools.config.generate_image — modelo de geração de imagem por cliente."""
+    model_config = ConfigDict(extra="allow", protected_namespaces=())
+
+    model: str = ""                                # ex: "gpt-image-1"; "" = default do core
+
+
+class ProfileLegalExtractFieldSpec(BaseModel):
+    """Um campo do schema de extração legal: label (cartão) + hint (instrução
+    de extração para o LLM). A key é a chave do dict em `schema`."""
+    model_config = ConfigDict(extra="allow")
+
+    label: str = ""
+    hint: str = ""
+
+
+class ProfileToolLegalExtractConfig(BaseModel):
+    """tools.config.extract_legal_terms — motor de extração documental com
+    schema por perfil (épico BOQ+Legal, Jul 2026). Cada campo é extraído com
+    saída {value, reference} (referência de página/cláusula — padrão ADIC).
+
+    `schema` aceita, por campo, o objeto {label, hint} OU a forma abreviada
+    string (só o hint) — normalizada pelo genai-core. Vazio = schema default
+    da tool (termos de contrato).
+    """
+    model_config = ConfigDict(extra="allow")
+
+    title: str = ""                                # título do cartão; "" = default da tool
+    field_schema: Dict[str, Union[ProfileLegalExtractFieldSpec, str]] = Field(
+        default_factory=dict,
+        alias="schema",
+        json_schema_extra={"requires_tool": "extract_legal_terms"},
+    )
+
+
+# Mapa key de tools.config → model tipado. Tools fora deste mapa passam sem
+# validação estrutural (estrutura aberta, como sempre).
+_KNOWN_TOOL_CONFIG_MODELS: Dict[str, Any] = {
+    "search_web": ProfileToolSearchWebConfig,
+    "generate_image": ProfileToolGenerateImageConfig,
+    "extract_legal_terms": ProfileToolLegalExtractConfig,
+}
+
+
 class ProfileTools(BaseModel):
     model_config = ConfigDict(extra="allow")
 
@@ -180,6 +243,21 @@ class ProfileTools(BaseModel):
     enabled: List[str] = Field(default_factory=lambda: list(_DEFAULT_TOOLS_ENABLED))
     # config por tool — estrutura aberta (cada tool define o seu)
     config: Dict[str, Dict[str, Any]] = Field(default_factory=dict)
+
+    @model_validator(mode="after")
+    def _validate_known_tool_configs(self) -> "ProfileTools":
+        """Valida os blocos de tools.config com model conhecido, SEM alterar o
+        conteúdo gravado (o Blob mantém exatamente o que o editor enviou —
+        round-trip byte-fiel; o model tipado serve só de guarda de formato)."""
+        for key, model in _KNOWN_TOOL_CONFIG_MODELS.items():
+            raw = (self.config or {}).get(key)
+            if raw is None:
+                continue
+            try:
+                model.model_validate(raw)
+            except Exception as e:
+                raise ValueError(f"tools.config.{key} inválido: {e}") from e
+        return self
 
 
 class ProfileSourcePriority(BaseModel):
