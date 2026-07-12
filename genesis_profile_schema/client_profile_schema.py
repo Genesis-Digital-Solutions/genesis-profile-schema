@@ -385,6 +385,10 @@ class ProfileRetrieval(BaseModel):
     rerank_chars_per_source: int = Field(default=3000, ge=0)   # RAG_PHASE1_CHARS_PER_SOURCE
     topicality_gate: bool = True                               # KB_TOPICALITY_GATE
     force_diversity: bool = False                              # KB_FORCE_DIVERSITY
+    # GPT re-rank largo (só em broad/diversity): um LLM re-ordena os candidatos
+    # por relevância antes do corte. Custo extra por query; ganho de qualidade
+    # em corpora ruidosos. Antes só env — agora por cliente e afinável.
+    gpt_rerank_broad: bool = False                             # RAG_ENABLE_GPT_RERANK_BROAD
     fuzzy_correction: bool = False                             # KB_FUZZY_CORRECTION_ENABLED
     faithfulness_overlap_skip: float = Field(default=0.65, ge=0.0, le=1.0)  # FAITHFULNESS_JUDGE_OVERLAP_SKIP
 
@@ -424,6 +428,14 @@ class ProfileOrchestration(BaseModel):
 
     # Permite a tool de web na orquestração. False = web nunca entra no guidance.
     allow_web: bool = True
+
+    # Planner leve: um passo pré-loop classifica pedidos multi-passo e gera um
+    # plano curto (3-6 passos) injetado no prompt. OFF por defeito. Custo de 1
+    # internal-LLM call quando dispara. Antes só env — agora por cliente.
+    agent_planner: bool = False                                 # AGENT_PLANNER_ENABLED
+    # Execução paralela de tools quando o batch tem 2+ chamadas independentes.
+    # OFF por defeito. Reduz latência multi-tool; validar por cliente. Antes só env.
+    parallel_tools: bool = False                                # AGENT_PARALLEL_TOOLS
 
 
 class ProfileRuntime(BaseModel):
@@ -772,9 +784,18 @@ class ProfileFrontendFeatures(BaseModel):
     enableStarterPrompts: bool = True
     enableDarkMode: bool = False
     # Fila de revisão human-in-the-loop (Jul 2026) — rota /fila do fecore.
-    # Exige REVIEW_QUEUE_ENABLED=true no genai-core do cliente + container
-    # Cosmos `review_queue`. Default false: só liga onde for contratado.
+    # Ativa-se por esta flag no perfil (+ container Cosmos `review_queue`). A env
+    # REVIEW_QUEUE_ENABLED no genai-core é só kill-switch opcional (força on/off).
+    # Default false: só liga onde for contratado.
     reviewQueue: bool = False
+    # Task API assíncrona (/tasks) no genai-core: pedidos longos com task_id +
+    # polling/webhook. OFF por defeito; liga onde um produto precise. (env
+    # TASK_API_ENABLED continua a funcionar como fallback.)
+    taskApi: bool = False
+    # Arquivar os ficheiros ORIGINais dos uploads (ex.: PDF da fatura) para
+    # auditoria. Auto-liga já se o cliente tiver extract_invoice/generate_boq;
+    # esta flag força explicitamente on/off. (env PERSIST_ORIGINALS = fallback.)
+    persistOriginals: bool = False
     # REMOVIDOS (campos mortos, nenhum componente os lia):
     #   showQuestionsMenu, enableFollowupSuggestions
     # REMOVIDO enableFeedback: feedback é sempre-on no frontend, sem flag.
