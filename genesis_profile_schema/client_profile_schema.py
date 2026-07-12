@@ -200,10 +200,15 @@ class ProfileToolGenerateImageConfig(BaseModel):
 
 class ProfileLegalExtractFieldSpec(BaseModel):
     """Um campo do schema de extração legal: label (cartão) + hint (instrução
-    de extração para o LLM). A key é a chave do dict em `schema`."""
+    de extração para o LLM). A key é a chave do dict em `schema`.
+
+    v0.1.27 (i18n das tools): o label aceita string simples OU mapa
+    multilingue {lang: texto} (ex: {"pt": "Partes", "ar": "الأطراف"}) — o
+    genai-core resolve pela língua detetada do utilizador com fallback
+    lang → en → pt → primeiro valor."""
     model_config = ConfigDict(extra="allow")
 
-    label: str = ""
+    label: Union[str, Dict[str, str]] = ""
     hint: str = ""
 
 
