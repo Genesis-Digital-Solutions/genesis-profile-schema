@@ -220,6 +220,10 @@ class ProfileToolLegalExtractConfig(BaseModel):
     `schema` aceita, por campo, o objeto {label, hint} OU a forma abreviada
     string (só o hint) — normalizada pelo genai-core. Vazio = schema default
     da tool (termos de contrato).
+
+    Overlay de domínio (tool_playbooks): prompt_preset (preset do produto) +
+    prompt_custom (instruções livres do cliente), APENDADOS ao contrato base do
+    LLM legal — nunca o substituem.
     """
     model_config = ConfigDict(extra="allow")
 
@@ -229,6 +233,37 @@ class ProfileToolLegalExtractConfig(BaseModel):
         alias="schema",
         json_schema_extra={"requires_tool": "extract_legal_terms"},
     )
+    prompt_preset: str = ""                         # "" | "contracts" (catálogo tool_playbooks)
+    prompt_custom: str = ""                         # instruções de domínio livres (apendadas)
+
+
+class ProfileToolBoqRateRule(BaseModel):
+    """Uma regra da tabela de preços do BOQ (tools.config.generate_boq.rates).
+    Casa linhas SEM preço da fonte: se `match` (substring, case-insensitive)
+    ocorre na descrição da linha e (se indicada) `unit` coincide, aplica `price`.
+    Fonte explícita de custos — o genai-core nunca inventa preços."""
+    model_config = ConfigDict(extra="allow")
+
+    match: str = ""
+    unit: str = ""
+    price: Union[float, str] = ""                   # "" tolerado (linha em branco no editor)
+    label: str = ""
+
+
+class ProfileToolBoqConfig(BaseModel):
+    """tools.config.generate_boq — Bill of Quantities (épico BOQ v2, Jul 2026).
+    - prompt_preset: norma de medição (overlay tool_playbooks): "" | "pronic_pt" | "pomi_gcc".
+    - prompt_custom: instruções de domínio livres do cliente (apendadas ao contrato base).
+    - rates: tabela de preços editável pelo cliente (fonte explícita de custos).
+    Vazio = tool no comportamento default. extra=allow → round-trip byte-fiel."""
+    model_config = ConfigDict(extra="allow")
+
+    prompt_preset: str = ""
+    prompt_custom: str = ""
+    rates: List[ProfileToolBoqRateRule] = Field(
+        default_factory=list,
+        json_schema_extra={"requires_tool": "generate_boq"},
+    )
 
 
 # Mapa key de tools.config → model tipado. Tools fora deste mapa passam sem
@@ -237,6 +272,7 @@ _KNOWN_TOOL_CONFIG_MODELS: Dict[str, Any] = {
     "search_web": ProfileToolSearchWebConfig,
     "generate_image": ProfileToolGenerateImageConfig,
     "extract_legal_terms": ProfileToolLegalExtractConfig,
+    "generate_boq": ProfileToolBoqConfig,
 }
 
 
