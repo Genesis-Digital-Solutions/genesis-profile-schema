@@ -392,6 +392,21 @@ class ProfileNeighborExpansion(BaseModel):
     max_added: Optional[int] = Field(default=None, ge=0)    # KB_NEIGHBOR_MAX_ADDED (12)
 
 
+class ProfileRetrievalIndex(BaseModel):
+    """Config por-índice (multi-índice). Rede de segurança: lista vazia →
+    comportamento atual (todos os índices tratados igual). `weight` escala o
+    reranker_score dos chunks do índice no merge (corrige a incomparabilidade
+    de scores entre índices heterogéneos e permite preferir o autoritativo);
+    `rerank_mode` decide se os chunks desse índice tornam o GPT rerank elegível
+    (`llm`) ou se basta o reranker semântico do Azure (`semantic_only`).
+    Índice não listado = `llm` (default)."""
+    model_config = ConfigDict(extra="allow")
+
+    name: str
+    weight: float = Field(default=1.0, ge=0.0)
+    rerank_mode: Literal["llm", "semantic_only"] = "llm"
+
+
 class ProfileRetrieval(BaseModel):
     """
     Knobs de RAG/retrieval por cliente. Antes só env vars (KB_*, RAG_*) — logo
@@ -443,6 +458,12 @@ class ProfileRetrieval(BaseModel):
     )
     latest_version: ProfileLatestVersion = Field(
         default_factory=ProfileLatestVersion,
+        json_schema_extra={"requires_tool": "search_knowledge_base"},
+    )
+    # Config por-índice (multi-índice). Vazio = comportamento atual (rede de
+    # segurança): todos os índices com peso 1.0 e rerank elegível.
+    indexes: List[ProfileRetrievalIndex] = Field(
+        default_factory=list,
         json_schema_extra={"requires_tool": "search_knowledge_base"},
     )
 
