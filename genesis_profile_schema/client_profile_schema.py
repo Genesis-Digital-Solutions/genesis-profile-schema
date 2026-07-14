@@ -250,11 +250,29 @@ class ProfileToolBoqRateRule(BaseModel):
     label: str = ""
 
 
+class ProfileToolBoqScale(BaseModel):
+    """tools.config.generate_boq.scale — travões de plausibilidade da calibração
+    de escala do parser PDF (épico BOQ v2, passo 3b). São afinações de
+    COMPORTAMENTO por cliente (não env): raramente se tocam — no fluxo normal a
+    escala é confirmada pelo carimbo/cadeia de cotagem e a afinação caso-a-caso
+    faz-se por calibração ao agente. Só fazem sentido para clientes com desenhos
+    sistematicamente atípicos (obras civis de vários km → subir max_drawing_span_mm;
+    pormenores de peças pequenas → descer min_drawing_span_mm; PDFs sempre muito
+    reescalados com cotas fiáveis → subir max_corrob_printed_ratio). Vazio/ausente
+    = defaults do genai-core. extra=allow → round-trip byte-fiel."""
+    model_config = ConfigDict(extra="allow")
+
+    max_corrob_printed_ratio: Optional[float] = None  # divergência máx. cotas/carimbo p/ descartar o carimbo (default 2.5)
+    min_drawing_span_mm: Optional[float] = None        # extensão real mínima plausível do desenho, em mm (default 500 = 0,5 m)
+    max_drawing_span_mm: Optional[float] = None        # extensão real máxima plausível do desenho, em mm (default 2 000 000 = 2 km)
+
+
 class ProfileToolBoqConfig(BaseModel):
     """tools.config.generate_boq — Bill of Quantities (épico BOQ v2, Jul 2026).
-    - prompt_preset: norma de medição (overlay tool_playbooks): "" | "pronic_pt" | "pomi_gcc".
+    - prompt_preset: norma de medição (overlay tool_playbooks): "" | "pronic_pt" | "pomi_gcc" | "cesmm_civil" | "nrm2_building".
     - prompt_custom: instruções de domínio livres do cliente (apendadas ao contrato base).
     - rates: tabela de preços editável pelo cliente (fonte explícita de custos).
+    - scale: travões de plausibilidade da escala (avançado; vazio = defaults).
     Vazio = tool no comportamento default. extra=allow → round-trip byte-fiel."""
     model_config = ConfigDict(extra="allow")
 
@@ -264,6 +282,7 @@ class ProfileToolBoqConfig(BaseModel):
         default_factory=list,
         json_schema_extra={"requires_tool": "generate_boq"},
     )
+    scale: Optional[ProfileToolBoqScale] = None
 
 
 # Mapa key de tools.config → model tipado. Tools fora deste mapa passam sem
