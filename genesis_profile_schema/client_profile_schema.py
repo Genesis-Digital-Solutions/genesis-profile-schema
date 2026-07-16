@@ -648,6 +648,10 @@ class ProfileMCPServer(BaseModel):
     # (higienizada); quando False (default seguro), usa-se descrição neutra.
     # Consumido no genai-core (tool_loader) ao construir as MCPTool.
     trusted: bool = False
+    # erp — metadata OPCIONAL: declara que este server desempenha o papel de
+    # ERP para uma fila (ex.: {"lookup_tool": "erp_get_customer_history"}). Lido
+    # pelo resolver/gates; forma livre (extra="allow") enquanto estabiliza.
+    erp: Optional[Dict[str, Any]] = None
 
 
 class ProfileMCP(BaseModel):
@@ -1125,6 +1129,134 @@ class ProfileCompliance(BaseModel):
     annex_iv_generated_at: str = ""   # ISO datetime da última geração
 
 
+# ═════════════════════════════════════════════════════════════════════════════
+# Atendimento / Casos (v0.1.32, Jul 2026) — voz, contactos, ingest e filas de
+# revisão genéricas. TODOS extra="allow" e opcionais: um perfil existente
+# (Salmon) valida sem alteração — o typing é um SUPERSET permissivo. As listas
+# da fila default a None (não []) DE PROPÓSITO: é assim que o caminho LEGADO
+# continua exato (spec_for_queue só ativa a máquina custom com states E actions
+# presentes; ausentes/None ⇒ máquina embutida intocada).
+# ─────────────────────────────────────────────────────────────────────────────
+
+class ProfileVoiceTranscription(BaseModel):
+    """Transcrição integral verbatim da chamada (OPT-IN; RGPD: a câmara é o
+    responsável pelo tratamento). `model` = NOME de deployment de transcrição
+    (não usar família gpt-4o). OFF por default → só o resumo reconstituído."""
+    model_config = ConfigDict(extra="allow", protected_namespaces=())
+    enabled: bool = False
+    retention_days: Optional[int] = None
+    model: Optional[str] = None
+
+
+class ProfileVoice(BaseModel):
+    """Canal de voz telefónico (Realtime). Comportamento por cliente; os
+    segredos (VOICE-OPENAI-ENDPOINT/API-KEY/WEBHOOK-SECRET) vivem no Key Vault,
+    NUNCA aqui. OFF por default."""
+    model_config = ConfigDict(extra="allow",
+                              json_schema_extra={"requires_field": "reviewQueues"})
+    enabled: bool = False
+    deployment: str = ""          # ex.: gpt-realtime-2.1-mini
+    voice: str = "marin"
+    language: str = "pt-PT"
+    greeting: str = ""
+    instructions: str = ""
+    queue: str = "tickets"        # fila de tickets (reviewQueues.<queue>)
+    transfer_number: str = ""
+    kb_top_n: int = 4
+    transcription: ProfileVoiceTranscription = Field(default_factory=ProfileVoiceTranscription)
+
+
+class ProfileContacts(BaseModel):
+    """Contacto/entidade unificado — identidade DETERMINÍSTICA entre canais
+    (telefone/email/whatsapp/user_id). Isolado por-tenant (o container Cosmos
+    é a fronteira). OFF por default. Ver core/managers/contact_store.py."""
+    model_config = ConfigDict(extra="allow")
+    enabled: bool = False
+    identity_fields: Optional[List[Dict[str, Any]]] = None   # [{kind, path}]
+    display_name_path: Optional[str] = None
+    attribute_paths: Optional[Dict[str, str]] = None
+
+
+class ProfileIngestAlerts(BaseModel):
+    """Sweep de aging/exceções no fim do job de ingestão. OFF por default."""
+    model_config = ConfigDict(extra="allow")
+    enabled: bool = False
+    aging_hours: float = 24        # nunca reduzir por poupança
+    email: str = ""
+    email_interval_hours: float = 6
+
+
+class ProfileIngest(BaseModel):
+    """Ingestão por email (job Container Apps, cron). Cada fonte em `sources`
+    é livre (mailbox/classifier/extraction/reply/…) — extra="allow"."""
+    model_config = ConfigDict(extra="allow")
+    sources: Optional[List[Dict[str, Any]]] = None
+    alerts: ProfileIngestAlerts = Field(default_factory=ProfileIngestAlerts)
+
+
+class ProfileReviewQueueState(BaseModel):
+    model_config = ConfigDict(extra="allow")
+    id: str = ""
+    kind: Literal["open", "parked", "final"] = "open"
+    label: str = ""
+
+
+class ProfileReviewQueueAction(BaseModel):
+    """Ação da máquina de estados. NOTA: a origem `from` é palavra reservada em
+    Python — não é campo tipado; fica em extra="allow" (preservada byte a byte
+    no round-trip). Ex.: {"id":"resolver","from":["triaged"],"to":"resolved"}."""
+    model_config = ConfigDict(extra="allow")
+    id: str = ""
+    to: str = ""
+    note_required: bool = False
+    label: str = ""
+
+
+class ProfileReviewQueueNotification(BaseModel):
+    model_config = ConfigDict(extra="allow")
+    when: str = ""                 # "create" ou id de uma ação
+    channel: Literal["sms", "whatsapp"] = "sms"
+    to: str = ""                   # dot-path (ex.: payload.citizen.telefone)
+    text: str = ""
+
+
+class ProfileReviewQueueGate(BaseModel):
+    """Gate numa transição: chama uma tool MCP e traduz a decisão em
+    consequência (proceed | block | <estado alternativo>)."""
+    model_config = ConfigDict(extra="allow")
+    when: str = ""                 # id da ação a que o gate se aplica
+    call: Optional[Dict[str, Any]] = None    # {server, tool, mapping}
+    decide: Optional[Dict[str, str]] = None  # resultado → consequência
+
+
+class ProfileReviewQueueTrigger(BaseModel):
+    """Automação da fila. NOTA: `if` é palavra reservada — fica em extra="allow"
+    (condições dot-path→valor). `when` = {"event": "create|action:x|state:y"}
+    (ou lista) OU {"schedule": {"status","older_than_hours"}}. `do` = lista de
+    passos {type: notify|call|transition, …}. Ver review_queue_triggers.py."""
+    model_config = ConfigDict(extra="allow")
+    id: str = ""
+    when: Optional[Dict[str, Any]] = None
+    do: Optional[List[Dict[str, Any]]] = None
+
+
+class ProfileReviewQueue(BaseModel):
+    """Uma fila de revisão human-in-the-loop, genérica e configurável. TUDO
+    opcional; as LISTAS default a None (não []) para o caminho legado (Salmon)
+    continuar exato. `onValidate`/`onIngest` e afins ficam em extra="allow"."""
+    model_config = ConfigDict(extra="allow")
+    label: str = ""
+    states: Optional[List[ProfileReviewQueueState]] = None
+    actions: Optional[List[ProfileReviewQueueAction]] = None
+    businessKey: Optional[Dict[str, Any]] = None
+    notifications: Optional[List[ProfileReviewQueueNotification]] = None
+    gates: Optional[List[ProfileReviewQueueGate]] = None
+    triggers: Optional[List[ProfileReviewQueueTrigger]] = None
+    fields: Optional[List[Dict[str, Any]]] = None
+    onValidate: Optional[Dict[str, Any]] = None
+    onIngest: Optional[Dict[str, Any]] = None
+
+
 # ─────────────────────────────────────────────────────────────────────────────
 # Schema root
 # ─────────────────────────────────────────────────────────────────────────────
@@ -1161,6 +1293,13 @@ class ClientProfileSchema(BaseModel):
     voices: ProfileVoices = Field(default_factory=ProfileVoices)
     query_cache: ProfileQueryCache = Field(default_factory=ProfileQueryCache)
     language: ProfileLanguage = Field(default_factory=ProfileLanguage)
+
+    # ── Atendimento / Casos (v0.1.32) — todos OFF/vazios por default; um perfil
+    # que não os use materializa-os inertes, como já acontece com mcp/audio/etc.
+    voice: ProfileVoice = Field(default_factory=ProfileVoice)
+    contacts: ProfileContacts = Field(default_factory=ProfileContacts)
+    ingest: ProfileIngest = Field(default_factory=ProfileIngest)
+    reviewQueues: Dict[str, ProfileReviewQueue] = Field(default_factory=dict)
 
     # Bloco de conformidade EU AI Act — metadata (Console/auditoria), sem
     # efeito funcional no genai-core (v1).
