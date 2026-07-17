@@ -868,6 +868,12 @@ class ProfileFrontendFeatures(BaseModel):
     # REVIEW_QUEUE_ENABLED no genai-core é só kill-switch opcional (força on/off).
     # Default false: só liga onde for contratado.
     reviewQueue: bool = False
+    # Modo "só fila" (Jul 2026): esconde a navegação de volta ao chat na rota
+    # /fila E redireciona o chat para /fila — para perfis de operadores que
+    # devem usar APENAS a fila de revisão (ex.: backoffice Salmon). Só faz
+    # sentido com reviewQueue=true; o fecore ignora-a se a fila estiver off.
+    # Flui para o frontend via /client-config como qualquer campo deste bloco.
+    reviewQueueOnly: bool = False
     # Task API assíncrona (/tasks) no genai-core: pedidos longos com task_id +
     # polling/webhook. OFF por defeito; liga onde um produto precise. (env
     # TASK_API_ENABLED continua a funcionar como fallback.)
