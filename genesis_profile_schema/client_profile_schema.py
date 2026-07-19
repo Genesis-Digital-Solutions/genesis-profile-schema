@@ -435,6 +435,13 @@ class ProfileRetrieval(BaseModel):
     """
     model_config = ConfigDict(extra="allow")
 
+    # Índices AI Search por perfil (Épico Multi-Perfil — Julho 2026, v0.1.34).
+    # Lista de nomes de índices; vazia → fallback às envs AZURE_SEARCH_INDEX_NAMES/
+    # AZURE_SEARCH_INDEX_NAME (comportamento da frota, byte a byte). Perfil-primeiro
+    # permite: (a) índice próprio por VARIANTE multi-perfil; (b) mudar o índice de
+    # qualquer cliente via Studio com efeito em ≤TTL, sem redeploy do CA.
+    search_index_names: List[str] = Field(default_factory=list)
+
     top_k: int = Field(default=20, ge=1)                       # KB_TOP_K
     # Corte final de contexto: nº de chunks (ordenados por reranker_score,
     # determinístico) que passam ao modelo ANTES da expansão de vizinhos.
@@ -1267,6 +1274,33 @@ class ProfileReviewQueue(BaseModel):
 # Schema root
 # ─────────────────────────────────────────────────────────────────────────────
 
+class ProfileMultiProfile(BaseModel):
+    """
+    Multi-perfil por link (Épico Multi-Perfil — Julho 2026, v0.1.34).
+
+    Presente APENAS no perfil BASE do cliente. Liga o modo em que um backend
+    serve N experiências (variantes) escolhidas pelo slug do link (?uc=<slug>
+    → header X-Genesis-Profile-Slug). Cada variante é um blob completo
+    `<client>-<env>__<slug>.json` no mesmo storage central.
+
+    Regras (decisões de 17 Jul 2026):
+      • enabled=false (default) → modo adormecido, header ignorado por
+        completo. Clientes sem o bloco são byte a byte o comportamento atual.
+      • slugs = whitelist ativa; disabledSlugs = desativadas sem apagar o blob.
+      • Slug inválido/desativado → 403 unknown_profile_slug no backend, página
+        explícita brandada no frontend. NUNCA fallback silencioso para o base.
+      • O multi-perfil nunca atravessa fronteiras entre clientes — só escolhe
+        a variante DENTRO do mesmo tenant/cliente.
+    """
+    model_config = ConfigDict(extra="allow")
+
+    enabled: bool = False
+    slugs: List[str] = Field(default_factory=list)
+    disabledSlugs: List[str] = Field(default_factory=list)
+    # Fixo na fase 1; a fase 2 pode ganhar opções (ex.: redirect).
+    invalidSlugBehavior: Literal["error_page"] = "error_page"
+
+
 class ClientProfileSchema(BaseModel):
     """
     Schema completo do profile (backend + frontend num só JSON) — o contrato.
@@ -1306,6 +1340,10 @@ class ClientProfileSchema(BaseModel):
     contacts: ProfileContacts = Field(default_factory=ProfileContacts)
     ingest: ProfileIngest = Field(default_factory=ProfileIngest)
     reviewQueues: Dict[str, ProfileReviewQueue] = Field(default_factory=dict)
+
+    # Multi-perfil por link (v0.1.34) — só tem efeito no perfil BASE; inerte
+    # por default (enabled=false), como mcp/audio/voice/etc.
+    multiProfile: ProfileMultiProfile = Field(default_factory=ProfileMultiProfile)
 
     # Bloco de conformidade EU AI Act — metadata (Console/auditoria), sem
     # efeito funcional no genai-core (v1).
