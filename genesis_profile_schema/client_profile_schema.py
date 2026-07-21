@@ -577,6 +577,9 @@ class ProfileQueryCache(BaseModel):
     model_config = ConfigDict(extra="allow")
 
     enabled: bool = False
+    # Auditoria Jul 2026: lido pelo backend (chave de invalidação do cache de
+    # queries — bump manual invalida tudo sem apagar docs).
+    index_version: int = 1
     ttl_seconds: int = Field(default=86400, ge=0)
 
 
@@ -668,6 +671,10 @@ class ProfileMCP(BaseModel):
     enabled: bool = False
     discovery_cache_ttl_seconds: int = Field(default=3600, ge=60, le=86400)
     servers: List[ProfileMCPServer] = Field(default_factory=list)
+    # Auditoria Jul 2026 (fase 2/B do Multi-Perfil, já em produção no backend):
+    # numa VARIANTE, desliga por NOME servers herdados do base (listas
+    # substituem, não subtraem — isto resolve "o base tem, a persona não quer").
+    disabledServers: List[str] = Field(default_factory=list)
     # Gate de confirmação de ações MCP (write/destructive). Lido pelo runtime
     # do genai-core (_confirm_actions_policy). "all_writes" = pede confirmação em
     # qualquer tool não-readonly; "destructive_only" = só nas marcadas destrutivas;
@@ -1267,6 +1274,9 @@ class ProfileReviewQueue(BaseModel):
     triggers: Optional[List[ProfileReviewQueueTrigger]] = None
     fields: Optional[List[Dict[str, Any]]] = None
     onValidate: Optional[Dict[str, Any]] = None
+    # Auditoria Jul 2026: campo de observações do operador na /fila (lido pelo
+    # _queue_options do backend; vale também para filas legado sem spec).
+    operatorNotes: bool = False
     onIngest: Optional[Dict[str, Any]] = None
 
 
@@ -1299,6 +1309,84 @@ class ProfileMultiProfile(BaseModel):
     disabledSlugs: List[str] = Field(default_factory=list)
     # Fixo na fase 1; a fase 2 pode ganhar opções (ex.: redirect).
     invalidSlugBehavior: Literal["error_page"] = "error_page"
+
+
+class ProfilePricingModel(BaseModel):
+    """Preços por 1M tokens em USD (alinhado com a tabela builtin do backend;
+    a conversão EUR é feita no cálculo)."""
+    model_config = ConfigDict(extra="allow")
+
+    input_per_1m: float = 0.0
+    output_per_1m: float = 0.0
+    cached_input_per_1m: float = 0.0
+
+
+class ProfilePricing(BaseModel):
+    """
+    Overrides de preços por modelo (Auditoria Jul 2026 — o backend lê
+    `client_profile.pricing` desde o M5.1 mas o bloco nunca foi tipado).
+
+    Vazio (default) = tabela builtin do backend (pricing_defaults.py).
+    `models`: nome do modelo → preços token; `image_models`: nome → preços
+    por tier de qualidade (low/medium/high, por imagem, USD).
+    """
+    model_config = ConfigDict(extra="allow")
+
+    currency: str = ""
+    models: Dict[str, ProfilePricingModel] = Field(default_factory=dict)
+    image_models: Dict[str, Dict[str, float]] = Field(default_factory=dict)
+
+
+class ProfileGuestAccessUploads(BaseModel):
+    """Uploads de CONVIDADOS numa demo (Épico Demos, v0.1.35).
+
+    OFF por defeito mesmo com o Modo Convidado ligado — uploads públicos
+    anónimos são o maior risco. A variante que os precisa (ex.: faturas)
+    liga explicitamente, sempre com aperto.
+    """
+    model_config = ConfigDict(extra="allow")
+
+    enabled: bool = False
+    pdfOnly: bool = True
+    maxMb: int = 10
+    maxFiles: int = 3     # por CONVERSA, não por pedido
+
+
+class ProfileGuestAccessRateLimits(BaseModel):
+    """Limites de rate para convidados (mais apertados que os default do
+    backend). None = usa env GUEST_RATE_LIMIT_PER_* › defaults (10/100/300).
+    Chave de limite por visitante: guest:<id> (resolve NAT partilhado)."""
+    model_config = ConfigDict(extra="allow")
+
+    perMinute: Optional[int] = None
+    perHour: Optional[int] = None
+    perDay: Optional[int] = None
+
+
+class ProfileGuestAccess(BaseModel):
+    """
+    Modo Convidado (Épico Demos Marketplace — Julho 2026, v0.1.35).
+
+    Permite que uma VARIANTE de demo seja usada num marketplace público sem
+    login: o visitante recebe identidade automática `guest:<aleatório>` na
+    primeira interação — tickets/uploads/conversas continuam com dono.
+
+    FECHO DUPLO (regra inviolável): este bloco SÓ atua em backends com a env
+    `DEMO_ENVIRONMENT=1` no Container App — posta à mão no provisionamento,
+    NUNCA automatizada. Num backend de cliente real, o bloco é inerte byte a
+    byte, mesmo copiado por engano. enabled=false (default) = tudo inerte,
+    como mcp/audio/voice.
+
+    dailyBudgetEur: orçamento diário da variante. Ao estoirar, o slug entra
+    automaticamente nos multiProfile.disabledSlugs (403 brandado) e religa à
+    meia-noite UTC. 0 = sem orçamento.
+    """
+    model_config = ConfigDict(extra="allow")
+
+    enabled: bool = False
+    uploads: ProfileGuestAccessUploads = Field(default_factory=ProfileGuestAccessUploads)
+    rateLimits: ProfileGuestAccessRateLimits = Field(default_factory=ProfileGuestAccessRateLimits)
+    dailyBudgetEur: float = 0.0
 
 
 class ClientProfileSchema(BaseModel):
@@ -1344,6 +1432,14 @@ class ClientProfileSchema(BaseModel):
     # Multi-perfil por link (v0.1.34) — só tem efeito no perfil BASE; inerte
     # por default (enabled=false), como mcp/audio/voice/etc.
     multiProfile: ProfileMultiProfile = Field(default_factory=ProfileMultiProfile)
+
+    # Modo Convidado para demos (v0.1.35) — só tem efeito em VARIANTES servidas
+    # por backends com env DEMO_ENVIRONMENT (fecho duplo); inerte por default.
+    guestAccess: ProfileGuestAccess = Field(default_factory=ProfileGuestAccess)
+
+    # Overrides de preços por modelo (Auditoria v0.1.35) — vazio = tabela
+    # builtin do backend. Consumido pelo cálculo de custos (M5.1).
+    pricing: ProfilePricing = Field(default_factory=ProfilePricing)
 
     # Bloco de conformidade EU AI Act — metadata (Console/auditoria), sem
     # efeito funcional no genai-core (v1).
