@@ -17,6 +17,10 @@ Filosofia:
     aumentar; nunca cortar por poupança.
   - Defaults seguros: um perfil vazio validado é um perfil funcional.
 
+v0.1.36 (Jul 2026) — épico Capture: `tools.config.record_contact_details`
+(ProfileToolCaptureConfig) com campos fechados, base legal obrigatória e
+recusa de campos avaliativos / categorias especiais no próprio contrato.
+
 Convenção de metadata para o editor (json_schema_extra):
   - "requires_tool": <nome>   → feature/flag só coerente com essa tool ligada.
   - "requires_field": <path>  → flag depende de outro campo estar preenchido.
@@ -285,6 +289,174 @@ class ProfileToolBoqConfig(BaseModel):
     scale: Optional[ProfileToolBoqScale] = None
 
 
+# ── Captura estruturada (v0.1.36 — épico Capture, Jul 2026) ─────────────────
+# Regra central do épico: CAMPOS FECHADOS, MOMENTO ABERTO. O schema que o modelo
+# vê tem EXACTAMENTE os campos configurados aqui; o LLM decide QUANDO preencher,
+# nunca O QUÊ. É isto que torna a minimização de dados declarável — o aviso de
+# privacidade pode listar os campos porque são finitos e conhecidos.
+
+# Tokens proibidos em `key`/`label` de um campo de captura. Os dois grupos têm
+# fundamentos distintos e ambos são ERRO (não aviso), porque o custo de os
+# deixar passar não é técnico:
+#
+#  • AVALIAÇÃO — a tool CAPTURA, nunca AVALIA. Pontuar/classificar/ranquear
+#    candidatos faz o sistema entrar no anexo de emprego do AI Act (alto risco).
+#    Um perfil de recrutamento com um campo "score" muda o enquadramento
+#    regulatório do deployment inteiro. Se um dia houver scoring: tool separada,
+#    avaliação de risco separada, decisão própria.
+#  • CATEGORIAS ESPECIAIS (RGPD Art. 9) — não há base legal montada para as
+#    tratar num formulário de contacto. Bloqueadas no contrato E na tool
+#    (defesa em profundidade: o Studio não deixa configurar, o core não grava).
+_CAPTURE_FORBIDDEN_EVALUATIVE = (
+    "score", "scoring", "rating", "ranking", "rank", "probability",
+    "likelihood", "propensity", "fit", "suitability", "qualification_level",
+    "classification", "grade", "tier", "priority_level",
+    "pontuacao", "pontuação", "classificacao", "classificação",
+    "avaliacao", "avaliação", "probabilidade", "adequacao", "adequação",
+)
+
+_CAPTURE_FORBIDDEN_SPECIAL_CATEGORY = (
+    "health", "medical", "diagnosis", "disability", "ethnicity", "ethnic",
+    "race", "racial", "religion", "religious", "belief", "political",
+    "party", "union", "sexual", "sexuality", "orientation", "biometric",
+    "genetic", "criminal", "conviction", "pregnan",
+    "saude", "saúde", "medico", "médico", "diagnostico", "diagnóstico",
+    "deficiencia", "deficiência", "etnia", "raca", "raça", "religiao",
+    "religião", "politic", "sindicato", "sindical", "orientacao_sexual",
+    "orientação_sexual", "biometric", "genetic", "criminal", "gravidez",
+)
+
+
+class ProfileCaptureField(BaseModel):
+    """Um campo configurado da captura.
+
+    `key` é o nome técnico (EN, snake_case) — é a chave gravada em `fields` no
+    Cosmos e o nome do parâmetro que o modelo vê. `label` é o rótulo humano
+    (string ou mapa i18n {lang: texto}) para a lista no Studio e para o aviso
+    de privacidade. `hint` é a instrução de preenchimento dada ao LLM.
+
+    `required` NÃO bloqueia a gravação (uma captura parcial vale mais do que
+    nenhuma) — só entra no cálculo de `completeness` do registo.
+    """
+    model_config = ConfigDict(extra="allow")
+
+    key: str = ""
+    label: Union[str, Dict[str, str]] = ""
+    hint: str = ""
+    required: bool = False
+
+
+class ProfileToolCaptureConfig(BaseModel):
+    """tools.config.record_contact_details — captura estruturada via tool.
+
+    Desacoplada do Guião de propósito: apanha tanto a resposta a uma pergunta
+    de qualificação como a oferta espontânea de dados ("sou o João, 91x xxx xxx,
+    quero vender um T3"). Serve chat, voz e widget sem código por canal.
+
+    INERTE por defeito: sem `fields` ou sem `legal_basis` a tool não chega a
+    aparecer ao modelo (is_available False) — padrão da casa.
+    """
+    model_config = ConfigDict(extra="allow")
+
+    # Tipo de negócio do registo. FIXO por perfil/variante (não escolhido pelo
+    # modelo — menos não-determinismo). Distingue `lead_venda` de `candidatura`
+    # de `pedido_orcamento`: custo zero agora, evita uma tabela chamada "leads"
+    # cheia de candidaturas de recrutamento.
+    capture_type: str = ""
+
+    # Base legal do tratamento — decisão do CLIENTE (responsável pelo
+    # tratamento), nunca do código. Guarda-se o valor SEMÂNTICO e não o rótulo
+    # de UI ("interno"/"externo") para não obrigar a migração quando aparecer o
+    # terceiro caso: uma candidatura é de gente externa mas com base diferente
+    # de uma lead comercial, e um portal de fornecedores é externo e recolhe ao
+    # abrigo de contrato.
+    #   consent             → a tool PEDE consentimento e respeita a recusa.
+    #   contract            → recolhe sem pedir; informa no disclaimer.
+    #   legitimate_interest → idem.
+    # NOTA (contexto laboral): `consent` é normalmente a base ERRADA para
+    # colaboradores — o desequilíbrio de poder faz com que o consentimento não
+    # seja "livremente prestado". Pedir a um trabalhador é pior do que não
+    # pedir: cria escolha ilusória e, se recusar, fica-se sem base legal.
+    legal_basis: Literal["", "consent", "contract", "legitimate_interest"] = ""
+
+    # Quem escolheu a base legal e quando (preenchido pelo Studio ao gravar).
+    # Protege a Genesis (subcontratante) e é argumento de venda: a plataforma
+    # obriga a documentar a decisão.
+    legal_basis_set_by: str = ""
+    legal_basis_set_at: str = ""
+
+    # Finalidade ESPECÍFICA, na voz do cliente. Entra no pedido de
+    # consentimento. "Recolher dados para melhorar a sua experiência" NÃO é
+    # finalidade válida e mina a base legal; "para que um consultor o contacte
+    # sobre a venda do seu imóvel" é. Aceita mapa i18n.
+    purpose: Union[str, Dict[str, str]] = ""
+
+    # Os campos. Vazio = tool inerte.
+    fields: List[ProfileCaptureField] = Field(
+        default_factory=list,
+        json_schema_extra={"requires_tool": "record_contact_details"},
+    )
+
+    # Retenção do registo, em dias. "" / 0 = sem expiração (o container tem
+    # DefaultTimeToLive=-1, logo o `ttl` por documento é que decide).
+    # ATENÇÃO à semântica: o Cosmos conta o TTL a partir da ÚLTIMA
+    # modificação, e a captura faz upsert incremental por conversa — a
+    # retenção é "N dias após o último contacto", não após a criação.
+    retention_days: Union[int, str] = ""
+
+    # Notificar por email quando entra uma captura nova. Reutiliza os
+    # destinatários de `contacts` / envio Graph do épico Atendimento.
+    notify_on_capture: bool = False
+
+    @model_validator(mode="after")
+    def _validate_capture(self) -> "ProfileToolCaptureConfig":
+        fields = list(self.fields or [])
+        if not fields:
+            return self          # inerte — nada a validar
+
+        # A base legal é OBRIGATÓRIA a partir do momento em que há campos.
+        # Sem ela não há como declarar o tratamento, e a tool ficaria a
+        # recolher dados pessoais sem fundamento documentado.
+        if not (self.legal_basis or "").strip():
+            raise ValueError(
+                "legal_basis é obrigatório quando há campos configurados "
+                "(consent | contract | legitimate_interest)"
+            )
+        # `consent` sem finalidade específica = aviso vago = base minada.
+        if self.legal_basis == "consent" and not self.purpose:
+            raise ValueError(
+                "legal_basis='consent' exige `purpose` — a finalidade "
+                "específica que é apresentada ao utilizador"
+            )
+
+        seen = set()
+        for f in fields:
+            key = (f.key or "").strip()
+            if not key:
+                raise ValueError("campo de captura sem `key`")
+            if key in seen:
+                raise ValueError(f"campo de captura duplicado: '{key}'")
+            seen.add(key)
+
+            haystack = f"{key} {f.label if isinstance(f.label, str) else ' '.join((f.label or {}).values())}".lower()
+            for token in _CAPTURE_FORBIDDEN_EVALUATIVE:
+                if token in haystack:
+                    raise ValueError(
+                        f"campo '{key}': a captura registra o que o utilizador "
+                        f"disse, nunca juízos do modelo ('{token}'). Pontuar ou "
+                        f"classificar candidatos torna o sistema alto risco no "
+                        f"AI Act — exige tool e avaliação de risco próprias."
+                    )
+            for token in _CAPTURE_FORBIDDEN_SPECIAL_CATEGORY:
+                if token in haystack:
+                    raise ValueError(
+                        f"campo '{key}': categoria especial de dados (RGPD "
+                        f"Art. 9, '{token}') não pode ser recolhida por esta "
+                        f"tool."
+                    )
+        return self
+
+
 # Mapa key de tools.config → model tipado. Tools fora deste mapa passam sem
 # validação estrutural (estrutura aberta, como sempre).
 _KNOWN_TOOL_CONFIG_MODELS: Dict[str, Any] = {
@@ -292,6 +464,7 @@ _KNOWN_TOOL_CONFIG_MODELS: Dict[str, Any] = {
     "generate_image": ProfileToolGenerateImageConfig,
     "extract_legal_terms": ProfileToolLegalExtractConfig,
     "generate_boq": ProfileToolBoqConfig,
+    "record_contact_details": ProfileToolCaptureConfig,
 }
 
 
