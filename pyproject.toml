@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "genesis-profile-schema"
-version = "0.1.36"
+version = "0.1.37"
 description = "Contrato partilhado do ClientProfile (Genesis AI): control plane (Console) + data plane (genai-core). Fonte de verdade única do perfil."
 requires-python = ">=3.10"
 dependencies = ["pydantic>=2,<3"]

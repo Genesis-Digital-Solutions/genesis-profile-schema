@@ -17,6 +17,9 @@ Filosofia:
     aumentar; nunca cortar por poupança.
   - Defaults seguros: um perfil vazio validado é um perfil funcional.
 
+v0.1.37 (Jul 2026) — captura: `notify_emails` / `notify_subject` (notificação
+ao consultor quando entra uma captura completa).
+
 v0.1.36 (Jul 2026) — épico Capture: `tools.config.record_contact_details`
 (ProfileToolCaptureConfig) com campos fechados, base legal obrigatória e
 recusa de campos avaliativos / categorias especiais no próprio contrato.
@@ -404,9 +407,17 @@ class ProfileToolCaptureConfig(BaseModel):
     # retenção é "N dias após o último contacto", não após a criação.
     retention_days: Union[int, str] = ""
 
-    # Notificar por email quando entra uma captura nova. Reutiliza os
-    # destinatários de `contacts` / envio Graph do épico Atendimento.
+    # Notificar por email quando entra uma captura. Enviada UMA vez por
+    # conversa, quando o registo fica completo (todos os campos essenciais
+    # preenchidos) — não a cada campo novo, senão o consultor recebe três
+    # emails para a mesma pessoa. Ver core/managers/captures_notify.py.
     notify_on_capture: bool = False
+    # Destinatários. Vazio com notify_on_capture=True → nada é enviado (fica
+    # registado no audit_log). Não se reutiliza `ingest.alerts.email`: aquele é
+    # para alertas operacionais da fila e tem outro dono.
+    notify_emails: List[str] = Field(default_factory=list)
+    # Assunto do email. {capture_type} e {client} são substituídos.
+    notify_subject: str = ""
 
     @model_validator(mode="after")
     def _validate_capture(self) -> "ProfileToolCaptureConfig":
@@ -421,6 +432,15 @@ class ProfileToolCaptureConfig(BaseModel):
             raise ValueError(
                 "legal_basis é obrigatório quando há campos configurados "
                 "(consent | contract | legitimate_interest)"
+            )
+        # Notificação ligada sem destinatários é uma armadilha silenciosa:
+        # o cliente pensa que está a ser avisado e não está.
+        if self.notify_on_capture and not [
+            e for e in (self.notify_emails or []) if (e or "").strip()
+        ]:
+            raise ValueError(
+                "notify_on_capture=True exige pelo menos um endereço em "
+                "notify_emails"
             )
         # `consent` sem finalidade específica = aviso vago = base minada.
         if self.legal_basis == "consent" and not self.purpose:
