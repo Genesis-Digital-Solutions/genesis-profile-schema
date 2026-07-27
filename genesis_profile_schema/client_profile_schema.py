@@ -17,6 +17,9 @@ Filosofia:
     aumentar; nunca cortar por poupança.
   - Defaults seguros: um perfil vazio validado é um perfil funcional.
 
+v0.1.38 (Jul 2026) — captura: `notify_language` (língua do email de aviso — a
+do CLIENTE que o recebe, não a do visitante).
+
 v0.1.37 (Jul 2026) — captura: `notify_emails` / `notify_subject` (notificação
 ao consultor quando entra uma captura completa).
 
@@ -418,6 +421,11 @@ class ProfileToolCaptureConfig(BaseModel):
     notify_emails: List[str] = Field(default_factory=list)
     # Assunto do email. {capture_type} e {client} são substituídos.
     notify_subject: str = ""
+    # Língua do EMAIL de aviso — a do CLIENTE, não a do visitante: quem lê é o
+    # consultor que vai ligar de volta. Vazio = usa `language.fallback` do
+    # perfil. Um visitante árabe num cliente português gera email em português
+    # com os dados em árabe.
+    notify_language: Literal["", "pt", "en", "es", "ar"] = ""
 
     @model_validator(mode="after")
     def _validate_capture(self) -> "ProfileToolCaptureConfig":
