@@ -1171,7 +1171,14 @@ class ProfileFrontendWidget(BaseModel):
     offset_y_px: int = Field(20, ge=0)
     # None → cai em branding.primaryColor (nunca '' — padrão das cores do schema)
     bubble_color: Optional[str] = Field(None, pattern=r"^#[0-9A-Fa-f]{6}$")
-    bubble_icon_url: str = ""                            # "" → favicon/logoRail do branding
+    bubble_icon_url: str = ""                            # "" → favicon/logoRail do branding;
+                                                        # aceita URL https ou data URI (o Console
+                                                        # redimensiona a imagem anexada antes de gravar)
+    # Diâmetro da bolha. 56 é o valor histórico (era hardcoded no CSS do
+    # widget.js); o ícone interno e a posição do balão de saudação derivam
+    # deste número. Limites largos de propósito — há sites que querem uma
+    # bolha discreta e outros que a querem bem visível.
+    bubble_size_px: int = Field(56, ge=32, le=128)
     bubble_label: I18nMap = Field(default_factory=dict)  # pill de texto na bolha (opcional)
     greeting: I18nMap = Field(default_factory=dict)      # balão de saudação proativa (default OFF: vazio)
     greeting_delay_s: int = Field(3, ge=0)
