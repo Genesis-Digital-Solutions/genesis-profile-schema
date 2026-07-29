@@ -1183,6 +1183,10 @@ class ProfileFrontendWidget(BaseModel):
     # histórica (30/56). Logos com muito padding precisam de 70-90 para não
     # ficarem "afogados" na cor da bolha.
     bubble_icon_scale_pct: int = Field(54, ge=30, le=100)
+    # Encaixe do ícone: contain=mostra inteiro (default), cover=enche cortando
+    # bordas (fotos), full=a imagem É a bolha (logos que devem dominar) — a
+    # bubble_color fica por baixo para imagens com transparência.
+    bubble_icon_fit: Literal["contain", "cover", "full"] = "contain"
     bubble_label: I18nMap = Field(default_factory=dict)  # pill de texto na bolha (opcional)
     greeting: I18nMap = Field(default_factory=dict)      # balão de saudação proativa (default OFF: vazio)
     greeting_delay_s: int = Field(3, ge=0)
