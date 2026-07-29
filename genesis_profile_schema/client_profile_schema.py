@@ -1179,6 +1179,10 @@ class ProfileFrontendWidget(BaseModel):
     # deste número. Limites largos de propósito — há sites que querem uma
     # bolha discreta e outros que a querem bem visível.
     bubble_size_px: int = Field(56, ge=32, le=128)
+    # Tamanho do ÍCONE dentro da bolha, em % do diâmetro. 54 = proporção
+    # histórica (30/56). Logos com muito padding precisam de 70-90 para não
+    # ficarem "afogados" na cor da bolha.
+    bubble_icon_scale_pct: int = Field(54, ge=30, le=100)
     bubble_label: I18nMap = Field(default_factory=dict)  # pill de texto na bolha (opcional)
     greeting: I18nMap = Field(default_factory=dict)      # balão de saudação proativa (default OFF: vazio)
     greeting_delay_s: int = Field(3, ge=0)
