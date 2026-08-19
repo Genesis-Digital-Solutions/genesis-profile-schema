@@ -118,6 +118,10 @@ class ProfileIdentity(BaseModel):
 
     company_name: str = "Genesis Digital Solutions"
     assistant_name: str = "Genesis AI"
+    # Papel/função do assistente no system prompt (ex.: "assistente de RH").
+    # Vazio = sem papel explícito. O core aceita ainda o alias legacy `role`
+    # (fora do schema, só retrocompat). Formalizado v0.1.43 (era fantasma).
+    assistant_role: str = ""
     default_language: str = "auto"
     timezone: str = "Europe/Lisbon"
     logo_url: str = ""
@@ -197,6 +201,9 @@ class ProfileToolSearchWebConfig(BaseModel):
     web_agent_id: str = ""
     web_agent_name: str = ""
     mode: Literal["agent", "native", ""] = "agent"  # "" tolerado (editor antigo); native = web_search da Responses API
+    # Deployment da lane nativa (mode="native"). Vazio = deployment do agente.
+    # Formalizado v0.1.43 (era fantasma).
+    native_deployment: str = ""
     temperature: Union[float, str] = ""            # "" = default do agente
     allowed_domains: List[str] = Field(default_factory=list)
 
@@ -485,6 +492,38 @@ class ProfileToolCaptureConfig(BaseModel):
         return self
 
 
+class ProfileToolCreateTicketConfig(BaseModel):
+    """tools.config.create_ticket — fila de destino e dicas de categorização.
+    `queue` vazio desativa a tool (is_available). Formalizado v0.1.43."""
+    model_config = ConfigDict(extra="allow")
+
+    queue: str = ""                     # chave de reviewQueues
+    category_hints: List[str] = Field(default_factory=list)
+
+
+class ProfileToolReadAttachedDocumentConfig(BaseModel):
+    """tools.config.read_attached_document — knobs do retrieval híbrido sobre
+    documentos anexados (defaults = fallbacks do core). Nunca reduzir por
+    poupança. Formalizado v0.1.43."""
+    model_config = ConfigDict(extra="allow")
+
+    top_k: int = Field(default=25, ge=1)          # chunks entregues ao LLM
+    k_semantic: int = Field(default=20, ge=1)     # candidatos do ranker semântico (RRF)
+    k_bm25: int = Field(default=20, ge=1)         # candidatos do BM25 (RRF)
+    head_n: int = Field(default=2, ge=0)          # chunks do início do doc
+    tail_n: int = Field(default=2, ge=0)          # chunks do fim do doc
+    per_file_cap: int = Field(default=12, ge=1)   # cap por ficheiro em multi-doc
+
+
+class ProfileToolRecallPastConversationsConfig(BaseModel):
+    """tools.config.recall_past_conversations — memória de conversas passadas.
+    Formalizado v0.1.43."""
+    model_config = ConfigDict(extra="allow")
+
+    max_results: int = Field(default=5, ge=1)
+    min_similarity: float = Field(default=0.3, ge=0.0, le=1.0)
+
+
 # Mapa key de tools.config → model tipado. Tools fora deste mapa passam sem
 # validação estrutural (estrutura aberta, como sempre).
 _KNOWN_TOOL_CONFIG_MODELS: Dict[str, Any] = {
@@ -493,6 +532,9 @@ _KNOWN_TOOL_CONFIG_MODELS: Dict[str, Any] = {
     "extract_legal_terms": ProfileToolLegalExtractConfig,
     "generate_boq": ProfileToolBoqConfig,
     "record_contact_details": ProfileToolCaptureConfig,
+    "create_ticket": ProfileToolCreateTicketConfig,
+    "read_attached_document": ProfileToolReadAttachedDocumentConfig,
+    "recall_past_conversations": ProfileToolRecallPastConversationsConfig,
 }
 
 
@@ -676,6 +718,17 @@ class ProfileRetrieval(BaseModel):
     # a 1.5 o bot às vezes respondia o que não devia (caso real, remax-v2).
     # 0 = desativado; o core aplica clamp a [1.0, 3.0] para valores > 0.
     refuse_pregen_min_score: float = Field(default=1.6, ge=0.0, le=3.0)  # KB_REFUSE_PREGEN_MIN_SCORE
+    # Teto da ZONA FRACA de grounding (par do refuse_pregen): entre o gate de
+    # recusa e este teto, o preamble do tool result declara a relevância como
+    # BAIXA e proíbe resposta por conhecimento paramétrico. 0 = desligado.
+    # O core clampa a [refuse_pregen_min_score, 3.0]. Formalizado v0.1.43
+    # (era fantasma consumido só via extra="allow"/env).
+    weak_grounding_ceiling: float = Field(default=2.0, ge=0.0, le=3.0)  # KB_WEAK_GROUNDING_CEILING
+    # Cap de chunks que o GPT rerank entrega ao modelo (só atua em
+    # force_diversity). Subir junto com top_k, senão o rerank estrangula o
+    # pool alargado. Formalizado v0.1.43 (era fantasma; toda a frota já o
+    # tinha explícito no blob).
+    rerank_top_k: int = Field(default=10, ge=1)                # RAG_GPT_RERANK_TOP_K
 
     # Expansão de vizinhos por cliente. Campos None = envs de frota.
     neighbor_expansion: ProfileNeighborExpansion = Field(
@@ -977,6 +1030,13 @@ class ProfileFrontendBranding(BaseModel):
     logoDark: str = ""
     logoRail: str = ""
     favicon: str = ""
+    # Avatar do bot nas mensagens e altura do logo do header. O fecore só
+    # injeta as CSS vars quando definidos ("" / 0 = defaults do SCSS —
+    # comportamento da frota intacto). shape: round=50%, soft=25%, square=0.
+    # Formalizados v0.1.43 (eram fantasmas).
+    botAvatarShape: Literal["", "round", "soft", "square"] = ""
+    botAvatarSize: int = Field(default=0, ge=0)        # px; 0 = default do tema
+    headerLogoHeight: int = Field(default=0, ge=0)     # px; 0 = default do tema
     # Texto ao lado do logo no header (ex.: "Antonius"). Multilingue (data-driven);
     # cor/tamanho opcionais (vazios = default do tema).
     headerText: I18nMap = Field(default_factory=dict)
@@ -1104,6 +1164,22 @@ class ProfileFrontendFeatures(BaseModel):
     # auditoria. Auto-liga já se o cliente tiver extract_invoice/generate_boq;
     # esta flag força explicitamente on/off. (env PERSIST_ORIGINALS = fallback.)
     persistOriginals: bool = False
+    # Preservar a secção "Fontes:" escrita pelo modelo no markdown (o default
+    # da frota é strippá-la). Espelho de retrieval.context_include_source_fields
+    # — o editor do Studio mantém os dois em sincronia. Formalizado v0.1.43.
+    renderSourcesSection: bool = False
+    # Modo de voz conversacional no browser (realtime web). O gate do backend
+    # é voice.web.enabled — esta flag só mostra/esconde a UI no fecore.
+    # Formalizado v0.1.43.
+    voiceMode: bool = False
+    # Rota /fila como página inicial (sem esconder o chat — ver reviewQueueOnly
+    # para o modo exclusivo). Só faz sentido com reviewQueue=true; o fecore
+    # ignora-a com a fila desligada. Formalizado v0.1.43.
+    reviewQueueHome: bool = False
+    # Workspace de visuais dedicados por tool (o fecore abre um visual completo
+    # pedido pela tool). Opt-OUT deliberado: ausente ⇒ ligado, daí default True.
+    # Formalizado v0.1.43 (era hardcode do editor do Studio).
+    toolWorkspace: bool = True
     # REMOVIDOS (campos mortos, nenhum componente os lia):
     #   showQuestionsMenu, enableFollowupSuggestions
     # REMOVIDO enableFeedback: feedback é sempre-on no frontend, sem flag.
@@ -1269,6 +1345,22 @@ class ProfileFrontendAuth(BaseModel):
     widget_identity: ProfileWidgetIdentity = Field(default_factory=ProfileWidgetIdentity)
 
 
+class ProfileFrontendCsp(BaseModel):
+    """
+    Fontes EXTRA da Content-Security-Policy da SWA do cliente. O creator do
+    Studio funde estas listas no staticwebapp.config.json no deploy/rollout do
+    frontend — sem novo rollout não há efeito em runtime. Formalizado v0.1.43
+    (era fantasma em toda a frota).
+    """
+    model_config = ConfigDict(extra="allow")
+
+    extraScriptSrc: List[str] = Field(default_factory=list)
+    extraConnectSrc: List[str] = Field(default_factory=list)
+    extraFrameSrc: List[str] = Field(default_factory=list)
+    extraImgSrc: List[str] = Field(default_factory=list)
+    extraStyleSrc: List[str] = Field(default_factory=list)
+
+
 class ProfileFrontend(BaseModel):
     """
     Sub-bloco PÚBLICO do profile — consumido pelo endpoint /client-config.
@@ -1284,6 +1376,8 @@ class ProfileFrontend(BaseModel):
     insightsPanel: Optional[ProfileFrontendInsightsPanel] = None
     features: ProfileFrontendFeatures = Field(default_factory=ProfileFrontendFeatures)
     widget: ProfileFrontendWidget = Field(default_factory=ProfileFrontendWidget)
+    # CSP extra por cliente — aplicada pelo Studio no rollout do FE.
+    csp: ProfileFrontendCsp = Field(default_factory=ProfileFrontendCsp)
     # Auth/identidade. Opcional (= None quando ausente) para NÃO materializar um
     # bloco em perfis que caíam no default do environment — retrocompat total.
     auth: Optional[ProfileFrontendAuth] = None
@@ -1310,6 +1404,12 @@ class ProfileFrontend(BaseModel):
     # nova aba) → privacyPolicyI18n (markdown no modal) → texto default.
     privacyPolicyUrl: str = ""                            # URL da política do cliente (recomendado)
     privacyPolicyI18n: I18nMap = Field(default_factory=dict)  # alternativa: texto markdown multilingue no modal
+    # Partilha de conversas: expiries (dias) oferecidos no modal e o default
+    # pré-selecionado. O fecore lê do /client-config com fallback ao
+    # environment. Formalizados v0.1.43 (eram fantasmas em toda a frota, com
+    # exatamente estes valores).
+    shareExpiryOptionsDays: List[int] = Field(default_factory=lambda: [7, 30])
+    shareDefaultExpiryDays: int = Field(default=7, ge=1)
     # Género gramatical do assistente (afeta artigos nas labels fixas do FE).
     assistantGender: Literal["feminine", "masculine", "neutral"] = "masculine"
 
@@ -1391,6 +1491,16 @@ class ProfileVoiceTranscription(BaseModel):
     model: Optional[str] = None
 
 
+class ProfileVoiceWeb(BaseModel):
+    """Canal de voz realtime NO BROWSER (par do frontend.features.voiceMode,
+    que só controla a UI). Partilha deployment/voz do bloco voice — o backend
+    exige enabled=true E voice.deployment definido. Formalizado v0.1.43
+    (era fantasma)."""
+    model_config = ConfigDict(extra="allow")
+
+    enabled: bool = False
+
+
 class ProfileVoice(BaseModel):
     """Canal de voz telefónico (Realtime). Comportamento por cliente; os
     segredos (VOICE-OPENAI-ENDPOINT/API-KEY/WEBHOOK-SECRET) vivem no Key Vault,
@@ -1406,6 +1516,10 @@ class ProfileVoice(BaseModel):
     queue: str = "tickets"        # fila de tickets (reviewQueues.<queue>)
     transfer_number: str = ""
     kb_top_n: int = 4
+    # Aviso de IA no início da chamada (EU AI Act Art. 50). Formalizado
+    # v0.1.43 (era fantasma; default do core é ligado).
+    aiDisclosure: bool = True
+    web: ProfileVoiceWeb = Field(default_factory=ProfileVoiceWeb)
     transcription: ProfileVoiceTranscription = Field(default_factory=ProfileVoiceTranscription)
 
 
@@ -1556,6 +1670,9 @@ class ProfilePricing(BaseModel):
     model_config = ConfigDict(extra="allow")
 
     currency: str = ""
+    # Taxa USD→EUR do cálculo de custos. None = env → default builtin do
+    # backend (preserva a precedência). Formalizado v0.1.43 (era fantasma).
+    usd_to_eur: Optional[float] = Field(default=None, gt=0.0)
     models: Dict[str, ProfilePricingModel] = Field(default_factory=dict)
     image_models: Dict[str, Dict[str, float]] = Field(default_factory=dict)
 
@@ -1610,6 +1727,11 @@ class ProfileGuestAccess(BaseModel):
     uploads: ProfileGuestAccessUploads = Field(default_factory=ProfileGuestAccessUploads)
     rateLimits: ProfileGuestAccessRateLimits = Field(default_factory=ProfileGuestAccessRateLimits)
     dailyBudgetEur: float = 0.0
+    # Estimativa de custo (EUR) de UMA sessão de voz realtime — trava o
+    # arranque quando o orçamento restante do dia não a cobre. None = env
+    # DEMO_REALTIME_SESSION_EST_EUR → 0.50 (preserva a precedência env dos
+    # ambientes de demo, postos à mão). Formalizado v0.1.43 (era fantasma).
+    realtimeSessionEstEur: Optional[float] = Field(default=None, ge=0.0)
 
 
 class ClientProfileSchema(BaseModel):
