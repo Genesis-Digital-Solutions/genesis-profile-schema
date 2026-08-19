@@ -669,6 +669,13 @@ class ProfileRetrieval(BaseModel):
     gpt_rerank_broad: bool = False                             # RAG_ENABLE_GPT_RERANK_BROAD
     fuzzy_correction: bool = False                             # KB_FUZZY_CORRECTION_ENABLED
     faithfulness_overlap_skip: float = Field(default=0.65, ge=0.0, le=1.0)  # FAITHFULNESS_JUDGE_OVERLAP_SKIP
+    # Gate de recusa PRÉ-GERAÇÃO (OOD), escala do reranker 0–4: com o top score
+    # abaixo disto, o bot recusa em vez de gerar sobre grounding fraco.
+    # Formalizado a 19 Ago 2026 (v0.1.42) — antes vivia via extra="allow" e o
+    # default era o hardcoded do core (1.5). 1.6 é decisão de produto (Bruno):
+    # a 1.5 o bot às vezes respondia o que não devia (caso real, remax-v2).
+    # 0 = desativado; o core aplica clamp a [1.0, 3.0] para valores > 0.
+    refuse_pregen_min_score: float = Field(default=1.6, ge=0.0, le=3.0)  # KB_REFUSE_PREGEN_MIN_SCORE
 
     # Expansão de vizinhos por cliente. Campos None = envs de frota.
     neighbor_expansion: ProfileNeighborExpansion = Field(
