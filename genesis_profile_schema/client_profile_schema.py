@@ -1275,6 +1275,12 @@ class ProfileFrontendWidget(BaseModel):
     greeting_delay_s: int = Field(3, ge=0)
     panel_width_px: int = Field(420, ge=320)
     panel_height_px: int = Field(640, ge=480)
+    # Comportamento ≤640px de largura da JANELA do site (breakpoint histórico
+    # do widget.js). fullscreen (default, comportamento de sempre): o painel
+    # toma o viewport inteiro. sheet: bottom sheet a 88% da altura, cantos
+    # redondos em cima e backdrop translúcido clicável — o site fica visível
+    # por trás (responde à queixa "em mobile parece que o site desapareceu").
+    mobile_mode: Literal["fullscreen", "sheet"] = "fullscreen"
     # [] = qualquer site https pode embeber (frame-ancestors https:);
     # não-vazio → o creator escreve frame-ancestors 'self' + estas origens.
     allowed_origins: List[str] = Field(default_factory=list)
@@ -1397,6 +1403,10 @@ class ProfileFrontend(BaseModel):
     # Título de boas-vindas do empty-state — mapa i18n {lang:texto}.
     welcomeMessage: I18nMap = Field(default_factory=dict)
     welcomeMessageSize: str = ""   # tamanho da fonte do título de boas-vindas (ex.: "1.5rem")
+    # Tamanho do título em viewports ≤640px do fecore (no widget, o viewport é
+    # o IFRAME — 420px em desktop, pelo que este valor também manda aí).
+    # Vazio → herda welcomeMessageSize; sem nenhum, o CSS degrada 28px→22px.
+    welcomeMessageSizeMobile: str = ""
     welcomeSubtitle: I18nMap = Field(default_factory=dict)   # subtítulo de apresentação abaixo do título (markdown, multilingue)
     legalNotice: I18nMap = Field(default_factory=dict)   # aviso legal recolhível no ecrã inicial (markdown, multilingue)
     # Política de privacidade DO CLIENTE (GDPR) — substitui o placeholder
