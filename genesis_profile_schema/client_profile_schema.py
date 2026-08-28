@@ -1277,7 +1277,8 @@ class ProfileFrontendWidget(BaseModel):
     panel_height_px: int = Field(640, ge=480)
     # Comportamento ≤640px de largura da JANELA do site (breakpoint histórico
     # do widget.js). fullscreen (default, comportamento de sempre): o painel
-    # toma o viewport inteiro. sheet: bottom sheet a 88% da altura, cantos
+    # toma o viewport inteiro. sheet: bottom sheet a 95% da altura (fresta
+    # deliberadamente pequena: só para se perceber que o site está lá), cantos
     # redondos em cima e backdrop translúcido clicável — o site fica visível
     # por trás (responde à queixa "em mobile parece que o site desapareceu").
     mobile_mode: Literal["fullscreen", "sheet"] = "fullscreen"
@@ -1480,6 +1481,12 @@ class ProfileCompliance(BaseModel):
     deployer_content_responsibility: bool = True
     annex_iv_doc_url: str = ""        # link p/ documentação técnica gerada (blob)
     annex_iv_generated_at: str = ""   # ISO datetime da última geração
+    # v0.1.45 (28 Ago 2026, pack AI Act): identificação estruturada do
+    # deployment para a análise por deployment que o baseline jurídico exige
+    # (setor do cliente + caso de uso concreto). Texto livre curto, opcionais
+    # — perfis existentes validam sem alteração; entram no Anexo IV gerado.
+    sector: str = ""                  # setor do cliente (ex.: "imobiliária", "utilities")
+    use_case: str = ""                # caso de uso concreto (ex.: "FAQ + captação de leads no site público")
 
 
 # ═════════════════════════════════════════════════════════════════════════════
