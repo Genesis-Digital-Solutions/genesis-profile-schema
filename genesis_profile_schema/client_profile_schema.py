@@ -730,6 +730,17 @@ class ProfileRetrieval(BaseModel):
     # tinha explícito no blob).
     rerank_top_k: int = Field(default=10, ge=1)                # RAG_GPT_RERANK_TOP_K
 
+    # TTL (dias) do SAS de leitura anexado aos URLs das fontes. Os containers
+    # `input` e `vision-images` passaram a privados a 29 Ago 2026 — sem
+    # assinatura o browser leva 403 ao abrir uma citação.
+    # 30 é o teto de vida de uma conversa partilhada (core: MAX_EXPIRY_DAYS),
+    # por isso nenhuma partilha sobrevive ao seu próprio link de fontes. Passado
+    # o prazo, repetir a pergunta devolve a fonte ATUAL — que é melhor do que um
+    # link eterno a servir uma versão que entretanto mudou. O fecore mostra o
+    # estado "fonte expirada" em vez de um link partido.
+    # 0 = sem assinatura (só para cliente que mantenha os containers públicos).
+    source_url_sas_ttl_days: int = Field(default=30, ge=0)     # KB_SOURCE_SAS_TTL_DAYS
+
     # Expansão de vizinhos por cliente. Campos None = envs de frota.
     neighbor_expansion: ProfileNeighborExpansion = Field(
         default_factory=ProfileNeighborExpansion,
