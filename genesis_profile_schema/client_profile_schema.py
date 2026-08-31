@@ -166,6 +166,15 @@ class ProfileGuardrails(BaseModel):
     competitor_brands: List[str] = Field(default_factory=list)
     blocked_words: List[str] = Field(default_factory=list)
     allow_general_knowledge: bool = False
+    # v0.1.48 — o aviso ao utilizador do verificador de citações
+    # (core/agent/citation_support.py) é decisão de PRODUTO por cliente: em
+    # bots documentais onde se age sobre números o aviso é diferenciador; num
+    # bot público de site é embaraço quando erra. False = modo sombra (a
+    # deteção corre SEMPRE — traces, spans, dumps — só a nota ao utilizador é
+    # suprimida). O padrão do mercado é nem verificar; a sombra dá-nos a
+    # medição sem o custo. Kill-switch total continua no env
+    # (CITATION_SUPPORT_CHECK=0), fora do perfil, como manda a regra.
+    citation_support_warning: bool = False
 
 
 class ProfileProductIdentification(BaseModel):
