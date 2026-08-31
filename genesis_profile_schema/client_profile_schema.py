@@ -1609,8 +1609,17 @@ class ProfileReviewQueueGate(BaseModel):
     """Gate numa transição: chama uma tool MCP e traduz a decisão em
     consequência (proceed | block | <estado alternativo>)."""
     model_config = ConfigDict(extra="allow")
-    when: str = ""                 # id da ação a que o gate se aplica
-    call: Optional[Dict[str, Any]] = None    # {server, tool, mapping}
+    # `when` aceita UM id de ação ou uma LISTA de ids — o core faz o match nas
+    # duas formas (review_queue_spec.gates_for: `whens = raw_when if
+    # isinstance(raw_when, list) else [raw_when]`) e o picker "ações…" do Studio
+    # emite lista quando o gate corre em várias ações.
+    # ⚠️ Era `str` até 0.1.46, e não era um detalhe de tipagem: um gate
+    # multi-ação fazia a validação REBENTAR, logo o cliente que o tivesse no
+    # perfil não conseguia promover NENHUM campo dev→prod
+    # (profile_field_promote → 422 schema_validation_failed) nem gravar
+    # variantes — com um erro em `gates.0.when` que ninguém associava à causa.
+    when: Union[str, List[str]] = ""
+    call: Optional[Dict[str, Any]] = None    # {server, tool, mapping, writes}
     decide: Optional[Dict[str, str]] = None  # resultado → consequência
 
 
