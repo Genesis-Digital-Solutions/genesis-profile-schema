@@ -1551,6 +1551,13 @@ class ProfileVoice(BaseModel):
     greeting: str = ""
     instructions: str = ""
     queue: str = "tickets"        # fila de tickets (reviewQueues.<queue>)
+    # Categorias sugeridas ao modelo ao registar um pedido. Mesmo conceito e
+    # mesmo nome da tool de fila do chat
+    # (`tools.config.create_ticket.category_hints`). Só entram no prompt de voz
+    # quando a fila existe; o operador declara-as aqui em vez de as escrever no
+    # texto livre de `instructions` — e o modelo deixa de as inventar.
+    # Formalizado v0.1.49 (Ago 2026).
+    category_hints: List[str] = Field(default_factory=list)
     transfer_number: str = ""
     kb_top_n: int = 4
     # Aviso de IA no início da chamada (EU AI Act Art. 50). Formalizado
