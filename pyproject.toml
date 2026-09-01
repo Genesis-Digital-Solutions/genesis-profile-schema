@@ -4,10 +4,17 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "genesis-profile-schema"
-version = "0.1.49"
+version = "0.1.50"
 description = "Contrato partilhado do ClientProfile (Genesis AI): control plane (Console) + data plane (genai-core). Fonte de verdade única do perfil."
 requires-python = ">=3.10"
 dependencies = ["pydantic>=2,<3"]
 
 [tool.setuptools]
 packages = ["genesis_profile_schema"]
+
+# Os catálogos de texto são dados, não código: sem isto o wheel instala o
+# pacote SEM os JSON e `ui_text.catalogue()` devolve vazio em produção — em
+# silêncio, porque o carregador é deliberadamente tolerante a ficheiro em
+# falta. Verificado com uma instalação real, não só pela presença desta linha.
+[tool.setuptools.package-data]
+genesis_profile_schema = ["ui_text/*.json"]

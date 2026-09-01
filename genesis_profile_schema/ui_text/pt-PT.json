@@ -1,0 +1,1729 @@
+{
+ "locale": "pt-PT",
+ "fields": {
+  "audio.disfluency_removal": {
+   "label": "Remover hesitações"
+  },
+  "audio.glossary": {
+   "label": "Glossário de termos"
+  },
+  "audio.max_duration_min": {
+   "label": "Duração máxima (minutos)"
+  },
+  "audio.max_speakers": {
+   "label": "Número máximo de oradores"
+  },
+  "audio.phrase_bias": {
+   "label": "Peso das expressões (1 a 20)"
+  },
+  "audio.phrase_list": {
+   "label": "Lista de expressões"
+  },
+  "audio.speech_locale": {
+   "label": "Idioma da transcrição"
+  },
+  "brand_safety": {
+   "note": "Protecção contra menção de marcas concorrentes. soft_redirect=instrução no prompt; hard_block=mais assertivo; post_filter=redacção sobre resposta final."
+  },
+  "brand_safety.blocked_brands": {
+   "label": "Marcas bloqueadas"
+  },
+  "brand_safety.level": {
+   "label": "Nível de bloqueio",
+   "help": "\"soft_redirect\" redireciona a conversa; \"hard_block\" recusa responder; \"post_filter\" filtra a resposta já gerada.",
+   "options": {
+    "soft_redirect": "Redirecionar com subtileza",
+    "hard_block": "Bloquear de forma assertiva",
+    "post_filter": "Rever a resposta no fim"
+   }
+  },
+  "brand_safety.redirect_to": {
+   "label": "Redirecionar para",
+   "note": "(ex: \"nossa gama equivalente\")"
+  },
+  "compliance": {
+   "note": "Classificação de risco EU AI Act (Anexo III) e evidência de transparência (Art. 50) deste deployment. A classificação é metadata — não altera o comportamento do bot."
+  },
+  "compliance.annex_iv_doc_url": {
+   "label": "Documentação do Anexo IV (ligação)",
+   "help": "Ligação para o documento técnico gerado pelo próprio sistema e guardado em armazenamento de blobs."
+  },
+  "compliance.annex_iv_generated_at": {
+   "label": "Última geração da documentação",
+   "help": "Data e hora em formato ISO."
+  },
+  "compliance.classification": {
+   "label": "Classificação de risco",
+   "help": "Classificação de risco do Regulamento Europeu de IA para esta instalação, segundo o Anexo III. Por omissão fica por classificar, para que o trabalho em falta seja visível no painel."
+  },
+  "compliance.classification.annex_iii_answers": {
+   "label": "Respostas ao questionário do Anexo III",
+   "help": "Mapa {área: sim ou não}. Guardado para auditoria e para comparar com futuras reavaliações."
+  },
+  "compliance.classification.classified_at": {
+   "label": "Data da classificação",
+   "help": "Data e hora em formato ISO."
+  },
+  "compliance.classification.classified_by": {
+   "label": "Autor da classificação",
+   "help": "Nome ou endereço de correio eletrónico de quem fez a classificação."
+  },
+  "compliance.classification.justification": {
+   "label": "Justificação da classificação",
+   "help": "Texto gerado automaticamente a partir das respostas e depois editável por uma pessoa."
+  },
+  "compliance.classification.legal_review_date": {
+   "label": "Data da revisão jurídica"
+  },
+  "compliance.classification.legal_reviewer": {
+   "label": "Jurista responsável"
+  },
+  "compliance.classification.next_review_due": {
+   "label": "Próxima revisão",
+   "help": "A classificação é reavaliada anualmente e sempre que a utilização do sistema mudar."
+  },
+  "compliance.classification.reviewed_by_legal": {
+   "label": "Validado pelo departamento jurídico",
+   "help": "Opcional: a falta de validação jurídica não bloqueia um sistema de risco limitado."
+  },
+  "compliance.classification.risk_level": {
+   "label": "Nível de risco",
+   "help": "Determinado pela lista de verificação do Anexo III. O risco elevado ativa as obrigações adicionais da secção abaixo.",
+   "options": {
+    "minimal": "Risco mínimo",
+    "limited": "Risco limitado",
+    "high": "Risco elevado",
+    "unclassified": "Por classificar"
+   }
+  },
+  "compliance.deployer_content_responsibility": {
+   "label": "Responsabilidade do cliente pelo conteúdo indexado",
+   "help": "Transparência do Artigo 50: a responsabilidade pelo conteúdo indexado pertence ao cliente que opera o sistema, formalizada por cláusula contratual."
+  },
+  "compliance.high_risk": {
+   "label": "Obrigações de risco elevado",
+   "help": "Obrigações adicionais dos Artigos 11, 12, 14 e 73, exigidas apenas quando o nível de risco é elevado. São metadados: não alteram o comportamento do assistente."
+  },
+  "compliance.high_risk.enabled": {
+   "label": "Ativar as obrigações de risco elevado",
+   "help": "Obrigatório antes de entrar em produção quando o nível de risco é elevado, com os restantes campos preenchidos."
+  },
+  "compliance.high_risk.human_oversight_contact": {
+   "label": "Contacto do responsável pela supervisão humana",
+   "help": "Artigo 14: a pessoa designada para supervisionar o sistema."
+  },
+  "compliance.high_risk.log_retention_days": {
+   "label": "Retenção de registos (dias)",
+   "help": "Artigo 12: o mínimo legal é de seis meses, ou seja 180 dias."
+  },
+  "compliance.high_risk.oversight_procedure_url": {
+   "label": "Procedimento de supervisão (ligação)",
+   "help": "Ligação para o procedimento interno que descreve como a supervisão é feita."
+  },
+  "compliance.high_risk.serious_incident_contact": {
+   "label": "Contacto para incidentes graves",
+   "help": "Artigo 73: quem comunica incidentes graves às autoridades."
+  },
+  "compliance.sector": {
+   "label": "Setor",
+   "help": "Setor em que o assistente é usado (ex.: imobiliária, utilities). Entra na documentação técnica do Anexo IV."
+  },
+  "compliance.use_case": {
+   "label": "Caso de uso",
+   "help": "O que o assistente faz em concreto neste deployment (ex.: \"FAQ e captação de contactos no site público\"). Entra na documentação técnica do Anexo IV."
+  },
+  "contacts.attribute_paths": {
+   "label": "Atributos do contacto",
+   "help": "Mapa do nome do atributo para o caminho de onde é lido no pedido."
+  },
+  "contacts.display_name_path": {
+   "label": "Caminho do nome a apresentar"
+  },
+  "contacts.enabled": {
+   "label": "Ativar contactos unificados",
+   "help": "Reconhece o mesmo contacto entre canais (telefone, email, WhatsApp, ID de utilizador) de forma determinística. Desligado por defeito e sempre isolado por cliente."
+  },
+  "contacts.identity_fields": {
+   "label": "Campos de identidade",
+   "help": "Cada entrada é um par: o tipo de identificador (kind) e o caminho de onde é lido (path)."
+  },
+  "custom_instructions": {
+   "label": "Instruções personalizadas",
+   "help": "Texto livre acrescentado às instruções do assistente: políticas de negócio, exemplos, encaminhamentos. Complementa as secções estruturadas, não as substitui.",
+   "note": "Texto livre injectado no system prompt entre <domain> e <conversation_rules>. Aqui escreves regras específicas que não cabem nas secções estruturadas (políticas de negócio, exemplos, redireccionamentos)."
+  },
+  "domain.description": {
+   "label": "Descrição do domínio",
+   "note": "Descrição em texto livre do domínio do cliente — usada pelo LLM para perceber o âmbito."
+  },
+  "frontend.aiDisclosure": {
+   "label": "Aviso de IA",
+   "help": "Transparência exigida pelo Artigo 50(1) do Regulamento Europeu de IA: o utilizador tem de saber que comunica com um sistema de IA. Ativo por defeito."
+  },
+  "frontend.aiDisclosure.enabled": {
+   "label": "Mostrar aviso",
+   "help": "Mostra o aviso de que se está a falar com uma inteligência artificial. Exigido pelo AI Act (Art. 50)."
+  },
+  "frontend.aiDisclosure.text": {
+   "label": "Texto do aviso"
+  },
+  "frontend.aiDisclosure.textI18n": {
+   "label": "Texto do aviso (multilingue)",
+   "help": "Mapa {idioma: texto}. Tem precedência sobre o texto único."
+  },
+  "frontend.assistantGender": {
+   "label": "Género do assistente",
+   "help": "Género gramatical do assistente — afeta os artigos e as concordâncias nas legendas fixas do frontend.",
+   "options": {
+    "feminine": "Feminino",
+    "masculine": "Masculino",
+    "neutral": "Neutro"
+   }
+  },
+  "frontend.auth": {
+   "label": "Autenticação",
+   "help": "Autenticação e identidade do frontend. Os campos MSAL e OIDC são escritos na configuração da aplicação do cliente; os emissores e a identidade de widget são lidos do perfil pelo backend.",
+   "note": "Autenticação do frontend por cliente (1 build serve todos). Escrito no runtime-config.json da SWA no deploy e lido pelo MSAL antes do arranque. Usa \"Auto-detetar\" para preencher tenant e scopes a partir do backend; o Client ID (registo da SPA) é manual."
+  },
+  "frontend.auth.apiScopes": {
+   "label": "Âmbitos da API",
+   "help": "Campo MSAL (Microsoft), escrito na configuração da aplicação."
+  },
+  "frontend.auth.authority": {
+   "label": "Autoridade OIDC",
+   "help": "URL do fornecedor de identidade (authority/issuer). Campo OIDC, escrito na configuração da aplicação."
+  },
+  "frontend.auth.clientId": {
+   "label": "ID da aplicação (client ID)",
+   "help": "Usado tanto pelo MSAL como pelo OIDC. Escrito na configuração da aplicação."
+  },
+  "frontend.auth.loginType": {
+   "label": "Tipo de início de sessão",
+   "help": "Campo MSAL (Microsoft), escrito na configuração da aplicação."
+  },
+  "frontend.auth.mode": {
+   "label": "Exigência de autenticação"
+  },
+  "frontend.auth.provider": {
+   "label": "Fornecedor de autenticação"
+  },
+  "frontend.auth.providers": {
+   "label": "Emissores de confiança",
+   "help": "Emissores OIDC que o backend aceita ao validar tokens; o emissor é a chave de fixação. Lido do perfil pelo backend — não é enviado ao frontend."
+  },
+  "frontend.auth.providers.audience": {
+   "label": "Audiência esperada",
+   "help": "Valor de `aud` esperado. Vazio não valida a audiência."
+  },
+  "frontend.auth.providers.id": {
+   "label": "Identificador interno",
+   "help": "Identificador interno do emissor."
+  },
+  "frontend.auth.providers.issuer": {
+   "label": "Emissor esperado",
+   "help": "Valor de `iss` esperado — é esta a chave de fixação."
+  },
+  "frontend.auth.providers.jwks_uri": {
+   "label": "URI do JWKS",
+   "help": "Vazio faz a descoberta automática pelo `.well-known` do emissor."
+  },
+  "frontend.auth.providers.label": {
+   "label": "Rótulo para o Console",
+   "help": "Rótulo amigável apresentado na interface do Console."
+  },
+  "frontend.auth.providers.primary": {
+   "label": "Emissor primário",
+   "help": "O emissor primário produz identificadores de utilizador simples; os restantes ficam prefixados pelo emissor. Sem nenhum marcado, é primário o primeiro da lista."
+  },
+  "frontend.auth.providers.required_scope": {
+   "label": "Âmbito obrigatório",
+   "help": "Vazio não exige nenhum âmbito."
+  },
+  "frontend.auth.providers.tenant_id": {
+   "label": "ID do tenant esperado",
+   "help": "Valor de `tid` esperado (Microsoft). Vazio não valida."
+  },
+  "frontend.auth.providers.type": {
+   "label": "Tipo de emissor"
+  },
+  "frontend.auth.scope": {
+   "label": "Âmbito OIDC",
+   "help": "Campo OIDC. Vazio usa um valor por defeito seguro no frontend."
+  },
+  "frontend.auth.tenantId": {
+   "label": "ID do tenant",
+   "help": "Campo MSAL (Microsoft), escrito na configuração da aplicação."
+  },
+  "frontend.auth.tenantMode": {
+   "label": "Âmbito do tenant",
+   "help": "Campo MSAL (Microsoft), escrito na configuração da aplicação."
+  },
+  "frontend.auth.widget_identity": {
+   "label": "Identidade de widget",
+   "help": "Identidade por token assinado. O segredo HMAC vive no Key Vault do cliente e o backend valida a assinatura e a idade. Lido pelo backend — não é enviado ao frontend."
+  },
+  "frontend.auth.widget_identity.algo": {
+   "label": "Algoritmo de assinatura"
+  },
+  "frontend.auth.widget_identity.enabled": {
+   "label": "Ativa"
+  },
+  "frontend.auth.widget_identity.max_age_s": {
+   "label": "Validade do token (s)",
+   "help": "Idade máxima aceite para o token, como proteção contra reutilização."
+  },
+  "frontend.auth.widget_identity.secret_ref": {
+   "label": "Nome do segredo",
+   "help": "Nome do segredo no Key Vault do cliente."
+  },
+  "frontend.branding": {
+   "label": "Marca e aspeto",
+   "note": "Marca visível ao utilizador final. Cores em formato hex #RRGGBB."
+  },
+  "frontend.branding.botAvatarShape": {
+   "label": "Forma do avatar",
+   "help": "round = círculo, soft = cantos arredondados, square = cantos direitos. Vazio mantém o predefinido.",
+   "options": {
+    "": "Predefinido",
+    "round": "Círculo",
+    "soft": "Cantos arredondados",
+    "square": "Cantos direitos"
+   }
+  },
+  "frontend.branding.botAvatarSize": {
+   "label": "Tamanho do avatar (px)",
+   "help": "0 mantém o tamanho predefinido."
+  },
+  "frontend.branding.disclaimer": {
+   "label": "Rodapé informativo",
+   "help": "Rodapé geral do frontend. Não confundir com o Aviso de IA, que é o aviso legal obrigatório.",
+   "note": "Texto pequeno no rodapé do chat (ex: \"MaintainAI pode cometer erros…\")"
+  },
+  "frontend.branding.disclaimerI18n": {
+   "label": "Rodapé informativo (multilingue)",
+   "help": "Mapa {idioma: texto}. Tem precedência sobre o rodapé de texto único."
+  },
+  "frontend.branding.favicon": {
+   "label": "Favicon",
+   "help": "URL no contentor `branding` — carregado pelo Console."
+  },
+  "frontend.branding.headerLogoHeight": {
+   "label": "Altura do logótipo no cabeçalho (px)",
+   "help": "0 mantém a altura predefinida."
+  },
+  "frontend.branding.headerText": {
+   "label": "Texto junto ao logótipo",
+   "help": "Aparece no cabeçalho, ao lado do logótipo (ex.: \"Antonius\"). Multilingue."
+  },
+  "frontend.branding.headerTextColor": {
+   "label": "Cor do texto do cabeçalho",
+   "help": "Opcional — vazio usa o valor por defeito do tema."
+  },
+  "frontend.branding.headerTextSize": {
+   "label": "Tamanho do texto do cabeçalho",
+   "help": "Opcional, ex.: \"20px\" ou \"1.25rem\" — vazio usa o valor por defeito do tema."
+  },
+  "frontend.branding.logoDark": {
+   "label": "Logótipo (tema escuro)",
+   "help": "URL no contentor `branding` — carregado pelo Console."
+  },
+  "frontend.branding.logoLight": {
+   "label": "Logótipo (tema claro)",
+   "help": "URL no contentor `branding` — carregado pelo Console."
+  },
+  "frontend.branding.logoRail": {
+   "label": "Logótipo da barra lateral recolhida",
+   "help": "URL no contentor `branding` — carregado pelo Console.",
+   "note": "Imagem mostrada como avatar nas respostas do assistente. Vazio → usa a inicial do nome. (campo: logoRail)"
+  },
+  "frontend.branding.primaryColor": {
+   "label": "Cor principal"
+  },
+  "frontend.branding.primaryTextColor": {
+   "label": "Cor do texto sobre a cor principal"
+  },
+  "frontend.branding.productName": {
+   "label": "Nome do produto"
+  },
+  "frontend.branding.subtitle": {
+   "label": "Subtítulo"
+  },
+  "frontend.branding.theme": {
+   "label": "Tema de cores",
+   "help": "Tema completo: a barra lateral aplica-se a ambos os modos; os sub-temas claro e escuro tratam o resto.",
+   "note": "Cores dos elementos da UI. As cores da sidebar aplicam-se a ambos os modos (light/dark) por defeito; light/dark podem override."
+  },
+  "frontend.branding.theme.bgSidebar": {
+   "label": "Fundo da barra lateral",
+   "help": "Aplica-se a ambos os modos, claro e escuro."
+  },
+  "frontend.branding.theme.bgSidebarSubtle": {
+   "label": "Fundo secundário da barra lateral",
+   "help": "Aplica-se a ambos os modos, claro e escuro."
+  },
+  "frontend.branding.theme.dark": {
+   "label": "Modo escuro",
+   "help": "Sub-tema escuro. Cores em hexadecimal `#RRGGBB`.",
+   "note": "Em dark mode também podes override bgSidebar/bgSidebarSubtle se quiseres sidebar diferente"
+  },
+  "frontend.branding.theme.dark.bgPage": {
+   "label": "Fundo da página"
+  },
+  "frontend.branding.theme.dark.bgSidebar": {
+   "label": "Fundo da barra lateral"
+  },
+  "frontend.branding.theme.dark.bgSidebarCollapsed": {
+   "label": "Fundo da barra lateral recolhida",
+   "help": "Ajuste fino de componente — vazio herda do token semântico correspondente."
+  },
+  "frontend.branding.theme.dark.bgSidebarSubtle": {
+   "label": "Fundo secundário da barra lateral"
+  },
+  "frontend.branding.theme.dark.bgSubtle": {
+   "label": "Fundo secundário"
+  },
+  "frontend.branding.theme.dark.bgSurface": {
+   "label": "Fundo das superfícies"
+  },
+  "frontend.branding.theme.dark.codeBg": {
+   "label": "Fundo do código"
+  },
+  "frontend.branding.theme.dark.codeText": {
+   "label": "Texto do código"
+  },
+  "frontend.branding.theme.dark.headerBg": {
+   "label": "Fundo do cabeçalho",
+   "help": "Ajuste fino de componente — vazio herda do token semântico correspondente."
+  },
+  "frontend.branding.theme.dark.iconHeaderColor": {
+   "label": "Cor dos ícones do cabeçalho",
+   "help": "Ajuste fino de componente — vazio herda do token semântico correspondente."
+  },
+  "frontend.branding.theme.dark.iconInputColor": {
+   "label": "Cor dos ícones da caixa de escrita",
+   "help": "Ajuste fino de componente — vazio herda do token semântico correspondente."
+  },
+  "frontend.branding.theme.dark.iconSidebarColor": {
+   "label": "Cor dos ícones da barra lateral",
+   "help": "Ajuste fino de componente — vazio herda do token semântico correspondente."
+  },
+  "frontend.branding.theme.dark.inputBg": {
+   "label": "Fundo da caixa de escrita",
+   "help": "Ajuste fino de componente — vazio herda do token semântico correspondente."
+  },
+  "frontend.branding.theme.dark.sourceCardBg": {
+   "label": "Fundo do cartão de fonte",
+   "help": "Ajuste fino de componente — vazio herda do token semântico correspondente."
+  },
+  "frontend.branding.theme.dark.sourcesBubbleBg": {
+   "label": "Fundo do balão de fontes",
+   "help": "Ajuste fino de componente — vazio herda do token semântico correspondente."
+  },
+  "frontend.branding.theme.dark.textPrimary": {
+   "label": "Texto principal"
+  },
+  "frontend.branding.theme.dark.textSecondary": {
+   "label": "Texto secundário"
+  },
+  "frontend.branding.theme.dark.textSidebarPrimary": {
+   "label": "Texto principal da barra lateral"
+  },
+  "frontend.branding.theme.dark.textSidebarSecondary": {
+   "label": "Texto secundário da barra lateral"
+  },
+  "frontend.branding.theme.dark.textSidebarTertiary": {
+   "label": "Texto terciário da barra lateral"
+  },
+  "frontend.branding.theme.dark.textTertiary": {
+   "label": "Texto terciário"
+  },
+  "frontend.branding.theme.dark.traceBubbleBg": {
+   "label": "Fundo do balão de diagnóstico",
+   "help": "Ajuste fino de componente — vazio herda do token semântico correspondente."
+  },
+  "frontend.branding.theme.dark.userBubble": {
+   "label": "Balão do utilizador"
+  },
+  "frontend.branding.theme.dark.welcomeCardBg": {
+   "label": "Fundo do cartão de boas-vindas",
+   "help": "Ajuste fino de componente — vazio herda do token semântico correspondente."
+  },
+  "frontend.branding.theme.light": {
+   "label": "Modo claro",
+   "help": "Sub-tema claro. Cores em hexadecimal `#RRGGBB`."
+  },
+  "frontend.branding.theme.light.bgPage": {
+   "label": "Fundo da página"
+  },
+  "frontend.branding.theme.light.bgSidebar": {
+   "label": "Fundo da barra lateral"
+  },
+  "frontend.branding.theme.light.bgSidebarCollapsed": {
+   "label": "Fundo da barra lateral recolhida",
+   "help": "Ajuste fino de componente — vazio herda do token semântico correspondente."
+  },
+  "frontend.branding.theme.light.bgSidebarSubtle": {
+   "label": "Fundo secundário da barra lateral"
+  },
+  "frontend.branding.theme.light.bgSubtle": {
+   "label": "Fundo secundário"
+  },
+  "frontend.branding.theme.light.bgSurface": {
+   "label": "Fundo das superfícies"
+  },
+  "frontend.branding.theme.light.codeBg": {
+   "label": "Fundo do código"
+  },
+  "frontend.branding.theme.light.codeText": {
+   "label": "Texto do código"
+  },
+  "frontend.branding.theme.light.headerBg": {
+   "label": "Fundo do cabeçalho",
+   "help": "Ajuste fino de componente — vazio herda do token semântico correspondente."
+  },
+  "frontend.branding.theme.light.iconHeaderColor": {
+   "label": "Cor dos ícones do cabeçalho",
+   "help": "Ajuste fino de componente — vazio herda do token semântico correspondente."
+  },
+  "frontend.branding.theme.light.iconInputColor": {
+   "label": "Cor dos ícones da caixa de escrita",
+   "help": "Ajuste fino de componente — vazio herda do token semântico correspondente."
+  },
+  "frontend.branding.theme.light.iconSidebarColor": {
+   "label": "Cor dos ícones da barra lateral",
+   "help": "Ajuste fino de componente — vazio herda do token semântico correspondente."
+  },
+  "frontend.branding.theme.light.inputBg": {
+   "label": "Fundo da caixa de escrita",
+   "help": "Ajuste fino de componente — vazio herda do token semântico correspondente."
+  },
+  "frontend.branding.theme.light.sourceCardBg": {
+   "label": "Fundo do cartão de fonte",
+   "help": "Ajuste fino de componente — vazio herda do token semântico correspondente."
+  },
+  "frontend.branding.theme.light.sourcesBubbleBg": {
+   "label": "Fundo do balão de fontes",
+   "help": "Ajuste fino de componente — vazio herda do token semântico correspondente."
+  },
+  "frontend.branding.theme.light.textPrimary": {
+   "label": "Texto principal"
+  },
+  "frontend.branding.theme.light.textSecondary": {
+   "label": "Texto secundário"
+  },
+  "frontend.branding.theme.light.textSidebarPrimary": {
+   "label": "Texto principal da barra lateral"
+  },
+  "frontend.branding.theme.light.textSidebarSecondary": {
+   "label": "Texto secundário da barra lateral"
+  },
+  "frontend.branding.theme.light.textSidebarTertiary": {
+   "label": "Texto terciário da barra lateral"
+  },
+  "frontend.branding.theme.light.textTertiary": {
+   "label": "Texto terciário"
+  },
+  "frontend.branding.theme.light.traceBubbleBg": {
+   "label": "Fundo do balão de diagnóstico",
+   "help": "Ajuste fino de componente — vazio herda do token semântico correspondente."
+  },
+  "frontend.branding.theme.light.userBubble": {
+   "label": "Balão do utilizador"
+  },
+  "frontend.branding.theme.light.welcomeCardBg": {
+   "label": "Fundo do cartão de boas-vindas",
+   "help": "Ajuste fino de componente — vazio herda do token semântico correspondente."
+  },
+  "frontend.branding.theme.textSidebarPrimary": {
+   "label": "Texto principal da barra lateral",
+   "help": "Aplica-se a ambos os modos, claro e escuro."
+  },
+  "frontend.branding.theme.textSidebarSecondary": {
+   "label": "Texto secundário da barra lateral",
+   "help": "Aplica-se a ambos os modos, claro e escuro."
+  },
+  "frontend.branding.theme.textSidebarTertiary": {
+   "label": "Texto terciário da barra lateral",
+   "help": "Aplica-se a ambos os modos, claro e escuro."
+  },
+  "frontend.csp.extraConnectSrc": {
+   "label": "Origens extra para ligações (CSP)",
+   "note": "Destinos permitidos a fetch/XHR/WebSocket a partir da página de chat. Aplicado no rollout do frontend."
+  },
+  "frontend.csp.extraFrameSrc": {
+   "label": "Origens extra para iframes (CSP)",
+   "note": "Origens que podem ser embebidas na página de chat. Aplicado no rollout do frontend."
+  },
+  "frontend.csp.extraImgSrc": {
+   "label": "Origens extra para imagens (CSP)",
+   "note": "Aplicado no rollout do frontend."
+  },
+  "frontend.csp.extraScriptSrc": {
+   "label": "Origens extra para scripts (CSP)",
+   "note": "Controlo de segurança. Acrescentar uma origem aqui autoriza scripts de terceiros na página de chat. O Studio funde estas listas no staticwebapp.config.json durante o rollout do frontend — sem novo rollout não há efeito em runtime."
+  },
+  "frontend.csp.extraStyleSrc": {
+   "label": "Origens extra para estilos (CSP)",
+   "note": "Aplicado no rollout do frontend."
+  },
+  "frontend.features": {
+   "label": "Funcionalidades",
+   "help": "Interruptores do frontend. As dependências entre funcionalidades são declaradas no schema, pelo que o editor avisa e impede combinações incoerentes.",
+   "note": "Toggles de funcionalidades visíveis. Podes adicionar flags personalizadas no JSON do Blob — qualquer chave extra é preservada."
+  },
+  "frontend.features.enableDarkMode": {
+   "label": "Permitir modo escuro",
+   "help": "Dá ao utilizador um interruptor para o tema escuro."
+  },
+  "frontend.features.enableDocumentUpload": {
+   "label": "Permitir envio de documentos",
+   "help": "Permite anexar documentos à conversa."
+  },
+  "frontend.features.enableInlineCitations": {
+   "label": "Citações dentro do texto",
+   "help": "Mostra os marcadores de citação no meio da resposta, ligados à fonte."
+  },
+  "frontend.features.enableLlmSelector": {
+   "label": "Seletor de modelo"
+  },
+  "frontend.features.enablePdfExport": {
+   "label": "Exportar para PDF",
+   "help": "Permite guardar a conversa em PDF."
+  },
+  "frontend.features.enablePipelineTrace": {
+   "label": "Mostrar diagnóstico da resposta",
+   "help": "Ativo, mostra a transparência do processo e um resumo de explicabilidade."
+  },
+  "frontend.features.enableShare": {
+   "label": "Partilhar conversa",
+   "help": "Permite gerar uma ligação de partilha da conversa. A validade define-se na secção de partilha."
+  },
+  "frontend.features.enableSourcePreview": {
+   "label": "Pré-visualizar fontes (legado)",
+   "help": "Campo legado, mantido em sincronia com \"Ação ao clicar numa fonte\" — existe para versões antigas do frontend que só leem este booleano."
+  },
+  "frontend.features.enableStarterPrompts": {
+   "label": "Mostrar sugestões iniciais",
+   "help": "Mostra as sugestões de arranque no ecrã inicial."
+  },
+  "frontend.features.enableTTS": {
+   "label": "Ler respostas em voz alta",
+   "help": "Permite ouvir a resposta lida em voz alta."
+  },
+  "frontend.features.enableVoiceLoop": {
+   "label": "Conversa por voz contínua",
+   "help": "Depois de responder, o microfone volta a abrir sozinho para a pergunta seguinte."
+  },
+  "frontend.features.persistOriginals": {
+   "label": "Arquivar ficheiros originais",
+   "help": "Guarda o ficheiro original de cada envio (ex.: o PDF da fatura) para auditoria. Liga automaticamente com as ferramentas de extração; esta opção força o estado."
+  },
+  "frontend.features.renderSourcesSection": {
+   "label": "Manter a secção «Fontes» do texto",
+   "help": "Por omissão essa secção é removida da resposta. Ligada, fica visível tal como o modelo a escreveu.",
+   "note": "Espelho de retrieval.context_include_source_fields — o editor do Studio mantém os dois em sincronia."
+  },
+  "frontend.features.reviewQueue": {
+   "label": "Fila de revisão humana",
+   "help": "Ativa a rota da fila de revisão no frontend. Requer também o contentor `review_queue`. Desligada por defeito — liga-se apenas onde for contratada."
+  },
+  "frontend.features.reviewQueueHome": {
+   "label": "Abrir na fila de revisão",
+   "help": "A fila passa a ser a página de entrada, sem esconder o chat. Só tem efeito com a fila de revisão ligada."
+  },
+  "frontend.features.reviewQueueOnly": {
+   "label": "Apenas fila de revisão",
+   "help": "Esconde a navegação de volta à conversa e encaminha a conversa para a fila — para operadores que só devem usar a fila. Só faz sentido com a fila ativa."
+  },
+  "frontend.features.showHistory": {
+   "label": "Mostrar histórico",
+   "help": "Mostra as conversas anteriores na barra lateral."
+  },
+  "frontend.features.sourceClickAction": {
+   "label": "Ação ao clicar numa fonte",
+   "help": "\"inline\" abre um painel de pré-visualização; \"newtab\" abre a fonte noutro separador; \"none\" mostra as fontes sem serem clicáveis.",
+   "options": {
+    "inline": "Abrir pré-visualização na página",
+    "newtab": "Abrir em novo separador",
+    "none": "Mostrar sem permitir clicar"
+   }
+  },
+  "frontend.features.taskApi": {
+   "label": "Pedidos assíncronos",
+   "help": "Pedidos longos passam a devolver um identificador de tarefa, consultado depois ou entregue por webhook. Desligado por defeito."
+  },
+  "frontend.features.toolWorkspace": {
+   "label": "Espaço dedicado das ferramentas",
+   "help": "A ferramenta abre um visual completo em vez de responder dentro do chat. Ligado por omissão."
+  },
+  "frontend.features.turnOnVoiceRecorder": {
+   "label": "Gravador de voz",
+   "help": "Mostra o microfone para ditar a pergunta em vez de a escrever."
+  },
+  "frontend.features.voiceMode": {
+   "label": "Conversa por voz no site",
+   "help": "Mostra ou esconde o botão de voz. Quem liga o serviço é a voz web do lado do servidor — sem ela o botão não funciona."
+  },
+  "frontend.insightsPanel": {
+   "label": "Painel de insights",
+   "help": "Painel lateral. Os tipos de visual são lidos pelo backend, que projeta esses visuais no painel em vez de os mostrar na conversa; o resto é consumido pelo frontend."
+  },
+  "frontend.insightsPanel.openOnLoad": {
+   "label": "Abrir ao carregar",
+   "help": "O painel aparece já aberto quando a conversa abre."
+  },
+  "frontend.insightsPanel.panelTypes": {
+   "label": "Tipos de visual projetados no painel",
+   "help": "Lido pelo backend: visuais destes tipos são apresentados no painel em vez de na conversa."
+  },
+  "frontend.insightsPanel.providerBadge": {
+   "label": "Selo de integração",
+   "help": "Etiqueta no cabeçalho do painel (ex.: \"Xero · Ligado\"). Indica que a integração está configurada no perfil — não é uma verificação de estado em tempo real."
+  },
+  "frontend.insightsPanel.providerBadge.icon": {
+   "label": "Ícone do selo",
+   "help": "Opcional — aceita um emoji."
+  },
+  "frontend.insightsPanel.providerBadge.label": {
+   "label": "Texto do selo",
+   "help": "Texto apresentado no selo. Multilingue."
+  },
+  "frontend.insightsPanel.quickInsights": {
+   "label": "Atalhos rápidos",
+   "help": "Atalhos fixos do painel, em dois modos: com pergunta preenchida é um atalho de um clique; com lista de perguntas torna-se um cartão expansível."
+  },
+  "frontend.insightsPanel.quickInsights.icon": {
+   "label": "Ícone do atalho"
+  },
+  "frontend.insightsPanel.quickInsights.id": {
+   "label": "Identificador"
+  },
+  "frontend.insightsPanel.quickInsights.label": {
+   "label": "Texto do atalho",
+   "help": "Texto apresentado no atalho. Multilingue."
+  },
+  "frontend.insightsPanel.quickInsights.prompt": {
+   "label": "Pergunta enviada",
+   "help": "Preenchida, o atalho passa a ser um clique direto. Vazia, torna-se um cartão expansível com as perguntas abaixo. Multilingue."
+  },
+  "frontend.insightsPanel.quickInsights.questions": {
+   "label": "Perguntas do cartão",
+   "help": "Perguntas dentro de um atalho expansível."
+  },
+  "frontend.insightsPanel.quickInsights.questions.label": {
+   "label": "Texto da pergunta",
+   "help": "Se a pergunta enviada ficar vazia, é este texto que segue como pergunta."
+  },
+  "frontend.insightsPanel.quickInsights.questions.prompt": {
+   "label": "Pergunta enviada",
+   "help": "Vazia, é o texto da pergunta que é enviado."
+  },
+  "frontend.insightsPanel.title": {
+   "label": "Título do painel"
+  },
+  "frontend.language": {
+   "label": "Idiomas"
+  },
+  "frontend.language.default": {
+   "label": "Idioma por defeito do frontend"
+  },
+  "frontend.language.enabled": {
+   "label": "Idiomas disponíveis"
+  },
+  "frontend.legalNotice": {
+   "label": "Aviso legal (ecrã inicial)",
+   "help": "Aviso legal recolhível no ecrã inicial. Markdown, multilingue ({idioma: texto})."
+  },
+  "frontend.llmModels": {
+   "label": "Modelos de LLM disponíveis",
+   "help": "Lista do seletor de modelos — só relevante com o seletor ativo. Preenchida com os modelos efetivamente implementados no OpenAI do cliente."
+  },
+  "frontend.privacyPolicyI18n": {
+   "label": "Política de privacidade (texto)",
+   "help": "Alternativa ao URL: texto markdown multilingue apresentado dentro do próprio modal de início de sessão."
+  },
+  "frontend.privacyPolicyUrl": {
+   "label": "URL da política de privacidade",
+   "help": "Política do cliente (RGPD), recomendada — abre noutro separador e substitui o texto genérico do modal de início de sessão. Tem precedência sobre o texto markdown."
+  },
+  "frontend.shareDefaultExpiryDays": {
+   "label": "Validade pré-selecionada (dias)",
+   "help": "Valor que aparece escolhido quando alguém partilha uma conversa.",
+   "note": "Valor pré-seleccionado no modal de partilha (dias)"
+  },
+  "frontend.shareExpiryOptionsDays": {
+   "label": "Opções de validade (dias)",
+   "help": "As escolhas oferecidas ao partilhar (ex.: 7, 30, 90).",
+   "note": "Lista de opções no dropdown (ex: 7, 30, 90 dias)"
+  },
+  "frontend.starterPrompts": {
+   "label": "Sugestões iniciais",
+   "help": "Sugestões apresentadas no ecrã inicial. O título e a pergunta são mapas multilingues, com suporte para qualquer número de idiomas.",
+   "note": "Prompts sugeridos no ecrã inicial (4 typically). Bilíngue PT/EN."
+  },
+  "frontend.starterPrompts.iconName": {
+   "label": "Ícone",
+   "help": "Escolhido no editor a partir do conjunto de ícones do frontend.",
+   "note": "Nome do ícone lucide-react (scroll-text, zap, history, cpu, …)"
+  },
+  "frontend.starterPrompts.prompt": {
+   "label": "Pergunta da sugestão",
+   "help": "Mapa {idioma: texto}."
+  },
+  "frontend.starterPrompts.title": {
+   "label": "Título da sugestão",
+   "help": "Mapa {idioma: texto}."
+  },
+  "frontend.sttPhraseList": {
+   "label": "Lista de expressões (voz para texto)",
+   "note": "Termos que o reconhecedor deve favorecer (siglas, jargão, nomes de marca)"
+  },
+  "frontend.sttSilenceTimeoutMs": {
+   "label": "Silêncio até terminar a gravação (ms)",
+   "note": "milissegundos de silêncio antes de submeter automaticamente (3500 = 3.5s)"
+  },
+  "frontend.ttsPhoneticMap": {
+   "label": "Correções fonéticas (leitura em voz alta)",
+   "note": "Mapa fonético para Text-to-Speech. Chave = como está escrito; valor = como pronunciar. Útil para nomes de marca e siglas."
+  },
+  "frontend.ttsVoiceMap": {
+   "label": "Voz por idioma (leitura em voz alta)"
+  },
+  "frontend.welcomeMessage": {
+   "label": "Título de boas-vindas",
+   "help": "Título do ecrã inicial, antes de existir conversa. Mapa multilingue ({idioma: texto})."
+  },
+  "frontend.welcomeMessageSize": {
+   "label": "Tamanho do título de boas-vindas",
+   "help": "Tamanho da fonte do título — por exemplo \"1.5rem\"."
+  },
+  "frontend.welcomeMessageSizeMobile": {
+   "label": "Tamanho do título em ecrãs pequenos",
+   "help": "Vazio herda o tamanho normal do título de boas-vindas."
+  },
+  "frontend.welcomeSubtitle": {
+   "label": "Subtítulo de boas-vindas",
+   "help": "Subtítulo de apresentação abaixo do título. Markdown, multilingue."
+  },
+  "frontend.widget": {
+   "label": "Widget para site externo",
+   "help": "Widget incorporável no site do cliente: o site cola uma única linha de script e toda a restante configuração vem daqui."
+  },
+  "frontend.widget.allowed_origins": {
+   "label": "Sites autorizados a incorporar",
+   "help": "Vazio permite qualquer site https. Com valores, apenas o próprio site e estas origens podem incorporar o widget."
+  },
+  "frontend.widget.bubble_color": {
+   "label": "Cor da bolha",
+   "help": "Vazio usa a cor principal da marca."
+  },
+  "frontend.widget.bubble_icon_fit": {
+   "label": "Encaixe do ícone",
+   "help": "\"contain\" mostra o ícone inteiro; \"cover\" enche cortando as bordas; \"full\" faz a imagem ser a própria bolha. A cor da bolha fica por baixo em imagens com transparência.",
+   "options": {
+    "contain": "Mostrar o ícone inteiro",
+    "cover": "Preencher, cortando as bordas",
+    "full": "A imagem é a própria bolha"
+   }
+  },
+  "frontend.widget.bubble_icon_scale_pct": {
+   "label": "Tamanho do ícone (% do diâmetro)",
+   "help": "54% é a proporção histórica. Logótipos com muita margem branca precisam de 70 a 90% para não ficarem afogados na cor da bolha."
+  },
+  "frontend.widget.bubble_icon_url": {
+   "label": "Ícone da bolha",
+   "help": "Vazio usa o favicon ou o logótipo da barra recolhida. Aceita um URL https ou um data URI — o Console redimensiona a imagem anexada antes de gravar."
+  },
+  "frontend.widget.bubble_label": {
+   "label": "Etiqueta na bolha",
+   "help": "Texto opcional apresentado numa pequena etiqueta junto à bolha. Multilingue."
+  },
+  "frontend.widget.bubble_size_px": {
+   "label": "Diâmetro da bolha (px)",
+   "help": "56 é o valor histórico. O ícone interior e a posição do balão de saudação derivam deste número. Os limites são largos de propósito: há sites que querem a bolha discreta e outros bem visível."
+  },
+  "frontend.widget.enabled": {
+   "label": "Widget ativo",
+   "help": "Liga a bolha de chat no site onde o código foi colado."
+  },
+  "frontend.widget.greeting": {
+   "label": "Saudação proativa",
+   "help": "Balão de saudação mostrado sem o utilizador abrir o widget. Vazio desliga-o, que é o comportamento por defeito."
+  },
+  "frontend.widget.greeting_delay_s": {
+   "label": "Atraso da saudação (s)",
+   "help": "Segundos até o balão de saudação aparecer. Só conta se houver saudação escrita."
+  },
+  "frontend.widget.mobile_mode": {
+   "label": "Comportamento em telemóvel",
+   "help": "fullscreen = o painel ocupa o ecrã todo; sheet = painel a 95% da altura, deixando o site visível por trás.",
+   "options": {
+    "fullscreen": "Ocupar o ecrã todo",
+    "sheet": "Painel por cima do site"
+   }
+  },
+  "frontend.widget.mode": {
+   "label": "Modo de apresentação",
+   "help": "bubble = bolha flutuante no canto; inline = o chat fica encaixado na própria página.",
+   "options": {
+    "bubble": "Bolha flutuante",
+    "inline": "Encaixado na página"
+   }
+  },
+  "frontend.widget.offset_x_px": {
+   "label": "Afastamento horizontal (px)",
+   "help": "Ajuste ao pixel, para não colidir com barras de cookies e outros elementos fixos."
+  },
+  "frontend.widget.offset_y_px": {
+   "label": "Afastamento vertical (px)",
+   "help": "Ajuste ao pixel, para não colidir com barras de cookies e outros elementos fixos."
+  },
+  "frontend.widget.panel_height_px": {
+   "label": "Altura do painel (px)",
+   "help": "Altura do painel de chat em ecrãs grandes."
+  },
+  "frontend.widget.panel_width_px": {
+   "label": "Largura do painel (px)",
+   "help": "Largura do painel de chat em ecrãs grandes."
+  },
+  "frontend.widget.position": {
+   "label": "Posição no ecrã",
+   "help": "Canto do ecrã onde a bolha aparece.",
+   "options": {
+    "bottom-right": "Canto inferior direito",
+    "bottom-left": "Canto inferior esquerdo"
+   }
+  },
+  "guardrails": {
+   "note": "Bloqueios genéricos. Para protecção activa contra marcas concorrentes usa a tab Brand Safety."
+  },
+  "guardrails.allow_general_knowledge": {
+   "label": "Permitir conhecimento geral",
+   "help": "Permite responder com conhecimento geral do modelo quando não há fonte documental relevante.",
+   "note": "(true = permite responder fora do domínio com general knowledge)"
+  },
+  "guardrails.blocked_words": {
+   "label": "Palavras bloqueadas"
+  },
+  "guardrails.citation_support_warning": {
+   "label": "Avisar quando a fonte não sustenta a frase",
+   "help": "A verificação corre sempre; isto decide apenas se a nota aparece ao utilizador final.",
+   "note": "False = modo sombra: a deteção continua em traces, spans e dumps. Kill-switch total é a env CITATION_SUPPORT_CHECK=0."
+  },
+  "guardrails.competitor_brands": {
+   "label": "Marcas concorrentes",
+   "note": "(legacy — preferir Brand Safety)"
+  },
+  "guestAccess.dailyBudgetEur": {
+   "label": "Orçamento diário (euros)",
+   "help": "Ao esgotar-se, a variante é desativada automaticamente e volta a ficar disponível à meia-noite UTC. Zero desliga o limite."
+  },
+  "guestAccess.enabled": {
+   "label": "Ativar modo convidado",
+   "help": "Só atua em backends de demonstração. Num backend de cliente real todo o bloco fica inerte, mesmo que seja copiado por engano."
+  },
+  "guestAccess.rateLimits": {
+   "label": "Limites de utilização",
+   "help": "Contados por visitante. Deixados em branco, aplicam-se os limites por defeito do backend."
+  },
+  "guestAccess.rateLimits.perDay": {
+   "label": "Pedidos por dia",
+   "help": "Perguntas que um visitante pode fazer por dia."
+  },
+  "guestAccess.rateLimits.perHour": {
+   "label": "Pedidos por hora",
+   "help": "Perguntas que um visitante pode fazer por hora."
+  },
+  "guestAccess.rateLimits.perMinute": {
+   "label": "Pedidos por minuto",
+   "help": "Perguntas que um visitante pode fazer por minuto."
+  },
+  "guestAccess.realtimeSessionEstEur": {
+   "label": "Custo estimado de uma sessão de voz (EUR)",
+   "note": "Trava o arranque de uma sessão quando o orçamento restante do dia não a cobre. Vazio = env DEMO_REALTIME_SESSION_EST_EUR, com fallback 0,50."
+  },
+  "guestAccess.uploads": {
+   "label": "Envio de ficheiros por convidados",
+   "help": "Desligado por defeito mesmo com o modo convidado ativo: envios públicos anónimos são o maior risco desta funcionalidade."
+  },
+  "guestAccess.uploads.enabled": {
+   "label": "Permitir envio de ficheiros",
+   "help": "Permite que visitantes não autenticados anexem ficheiros."
+  },
+  "guestAccess.uploads.maxFiles": {
+   "label": "Número máximo de ficheiros",
+   "help": "Contado por conversa, não por pedido."
+  },
+  "guestAccess.uploads.maxMb": {
+   "label": "Tamanho máximo (MB)",
+   "help": "Tamanho máximo de cada ficheiro anexado por um visitante."
+  },
+  "guestAccess.uploads.pdfOnly": {
+   "label": "Aceitar apenas PDF",
+   "help": "Restringe os anexos de visitantes a PDF."
+  },
+  "identity": {
+   "note": "Identidade do cliente e do assistente. Estes valores são usados em headers, footers e prompts gerados."
+  },
+  "identity.assistant_name": {
+   "label": "Nome do assistente"
+  },
+  "identity.assistant_role": {
+   "label": "Papel do assistente",
+   "help": "Função que o assistente assume ao apresentar-se e ao responder (ex.: \"assistente de RH\"). Vazio = sem papel explícito."
+  },
+  "identity.company_name": {
+   "label": "Nome da empresa"
+  },
+  "identity.default_language": {
+   "label": "Idioma por defeito",
+   "help": "Idioma inicial da conversa quando o utilizador ainda não escreveu nada. \"auto\" deteta pelo browser/mensagem.",
+   "note": "\"auto\" para detecção automática; ou ISO code (pt-PT, en, es)"
+  },
+  "identity.logo_url": {
+   "label": "URL do logótipo"
+  },
+  "identity.register": {
+   "label": "Registo (tratamento)",
+   "help": "\"formal\" = tratamento por \"você\"; \"informal\" = tratamento por \"tu\"; \"mirror\" = acompanha o registo do utilizador.",
+   "note": "formal=você; informal=tu; mirror=espelhar o utilizador",
+   "options": {
+    "formal": "Tratar por «você»",
+    "informal": "Tratar por «tu»",
+    "mirror": "Acompanhar o utilizador"
+   }
+  },
+  "identity.timezone": {
+   "label": "Fuso horário"
+  },
+  "ingest.alerts": {
+   "label": "Alertas de ingestão",
+   "help": "Varrimento de antiguidade e exceções no fim de cada execução do trabalho de ingestão. Desligado por defeito."
+  },
+  "ingest.alerts.aging_hours": {
+   "label": "Antiguidade que dispara alerta (horas)",
+   "help": "Não reduzir este valor por motivos de poupança."
+  },
+  "ingest.alerts.email": {
+   "label": "Endereço que recebe os alertas"
+  },
+  "ingest.alerts.email_interval_hours": {
+   "label": "Intervalo entre emails (horas)",
+   "help": "Intervalo mínimo entre avisos, para não repetir o mesmo email seguidamente."
+  },
+  "ingest.alerts.enabled": {
+   "label": "Ativar alertas",
+   "help": "Avisa por email quando há documentos parados à espera de tratamento."
+  },
+  "ingest.sources": {
+   "label": "Fontes de ingestão por email",
+   "help": "Cada fonte descreve uma caixa de correio e o respetivo tratamento. O conteúdo é livre, pelo que não é validado campo a campo."
+  },
+  "language.aliases": {
+   "label": "Equivalências de idioma",
+   "help": "Mapa de um código de idioma para outro que o substitui (ex.: pt-BR trata como pt-PT).",
+   "note": "Normalizações silenciosas em qualquer strategy. Ex: pt-BR → pt-PT (bot responde sempre PT europeu)"
+  },
+  "language.allowed": {
+   "label": "Idiomas permitidos",
+   "note": "[\"*\"] = qualquer; ou lista ISO [\"pt-PT\", \"en\", \"es\"] (só relevante para \"restricted\")"
+  },
+  "language.fallback": {
+   "label": "Idioma de recurso",
+   "note": "Língua quando restricted detecta fora da lista, ou frontend_locked sem hint"
+  },
+  "language.strategy": {
+   "label": "Estratégia de idioma",
+   "help": "\"auto_detect\" segue o idioma da mensagem; \"restricted\" limita à lista Permitidos; \"frontend_locked\" segue sempre o idioma da interface.",
+   "note": "Política de língua. auto_detect=detecta; restricted=detecta mas limitado à lista; frontend_locked=usa o que vier do toggle.",
+   "options": {
+    "auto_detect": "Detetar a língua do utilizador",
+    "restricted": "Detetar, mas só dentro da lista permitida",
+    "frontend_locked": "Usar a língua escolhida na interface"
+   }
+  },
+  "mcp": {
+   "note": "Servidores MCP (Model Context Protocol) configurados. O agente descobre tools destes servers em runtime e usa-as ao lado das tools nativas. Edição completa (add/remove/test) na tab MCP do Console."
+  },
+  "mcp.confirm_actions": {
+   "label": "Confirmação de ações",
+   "help": "Quando o assistente pede confirmação antes de executar uma ferramenta MCP. Por omissão fica no lado seguro."
+  },
+  "mcp.disabledServers": {
+   "label": "Servidores desligados",
+   "help": "Numa variante, desliga pelo nome os servidores herdados do perfil base. As listas substituem-se, não se subtraem."
+  },
+  "mcp.discovery_cache_ttl_seconds": {
+   "label": "Validade da cache de descoberta (segundos)",
+   "note": "TTL do cache de discovery (60-86400s). Quanto tempo as tools descobertas ficam em memória antes de novo discovery."
+  },
+  "mcp.enabled": {
+   "label": "Ativar MCP",
+   "help": "Desativado por omissão.",
+   "note": "Master switch — quando off, nenhum server MCP é consultado, independentemente do que estiver na lista"
+  },
+  "mcp.servers": {
+   "label": "Servidores MCP",
+   "note": "Lista de servers configurados — vista read-only. Para editar, abre o editor completo MCP."
+  },
+  "mcp.servers.auth": {
+   "label": "Autenticação do servidor",
+   "help": "Os segredos indicam-se pelo nome da variável de ambiente ou da entrada no cofre de chaves, nunca pelo valor literal."
+  },
+  "mcp.servers.auth.audience": {
+   "label": "Audiência do token",
+   "help": "Específico da Atlassian."
+  },
+  "mcp.servers.auth.authorize_url": {
+   "label": "URL de autorização"
+  },
+  "mcp.servers.auth.client_id": {
+   "label": "ID do cliente OAuth"
+  },
+  "mcp.servers.auth.client_id_env": {
+   "label": "Variável de ambiente com o ID do cliente"
+  },
+  "mcp.servers.auth.client_secret": {
+   "label": "Segredo do cliente",
+   "help": "Prefira indicar a variável de ambiente em vez do valor literal."
+  },
+  "mcp.servers.auth.client_secret_env": {
+   "label": "Variável de ambiente com o segredo do cliente"
+  },
+  "mcp.servers.auth.issuer": {
+   "label": "Emissor"
+  },
+  "mcp.servers.auth.per_user": {
+   "label": "Autenticar por utilizador",
+   "help": "Desligado, a autenticação é feita uma só vez para todo o cliente."
+  },
+  "mcp.servers.auth.revocation_url": {
+   "label": "URL de revogação"
+  },
+  "mcp.servers.auth.scopes": {
+   "label": "Âmbitos"
+  },
+  "mcp.servers.auth.token": {
+   "label": "Token literal",
+   "help": "Apenas para desenvolvimento. Use antes a variável de ambiente."
+  },
+  "mcp.servers.auth.token_env": {
+   "label": "Variável de ambiente com o token",
+   "help": "Forma preferida de indicar o token de portador (Bearer)."
+  },
+  "mcp.servers.auth.token_url": {
+   "label": "URL do token"
+  },
+  "mcp.servers.auth.type": {
+   "label": "Tipo de autenticação"
+  },
+  "mcp.servers.enabled": {
+   "label": "Servidor ativo"
+  },
+  "mcp.servers.erp": {
+   "label": "Papel de ERP",
+   "help": "Metadados opcionais que declaram que este servidor faz de ERP para uma fila, por exemplo indicando a ferramenta de consulta. Forma livre enquanto estabiliza."
+  },
+  "mcp.servers.name": {
+   "label": "Nome do servidor"
+  },
+  "mcp.servers.timeout_seconds": {
+   "label": "Tempo limite (segundos)"
+  },
+  "mcp.servers.tool_prefix": {
+   "label": "Prefixo das ferramentas",
+   "help": "Vazio, é usado o nome do servidor."
+  },
+  "mcp.servers.trusted": {
+   "label": "Servidor de confiança",
+   "help": "A especificação MCP trata as descrições das ferramentas como não fiáveis. Só num servidor de confiança a descrição de cada ferramenta é exposta ao modelo, já higienizada; caso contrário usa-se uma descrição neutra."
+  },
+  "mcp.servers.url": {
+   "label": "Endereço do servidor"
+  },
+  "memory.enabled": {
+   "label": "Ativar memória do utilizador",
+   "help": "O assistente guarda factos que o utilizador lhe diz e reutiliza-os em conversas seguintes."
+  },
+  "memory.max_facts": {
+   "label": "Máximo de factos guardados"
+  },
+  "multiProfile.disabledSlugs": {
+   "label": "Slugs desativados",
+   "help": "Desativa uma variante sem apagar o respetivo perfil, para poder voltar a ligá-la depois."
+  },
+  "multiProfile.enabled": {
+   "label": "Ativar multi-perfil",
+   "help": "Desligado, o slug do link é ignorado por completo e é sempre servido o perfil base."
+  },
+  "multiProfile.invalidSlugBehavior": {
+   "label": "Resposta a slug inválido",
+   "help": "Um slug desconhecido ou desativado devolve erro e uma página explícita da marca. Nunca há recurso silencioso ao perfil base."
+  },
+  "multiProfile.slugs": {
+   "label": "Slugs ativos"
+  },
+  "orchestration.agent_planner": {
+   "label": "Planeamento prévio do agente",
+   "help": "Um passo antes do ciclo classifica pedidos com vários passos e injeta um plano curto no prompt. Desligado por defeito; custa uma chamada interna ao modelo sempre que dispara."
+  },
+  "orchestration.allow_web": {
+   "label": "Permitir a ferramenta de web",
+   "help": "Desligado, a web nunca é oferecida ao agente, qualquer que seja a estratégia de recolha."
+  },
+  "orchestration.parallel_tools": {
+   "label": "Execução paralela de ferramentas",
+   "help": "Corre em simultâneo as chamadas independentes do mesmo lote. Desligado por defeito; reduz a latência de respostas com várias ferramentas, mas convém validar por cliente."
+  },
+  "orchestration.retrieval_strategy": {
+   "label": "Ordem das fontes"
+  },
+  "personality": {
+   "note": "Tom de comunicação e estilo de resposta. tone_instructions é um dicionário (tone → texto que vai para o system prompt)."
+  },
+  "personality.response_length": {
+   "label": "Extensão da resposta",
+   "help": "Quão desenvolvidas são as respostas por omissão.",
+   "options": {
+    "short": "Curtas",
+    "balanced": "Equilibradas",
+    "detailed": "Detalhadas"
+   }
+  },
+  "personality.tone": {
+   "label": "Tom",
+   "help": "Tom que o assistente usa a falar. O texto de cada tom é definido pela Genesis.",
+   "options": {
+    "professional": "Profissional",
+    "formal": "Formal",
+    "friendly": "Próximo",
+    "technical": "Técnico",
+    "commercial": "Comercial"
+   }
+  },
+  "personality.tone_instructions": {
+   "label": "Instruções de tom",
+   "help": "Instrução detalhada por tom (professional, formal, friendly, technical, commercial) — a entrada usada é a que corresponde ao Tom escolhido acima.",
+   "note": "Mapeia cada `tone` para uma instrução injectada no system prompt. Podes adicionar tons customizados além dos 5 default."
+  },
+  "pricing.currency": {
+   "label": "Moeda"
+  },
+  "pricing.image_models": {
+   "label": "Preços dos modelos de imagem",
+   "help": "Nome do modelo para os preços por imagem, em dólares, por nível de qualidade (low, medium, high)."
+  },
+  "pricing.models": {
+   "label": "Preços por modelo",
+   "help": "Nome do modelo para os preços por milhão de tokens, em dólares. Vazio usa a tabela interna do backend."
+  },
+  "pricing.usd_to_eur": {
+   "label": "Câmbio USD→EUR",
+   "note": "Usado no cálculo de custos. Vazio = env, com fallback ao default do backend."
+  },
+  "product_identification": {
+   "note": "Detecção de códigos alfanuméricos na query (SKUs, part numbers). Crítico para catálogos B2B — embeddings são fracos em códigos."
+  },
+  "product_identification.enabled": {
+   "label": "Ativar deteção de códigos de produto",
+   "help": "Deteta referências, SKU e códigos de modelo na pergunta e obriga o agente a citar apenas o que consta literalmente da base de conhecimento sobre esses códigos."
+  },
+  "product_identification.internal_prefixes": {
+   "label": "Prefixos de referências internas",
+   "note": "Prefixos de referências internas (ex: OT, OBRA, FO)"
+  },
+  "product_identification.patterns": {
+   "label": "Padrões de código",
+   "help": "Expressões regulares próprias do cliente. Acrescentam-se aos padrões internos, não os substituem.",
+   "note": "Regex adicionais — suplementam os defaults internos"
+  },
+  "product_identification.stopwords": {
+   "label": "Palavras a excluir da deteção"
+  },
+  "product_identification.strict_mode": {
+   "label": "Modo restritivo",
+   "help": "Aperta as instruções dadas ao modelo sobre os códigos detetados.",
+   "note": "(activa bloco mais restritivo no system prompt — força citação literal)"
+  },
+  "query_cache": {
+   "note": "Query cache exact-match (hash da query normalizada). Default OFF em B2B com queries únicas — só ligar em FAQ-style / demos."
+  },
+  "query_cache.enabled": {
+   "label": "Ativar cache de respostas",
+   "help": "Reaproveita respostas de perguntas semelhantes. Desligada por defeito, porque pode servir uma resposta menos afinada do que a que seria gerada agora."
+  },
+  "query_cache.index_version": {
+   "label": "Versão do índice de cache",
+   "help": "Chave de invalidação. Aumentar o número invalida toda a cache sem apagar documentos."
+  },
+  "query_cache.ttl_seconds": {
+   "label": "Validade da cache (segundos)",
+   "note": "(default 86400 = 24h)"
+  },
+  "response": {
+   "note": "Comportamento da resposta — fontes visíveis, imagens, follow-ups, modo extractivo."
+  },
+  "response.explainability_summary": {
+   "label": "Resumo de explicabilidade",
+   "help": "Acrescenta um resumo de 2-3 frases sobre como a resposta foi produzida (transparência, EU AI Act Art. 13)."
+  },
+  "response.extractive_mode": {
+   "label": "Modo extrativo",
+   "help": "Responde citando o texto-fonte diretamente em vez de o reformular.",
+   "note": "força o LLM a citar verbatim dos chunks — ideal para compliance / procurement"
+  },
+  "response.followup_count": {
+   "label": "Número de sugestões de seguimento",
+   "help": "Quantas perguntas de seguimento são sugeridas. 0 = nenhuma.",
+   "note": "número de follow-ups sugeridos (0 = nenhum)"
+  },
+  "response.show_images": {
+   "label": "Mostrar imagens",
+   "help": "Permite que a resposta inclua imagens vindas dos documentos."
+  },
+  "response.show_sources": {
+   "label": "Mostrar fontes",
+   "help": "Mostra ao utilizador que documentos foram consultados.",
+   "note": "(mostra os documentos consultados ao utilizador)"
+  },
+  "response.suggest_followups": {
+   "label": "Sugerir perguntas de seguimento",
+   "help": "Mostra sugestões de perguntas relacionadas depois de cada resposta."
+  },
+  "retrieval.chars_per_chunk": {
+   "label": "Caracteres por excerto"
+  },
+  "retrieval.context_include_source_fields": {
+   "label": "Incluir campos de fonte no contexto",
+   "help": "Acrescenta linhas Source/Url/Page/Tier ao contexto de cada excerto, antes do conteúdo."
+  },
+  "retrieval.context_top_k": {
+   "label": "Corte final de contexto",
+   "help": "Número de excertos, já ordenados, que efetivamente chegam ao modelo. 0 = sem corte (todos os do Top K)."
+  },
+  "retrieval.enable_rerank": {
+   "label": "Ativar reordenação"
+  },
+  "retrieval.faithfulness_overlap_skip": {
+   "label": "Limiar de sobreposição (fidelidade)",
+   "help": "Acima deste limiar de sobreposição com a fonte, a verificação de fidelidade da resposta é dispensada."
+  },
+  "retrieval.force_diversity": {
+   "label": "Forçar diversidade",
+   "help": "Prioriza excertos de fontes diferentes em vez de deixar uma só fonte dominar."
+  },
+  "retrieval.fuzzy_correction": {
+   "label": "Correção difusa",
+   "help": "Tenta corrigir erros ortográficos na pergunta antes de pesquisar."
+  },
+  "retrieval.gpt_rerank_broad": {
+   "label": "Reordenação alargada por LLM",
+   "help": "Um modelo de linguagem reordena os candidatos por relevância antes do corte final (só em pesquisas alargadas). Custo extra por pergunta."
+  },
+  "retrieval.indexes": {
+   "label": "Configuração por índice",
+   "help": "Peso e modo de reordenação por índice, para instalações multi-índice. Vazio = todos os índices tratados igualmente."
+  },
+  "retrieval.indexes.name": {
+   "label": "Nome do índice"
+  },
+  "retrieval.indexes.rerank_mode": {
+   "label": "Modo de reordenação",
+   "help": "\"llm\" torna os excertos deste índice elegíveis para reordenação por LLM; \"semantic_only\" usa só o reranker semântico."
+  },
+  "retrieval.indexes.weight": {
+   "label": "Peso",
+   "help": "Escala a pontuação de reordenação dos excertos deste índice ao combinar vários índices."
+  },
+  "retrieval.latest_version": {
+   "label": "Routing de última versão",
+   "help": "Para perguntas pela versão mais recente de uma família de documentos, restringe o contexto a essa versão."
+  },
+  "retrieval.latest_version.date_field": {
+   "label": "Campo de data (estratégia field)"
+  },
+  "retrieval.latest_version.enabled": {
+   "label": "Ativa"
+  },
+  "retrieval.latest_version.family_field": {
+   "label": "Campo de família (estratégia field)"
+  },
+  "retrieval.latest_version.intent_patterns": {
+   "label": "Padrões de intenção (\"última versão\")"
+  },
+  "retrieval.latest_version.strategy": {
+   "label": "Estratégia de versão",
+   "help": "\"field\" lê um campo de data/versão do índice; \"path\" deriva o ano a partir do caminho da fonte."
+  },
+  "retrieval.latest_version.version_field": {
+   "label": "Campo de versão (estratégia field)"
+  },
+  "retrieval.latest_version.year_segment_regex": {
+   "label": "Expressão regular do ano (estratégia path)"
+  },
+  "retrieval.min_score": {
+   "label": "Pontuação mínima"
+  },
+  "retrieval.neighbor_expansion": {
+   "label": "Expansão de vizinhos",
+   "help": "Traz os excertos adjacentes das melhores âncoras, para respostas que atravessam fronteiras de excerto (tabelas, cláusulas)."
+  },
+  "retrieval.neighbor_expansion.enabled": {
+   "label": "Ativa"
+  },
+  "retrieval.neighbor_expansion.max_added": {
+   "label": "Máximo de excertos acrescentados"
+  },
+  "retrieval.neighbor_expansion.top_anchors": {
+   "label": "Número de âncoras"
+  },
+  "retrieval.neighbor_expansion.window": {
+   "label": "Janela de vizinhos"
+  },
+  "retrieval.refuse_pregen_min_score": {
+   "label": "Limiar de recusa antes de gerar",
+   "note": "Abaixo deste score o bot recusa em vez de responder sobre grounding fraco. 0 desativa; o core faz clamp a [1.0, 3.0]."
+  },
+  "retrieval.rerank_chars_per_source": {
+   "label": "Caracteres por fonte (reordenação)"
+  },
+  "retrieval.rerank_top_k": {
+   "label": "Limite de chunks do rerank GPT",
+   "note": "Só atua com diversidade forçada. Subir junto com o top_k, senão o rerank estrangula o pool alargado."
+  },
+  "retrieval.search_index_names": {
+   "label": "Índices de pesquisa",
+   "help": "Índices Azure AI Search a consultar. Vazio = usar a configuração da frota."
+  },
+  "retrieval.source_priority": {
+   "label": "Priorização de fontes",
+   "help": "Ordena o contexto por nível de autoridade da fonte (interno → legal → externo) em vez de só por pontuação."
+  },
+  "retrieval.source_priority.enabled": {
+   "label": "Ativa"
+  },
+  "retrieval.source_priority.internal_markers": {
+   "label": "Marcadores internos (estratégia path)"
+  },
+  "retrieval.source_priority.label_overrides": {
+   "label": "Rótulos personalizados"
+  },
+  "retrieval.source_priority.legal_allowlist": {
+   "label": "Lista de fontes legais (estratégia path)"
+  },
+  "retrieval.source_priority.reranker_floor": {
+   "label": "Piso de relevância",
+   "help": "Fontes de nível superior com pontuação abaixo deste piso são adiadas para depois das de nível inferior acima do piso."
+  },
+  "retrieval.source_priority.strategy": {
+   "label": "Estratégia de tier",
+   "help": "\"field\" lê um campo de metadados do índice; \"path\" deriva o nível a partir do caminho da fonte."
+  },
+  "retrieval.source_priority.tier_field": {
+   "label": "Campo de tier (estratégia field)"
+  },
+  "retrieval.source_url_sas_ttl_days": {
+   "label": "Validade das ligações às fontes (dias)",
+   "note": "Passado o prazo, repetir a pergunta devolve a fonte atual e o fecore mostra \"fonte expirada\". 0 = sem assinatura, só para containers públicos."
+  },
+  "retrieval.top_k": {
+   "label": "Top K",
+   "help": "Número de excertos (chunks) recuperados do índice antes de qualquer corte adicional."
+  },
+  "retrieval.topicality_gate": {
+   "label": "Filtro de relevância temática",
+   "help": "Rejeita excertos fora do tópico antes de os enviar ao modelo."
+  },
+  "retrieval.weak_grounding_ceiling": {
+   "label": "Teto da zona de grounding fraco",
+   "note": "Entre o limiar de recusa e este teto a relevância é declarada BAIXA e o modelo fica proibido de responder por conhecimento próprio. 0 desliga."
+  },
+  "reviewQueues": {
+   "label": "Filas de revisão",
+   "note": "Mapa de filas por chave. Uma fila referida por um nome que não exista aqui passa a existir como fila fantasma no Cosmos."
+  },
+  "runtime.agent_mode": {
+   "label": "Esforço de raciocínio por defeito",
+   "help": "Aplicado quando o pedido não traz um modo escolhido pelo utilizador. Não abrange o modelo interno, que corre sempre no modo rápido."
+  },
+  "runtime.agent_model": {
+   "label": "Modelo do agente",
+   "help": "Tem de nomear um deployment que exista no OpenAI ou Foundry do cliente. Em branco, mantém-se o modelo já configurado no servidor."
+  },
+  "runtime.internal_model": {
+   "label": "Modelo interno",
+   "help": "Deployment do modelo reduzido usado nas tarefas internas. Em branco, mantém-se o que está configurado no servidor."
+  },
+  "runtime.max_history_items": {
+   "label": "Máximo de mensagens de histórico"
+  },
+  "runtime.max_turns": {
+   "label": "Máximo de iterações do agente"
+  },
+  "runtime.model_timeout_s": {
+   "label": "Tempo limite do modelo (segundos)"
+  },
+  "runtime.summary_every_n_turns": {
+   "label": "Resumir a cada N interações"
+  },
+  "system_prompt_disclaimers": {
+   "label": "Frases padrão permitidas",
+   "help": "Frases que o assistente pode incluir mesmo não vindo dos documentos. Listá-las aqui evita que sejam assinaladas como invenção.",
+   "note": "Frases standard que o bot foi instruído a poder incluir nas respostas via custom_instructions, mas que NÃO vêm dos chunks RAG. Listar aqui evita que sejam marcadas como hallucination pelos judges."
+  },
+  "tool_limits.max_attached_doc_chars": {
+   "label": "Limite de caracteres por documento anexado",
+   "help": "Tamanho máximo de texto lido de um documento anexado, em caracteres."
+  },
+  "tool_limits.max_user_prompt_chars": {
+   "label": "Limite de caracteres da pergunta",
+   "help": "Tamanho máximo de uma pergunta, em caracteres."
+  },
+  "tools": {
+   "note": "Tools activas no agente. config é um dicionário por tool (passa para tool.__init__)."
+  },
+  "tools.config": {
+   "label": "Configuração por ferramenta",
+   "help": "Estrutura aberta: cada ferramenta define os seus próprios campos, pelo que uma ferramenta nova não obriga a alterar o esquema.",
+   "note": "(JSON aberto — chave = nome da tool, valor = dict de parâmetros)"
+  },
+  "tools.config.extract_legal_terms": {
+   "label": "Extração de termos legais",
+   "help": "Motor de extração documental com esquema próprio por perfil. Cada campo é devolvido com o valor e a referência de página ou cláusula onde foi encontrado."
+  },
+  "tools.config.extract_legal_terms.prompt_custom": {
+   "label": "Instruções de domínio do cliente",
+   "help": "Acrescentadas ao contrato base do modelo legal — nunca o substituem."
+  },
+  "tools.config.extract_legal_terms.prompt_preset": {
+   "label": "Predefinição de instruções",
+   "help": "Preset do produto vindo do catálogo tool_playbooks. Vazio deixa apenas o contrato base."
+  },
+  "tools.config.extract_legal_terms.schema": {
+   "label": "Esquema de extração",
+   "help": "Cada entrada é um campo a extrair, com rótulo e instrução. Vazio usa o esquema predefinido da ferramenta (termos de contrato)."
+  },
+  "tools.config.extract_legal_terms.title": {
+   "label": "Título do cartão de resultados"
+  },
+  "tools.config.generate_boq": {
+   "label": "Mapa de quantidades (BOQ)"
+  },
+  "tools.config.generate_boq.prompt_custom": {
+   "label": "Instruções livres do cliente",
+   "help": "Acrescentadas ao contrato base do modelo — nunca o substituem."
+  },
+  "tools.config.generate_boq.prompt_preset": {
+   "label": "Norma de medição",
+   "help": "Preset do catálogo tool_playbooks (por exemplo pronic_pt, pomi_gcc, cesmm_civil, nrm2_building). Vazio deixa apenas o contrato base."
+  },
+  "tools.config.generate_boq.rates": {
+   "label": "Tabela de preços",
+   "help": "Fonte explícita de custos: o motor nunca inventa preços. Cada regra preenche as linhas que chegam sem preço na fonte."
+  },
+  "tools.config.generate_boq.rates.label": {
+   "label": "Rótulo da regra"
+  },
+  "tools.config.generate_boq.rates.match": {
+   "label": "Texto a procurar na descrição",
+   "help": "Comparação por subcadeia, sem distinção entre maiúsculas e minúsculas."
+  },
+  "tools.config.generate_boq.rates.price": {
+   "label": "Preço unitário"
+  },
+  "tools.config.generate_boq.rates.unit": {
+   "label": "Unidade de medida",
+   "help": "Se for indicada, a regra só se aplica quando a unidade da linha também coincide."
+  },
+  "tools.config.generate_boq.scale": {
+   "label": "Calibração da escala",
+   "help": "Travões de plausibilidade do leitor de desenhos PDF. Raramente se tocam: a escala é normalmente confirmada pelo carimbo ou pela cadeia de cotagem. Vazio usa os valores predefinidos."
+  },
+  "tools.config.generate_boq.scale.max_corrob_printed_ratio": {
+   "label": "Divergência máxima entre cotas e carimbo",
+   "help": "Acima deste rácio o carimbo é descartado e prevalecem as cotas. Predefinição do motor: 2,5."
+  },
+  "tools.config.generate_boq.scale.max_drawing_span_mm": {
+   "label": "Extensão máxima plausível do desenho (mm)",
+   "help": "Predefinição do motor: 2 000 000 mm, ou seja 2 km. Subir para obras civis de vários quilómetros."
+  },
+  "tools.config.generate_boq.scale.min_drawing_span_mm": {
+   "label": "Extensão mínima plausível do desenho (mm)",
+   "help": "Predefinição do motor: 500 mm, ou seja 0,5 m. Descer para pormenores de peças pequenas."
+  },
+  "tools.config.generate_image": {
+   "label": "Geração de imagens"
+  },
+  "tools.config.generate_image.model": {
+   "label": "Modelo de geração de imagem",
+   "help": "Nome do deployment, por exemplo gpt-image-1. Vazio usa o modelo predefinido do core."
+  },
+  "tools.config.record_contact_details": {
+   "label": "Captura de contactos",
+   "help": "Recolha estruturada de dados durante a conversa. Os campos são fixos; o modelo só decide quando os preenche. Sem campos ou sem base legal, a ferramenta fica inerte."
+  },
+  "tools.config.record_contact_details.capture_type": {
+   "label": "Tipo de registo",
+   "help": "Fixo por perfil, nunca escolhido pelo modelo. Distingue uma lead comercial de uma candidatura ou de um pedido de orçamento."
+  },
+  "tools.config.record_contact_details.fields": {
+   "label": "Campos a recolher",
+   "help": "O modelo vê exatamente estes campos e mais nenhum. Vazio deixa a ferramenta inerte."
+  },
+  "tools.config.record_contact_details.fields.hint": {
+   "label": "Instrução de preenchimento",
+   "help": "Dada ao modelo, não mostrada ao utilizador."
+  },
+  "tools.config.record_contact_details.fields.key": {
+   "label": "Chave técnica do campo",
+   "help": "Em inglês e snake_case. É o nome do parâmetro que o modelo vê e a chave gravada no registo."
+  },
+  "tools.config.record_contact_details.fields.label": {
+   "label": "Rótulo do campo",
+   "help": "Usado nas listagens e no aviso de privacidade. Aceita texto simples ou um mapa {idioma: texto}."
+  },
+  "tools.config.record_contact_details.fields.required": {
+   "label": "Campo essencial",
+   "help": "Não bloqueia a gravação — uma captura parcial é guardada na mesma. Só entra no cálculo do grau de preenchimento do registo."
+  },
+  "tools.config.record_contact_details.legal_basis": {
+   "label": "Base legal do tratamento",
+   "help": "Decisão do cliente, enquanto responsável pelo tratamento. Em contexto laboral o consentimento é normalmente a base errada: o desequilíbrio de poder impede que seja livremente prestado.",
+   "options": {
+    "": "Não definida — a tool fica inerte"
+   }
+  },
+  "tools.config.record_contact_details.legal_basis_set_at": {
+   "label": "Data da escolha da base legal",
+   "help": "Preenchida automaticamente ao gravar; documenta quando a decisão foi tomada."
+  },
+  "tools.config.record_contact_details.legal_basis_set_by": {
+   "label": "Autor da escolha da base legal",
+   "help": "Preenchido automaticamente ao gravar; documenta quem tomou a decisão."
+  },
+  "tools.config.record_contact_details.notify_emails": {
+   "label": "Destinatários do aviso",
+   "help": "Com o aviso ligado é exigido pelo menos um endereço. Não são os alertas operacionais da ingestão, que têm outro dono."
+  },
+  "tools.config.record_contact_details.notify_language": {
+   "label": "Idioma do email de aviso",
+   "help": "É o idioma de quem recebe o aviso, não o do visitante: um visitante árabe gera um email em português com os dados em árabe.",
+   "options": {
+    "": "Idioma de recurso do perfil"
+   }
+  },
+  "tools.config.record_contact_details.notify_on_capture": {
+   "label": "Avisar por email",
+   "help": "Enviado uma vez por conversa, quando o registo fica completo — não a cada campo novo."
+  },
+  "tools.config.record_contact_details.notify_subject": {
+   "label": "Assunto do email",
+   "help": "Os marcadores {capture_type} e {client} são substituídos."
+  },
+  "tools.config.record_contact_details.purpose": {
+   "label": "Finalidade da recolha",
+   "help": "Específica e na voz do cliente — é o que aparece no pedido de consentimento. Obrigatória quando a base legal é o consentimento."
+  },
+  "tools.config.record_contact_details.retention_days": {
+   "label": "Retenção do registo (dias)",
+   "help": "Contados a partir do último contacto e não da criação, porque o registo vai sendo atualizado ao longo da conversa. Vazio ou 0 significa sem expiração."
+  },
+  "tools.config.search_web": {
+   "label": "Pesquisa na web"
+  },
+  "tools.config.search_web.allowed_domains": {
+   "label": "Domínios permitidos"
+  },
+  "tools.config.search_web.mode": {
+   "label": "Modo de pesquisa",
+   "options": {
+    "": "Não definido — equivale a \"agent\""
+   }
+  },
+  "tools.config.search_web.project_endpoint": {
+   "label": "Endpoint do projeto Foundry"
+  },
+  "tools.config.search_web.temperature": {
+   "label": "Temperatura do agente",
+   "help": "Vazio usa a temperatura predefinida do próprio agente."
+  },
+  "tools.config.search_web.web_agent_id": {
+   "label": "ID do agente de pesquisa"
+  },
+  "tools.config.search_web.web_agent_name": {
+   "label": "Nome do agente de pesquisa"
+  },
+  "tools.enabled": {
+   "label": "Ferramentas ativas",
+   "help": "Linha de base do RAG documental. O catálogo vivo do backend é a lista completa: o editor pré-seleciona estas e mostra as restantes como opções."
+  },
+  "voice.aiDisclosure": {
+   "label": "Aviso de IA no início da chamada",
+   "help": "Informa quem liga de que está a falar com uma inteligência artificial. Exigido pelo AI Act (Art. 50)."
+  },
+  "voice.category_hints": {
+   "label": "Categorias sugeridas",
+   "help": "Categorias propostas ao assistente quando regista um pedido, para o classificar de forma consistente."
+  },
+  "voice.deployment": {
+   "label": "Deployment do modelo de voz",
+   "help": "Nome do deployment Realtime, por exemplo gpt-realtime-2.1-mini."
+  },
+  "voice.enabled": {
+   "label": "Ativar canal de voz",
+   "help": "Desligado por defeito. As credenciais do canal vivem no Key Vault e nunca no perfil."
+  },
+  "voice.greeting": {
+   "label": "Saudação inicial da chamada"
+  },
+  "voice.instructions": {
+   "label": "Instruções para o assistente de voz"
+  },
+  "voice.kb_top_n": {
+   "label": "Resultados da base de conhecimento a usar"
+  },
+  "voice.language": {
+   "label": "Idioma da chamada"
+  },
+  "voice.queue": {
+   "label": "Fila de tickets",
+   "help": "Tem de corresponder a uma das filas definidas em filas de revisão."
+  },
+  "voice.transcription": {
+   "label": "Transcrição da chamada",
+   "help": "Transcrição integral, por adesão explícita: o cliente é o responsável pelo tratamento. Desligada por defeito, ficando apenas o resumo."
+  },
+  "voice.transcription.enabled": {
+   "label": "Guardar a transcrição",
+   "help": "Guarda a transcrição das chamadas."
+  },
+  "voice.transcription.model": {
+   "label": "Modelo de transcrição",
+   "help": "Nome de um deployment de transcrição. Não usar a família gpt-4o."
+  },
+  "voice.transcription.retention_days": {
+   "label": "Retenção da transcrição (dias)",
+   "help": "Durante quantos dias as transcrições ficam guardadas antes de serem apagadas."
+  },
+  "voice.transfer_number": {
+   "label": "Número para transferência de chamada"
+  },
+  "voice.voice": {
+   "label": "Voz do assistente"
+  },
+  "voice.web.enabled": {
+   "label": "Voz em tempo real no site",
+   "help": "Liga o serviço de voz do lado do servidor. É este que faz o botão de voz do chat funcionar."
+  },
+  "voices.by_locale": {
+   "label": "Voz por idioma"
+  },
+  "voices.max_tts_chars": {
+   "label": "Máximo de caracteres por leitura"
+  },
+  "voices.phonetic_map": {
+   "label": "Correções de pronúncia",
+   "help": "Palavra escrita para a grafia que a voz deve ler (por exemplo API para «ei-pi-ái»). Acrescenta-se às substituições internas."
+  }
+ }
+}

@@ -1,0 +1,1729 @@
+{
+ "locale": "en-GB",
+ "fields": {
+  "audio.disfluency_removal": {
+   "label": "Strip disfluencies"
+  },
+  "audio.glossary": {
+   "label": "Terminology glossary"
+  },
+  "audio.max_duration_min": {
+   "label": "Maximum duration (minutes)"
+  },
+  "audio.max_speakers": {
+   "label": "Maximum number of speakers"
+  },
+  "audio.phrase_bias": {
+   "label": "Phrase weighting (1 to 20)"
+  },
+  "audio.phrase_list": {
+   "label": "Recognition phrase list"
+  },
+  "audio.speech_locale": {
+   "label": "Transcription language"
+  },
+  "brand_safety": {
+   "note": "Protection against competitor brand mentions. soft_redirect=prompt instruction; hard_block=more assertive; post_filter=redaction on final response."
+  },
+  "brand_safety.blocked_brands": {
+   "label": "Blocked brands"
+  },
+  "brand_safety.level": {
+   "label": "Block level",
+   "help": "\"soft_redirect\" steers the conversation away; \"hard_block\" refuses to answer; \"post_filter\" filters the already-generated reply.",
+   "options": {
+    "soft_redirect": "Redirect gently",
+    "hard_block": "Block assertively",
+    "post_filter": "Review the finished answer"
+   }
+  },
+  "brand_safety.redirect_to": {
+   "label": "Redirect to",
+   "note": "(e.g. \"our equivalent range\")"
+  },
+  "compliance": {
+   "note": "EU AI Act risk classification (Annex III) and transparency evidence (Art. 50) for this deployment. Classification is metadata — it does not change bot behaviour."
+  },
+  "compliance.annex_iv_doc_url": {
+   "label": "Annex IV documentation link",
+   "help": "Link to the technical document the system generates itself and keeps in blob storage."
+  },
+  "compliance.annex_iv_generated_at": {
+   "label": "Documentation last generated",
+   "help": "Date and time in ISO format."
+  },
+  "compliance.classification": {
+   "label": "Risk classification",
+   "help": "The EU AI Act risk classification for this deployment, following Annex III. It starts unclassified so that the outstanding work stays visible on the dashboard."
+  },
+  "compliance.classification.annex_iii_answers": {
+   "label": "Annex III questionnaire answers",
+   "help": "A map of {area: yes or no}. Kept for audit and to compare against future re-assessments."
+  },
+  "compliance.classification.classified_at": {
+   "label": "Classified on",
+   "help": "Date and time in ISO format."
+  },
+  "compliance.classification.classified_by": {
+   "label": "Classified by",
+   "help": "Name or email address of whoever made the classification."
+  },
+  "compliance.classification.justification": {
+   "label": "Classification rationale",
+   "help": "Text generated automatically from the answers and then editable by a person."
+  },
+  "compliance.classification.legal_review_date": {
+   "label": "Legal review date"
+  },
+  "compliance.classification.legal_reviewer": {
+   "label": "Legal reviewer"
+  },
+  "compliance.classification.next_review_due": {
+   "label": "Next review due",
+   "help": "The classification is re-assessed yearly and whenever the use of the system changes."
+  },
+  "compliance.classification.reviewed_by_legal": {
+   "label": "Signed off by legal",
+   "help": "Optional: a missing legal sign-off does not block a limited-risk system."
+  },
+  "compliance.classification.risk_level": {
+   "label": "Risk level",
+   "help": "Set by the Annex III checklist. High risk switches on the extra obligations in the section below.",
+   "options": {
+    "minimal": "Minimal risk",
+    "limited": "Limited risk",
+    "high": "High risk",
+    "unclassified": "Not yet classified"
+   }
+  },
+  "compliance.deployer_content_responsibility": {
+   "label": "Deployer responsibility for indexed content",
+   "help": "Article 50 transparency: responsibility for the indexed content sits with the deployer operating the system, formalised by a contractual clause."
+  },
+  "compliance.high_risk": {
+   "label": "High-risk obligations",
+   "help": "Extra obligations from Articles 11, 12, 14 and 73, required only when the risk level is high. These are metadata: they do not change how the assistant behaves."
+  },
+  "compliance.high_risk.enabled": {
+   "label": "Turn on high-risk obligations",
+   "help": "Required before going to production when the risk level is high, together with the fields below."
+  },
+  "compliance.high_risk.human_oversight_contact": {
+   "label": "Human oversight contact",
+   "help": "Article 14: the person designated to oversee the system."
+  },
+  "compliance.high_risk.log_retention_days": {
+   "label": "Log retention (days)",
+   "help": "Article 12: the legal minimum is six months, that is 180 days."
+  },
+  "compliance.high_risk.oversight_procedure_url": {
+   "label": "Oversight procedure link",
+   "help": "Link to the internal procedure describing how oversight is carried out."
+  },
+  "compliance.high_risk.serious_incident_contact": {
+   "label": "Serious incident contact",
+   "help": "Article 73: who reports serious incidents to the authorities."
+  },
+  "compliance.sector": {
+   "label": "Sector",
+   "help": "The sector the assistant is used in (e.g. real estate, utilities). Feeds the Annex IV technical documentation."
+  },
+  "compliance.use_case": {
+   "label": "Use case",
+   "help": "What the assistant concretely does in this deployment (e.g. \"public-site FAQ and lead capture\"). Feeds the Annex IV technical documentation."
+  },
+  "contacts.attribute_paths": {
+   "label": "Contact attributes",
+   "help": "Maps an attribute name to the path it is read from on the request."
+  },
+  "contacts.display_name_path": {
+   "label": "Display name path"
+  },
+  "contacts.enabled": {
+   "label": "Enable unified contacts",
+   "help": "Recognises the same contact across channels (phone, email, WhatsApp, user ID) deterministically. Off by default and always isolated per client."
+  },
+  "contacts.identity_fields": {
+   "label": "Identity fields",
+   "help": "Each entry is a pair: the identifier type (kind) and the path it is read from (path)."
+  },
+  "custom_instructions": {
+   "label": "Custom instructions",
+   "help": "Free text added to the assistant's instructions: business policies, examples, redirects. It complements the structured sections rather than replacing them.",
+   "note": "Free text injected in the system prompt between <domain> and <conversation_rules>. Write here specific rules that don't fit the structured sections (business policies, examples, redirects)."
+  },
+  "domain.description": {
+   "label": "Domain description",
+   "note": "Free-text description of the client domain — used by the LLM to understand scope."
+  },
+  "frontend.aiDisclosure": {
+   "label": "AI disclosure",
+   "help": "Transparency required by Article 50(1) of the EU AI Act: the user must know they are communicating with an AI system. On by default."
+  },
+  "frontend.aiDisclosure.enabled": {
+   "label": "Show the disclosure",
+   "help": "Shows the notice that the person is talking to an AI. Required by the AI Act (Art. 50)."
+  },
+  "frontend.aiDisclosure.text": {
+   "label": "Disclosure text"
+  },
+  "frontend.aiDisclosure.textI18n": {
+   "label": "Disclosure text (multilingual)",
+   "help": "A map of {language: text}. Takes precedence over the single text."
+  },
+  "frontend.assistantGender": {
+   "label": "Assistant gender",
+   "help": "The assistant’s grammatical gender — affects articles and agreement in the frontend’s fixed captions.",
+   "options": {
+    "feminine": "Feminine",
+    "masculine": "Masculine",
+    "neutral": "Neutral"
+   }
+  },
+  "frontend.auth": {
+   "label": "Authentication",
+   "help": "Frontend authentication and identity. The MSAL and OIDC fields are written into the client’s app configuration; the issuers and widget identity are read from the profile by the backend.",
+   "note": "Per-client frontend authentication (1 build for all). Written to the SWA runtime-config.json at deploy and read by MSAL before bootstrap. Use \"Auto-detect\" to fill tenant and scopes from the backend; the Client ID (SPA registration) is manual."
+  },
+  "frontend.auth.apiScopes": {
+   "label": "API scopes",
+   "help": "An MSAL (Microsoft) field, written into the app configuration."
+  },
+  "frontend.auth.authority": {
+   "label": "OIDC authority",
+   "help": "The identity provider’s URL (authority/issuer). An OIDC field, written into the app configuration."
+  },
+  "frontend.auth.clientId": {
+   "label": "Application (client) ID",
+   "help": "Used by both MSAL and OIDC. Written into the app configuration."
+  },
+  "frontend.auth.loginType": {
+   "label": "Login type",
+   "help": "An MSAL (Microsoft) field, written into the app configuration."
+  },
+  "frontend.auth.mode": {
+   "label": "Authentication requirement"
+  },
+  "frontend.auth.provider": {
+   "label": "Authentication provider"
+  },
+  "frontend.auth.providers": {
+   "label": "Trusted issuers",
+   "help": "The OIDC issuers the backend accepts when validating tokens; the issuer is the pinning key. Read from the profile by the backend — never sent to the frontend."
+  },
+  "frontend.auth.providers.audience": {
+   "label": "Expected audience",
+   "help": "The expected `aud` value. Empty does not validate the audience."
+  },
+  "frontend.auth.providers.id": {
+   "label": "Internal identifier",
+   "help": "The issuer’s internal identifier."
+  },
+  "frontend.auth.providers.issuer": {
+   "label": "Expected issuer",
+   "help": "The expected `iss` value — this is the pinning key."
+  },
+  "frontend.auth.providers.jwks_uri": {
+   "label": "JWKS URI",
+   "help": "Empty discovers it automatically from the issuer’s `.well-known`."
+  },
+  "frontend.auth.providers.label": {
+   "label": "Label for the Console",
+   "help": "A friendly label shown in the Console’s interface."
+  },
+  "frontend.auth.providers.primary": {
+   "label": "Primary issuer",
+   "help": "The primary issuer produces plain user identifiers; the rest are namespaced by issuer. With none marked, the first in the list is the primary one."
+  },
+  "frontend.auth.providers.required_scope": {
+   "label": "Required scope",
+   "help": "Empty requires no scope at all."
+  },
+  "frontend.auth.providers.tenant_id": {
+   "label": "Expected tenant ID",
+   "help": "The expected `tid` value (Microsoft). Empty does not validate."
+  },
+  "frontend.auth.providers.type": {
+   "label": "Issuer type"
+  },
+  "frontend.auth.scope": {
+   "label": "OIDC scope",
+   "help": "An OIDC field. Empty uses a safe default in the frontend."
+  },
+  "frontend.auth.tenantId": {
+   "label": "Tenant ID",
+   "help": "An MSAL (Microsoft) field, written into the app configuration."
+  },
+  "frontend.auth.tenantMode": {
+   "label": "Tenant scope",
+   "help": "An MSAL (Microsoft) field, written into the app configuration."
+  },
+  "frontend.auth.widget_identity": {
+   "label": "Widget identity",
+   "help": "Identity by signed token. The HMAC secret lives in the client’s Key Vault and the backend validates signature and age. Backend-only — never sent to the frontend."
+  },
+  "frontend.auth.widget_identity.algo": {
+   "label": "Signing algorithm"
+  },
+  "frontend.auth.widget_identity.enabled": {
+   "label": "Enabled"
+  },
+  "frontend.auth.widget_identity.max_age_s": {
+   "label": "Token validity (s)",
+   "help": "The maximum accepted age for the token, as replay protection."
+  },
+  "frontend.auth.widget_identity.secret_ref": {
+   "label": "Secret name",
+   "help": "The secret’s name in the client’s Key Vault."
+  },
+  "frontend.branding": {
+   "label": "Branding and appearance",
+   "note": "Branding visible to the end user. Colours in hex #RRGGBB format."
+  },
+  "frontend.branding.botAvatarShape": {
+   "label": "Avatar shape",
+   "help": "round = circle, soft = rounded corners, square = straight corners. Empty keeps the default.",
+   "options": {
+    "": "Default",
+    "round": "Circle",
+    "soft": "Rounded corners",
+    "square": "Square corners"
+   }
+  },
+  "frontend.branding.botAvatarSize": {
+   "label": "Avatar size (px)",
+   "help": "0 keeps the default size."
+  },
+  "frontend.branding.disclaimer": {
+   "label": "Footer disclaimer",
+   "help": "The frontend’s general footer. Not the AI disclosure, which is the mandatory legal notice.",
+   "note": "Small text in the chat footer (e.g. \"MaintainAI may make mistakes…\")"
+  },
+  "frontend.branding.disclaimerI18n": {
+   "label": "Footer disclaimer (multilingual)",
+   "help": "A map of {language: text}. Takes precedence over the single-text footer."
+  },
+  "frontend.branding.favicon": {
+   "label": "Favicon",
+   "help": "A URL in the `branding` container — uploaded via the Console."
+  },
+  "frontend.branding.headerLogoHeight": {
+   "label": "Header logo height (px)",
+   "help": "0 keeps the default height."
+  },
+  "frontend.branding.headerText": {
+   "label": "Text beside the logo",
+   "help": "Shown in the header, beside the logo (e.g. \"Antonius\"). Multilingual."
+  },
+  "frontend.branding.headerTextColor": {
+   "label": "Header text colour",
+   "help": "Optional — empty uses the theme’s default."
+  },
+  "frontend.branding.headerTextSize": {
+   "label": "Header text size",
+   "help": "Optional, e.g. \"20px\" or \"1.25rem\" — empty uses the theme’s default."
+  },
+  "frontend.branding.logoDark": {
+   "label": "Logo (dark theme)",
+   "help": "A URL in the `branding` container — uploaded via the Console."
+  },
+  "frontend.branding.logoLight": {
+   "label": "Logo (light theme)",
+   "help": "A URL in the `branding` container — uploaded via the Console."
+  },
+  "frontend.branding.logoRail": {
+   "label": "Collapsed sidebar logo",
+   "help": "A URL in the `branding` container — uploaded via the Console.",
+   "note": "Image shown as the avatar in the assistant's replies. Empty → uses the name initial. (field: logoRail)"
+  },
+  "frontend.branding.primaryColor": {
+   "label": "Primary colour"
+  },
+  "frontend.branding.primaryTextColor": {
+   "label": "Text colour on the primary colour"
+  },
+  "frontend.branding.productName": {
+   "label": "Product name"
+  },
+  "frontend.branding.subtitle": {
+   "label": "Subtitle"
+  },
+  "frontend.branding.theme": {
+   "label": "Colour theme",
+   "help": "The full theme: the sidebar applies to both modes; the light and dark sub-themes cover the rest.",
+   "note": "UI element colours. Sidebar colours apply to both modes (light/dark) by default; light/dark can override."
+  },
+  "frontend.branding.theme.bgSidebar": {
+   "label": "Sidebar background",
+   "help": "Applies to both modes, light and dark."
+  },
+  "frontend.branding.theme.bgSidebarSubtle": {
+   "label": "Subtle sidebar background",
+   "help": "Applies to both modes, light and dark."
+  },
+  "frontend.branding.theme.dark": {
+   "label": "Dark mode",
+   "help": "The dark sub-theme. Colours in hex `#RRGGBB`.",
+   "note": "In dark mode you can also override bgSidebar/bgSidebarSubtle for a different sidebar"
+  },
+  "frontend.branding.theme.dark.bgPage": {
+   "label": "Page background"
+  },
+  "frontend.branding.theme.dark.bgSidebar": {
+   "label": "Sidebar background"
+  },
+  "frontend.branding.theme.dark.bgSidebarCollapsed": {
+   "label": "Collapsed sidebar background",
+   "help": "A fine-grained component override — empty inherits from the matching semantic token."
+  },
+  "frontend.branding.theme.dark.bgSidebarSubtle": {
+   "label": "Subtle sidebar background"
+  },
+  "frontend.branding.theme.dark.bgSubtle": {
+   "label": "Subtle background"
+  },
+  "frontend.branding.theme.dark.bgSurface": {
+   "label": "Surface background"
+  },
+  "frontend.branding.theme.dark.codeBg": {
+   "label": "Code background"
+  },
+  "frontend.branding.theme.dark.codeText": {
+   "label": "Code text"
+  },
+  "frontend.branding.theme.dark.headerBg": {
+   "label": "Header background",
+   "help": "A fine-grained component override — empty inherits from the matching semantic token."
+  },
+  "frontend.branding.theme.dark.iconHeaderColor": {
+   "label": "Header icon colour",
+   "help": "A fine-grained component override — empty inherits from the matching semantic token."
+  },
+  "frontend.branding.theme.dark.iconInputColor": {
+   "label": "Input icon colour",
+   "help": "A fine-grained component override — empty inherits from the matching semantic token."
+  },
+  "frontend.branding.theme.dark.iconSidebarColor": {
+   "label": "Sidebar icon colour",
+   "help": "A fine-grained component override — empty inherits from the matching semantic token."
+  },
+  "frontend.branding.theme.dark.inputBg": {
+   "label": "Input background",
+   "help": "A fine-grained component override — empty inherits from the matching semantic token."
+  },
+  "frontend.branding.theme.dark.sourceCardBg": {
+   "label": "Source card background",
+   "help": "A fine-grained component override — empty inherits from the matching semantic token."
+  },
+  "frontend.branding.theme.dark.sourcesBubbleBg": {
+   "label": "Sources bubble background",
+   "help": "A fine-grained component override — empty inherits from the matching semantic token."
+  },
+  "frontend.branding.theme.dark.textPrimary": {
+   "label": "Primary text"
+  },
+  "frontend.branding.theme.dark.textSecondary": {
+   "label": "Secondary text"
+  },
+  "frontend.branding.theme.dark.textSidebarPrimary": {
+   "label": "Primary sidebar text"
+  },
+  "frontend.branding.theme.dark.textSidebarSecondary": {
+   "label": "Secondary sidebar text"
+  },
+  "frontend.branding.theme.dark.textSidebarTertiary": {
+   "label": "Tertiary sidebar text"
+  },
+  "frontend.branding.theme.dark.textTertiary": {
+   "label": "Tertiary text"
+  },
+  "frontend.branding.theme.dark.traceBubbleBg": {
+   "label": "Trace bubble background",
+   "help": "A fine-grained component override — empty inherits from the matching semantic token."
+  },
+  "frontend.branding.theme.dark.userBubble": {
+   "label": "User bubble"
+  },
+  "frontend.branding.theme.dark.welcomeCardBg": {
+   "label": "Welcome card background",
+   "help": "A fine-grained component override — empty inherits from the matching semantic token."
+  },
+  "frontend.branding.theme.light": {
+   "label": "Light mode",
+   "help": "The light sub-theme. Colours in hex `#RRGGBB`."
+  },
+  "frontend.branding.theme.light.bgPage": {
+   "label": "Page background"
+  },
+  "frontend.branding.theme.light.bgSidebar": {
+   "label": "Sidebar background"
+  },
+  "frontend.branding.theme.light.bgSidebarCollapsed": {
+   "label": "Collapsed sidebar background",
+   "help": "A fine-grained component override — empty inherits from the matching semantic token."
+  },
+  "frontend.branding.theme.light.bgSidebarSubtle": {
+   "label": "Subtle sidebar background"
+  },
+  "frontend.branding.theme.light.bgSubtle": {
+   "label": "Subtle background"
+  },
+  "frontend.branding.theme.light.bgSurface": {
+   "label": "Surface background"
+  },
+  "frontend.branding.theme.light.codeBg": {
+   "label": "Code background"
+  },
+  "frontend.branding.theme.light.codeText": {
+   "label": "Code text"
+  },
+  "frontend.branding.theme.light.headerBg": {
+   "label": "Header background",
+   "help": "A fine-grained component override — empty inherits from the matching semantic token."
+  },
+  "frontend.branding.theme.light.iconHeaderColor": {
+   "label": "Header icon colour",
+   "help": "A fine-grained component override — empty inherits from the matching semantic token."
+  },
+  "frontend.branding.theme.light.iconInputColor": {
+   "label": "Input icon colour",
+   "help": "A fine-grained component override — empty inherits from the matching semantic token."
+  },
+  "frontend.branding.theme.light.iconSidebarColor": {
+   "label": "Sidebar icon colour",
+   "help": "A fine-grained component override — empty inherits from the matching semantic token."
+  },
+  "frontend.branding.theme.light.inputBg": {
+   "label": "Input background",
+   "help": "A fine-grained component override — empty inherits from the matching semantic token."
+  },
+  "frontend.branding.theme.light.sourceCardBg": {
+   "label": "Source card background",
+   "help": "A fine-grained component override — empty inherits from the matching semantic token."
+  },
+  "frontend.branding.theme.light.sourcesBubbleBg": {
+   "label": "Sources bubble background",
+   "help": "A fine-grained component override — empty inherits from the matching semantic token."
+  },
+  "frontend.branding.theme.light.textPrimary": {
+   "label": "Primary text"
+  },
+  "frontend.branding.theme.light.textSecondary": {
+   "label": "Secondary text"
+  },
+  "frontend.branding.theme.light.textSidebarPrimary": {
+   "label": "Primary sidebar text"
+  },
+  "frontend.branding.theme.light.textSidebarSecondary": {
+   "label": "Secondary sidebar text"
+  },
+  "frontend.branding.theme.light.textSidebarTertiary": {
+   "label": "Tertiary sidebar text"
+  },
+  "frontend.branding.theme.light.textTertiary": {
+   "label": "Tertiary text"
+  },
+  "frontend.branding.theme.light.traceBubbleBg": {
+   "label": "Trace bubble background",
+   "help": "A fine-grained component override — empty inherits from the matching semantic token."
+  },
+  "frontend.branding.theme.light.userBubble": {
+   "label": "User bubble"
+  },
+  "frontend.branding.theme.light.welcomeCardBg": {
+   "label": "Welcome card background",
+   "help": "A fine-grained component override — empty inherits from the matching semantic token."
+  },
+  "frontend.branding.theme.textSidebarPrimary": {
+   "label": "Primary sidebar text",
+   "help": "Applies to both modes, light and dark."
+  },
+  "frontend.branding.theme.textSidebarSecondary": {
+   "label": "Secondary sidebar text",
+   "help": "Applies to both modes, light and dark."
+  },
+  "frontend.branding.theme.textSidebarTertiary": {
+   "label": "Tertiary sidebar text",
+   "help": "Applies to both modes, light and dark."
+  },
+  "frontend.csp.extraConnectSrc": {
+   "label": "Extra connect origins (CSP)",
+   "note": "Destinations allowed for fetch/XHR/WebSocket from the chat page. Applied at frontend rollout."
+  },
+  "frontend.csp.extraFrameSrc": {
+   "label": "Extra frame origins (CSP)",
+   "note": "Origins that may be embedded in the chat page. Applied at frontend rollout."
+  },
+  "frontend.csp.extraImgSrc": {
+   "label": "Extra image origins (CSP)",
+   "note": "Applied at frontend rollout."
+  },
+  "frontend.csp.extraScriptSrc": {
+   "label": "Extra script origins (CSP)",
+   "note": "Security control. Adding an origin here authorises third-party scripts on the chat page. The Studio merges these lists into staticwebapp.config.json during the frontend rollout — no new rollout, no runtime effect."
+  },
+  "frontend.csp.extraStyleSrc": {
+   "label": "Extra style origins (CSP)",
+   "note": "Applied at frontend rollout."
+  },
+  "frontend.features": {
+   "label": "Features",
+   "help": "Frontend switches. Dependencies between features are declared in the schema, so the editor warns about and blocks incoherent combinations.",
+   "note": "Toggles for visible features. You can add custom flags in the Blob JSON — any extra key is preserved."
+  },
+  "frontend.features.enableDarkMode": {
+   "label": "Allow dark mode",
+   "help": "Gives the user a switch for the dark theme."
+  },
+  "frontend.features.enableDocumentUpload": {
+   "label": "Allow document upload",
+   "help": "Lets people attach documents to the conversation."
+  },
+  "frontend.features.enableInlineCitations": {
+   "label": "Inline citations",
+   "help": "Shows citation markers inline in the answer, linked to the source."
+  },
+  "frontend.features.enableLlmSelector": {
+   "label": "Model selector"
+  },
+  "frontend.features.enablePdfExport": {
+   "label": "Export to PDF",
+   "help": "Lets people save the conversation as a PDF."
+  },
+  "frontend.features.enablePipelineTrace": {
+   "label": "Show answer diagnostics",
+   "help": "When on, shows process transparency and an explainability summary."
+  },
+  "frontend.features.enableShare": {
+   "label": "Share conversation",
+   "help": "Lets people generate a share link for the conversation. Its lifetime is set in the sharing section."
+  },
+  "frontend.features.enableSourcePreview": {
+   "label": "Source preview (legacy)",
+   "help": "A legacy field kept in sync with \"Source click action\" — it exists for older frontend builds that read only this boolean."
+  },
+  "frontend.features.enableStarterPrompts": {
+   "label": "Show starter prompts",
+   "help": "Shows the starter suggestions on the opening screen."
+  },
+  "frontend.features.enableTTS": {
+   "label": "Read answers aloud",
+   "help": "Lets people hear the answer read aloud."
+  },
+  "frontend.features.enableVoiceLoop": {
+   "label": "Continuous voice conversation",
+   "help": "After answering, the microphone reopens on its own for the next question."
+  },
+  "frontend.features.persistOriginals": {
+   "label": "Archive original files",
+   "help": "Keeps each upload’s original file (e.g. the invoice PDF) for audit. Auto-enabled when the extraction tools are present; this option forces the state."
+  },
+  "frontend.features.renderSourcesSection": {
+   "label": "Keep the \"Sources\" section in the text",
+   "help": "By default that section is stripped from the answer. Enabled, it stays as the model wrote it.",
+   "note": "Mirrors retrieval.context_include_source_fields — the Studio editor keeps the two in sync."
+  },
+  "frontend.features.reviewQueue": {
+   "label": "Human review queue",
+   "help": "Enables the review-queue route in the frontend. Also needs the `review_queue` container. Off by default — enabled only where contracted."
+  },
+  "frontend.features.reviewQueueHome": {
+   "label": "Open on the review queue",
+   "help": "The queue becomes the landing page, without hiding the chat. Only takes effect with the review queue enabled."
+  },
+  "frontend.features.reviewQueueOnly": {
+   "label": "Review queue only",
+   "help": "Hides navigation back to the chat and redirects the chat to the queue — for operators who should only use the queue. Only meaningful with the queue on."
+  },
+  "frontend.features.showHistory": {
+   "label": "Show history",
+   "help": "Shows previous conversations in the sidebar."
+  },
+  "frontend.features.sourceClickAction": {
+   "label": "Source click action",
+   "help": "\"inline\" opens an embedded preview panel; \"newtab\" opens the source in another tab; \"none\" shows the sources but makes them unclickable.",
+   "options": {
+    "inline": "Open a preview in the page",
+    "newtab": "Open in a new tab",
+    "none": "Show but don't allow clicking"
+   }
+  },
+  "frontend.features.taskApi": {
+   "label": "Asynchronous requests",
+   "help": "Long requests return a task identifier instead, polled afterwards or delivered by webhook. Off by default."
+  },
+  "frontend.features.toolWorkspace": {
+   "label": "Dedicated tool workspace",
+   "help": "The tool opens a full visual instead of answering inside the chat. On by default."
+  },
+  "frontend.features.turnOnVoiceRecorder": {
+   "label": "Voice recorder",
+   "help": "Shows the microphone so people can dictate instead of typing."
+  },
+  "frontend.features.voiceMode": {
+   "label": "Voice conversation on the site",
+   "help": "Shows or hides the voice button. The service itself is switched on server-side — without it the button does nothing."
+  },
+  "frontend.insightsPanel": {
+   "label": "Insights panel",
+   "help": "The side panel. Visual types are read by the backend, which projects those visuals into the panel instead of inline in the conversation; the rest is consumed by the frontend."
+  },
+  "frontend.insightsPanel.openOnLoad": {
+   "label": "Open on load",
+   "help": "The panel is already open when the conversation loads."
+  },
+  "frontend.insightsPanel.panelTypes": {
+   "label": "Visual types projected into the panel",
+   "help": "Read by the backend: visuals of these types are shown in the panel rather than in the conversation."
+  },
+  "frontend.insightsPanel.providerBadge": {
+   "label": "Integration badge",
+   "help": "A pill in the panel header (e.g. \"Xero · Connected\"). It means the integration is configured in the profile — it is not a real-time health check."
+  },
+  "frontend.insightsPanel.providerBadge.icon": {
+   "label": "Badge icon",
+   "help": "Optional — accepts an emoji."
+  },
+  "frontend.insightsPanel.providerBadge.label": {
+   "label": "Badge text",
+   "help": "The text shown on the badge. Multilingual."
+  },
+  "frontend.insightsPanel.quickInsights": {
+   "label": "Quick insights",
+   "help": "Fixed shortcuts in the panel, in two modes: with a prompt filled in it is a one-click shortcut; with a list of questions it becomes an expandable card."
+  },
+  "frontend.insightsPanel.quickInsights.icon": {
+   "label": "Shortcut icon"
+  },
+  "frontend.insightsPanel.quickInsights.id": {
+   "label": "Identifier"
+  },
+  "frontend.insightsPanel.quickInsights.label": {
+   "label": "Shortcut text",
+   "help": "The text shown on the shortcut. Multilingual."
+  },
+  "frontend.insightsPanel.quickInsights.prompt": {
+   "label": "Prompt sent",
+   "help": "When filled, the shortcut becomes a direct single click. When empty, it becomes an expandable card holding the questions below. Multilingual."
+  },
+  "frontend.insightsPanel.quickInsights.questions": {
+   "label": "Card questions",
+   "help": "The questions inside an expandable shortcut."
+  },
+  "frontend.insightsPanel.quickInsights.questions.label": {
+   "label": "Question text",
+   "help": "If the prompt below is left empty, this text is sent as the question instead."
+  },
+  "frontend.insightsPanel.quickInsights.questions.prompt": {
+   "label": "Prompt sent",
+   "help": "If empty, the question text is sent instead."
+  },
+  "frontend.insightsPanel.title": {
+   "label": "Panel title"
+  },
+  "frontend.language": {
+   "label": "Languages"
+  },
+  "frontend.language.default": {
+   "label": "Frontend default language"
+  },
+  "frontend.language.enabled": {
+   "label": "Available languages"
+  },
+  "frontend.legalNotice": {
+   "label": "Legal notice (home screen)",
+   "help": "A collapsible legal notice on the home screen. Markdown, multilingual ({language: text})."
+  },
+  "frontend.llmModels": {
+   "label": "Available LLM models",
+   "help": "The model picker’s list — only relevant when the selector is on. Filled with the models actually deployed on the client’s OpenAI."
+  },
+  "frontend.privacyPolicyI18n": {
+   "label": "Privacy policy (text)",
+   "help": "An alternative to the URL: multilingual markdown text shown inside the login modal itself."
+  },
+  "frontend.privacyPolicyUrl": {
+   "label": "Privacy policy URL",
+   "help": "The client’s own GDPR policy, recommended — opens in another tab and replaces the login modal’s generic text. Takes precedence over the markdown text."
+  },
+  "frontend.shareDefaultExpiryDays": {
+   "label": "Pre-selected lifetime (days)",
+   "help": "The value already chosen when someone shares a conversation.",
+   "note": "Pre-selected value in the share modal (days)"
+  },
+  "frontend.shareExpiryOptionsDays": {
+   "label": "Lifetime options (days)",
+   "help": "The choices offered when sharing (e.g. 7, 30, 90).",
+   "note": "List of options in the dropdown (e.g. 7, 30, 90 days)"
+  },
+  "frontend.starterPrompts": {
+   "label": "Starter prompts",
+   "help": "Suggestions shown on the home screen. Title and prompt are multilingual maps supporting any number of languages.",
+   "note": "Suggested prompts on the start screen (typically 4). Bilingual PT/EN."
+  },
+  "frontend.starterPrompts.iconName": {
+   "label": "Icon",
+   "help": "Chosen in the editor from the frontend’s icon set.",
+   "note": "lucide-react icon name (scroll-text, zap, history, cpu, …)"
+  },
+  "frontend.starterPrompts.prompt": {
+   "label": "Suggestion prompt",
+   "help": "A map of {language: text}."
+  },
+  "frontend.starterPrompts.title": {
+   "label": "Suggestion title",
+   "help": "A map of {language: text}."
+  },
+  "frontend.sttPhraseList": {
+   "label": "Phrase list (speech-to-text)",
+   "note": "Terms the recognizer should favour (acronyms, jargon, brand names)"
+  },
+  "frontend.sttSilenceTimeoutMs": {
+   "label": "Silence before ending the recording (ms)",
+   "note": "milliseconds of silence before auto-submit (3500 = 3.5s)"
+  },
+  "frontend.ttsPhoneticMap": {
+   "label": "Phonetic overrides (read aloud)",
+   "note": "Phonetic map for Text-to-Speech. Key = written form; value = pronunciation. Useful for brand names and acronyms."
+  },
+  "frontend.ttsVoiceMap": {
+   "label": "Voice per language (read aloud)"
+  },
+  "frontend.welcomeMessage": {
+   "label": "Welcome title",
+   "help": "The home screen’s title, shown before any conversation exists. Multilingual map ({language: text})."
+  },
+  "frontend.welcomeMessageSize": {
+   "label": "Welcome title size",
+   "help": "Font size for the title — for example \"1.5rem\"."
+  },
+  "frontend.welcomeMessageSizeMobile": {
+   "label": "Welcome title size on small screens",
+   "help": "Empty inherits the normal welcome title size."
+  },
+  "frontend.welcomeSubtitle": {
+   "label": "Welcome subtitle",
+   "help": "An introductory subtitle below the title. Markdown, multilingual."
+  },
+  "frontend.widget": {
+   "label": "Embeddable widget",
+   "help": "A widget embeddable in the client’s own site: the site pastes a single line of script and every other setting comes from here."
+  },
+  "frontend.widget.allowed_origins": {
+   "label": "Sites allowed to embed",
+   "help": "Empty allows any https site. With values, only the site itself and these origins may embed the widget."
+  },
+  "frontend.widget.bubble_color": {
+   "label": "Bubble colour",
+   "help": "Empty uses the brand’s primary colour."
+  },
+  "frontend.widget.bubble_icon_fit": {
+   "label": "Icon fit",
+   "help": "\"contain\" shows the whole icon; \"cover\" fills by cropping the edges; \"full\" makes the image the bubble itself. The bubble colour sits beneath for images with transparency.",
+   "options": {
+    "contain": "Show the whole icon",
+    "cover": "Fill, cropping the edges",
+    "full": "The image is the bubble itself"
+   }
+  },
+  "frontend.widget.bubble_icon_scale_pct": {
+   "label": "Icon size (% of the diameter)",
+   "help": "54% is the historical proportion. Logos with a lot of padding need 70–90% so they aren’t drowned by the bubble colour."
+  },
+  "frontend.widget.bubble_icon_url": {
+   "label": "Bubble icon",
+   "help": "Empty uses the favicon or the collapsed-sidebar logo. Accepts an https URL or a data URI — the Console resizes the attached image before saving."
+  },
+  "frontend.widget.bubble_label": {
+   "label": "Bubble label",
+   "help": "Optional text shown in a small pill beside the bubble. Multilingual."
+  },
+  "frontend.widget.bubble_size_px": {
+   "label": "Bubble diameter (px)",
+   "help": "56 is the historical value. The inner icon and the greeting balloon’s position both derive from it. The bounds are deliberately wide: some sites want a discreet bubble, others a prominent one."
+  },
+  "frontend.widget.enabled": {
+   "label": "Widget enabled",
+   "help": "Turns on the chat bubble on the site where the snippet was pasted."
+  },
+  "frontend.widget.greeting": {
+   "label": "Proactive greeting",
+   "help": "A greeting balloon shown without the user opening the widget. Empty turns it off, which is the default."
+  },
+  "frontend.widget.greeting_delay_s": {
+   "label": "Greeting delay (s)",
+   "help": "Seconds before the greeting bubble appears. Only applies if a greeting is written."
+  },
+  "frontend.widget.mobile_mode": {
+   "label": "Behaviour on mobile",
+   "help": "fullscreen = the panel takes the whole screen; sheet = a 95%-height sheet that leaves the site visible behind it.",
+   "options": {
+    "fullscreen": "Take the whole screen",
+    "sheet": "Sheet over the site"
+   }
+  },
+  "frontend.widget.mode": {
+   "label": "Display mode",
+   "help": "bubble = floating bubble in the corner; inline = the chat sits inside the page itself.",
+   "options": {
+    "bubble": "Floating bubble",
+    "inline": "Embedded in the page"
+   }
+  },
+  "frontend.widget.offset_x_px": {
+   "label": "Horizontal offset (px)",
+   "help": "Pixel-level adjustment, to avoid colliding with cookie banners and other fixed elements."
+  },
+  "frontend.widget.offset_y_px": {
+   "label": "Vertical offset (px)",
+   "help": "Pixel-level adjustment, to avoid colliding with cookie banners and other fixed elements."
+  },
+  "frontend.widget.panel_height_px": {
+   "label": "Panel height (px)",
+   "help": "Chat panel height on large screens."
+  },
+  "frontend.widget.panel_width_px": {
+   "label": "Panel width (px)",
+   "help": "Chat panel width on large screens."
+  },
+  "frontend.widget.position": {
+   "label": "On-screen position",
+   "help": "Which corner of the screen the bubble sits in.",
+   "options": {
+    "bottom-right": "Bottom right",
+    "bottom-left": "Bottom left"
+   }
+  },
+  "guardrails": {
+   "note": "Generic blocks. For active competitor brand protection use the Brand Safety tab."
+  },
+  "guardrails.allow_general_knowledge": {
+   "label": "Allow general knowledge",
+   "help": "Allow answering from the model’s general knowledge when no relevant document source exists.",
+   "note": "(true = allow answering off-domain with general knowledge)"
+  },
+  "guardrails.blocked_words": {
+   "label": "Blocked words"
+  },
+  "guardrails.citation_support_warning": {
+   "label": "Warn when a source doesn't support the claim",
+   "help": "The check always runs; this only decides whether the note is shown to the end user.",
+   "note": "False = shadow mode: detection still reaches traces, spans and dumps. The full kill-switch is the CITATION_SUPPORT_CHECK=0 env var."
+  },
+  "guardrails.competitor_brands": {
+   "label": "Competitor brands",
+   "note": "(legacy — prefer Brand Safety)"
+  },
+  "guestAccess.dailyBudgetEur": {
+   "label": "Daily budget (euros)",
+   "help": "Once it runs out, the demo variant is disabled automatically and comes back at midnight UTC. Zero means no budget."
+  },
+  "guestAccess.enabled": {
+   "label": "Enable guest mode",
+   "help": "Only takes effect on demo backends. On a real client backend the whole block stays inert, even if it is copied there by mistake."
+  },
+  "guestAccess.rateLimits": {
+   "label": "Rate limits",
+   "help": "Counted per visitor. Left blank, the backend default limits apply."
+  },
+  "guestAccess.rateLimits.perDay": {
+   "label": "Requests per day",
+   "help": "Questions a visitor may ask per day."
+  },
+  "guestAccess.rateLimits.perHour": {
+   "label": "Requests per hour",
+   "help": "Questions a visitor may ask per hour."
+  },
+  "guestAccess.rateLimits.perMinute": {
+   "label": "Requests per minute",
+   "help": "Questions a visitor may ask per minute."
+  },
+  "guestAccess.realtimeSessionEstEur": {
+   "label": "Estimated cost of one voice session (EUR)",
+   "note": "Blocks a session from starting when the day's remaining budget won't cover it. Empty = DEMO_REALTIME_SESSION_EST_EUR env var, falling back to 0.50."
+  },
+  "guestAccess.uploads": {
+   "label": "Guest file uploads",
+   "help": "Off by default even when guest mode is on: anonymous public uploads are the biggest risk this feature carries."
+  },
+  "guestAccess.uploads.enabled": {
+   "label": "Allow uploads",
+   "help": "Lets unauthenticated visitors attach files."
+  },
+  "guestAccess.uploads.maxFiles": {
+   "label": "Maximum number of files",
+   "help": "Counted per conversation, not per request."
+  },
+  "guestAccess.uploads.maxMb": {
+   "label": "Maximum size in megabytes",
+   "help": "Maximum size of each file a visitor attaches."
+  },
+  "guestAccess.uploads.pdfOnly": {
+   "label": "PDF files only",
+   "help": "Restricts visitor attachments to PDF."
+  },
+  "identity": {
+   "note": "Client and assistant identity. These values appear in headers, footers and generated prompts."
+  },
+  "identity.assistant_name": {
+   "label": "Assistant name"
+  },
+  "identity.assistant_role": {
+   "label": "Assistant role",
+   "help": "The role the assistant takes on when introducing itself and answering (e.g. \"HR assistant\"). Empty = no explicit role."
+  },
+  "identity.company_name": {
+   "label": "Company name"
+  },
+  "identity.default_language": {
+   "label": "Default language",
+   "help": "The conversation’s starting language before the user has typed anything. \"auto\" detects from the browser/message.",
+   "note": "\"auto\" for auto-detect; or ISO code (pt-PT, en, es)"
+  },
+  "identity.logo_url": {
+   "label": "Logo URL"
+  },
+  "identity.register": {
+   "label": "Register (form of address)",
+   "help": "\"formal\" or \"informal\" address, or \"mirror\" to match whatever register the user writes in.",
+   "note": "formal=formal address; informal=tu; mirror=mirror the user",
+   "options": {
+    "formal": "Formal address",
+    "informal": "Informal address",
+    "mirror": "Mirror the user"
+   }
+  },
+  "identity.timezone": {
+   "label": "Timezone"
+  },
+  "ingest.alerts": {
+   "label": "Ingestion alerts",
+   "help": "An aging and exception sweep at the end of every run of the ingestion job. Off by default."
+  },
+  "ingest.alerts.aging_hours": {
+   "label": "Aging threshold before an alert (hours)",
+   "help": "Never lower this value to save on costs."
+  },
+  "ingest.alerts.email": {
+   "label": "Address the alerts are sent to"
+  },
+  "ingest.alerts.email_interval_hours": {
+   "label": "Hours between alert emails",
+   "help": "Minimum gap between warnings, so the same email isn't repeated back to back."
+  },
+  "ingest.alerts.enabled": {
+   "label": "Send alerts",
+   "help": "Emails a warning when documents are stuck waiting to be processed."
+  },
+  "ingest.sources": {
+   "label": "Email ingestion sources",
+   "help": "Each source describes a mailbox and how its messages are handled. The shape is free-form, so it is not validated field by field."
+  },
+  "language.aliases": {
+   "label": "Language aliases",
+   "help": "Maps one language code to another that stands in for it (e.g. treat pt-BR as pt-PT).",
+   "note": "Silent normalizations in any strategy. E.g. pt-BR → pt-PT (bot always responds in European PT)"
+  },
+  "language.allowed": {
+   "label": "Allowed languages",
+   "note": "[\"*\"] = any; or ISO list [\"pt-PT\", \"en\", \"es\"] (only relevant for \"restricted\")"
+  },
+  "language.fallback": {
+   "label": "Fallback language",
+   "note": "Language when restricted detects off-list, or frontend_locked has no hint"
+  },
+  "language.strategy": {
+   "label": "Language strategy",
+   "help": "\"auto_detect\" follows the message’s language; \"restricted\" limits to the Allowed list; \"frontend_locked\" always follows the interface language.",
+   "note": "Language policy. auto_detect=detect; restricted=detect but limited to list; frontend_locked=use frontend toggle.",
+   "options": {
+    "auto_detect": "Detect the user's language",
+    "restricted": "Detect, but only within the allowed list",
+    "frontend_locked": "Use the language chosen in the interface"
+   }
+  },
+  "mcp": {
+   "note": "Configured MCP (Model Context Protocol) servers. The agent discovers tools from these servers at runtime and uses them alongside native tools. Full editing (add/remove/test) in the Console MCP tab."
+  },
+  "mcp.confirm_actions": {
+   "label": "Action confirmation",
+   "help": "When the assistant asks for confirmation before running an MCP tool. The default sits on the safe side."
+  },
+  "mcp.disabledServers": {
+   "label": "Disabled servers",
+   "help": "In a variant, switches off inherited base-profile servers by name. Lists replace one another rather than subtracting."
+  },
+  "mcp.discovery_cache_ttl_seconds": {
+   "label": "Discovery cache lifetime (seconds)",
+   "note": "Discovery cache TTL (60-86400s). How long discovered tools stay in memory before re-discovery."
+  },
+  "mcp.enabled": {
+   "label": "Enable MCP",
+   "help": "Off by default.",
+   "note": "Master switch — when off, no MCP server is queried regardless of the list"
+  },
+  "mcp.servers": {
+   "label": "MCP servers",
+   "note": "Configured server list — read-only view. To edit, open the full MCP editor."
+  },
+  "mcp.servers.auth": {
+   "label": "Server authentication",
+   "help": "Secrets are given as the name of an environment variable or key vault entry, never as the literal value."
+  },
+  "mcp.servers.auth.audience": {
+   "label": "Token audience",
+   "help": "Atlassian only."
+  },
+  "mcp.servers.auth.authorize_url": {
+   "label": "Authorisation URL"
+  },
+  "mcp.servers.auth.client_id": {
+   "label": "OAuth client ID"
+  },
+  "mcp.servers.auth.client_id_env": {
+   "label": "Environment variable holding the client ID"
+  },
+  "mcp.servers.auth.client_secret": {
+   "label": "Client secret",
+   "help": "Prefer naming the environment variable over the literal value."
+  },
+  "mcp.servers.auth.client_secret_env": {
+   "label": "Environment variable holding the client secret"
+  },
+  "mcp.servers.auth.issuer": {
+   "label": "Issuer"
+  },
+  "mcp.servers.auth.per_user": {
+   "label": "Authenticate per user",
+   "help": "When off, authentication happens once for the whole tenant."
+  },
+  "mcp.servers.auth.revocation_url": {
+   "label": "Revocation URL"
+  },
+  "mcp.servers.auth.scopes": {
+   "label": "Scopes"
+  },
+  "mcp.servers.auth.token": {
+   "label": "Literal token",
+   "help": "Development only. Use the environment variable instead."
+  },
+  "mcp.servers.auth.token_env": {
+   "label": "Environment variable holding the token",
+   "help": "The preferred way to supply the bearer token."
+  },
+  "mcp.servers.auth.token_url": {
+   "label": "Token URL"
+  },
+  "mcp.servers.auth.type": {
+   "label": "Authentication type"
+  },
+  "mcp.servers.enabled": {
+   "label": "Server enabled"
+  },
+  "mcp.servers.erp": {
+   "label": "ERP role",
+   "help": "Optional metadata declaring that this server acts as the ERP for a queue, for example naming the lookup tool. Free-form while it settles."
+  },
+  "mcp.servers.name": {
+   "label": "Server name"
+  },
+  "mcp.servers.timeout_seconds": {
+   "label": "Timeout (seconds)"
+  },
+  "mcp.servers.tool_prefix": {
+   "label": "Tool prefix",
+   "help": "If empty, the server name is used."
+  },
+  "mcp.servers.trusted": {
+   "label": "Trusted server",
+   "help": "The MCP spec treats tool descriptions as untrusted. Only on a trusted server is each tool description passed to the model, after sanitising; otherwise a neutral description is used."
+  },
+  "mcp.servers.url": {
+   "label": "Server URL"
+  },
+  "memory.enabled": {
+   "label": "Enable user memory",
+   "help": "The assistant remembers facts the user tells it and reuses them in later conversations."
+  },
+  "memory.max_facts": {
+   "label": "Maximum facts stored"
+  },
+  "multiProfile.disabledSlugs": {
+   "label": "Disabled slugs",
+   "help": "Switches a variant off without deleting its profile, so it can be switched back on later."
+  },
+  "multiProfile.enabled": {
+   "label": "Enable multi-profile",
+   "help": "When off, the link slug is ignored entirely and the base profile is always served."
+  },
+  "multiProfile.invalidSlugBehavior": {
+   "label": "Invalid slug response",
+   "help": "An unknown or disabled slug returns an error and an explicit branded page. There is never a silent fall back to the base profile."
+  },
+  "multiProfile.slugs": {
+   "label": "Active slugs"
+  },
+  "orchestration.agent_planner": {
+   "label": "Agent pre-planning",
+   "help": "A step before the loop classifies multi-step requests and injects a short plan into the prompt. Off by default; costs one internal model call whenever it fires."
+  },
+  "orchestration.allow_web": {
+   "label": "Allow the web tool",
+   "help": "When off, the web is never offered to the agent, whatever the retrieval strategy says."
+  },
+  "orchestration.parallel_tools": {
+   "label": "Parallel tool execution",
+   "help": "Runs independent calls in the same batch at the same time. Off by default; it cuts latency on multi-tool answers, but is worth validating per client."
+  },
+  "orchestration.retrieval_strategy": {
+   "label": "Source ordering"
+  },
+  "personality": {
+   "note": "Communication tone and response style. tone_instructions is a dict (tone → text injected in the system prompt)."
+  },
+  "personality.response_length": {
+   "label": "Response length",
+   "help": "How developed the answers are by default.",
+   "options": {
+    "short": "Short",
+    "balanced": "Balanced",
+    "detailed": "Detailed"
+   }
+  },
+  "personality.tone": {
+   "label": "Tone",
+   "help": "The tone the assistant speaks in. The wording behind each tone is set by Genesis.",
+   "options": {
+    "professional": "Professional",
+    "formal": "Formal",
+    "friendly": "Friendly",
+    "technical": "Technical",
+    "commercial": "Commercial"
+   }
+  },
+  "personality.tone_instructions": {
+   "label": "Tone instructions",
+   "help": "The detailed instruction for each tone (professional, formal, friendly, technical, commercial) — the entry actually used is the one matching the Tone selected above.",
+   "note": "Maps each `tone` to an instruction injected in the system prompt. You can add custom tones beyond the 5 defaults."
+  },
+  "pricing.currency": {
+   "label": "Currency"
+  },
+  "pricing.image_models": {
+   "label": "Image model prices",
+   "help": "Model name to per-image prices, in dollars, by quality tier (low, medium, high)."
+  },
+  "pricing.models": {
+   "label": "Model prices",
+   "help": "Model name to prices per million tokens, in dollars. Empty uses the backend built-in table."
+  },
+  "pricing.usd_to_eur": {
+   "label": "USD→EUR rate",
+   "note": "Used in cost calculations. Empty = env var, falling back to the backend default."
+  },
+  "product_identification": {
+   "note": "Detection of alphanumeric codes in the query (SKUs, part numbers). Critical for B2B catalogues — embeddings are weak on codes."
+  },
+  "product_identification.enabled": {
+   "label": "Enable product code detection",
+   "help": "Spots references, SKUs and model codes in the question and forces the agent to quote only what the knowledge base states literally about those codes."
+  },
+  "product_identification.internal_prefixes": {
+   "label": "Internal reference prefixes",
+   "note": "Internal reference prefixes (e.g. OT, OBRA, FO)"
+  },
+  "product_identification.patterns": {
+   "label": "Code patterns",
+   "help": "Client-specific regular expressions. They are added to the built-in patterns rather than replacing them.",
+   "note": "Additional regex — supplement internal defaults"
+  },
+  "product_identification.stopwords": {
+   "label": "Words excluded from detection"
+  },
+  "product_identification.strict_mode": {
+   "label": "Strict mode",
+   "help": "Tightens the instructions given to the model about the detected codes.",
+   "note": "(enables stricter block in the system prompt — forces literal citation)"
+  },
+  "query_cache": {
+   "note": "Exact-match query cache (hash of normalized query). Default OFF for B2B with unique queries — only enable for FAQ-style / demos."
+  },
+  "query_cache.enabled": {
+   "label": "Enable answer caching",
+   "help": "Reuses answers to similar questions. Off by default, because it can serve a less well-tuned answer than one generated now."
+  },
+  "query_cache.index_version": {
+   "label": "Cache index version",
+   "help": "The invalidation key. Raising the number invalidates the whole cache without deleting any documents."
+  },
+  "query_cache.ttl_seconds": {
+   "label": "Cache lifetime (seconds)",
+   "note": "(default 86400 = 24h)"
+  },
+  "response": {
+   "note": "Response behaviour — visible sources, images, follow-ups, extractive mode."
+  },
+  "response.explainability_summary": {
+   "label": "Explainability summary",
+   "help": "Adds a 2-3 sentence summary of how the answer was produced (transparency, EU AI Act Art. 13)."
+  },
+  "response.extractive_mode": {
+   "label": "Extractive mode",
+   "help": "Answer by quoting the source text directly instead of paraphrasing it.",
+   "note": "forces the LLM to quote verbatim from chunks — ideal for compliance / procurement"
+  },
+  "response.followup_count": {
+   "label": "Follow-up suggestion count",
+   "help": "How many follow-up questions are suggested. 0 = none.",
+   "note": "number of suggested follow-ups (0 = none)"
+  },
+  "response.show_images": {
+   "label": "Show images",
+   "help": "Lets answers include images taken from the documents."
+  },
+  "response.show_sources": {
+   "label": "Show sources",
+   "help": "Shows the user which documents were consulted.",
+   "note": "(shows consulted documents to the user)"
+  },
+  "response.suggest_followups": {
+   "label": "Suggest follow-ups",
+   "help": "Show suggested related questions after each answer."
+  },
+  "retrieval.chars_per_chunk": {
+   "label": "Characters per chunk"
+  },
+  "retrieval.context_include_source_fields": {
+   "label": "Include source fields in context",
+   "help": "Prepends Source/Url/Page/Tier lines to each chunk’s context, before its content."
+  },
+  "retrieval.context_top_k": {
+   "label": "Final context cut",
+   "help": "Number of already-ranked chunks that actually reach the model. 0 = no cut (all of Top K)."
+  },
+  "retrieval.enable_rerank": {
+   "label": "Enable rerank"
+  },
+  "retrieval.faithfulness_overlap_skip": {
+   "label": "Overlap threshold (faithfulness)",
+   "help": "Above this overlap with the source, the answer’s faithfulness check is skipped."
+  },
+  "retrieval.force_diversity": {
+   "label": "Force diversity",
+   "help": "Prioritises chunks from different sources instead of letting one source dominate."
+  },
+  "retrieval.fuzzy_correction": {
+   "label": "Fuzzy correction",
+   "help": "Attempts to correct spelling mistakes in the question before searching."
+  },
+  "retrieval.gpt_rerank_broad": {
+   "label": "Broad LLM rerank",
+   "help": "A language model re-ranks candidates by relevance before the final cut (broad searches only). Extra cost per query."
+  },
+  "retrieval.indexes": {
+   "label": "Per-index configuration",
+   "help": "Weight and rerank mode per index, for multi-index setups. Empty = every index treated equally."
+  },
+  "retrieval.indexes.name": {
+   "label": "Index name"
+  },
+  "retrieval.indexes.rerank_mode": {
+   "label": "Rerank mode",
+   "help": "\"llm\" makes this index’s chunks eligible for LLM rerank; \"semantic_only\" uses only the semantic reranker."
+  },
+  "retrieval.indexes.weight": {
+   "label": "Weight",
+   "help": "Scales this index’s chunks’ rerank score when merging multiple indexes."
+  },
+  "retrieval.latest_version": {
+   "label": "Latest-version routing",
+   "help": "For questions about the most recent version of a document family, restricts context to that version."
+  },
+  "retrieval.latest_version.date_field": {
+   "label": "Date field (field strategy)"
+  },
+  "retrieval.latest_version.enabled": {
+   "label": "Enabled"
+  },
+  "retrieval.latest_version.family_field": {
+   "label": "Family field (field strategy)"
+  },
+  "retrieval.latest_version.intent_patterns": {
+   "label": "Intent patterns (\"latest version\")"
+  },
+  "retrieval.latest_version.strategy": {
+   "label": "Version strategy",
+   "help": "\"field\" reads a date/version field from the index; \"path\" derives the year from the source’s own path."
+  },
+  "retrieval.latest_version.version_field": {
+   "label": "Version field (field strategy)"
+  },
+  "retrieval.latest_version.year_segment_regex": {
+   "label": "Year segment regex (path strategy)"
+  },
+  "retrieval.min_score": {
+   "label": "Minimum score"
+  },
+  "retrieval.neighbor_expansion": {
+   "label": "Neighbor expansion",
+   "help": "Pulls in the chunks adjacent to the best anchors, for answers that cross chunk boundaries (tables, clauses)."
+  },
+  "retrieval.neighbor_expansion.enabled": {
+   "label": "Enabled"
+  },
+  "retrieval.neighbor_expansion.max_added": {
+   "label": "Max chunks added"
+  },
+  "retrieval.neighbor_expansion.top_anchors": {
+   "label": "Top anchors"
+  },
+  "retrieval.neighbor_expansion.window": {
+   "label": "Neighbor window"
+  },
+  "retrieval.refuse_pregen_min_score": {
+   "label": "Refusal threshold before generating",
+   "note": "Below this score the bot refuses rather than answering on weak grounding. 0 disables; the core clamps to [1.0, 3.0]."
+  },
+  "retrieval.rerank_chars_per_source": {
+   "label": "Characters per source (rerank)"
+  },
+  "retrieval.rerank_top_k": {
+   "label": "GPT rerank chunk cap",
+   "note": "Only applies with forced diversity. Raise it together with top_k, or the rerank throttles the widened pool."
+  },
+  "retrieval.search_index_names": {
+   "label": "Search indexes",
+   "help": "Azure AI Search indexes to query. Empty = use the fleet’s configuration."
+  },
+  "retrieval.source_priority": {
+   "label": "Source priority",
+   "help": "Orders context by the source’s authority tier (internal → legal → external) rather than score alone."
+  },
+  "retrieval.source_priority.enabled": {
+   "label": "Enabled"
+  },
+  "retrieval.source_priority.internal_markers": {
+   "label": "Internal markers (path strategy)"
+  },
+  "retrieval.source_priority.label_overrides": {
+   "label": "Label overrides"
+  },
+  "retrieval.source_priority.legal_allowlist": {
+   "label": "Legal allowlist (path strategy)"
+  },
+  "retrieval.source_priority.reranker_floor": {
+   "label": "Reranker floor",
+   "help": "Higher-tier sources scoring below this floor are deferred behind lower-tier sources that score above it."
+  },
+  "retrieval.source_priority.strategy": {
+   "label": "Tier strategy",
+   "help": "\"field\" reads a metadata field from the index; \"path\" derives the tier from the source’s own path."
+  },
+  "retrieval.source_priority.tier_field": {
+   "label": "Tier field (field strategy)"
+  },
+  "retrieval.source_url_sas_ttl_days": {
+   "label": "Source link lifetime (days)",
+   "note": "Once expired, asking again returns the current source and the frontend shows \"source expired\". 0 = unsigned, public containers only."
+  },
+  "retrieval.top_k": {
+   "label": "Top K",
+   "help": "Number of chunks retrieved from the index before any further cut."
+  },
+  "retrieval.topicality_gate": {
+   "label": "Topicality gate",
+   "help": "Rejects off-topic chunks before they reach the model."
+  },
+  "retrieval.weak_grounding_ceiling": {
+   "label": "Weak-grounding ceiling",
+   "note": "Between the refusal threshold and this ceiling, relevance is declared LOW and the model is barred from answering from its own knowledge. 0 disables."
+  },
+  "reviewQueues": {
+   "label": "Review queues",
+   "note": "Map of queues by key. A queue referenced by a name absent here becomes a phantom queue in Cosmos."
+  },
+  "runtime.agent_mode": {
+   "label": "Default reasoning effort",
+   "help": "Applied when the request carries no mode chosen by the user. It does not cover the internal model, which always runs in the fast mode."
+  },
+  "runtime.agent_model": {
+   "label": "Agent model",
+   "help": "Must name a deployment that exists in the OpenAI or Foundry resource. Left blank, the model already configured on the server is kept."
+  },
+  "runtime.internal_model": {
+   "label": "Internal helper model",
+   "help": "The deployment of the smaller model used for internal tasks. Left blank, whatever the server has configured is kept."
+  },
+  "runtime.max_history_items": {
+   "label": "Maximum conversation history entries"
+  },
+  "runtime.max_turns": {
+   "label": "Maximum agent turns"
+  },
+  "runtime.model_timeout_s": {
+   "label": "Model timeout (seconds)"
+  },
+  "runtime.summary_every_n_turns": {
+   "label": "Summarise the conversation every N turns"
+  },
+  "system_prompt_disclaimers": {
+   "label": "Approved standard phrases",
+   "help": "Phrases the assistant may include even though they don't come from the documents. Listing them here stops them being flagged as invented.",
+   "note": "Standard phrases the bot was instructed to optionally include via custom_instructions, but that do NOT come from RAG chunks. Listing here avoids hallucination flags from judges."
+  },
+  "tool_limits.max_attached_doc_chars": {
+   "label": "Character limit per attached document",
+   "help": "Maximum amount of text read from an attached document, in characters."
+  },
+  "tool_limits.max_user_prompt_chars": {
+   "label": "Character limit for a question",
+   "help": "Maximum size of a single question, in characters."
+  },
+  "tools": {
+   "note": "Active agent tools. config is a dict per tool (passed to tool.__init__)."
+  },
+  "tools.config": {
+   "label": "Per-tool configuration",
+   "help": "An open structure: each tool defines its own fields, so a new tool needs no schema change.",
+   "note": "(open JSON — key = tool name, value = dict of parameters)"
+  },
+  "tools.config.extract_legal_terms": {
+   "label": "Legal term extraction",
+   "help": "A document extraction engine with a per-profile schema. Each field comes back with its value and the page or clause reference where it was found."
+  },
+  "tools.config.extract_legal_terms.prompt_custom": {
+   "label": "Client domain instructions",
+   "help": "Appended to the legal model’s base contract — they never replace it."
+  },
+  "tools.config.extract_legal_terms.prompt_preset": {
+   "label": "Instruction preset",
+   "help": "A product preset from the tool_playbooks catalogue. Empty leaves only the base contract."
+  },
+  "tools.config.extract_legal_terms.schema": {
+   "label": "Extraction schema",
+   "help": "Each entry is a field to extract, with a label and an instruction. Empty uses the tool’s default schema (contract terms)."
+  },
+  "tools.config.extract_legal_terms.title": {
+   "label": "Result card title"
+  },
+  "tools.config.generate_boq": {
+   "label": "Bill of quantities (BOQ)"
+  },
+  "tools.config.generate_boq.prompt_custom": {
+   "label": "Free-form client instructions",
+   "help": "Appended to the model’s base contract — they never replace it."
+  },
+  "tools.config.generate_boq.prompt_preset": {
+   "label": "Measurement standard",
+   "help": "A preset from the tool_playbooks catalogue (for example pronic_pt, pomi_gcc, cesmm_civil, nrm2_building). Empty leaves only the base contract."
+  },
+  "tools.config.generate_boq.rates": {
+   "label": "Rate table",
+   "help": "The explicit source of costs: the engine never invents prices. Each rule fills in lines that arrive with no price."
+  },
+  "tools.config.generate_boq.rates.label": {
+   "label": "Rule label"
+  },
+  "tools.config.generate_boq.rates.match": {
+   "label": "Text to match in the description",
+   "help": "Matched as a substring, case-insensitively."
+  },
+  "tools.config.generate_boq.rates.price": {
+   "label": "Unit price"
+  },
+  "tools.config.generate_boq.rates.unit": {
+   "label": "Unit of measurement",
+   "help": "If given, the rule applies only when the line’s unit matches as well."
+  },
+  "tools.config.generate_boq.scale": {
+   "label": "Scale calibration",
+   "help": "Plausibility limits for the PDF drawing reader. Rarely touched: the scale is normally confirmed by the title block or the dimension chain. Empty uses the defaults."
+  },
+  "tools.config.generate_boq.scale.max_corrob_printed_ratio": {
+   "label": "Maximum divergence between dimensions and title block",
+   "help": "Above this ratio the title block is discarded and the dimensions win. Engine default: 2.5."
+  },
+  "tools.config.generate_boq.scale.max_drawing_span_mm": {
+   "label": "Maximum plausible drawing span (mm)",
+   "help": "Engine default: 2,000,000 mm, that is 2 km. Raise it for civil works spanning several kilometres."
+  },
+  "tools.config.generate_boq.scale.min_drawing_span_mm": {
+   "label": "Minimum plausible drawing span (mm)",
+   "help": "Engine default: 500 mm, that is 0.5 m. Lower it for details of small parts."
+  },
+  "tools.config.generate_image": {
+   "label": "Image generation"
+  },
+  "tools.config.generate_image.model": {
+   "label": "Image generation model",
+   "help": "The deployment name, for example gpt-image-1. Empty uses the core’s default model."
+  },
+  "tools.config.record_contact_details": {
+   "label": "Contact capture",
+   "help": "Structured data collection during the conversation. The fields are fixed; the model only decides when to fill them. With no fields or no legal basis the tool stays inert."
+  },
+  "tools.config.record_contact_details.capture_type": {
+   "label": "Record type",
+   "help": "Fixed per profile, never chosen by the model. It separates a sales lead from a job application or a quote request."
+  },
+  "tools.config.record_contact_details.fields": {
+   "label": "Fields to collect",
+   "help": "The model sees exactly these fields and no others. Empty leaves the tool inert."
+  },
+  "tools.config.record_contact_details.fields.hint": {
+   "label": "Fill-in instruction",
+   "help": "Given to the model, not shown to the user."
+  },
+  "tools.config.record_contact_details.fields.key": {
+   "label": "Technical field key",
+   "help": "English, snake_case. It is the parameter name the model sees and the key stored on the record."
+  },
+  "tools.config.record_contact_details.fields.label": {
+   "label": "Field label",
+   "help": "Used in listings and in the privacy notice. Accepts plain text or a map of {language: text}."
+  },
+  "tools.config.record_contact_details.fields.required": {
+   "label": "Essential field",
+   "help": "Does not block saving — a partial capture is still stored. It only feeds the record’s completeness score."
+  },
+  "tools.config.record_contact_details.legal_basis": {
+   "label": "Legal basis for processing",
+   "help": "The client’s decision as data controller. In an employment context consent is usually the wrong basis: the imbalance of power stops it being freely given.",
+   "options": {
+    "": "Not set — the tool stays inactive"
+   }
+  },
+  "tools.config.record_contact_details.legal_basis_set_at": {
+   "label": "When the legal basis was chosen",
+   "help": "Filled in automatically on save; it records when the decision was taken."
+  },
+  "tools.config.record_contact_details.legal_basis_set_by": {
+   "label": "Who chose the legal basis",
+   "help": "Filled in automatically on save; it records who took the decision."
+  },
+  "tools.config.record_contact_details.notify_emails": {
+   "label": "Notification recipients",
+   "help": "With the notification on, at least one address is required. These are not the ingest queue’s operational alerts, which have another owner."
+  },
+  "tools.config.record_contact_details.notify_language": {
+   "label": "Notification email language",
+   "help": "This is the language of whoever reads the notice, not the visitor’s: an Arabic-speaking visitor produces a Portuguese email with the data in Arabic.",
+   "options": {
+    "": "Profile fallback language"
+   }
+  },
+  "tools.config.record_contact_details.notify_on_capture": {
+   "label": "Send an email notification",
+   "help": "Sent once per conversation, when the record becomes complete — not on every new field."
+  },
+  "tools.config.record_contact_details.notify_subject": {
+   "label": "Email subject",
+   "help": "The {capture_type} and {client} placeholders are substituted."
+  },
+  "tools.config.record_contact_details.purpose": {
+   "label": "Purpose of the collection",
+   "help": "Specific and in the client’s own voice — it is what appears in the consent request. Required when the legal basis is consent."
+  },
+  "tools.config.record_contact_details.retention_days": {
+   "label": "Record retention (days)",
+   "help": "Counted from the last contact rather than from creation, because the record is updated as the conversation goes on. Empty or 0 means no expiry."
+  },
+  "tools.config.search_web": {
+   "label": "Web search"
+  },
+  "tools.config.search_web.allowed_domains": {
+   "label": "Allowed domains"
+  },
+  "tools.config.search_web.mode": {
+   "label": "Search mode",
+   "options": {
+    "": "Not set — same as \"agent\""
+   }
+  },
+  "tools.config.search_web.project_endpoint": {
+   "label": "Foundry project endpoint"
+  },
+  "tools.config.search_web.temperature": {
+   "label": "Agent temperature",
+   "help": "Empty uses the agent’s own default temperature."
+  },
+  "tools.config.search_web.web_agent_id": {
+   "label": "Search agent ID"
+  },
+  "tools.config.search_web.web_agent_name": {
+   "label": "Search agent name"
+  },
+  "tools.enabled": {
+   "label": "Enabled tools",
+   "help": "The document RAG baseline. The backend’s live catalogue is the full list: the editor preselects these and shows the rest as toggles."
+  },
+  "voice.aiDisclosure": {
+   "label": "AI notice at the start of the call",
+   "help": "Tells the caller they are speaking to an AI. Required by the AI Act (Art. 50)."
+  },
+  "voice.category_hints": {
+   "label": "Suggested categories",
+   "help": "Categories offered to the assistant when it logs a request, so classification stays consistent."
+  },
+  "voice.deployment": {
+   "label": "Voice model deployment",
+   "help": "The name of the Realtime deployment, for example gpt-realtime-2.1-mini."
+  },
+  "voice.enabled": {
+   "label": "Enable the voice channel",
+   "help": "Off by default. The credentials for the channel live in Key Vault and never in the profile."
+  },
+  "voice.greeting": {
+   "label": "Opening greeting on the call"
+  },
+  "voice.instructions": {
+   "label": "Voice assistant instructions"
+  },
+  "voice.kb_top_n": {
+   "label": "Knowledge base results to use"
+  },
+  "voice.language": {
+   "label": "Call language"
+  },
+  "voice.queue": {
+   "label": "Ticket queue",
+   "help": "Must match one of the queues defined under review queues."
+  },
+  "voice.transcription": {
+   "label": "Call transcription",
+   "help": "A verbatim transcript, strictly opt-in: the client is the data controller. Off by default, leaving only the reconstructed summary."
+  },
+  "voice.transcription.enabled": {
+   "label": "Keep the transcript",
+   "help": "Stores a transcript of calls."
+  },
+  "voice.transcription.model": {
+   "label": "Transcription deployment",
+   "help": "The name of a transcription deployment. Do not use the gpt-4o family."
+  },
+  "voice.transcription.retention_days": {
+   "label": "Transcript retention (days)",
+   "help": "How many days transcripts are kept before deletion."
+  },
+  "voice.transfer_number": {
+   "label": "Call transfer phone number"
+  },
+  "voice.voice": {
+   "label": "Assistant voice"
+  },
+  "voice.web.enabled": {
+   "label": "Real-time voice on the site",
+   "help": "Switches on the server-side voice service. This is what makes the chat's voice button work."
+  },
+  "voices.by_locale": {
+   "label": "Voice per language"
+  },
+  "voices.max_tts_chars": {
+   "label": "Maximum characters per readout"
+  },
+  "voices.phonetic_map": {
+   "label": "Pronunciation corrections",
+   "help": "Written word to the spelling the voice should read (for example API as “ay-pee-eye”). Added to the built-in substitutions."
+  }
+ }
+}
