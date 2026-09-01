@@ -75,7 +75,10 @@ EXPOSURE: Dict[str, str] = {
     "identity.default_language": _I,  # DEPRECADO: nenhum consumidor o le; a lingua vem de language.* e frontend.language.default
     "identity.logo_url": _W,
     "identity.register": _W,
-    "identity.timezone": _I,  # sem consumidor (o core le a env TZ); interno ate ser ligado como perfil > env > default
+    # Ligado a 1 Set 2026: o core resolve perfil > env TZ > Europe/Lisbon em
+    # core/agent/clock.py, e o bloco temporal do prompt e o fast-path do
+    # "que horas sao?" leem de la. Passou a client_write no mesmo commit.
+    "identity.timezone": _W,
 
     # ──────────────────────────────────────────────────────────────────────
     # Personalidade — o cliente escolhe o tom, nao reescreve as instrucoes

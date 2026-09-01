@@ -161,9 +161,6 @@ CAMPOS_SEM_CONSUMIDOR = [
      "DEPRECADO: nada o lê. A língua da resposta vem de language.strategy/allowed/fallback "
      "e a da interface de frontend.language.default. Ligar um terceiro campo criava "
      "ambiguidade sobre qual ganha."),
-    ("identity.timezone",
-     "Sem consumidor: o core lê o fuso da env TZ. NÃO está deprecado — quando for ligado "
-     "como perfil > env > default, passa a client_write e esta entrada sai daqui, no mesmo commit."),
 ]
 
 

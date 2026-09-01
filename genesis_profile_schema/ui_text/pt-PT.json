@@ -1001,7 +1001,7 @@
   },
   "identity.default_language": {
    "label": "Idioma por defeito (não usado)",
-   "note": "DEPRECADO na v0.1.51: nenhum consumidor o lê. A língua da resposta vem de `language.strategy`/`allowed`/`fallback` e a da interface de `frontend.language.default`. Mantido só por retrocompatibilidade com o que está no blob."
+   "note": "DEPRECADO (v0.1.51): nada o lê. A língua da resposta vem da tab Linguagem; a da interface, de frontend.language.default."
   },
   "identity.logo_url": {
    "label": "URL do logótipo"
@@ -1017,8 +1017,9 @@
    }
   },
   "identity.timezone": {
-   "label": "Fuso horário (ainda não ligado)",
-   "note": "Sem consumidor em runtime: o core lê o fuso da env TZ. Não está deprecado — a intenção é ligá-lo como perfil > env > default. Até lá não se desenha controlo, para o cliente não escolher um fuso e acreditar que mudou algo."
+   "label": "Fuso horário",
+   "help": "Fuso do negócio, em nome IANA (ex.: Europe/Lisbon, Asia/Dubai). Define o que o assistente entende por \"hoje\" e por \"agora\" — não o fuso de cada utilizador.",
+   "note": "Perfil > env TZ > Europe/Lisbon, resolvido em core/agent/clock.py. Um nome inválido cai no de omissão com aviso no log, não derruba o turno."
   },
   "ingest.alerts": {
    "label": "Alertas de ingestão",
@@ -1056,7 +1057,7 @@
   "language.fallback": {
    "label": "Idioma de recurso",
    "help": "A língua em que o assistente responde quando não consegue seguir a do utilizador. Definida pela Genesis, porque o valor é uma instrução para o modelo (\"Portuguese (European Portuguese - pt-PT)\") e não um código como nos Idiomas permitidos.",
-   "note": "⚠️ NOME CANÓNICO, não código ISO — o espaço de valores é o CANONICAL_NAMES de genesis_profile_schema.languages (57). O prompt_builder injecta-o no system prompt e o language_detector resolve o ISO por CANONICAL_TO_ISO; um \"pt-PT\" seco dá instrução pior E iso_code vazio, em silêncio."
+   "note": "⚠️ NOME da língua, não código ISO — vai como instrução ao modelo. Escolher da lista: um \"pt-PT\" escrito à mão dá instrução pior e iso_code vazio, sem erro nenhum."
   },
   "language.strategy": {
    "label": "Estratégia de idioma",

@@ -248,8 +248,13 @@ um campo removido do modelo continua a viver no blob sem dar erro.
   qual, e o `pickLang` do `client-config.service` procura a chave exacta. Um
   código com região (`pt-PT`) renderiza uma entrada cujas strings caem para
   inglês ou português — degrada em silêncio, não dá erro.
-- **`identity.timezone` não tem consumidor** — o core lê a env `TZ`. Não está
-  deprecado: quando for ligado (perfil > env > default) passa a `client_write`.
+- **`identity.timezone` é lido desde a v0.1.52** — o core resolve perfil > env
+  `TZ` > `Europe/Lisbon` em `core/agent/clock.py`, e daí saem o bloco temporal
+  do system prompt e o fast-path do "que horas são?". É a hora de NEGÓCIO do
+  cliente, não a de cada utilizador (essa seria um header `X-Client-TZ`, que
+  não existe). Um nome IANA inválido cai no de omissão com aviso no log.
+  ⚠️ O core precisa do pacote `tzdata` no `requirements.txt`: a imagem é
+  `python:3.12-slim` e sem ele um `Asia/Dubai` válido cai em Lisboa.
 - **`retrieval.search_index_names` é override total da env.** Não é uma
   afinação de RAG como as vizinhas: escolhe QUE índice o bot consulta.
 - **`frontend.csp.*` só actua no rollout do frontend.** O Studio funde as listas

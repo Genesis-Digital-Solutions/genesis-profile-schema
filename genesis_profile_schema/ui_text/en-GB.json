@@ -1001,7 +1001,7 @@
   },
   "identity.default_language": {
    "label": "Default language (unused)",
-   "note": "Deprecated in v0.1.51: nothing reads it. The answer language comes from `language.strategy`/`allowed`/`fallback`, and the interface language from `frontend.language.default`. Kept only for backward compatibility with what is already in the blob."
+   "note": "Deprecated (v0.1.51): nothing reads it. The answer language comes from the Language tab; the interface language from frontend.language.default."
   },
   "identity.logo_url": {
    "label": "Logo URL"
@@ -1017,8 +1017,9 @@
    }
   },
   "identity.timezone": {
-   "label": "Time zone (not wired yet)",
-   "note": "No runtime consumer: the core reads the time zone from the TZ env var. Not deprecated — the intent is to wire it as profile > env > default. Until then no control is drawn, so nobody picks a zone and believes it changed something."
+   "label": "Time zone",
+   "help": "The business time zone, as an IANA name (e.g. Europe/Lisbon, Asia/Dubai). It sets what the assistant means by \"today\" and \"now\" — not each user’s own time zone.",
+   "note": "Profile > env TZ > Europe/Lisbon, resolved in core/agent/clock.py. An invalid name falls back with a log warning; it never breaks a turn."
   },
   "ingest.alerts": {
    "label": "Ingestion alerts",
@@ -1056,7 +1057,7 @@
   "language.fallback": {
    "label": "Fallback language",
    "help": "The language the assistant answers in when it cannot follow the user's. Set by Genesis, because the value is an instruction to the model (\"Portuguese (European Portuguese - pt-PT)\") rather than a code like in Allowed languages.",
-   "note": "⚠️ Canonical NAME, not an ISO code — the value space is CANONICAL_NAMES in genesis_profile_schema.languages (57). prompt_builder injects it into the system prompt and language_detector resolves the ISO through CANONICAL_TO_ISO; a bare \"pt-PT\" gives a weaker instruction AND an empty iso_code, silently."
+   "note": "⚠️ The language NAME, not an ISO code — it goes to the model as an instruction. Pick from the list: a hand-typed \"pt-PT\" weakens it and leaves iso_code empty, with no error."
   },
   "language.strategy": {
    "label": "Language strategy",
