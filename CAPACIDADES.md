@@ -25,9 +25,9 @@ vezes.
 
 ---
 
-## As seis camadas
+## As sete camadas
 
-Um campo do perfil obriga a seis decisões, e cada uma vive num sítio próprio.
+Um campo do perfil obriga a sete decisões, e cada uma vive num sítio próprio.
 Nenhuma delas está no modelo Pydantic por acidente: o modelo é o que o core usa
 para CARREGAR o perfil, e tudo o que lá se acrescenta pode impedir um bot de
 arrancar.
@@ -114,10 +114,41 @@ carregar. Quem escreve é que descarta; quem lê continua a ler tudo.
   core já apanha `re.error`; o que falta lá é limite de TEMPO de execução, e
   isso resolve-se no core, não aqui.
 - `looks_like_language_tag()` / `SUGGESTED_LOCALES` — forma BCP-47 e os locales
-  com voz de fábrica. **Não há lista fechada de línguas, por desenho**:
-  `auto_detect` é multilíngua total e `language.allowed` aceita `["*"]`. E não
-  serve para `language.fallback`, cujo valor é uma FRASE para o modelo
-  (`"Portuguese (European Portuguese - pt-PT)"`), não um código.
+  com voz de fábrica. Valida a FORMA, nunca a pertença: `language.allowed` aceita
+  `["*"]` e línguas de fora do mapa de propósito. E não serve para
+  `language.fallback`, cujo valor é uma FRASE para o modelo
+  (`"Portuguese (European Portuguese - pt-PT)"`), não um código. **Que valores
+  existem** é a camada 7 (`languages.py`), não esta — e há um espaço que É
+  fechado: o `UI_LANGS` do `frontend.language.*`.
+
+### 7. Que valores existem — `languages.py`
+
+O espaço de valores de um campo, quando é enumerável mas não é um `Literal`.
+Hoje só as línguas, e são o caso que justificou a camada: são **três** espaços
+distintos e não se sobrepõem.
+
+| campo | espaço | fechado? |
+|---|---|---|
+| `language.fallback` | `CANONICAL_NAMES` (57 nomes em prosa) | sim |
+| `language.allowed` | `LANGUAGE_CODES` + `"*"` | **não, por desenho** |
+| `language.aliases` (chave e valor) | `LANGUAGE_CODES` | **não, por desenho** |
+| `frontend.language.default` / `enabled` | `UI_LANGS` (8 códigos secos) | sim |
+
+O `ISO_TO_CANONICAL` **veio do core** na v0.1.51 (`core/agent/language_detector.py`),
+onde era privado — e era por isso que nem o Studio nem o backoffice do cliente
+conseguiam validar nem renderizar nenhum destes campos. O core passou a importar
+daqui e os nomes privados dele mantêm-se, para os usos internos não mexerem.
+**Não recriar uma cópia local no core**: era a divergência silenciosa que isto
+fechou.
+
+O `UI_LANGS` é uma cópia deliberada do `UI_LANGS` do fecore
+(`src/app/i18n/strings.ts`) — é TypeScript, não há como importá-lo. Quem
+acrescentar uma língua de interface lá tem de acrescentar aqui **e** dar-lhe
+etiqueta no `ui_text`; há um teste a chumbar nesse dia.
+
+Nenhuma função deste módulo recusa nada: `is_known_language_code()` responde se
+a língua está no mapa, e um `False` é motivo para AVISAR, nunca para bloquear —
+`allowed` aceita línguas de fora de propósito.
 
 ---
 
@@ -152,8 +183,8 @@ um campo removido do modelo continua a viver no blob sem dar erro.
 
 ## Invariantes que os testes protegem
 
-129 testes em `tests/` — `test_exposure.py`, `test_ui_text.py`,
-`test_presentation.py` e `test_field_checks.py`:
+172 testes em `tests/` — `test_exposure.py`, `test_ui_text.py`,
+`test_presentation.py`, `test_field_checks.py` e `test_languages.py`:
 
 - Toda a folha do schema está classificada; nenhuma entrada morta.
 - Áreas inteiramente internas — `retrieval`, `mcp`, `runtime`, `pricing`,
@@ -171,6 +202,26 @@ um campo removido do modelo continua a viver no blob sem dar erro.
   também chumba).
 - Catálogo em falta devolve vazio em vez de rebentar — texto de interface não
   derruba serviços.
+- Os campos SEM CONSUMIDOR ficam escondidos, com o motivo por campo. Um campo
+  editável que não faz nada é pior do que um campo ausente: o cliente muda-o,
+  acredita que mudou algo, e o suporte descobre meses depois.
+- `identity.default_language` está marcado `deprecated` no próprio JSON Schema
+  (não só num comentário), e não pode voltar a ter `help` — a ajuda que lá
+  estava descrevia um comportamento inexistente.
+- `language.fallback` tem de mostrar a FORMA do valor na ajuda: o rótulo
+  sozinho convida a escrever `pt-PT`, que é a coisa errada.
+- **Os defaults do contrato vivem dentro dos espaços de valores que o contrato
+  publica**: o `fallback` de fábrica é um `CANONICAL_NAMES`, os `aliases` são
+  `LANGUAGE_CODES`, o `frontend.language.default`/`enabled` são `UI_LANGS`. Se
+  divergirem, o backoffice desenha um select onde o valor actual do cliente não
+  aparece — e ao guardar muda-o sem ninguém pedir.
+- Os dois espaços de língua têm de continuar SEPARADOS (`pt` só na interface,
+  `pt-PT` só no detector): juntar as listas parece arrumação e parte os campos.
+- Cada `UI_LANGS` tem etiqueta nas duas línguas, nos dois campos — uma língua
+  nova no fecore sem etiqueta dava uma opção sem nome no backoffice.
+- Forma válida ≠ língua conhecida: `looks_like_language_tag("sw")` é `True` e
+  `is_known_language_code("sw")` é `False`, e `language_tag_problems` **não**
+  consulta o mapa. É o que mantém `allowed` aberto.
 
 ---
 
@@ -183,6 +234,22 @@ um campo removido do modelo continua a viver no blob sem dar erro.
   ao MESMO caminho da lista (`retrieval.indexes.name`). `leaf_paths()` é a
   travessia canónica — havia três escritas à mão, cada uma com o seu dialecto.
   Se precisares de outro dialecto, deriva-o desta.
+- **Sete campos de língua, TRÊS espaços de valores, um campo morto.**
+  `language.strategy`/`allowed`/`aliases`/`fallback` mandam no bot;
+  `frontend.language.default`/`enabled` mandam no selector da interface;
+  `identity.default_language` **não é lido por ninguém** (deprecado v0.1.51).
+  Dentro do bloco `language` já há dois espaços — `allowed`/`aliases` são
+  códigos ISO, `fallback` é o NOME CANÓNICO que vai como instrução ao modelo —
+  e o `frontend.language.*` é um terceiro: os 8 códigos SECOS do `UI_LANGS`
+  (`pt`, não `pt-PT`). MEDIDO nos 29 perfis da frota: todos usam `pt`, e `pt`
+  não existe no mapa do detector. Ver a camada 7.
+- **`frontend.language.enabled` chega ao selector do chat SEM filtro.** Medido
+  no fecore: o `chat.component` faz `this.enabledLanguages = enabled` tal e
+  qual, e o `pickLang` do `client-config.service` procura a chave exacta. Um
+  código com região (`pt-PT`) renderiza uma entrada cujas strings caem para
+  inglês ou português — degrada em silêncio, não dá erro.
+- **`identity.timezone` não tem consumidor** — o core lê a env `TZ`. Não está
+  deprecado: quando for ligado (perfil > env > default) passa a `client_write`.
 - **`retrieval.search_index_names` é override total da env.** Não é uma
   afinação de RAG como as vizinhas: escolhe QUE índice o bot consulta.
 - **`frontend.csp.*` só actua no rollout do frontend.** O Studio funde as listas

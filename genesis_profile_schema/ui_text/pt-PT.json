@@ -725,10 +725,34 @@
    "label": "Idiomas"
   },
   "frontend.language.default": {
-   "label": "Idioma por defeito do frontend"
+   "label": "Idioma por defeito do frontend",
+   "help": "A língua em que a interface abre antes de o visitante escolher outra.",
+   "note": "Espaço de valores FECHADO: as 8 línguas do UI_LANGS do fecore, em código seco (pt, não pt-PT). Um código com região degrada em silêncio no pickLang.",
+   "options": {
+    "pt": "Português",
+    "en": "Inglês",
+    "es": "Espanhol",
+    "fr": "Francês",
+    "de": "Alemão",
+    "it": "Italiano",
+    "nl": "Neerlandês",
+    "ar": "Árabe"
+   }
   },
   "frontend.language.enabled": {
-   "label": "Idiomas disponíveis"
+   "label": "Idiomas disponíveis",
+   "help": "As línguas que o visitante pode escolher no selector da interface. Não confundir com os Idiomas permitidos, que são a política de resposta do assistente.",
+   "note": "Chega ao selector do chat SEM filtro — um código fora do UI_LANGS renderiza uma entrada cujas strings caem para inglês ou português.",
+   "options": {
+    "pt": "Português",
+    "en": "Inglês",
+    "es": "Espanhol",
+    "fr": "Francês",
+    "de": "Alemão",
+    "it": "Italiano",
+    "nl": "Neerlandês",
+    "ar": "Árabe"
+   }
   },
   "frontend.legalNotice": {
    "label": "Aviso legal (ecrã inicial)",
@@ -976,9 +1000,8 @@
    "label": "Nome da empresa"
   },
   "identity.default_language": {
-   "label": "Idioma por defeito",
-   "help": "Idioma inicial da conversa quando o utilizador ainda não escreveu nada. \"auto\" deteta pelo browser/mensagem.",
-   "note": "\"auto\" para detecção automática; ou ISO code (pt-PT, en, es)"
+   "label": "Idioma por defeito (não usado)",
+   "note": "DEPRECADO na v0.1.51: nenhum consumidor o lê. A língua da resposta vem de `language.strategy`/`allowed`/`fallback` e a da interface de `frontend.language.default`. Mantido só por retrocompatibilidade com o que está no blob."
   },
   "identity.logo_url": {
    "label": "URL do logótipo"
@@ -994,7 +1017,8 @@
    }
   },
   "identity.timezone": {
-   "label": "Fuso horário"
+   "label": "Fuso horário (ainda não ligado)",
+   "note": "Sem consumidor em runtime: o core lê o fuso da env TZ. Não está deprecado — a intenção é ligá-lo como perfil > env > default. Até lá não se desenha controlo, para o cliente não escolher um fuso e acreditar que mudou algo."
   },
   "ingest.alerts": {
    "label": "Alertas de ingestão",
@@ -1022,15 +1046,17 @@
   "language.aliases": {
    "label": "Equivalências de idioma",
    "help": "Mapa de um código de idioma para outro que o substitui (ex.: pt-BR trata como pt-PT).",
-   "note": "Normalizações silenciosas em qualquer strategy. Ex: pt-BR → pt-PT (bot responde sempre PT europeu)"
+   "note": "Normalizações silenciosas em qualquer strategy (ex.: pt-BR → pt-PT). Chaves E valores são códigos de LANGUAGE_CODES."
   },
   "language.allowed": {
    "label": "Idiomas permitidos",
-   "note": "[\"*\"] = qualquer; ou lista ISO [\"pt-PT\", \"en\", \"es\"] (só relevante para \"restricted\")"
+   "help": "As línguas em que o assistente pode responder. Deixe «*» para não impor limite, ou indique códigos (pt-PT, en, es). Só tem efeito na estratégia «Detetar, mas só dentro da lista permitida».",
+   "note": "[\"*\"] = qualquer; ou códigos de LANGUAGE_CODES em genesis_profile_schema.languages (só relevante para \"restricted\"). Lista aberta: um código de fora é aceite."
   },
   "language.fallback": {
    "label": "Idioma de recurso",
-   "note": "Língua quando restricted detecta fora da lista, ou frontend_locked sem hint"
+   "help": "A língua em que o assistente responde quando não consegue seguir a do utilizador. Definida pela Genesis, porque o valor é uma instrução para o modelo (\"Portuguese (European Portuguese - pt-PT)\") e não um código como nos Idiomas permitidos.",
+   "note": "⚠️ NOME CANÓNICO, não código ISO — o espaço de valores é o CANONICAL_NAMES de genesis_profile_schema.languages (57). O prompt_builder injecta-o no system prompt e o language_detector resolve o ISO por CANONICAL_TO_ISO; um \"pt-PT\" seco dá instrução pior E iso_code vazio, em silêncio."
   },
   "language.strategy": {
    "label": "Estratégia de idioma",

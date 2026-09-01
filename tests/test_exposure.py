@@ -118,6 +118,8 @@ NUNCA_ESCRITO_PELO_CLIENTE = [
     ("compliance.annex_iv_doc_url", "documentação técnica gerada pela Genesis"),
     ("tools.enabled", "escopo contratado, não preferência de UI"),
     ("guestAccess.rateLimits.perDay", "limite de abuso definido pela Genesis"),
+    ("language.fallback", "é o NOME CANÓNICO que vai como instrução ao modelo, não um código ISO: "
+                          "um \"pt-PT\" escrito pelo cliente dá instrução pior e iso_code vazio, em silêncio"),
 ]
 
 
@@ -148,3 +150,39 @@ def test_frontend_csp_e_auth_inteiros():
             if p.startswith(prefixo) and exp.exposure_of(p) != exp.INTERNAL
         ]
         assert expostos == [], f"'{prefixo}*' devia ser interno; expostos: {expostos}"
+
+
+# ─────────────────────────────────────────────────────────────────────────────
+# Campos sem consumidor
+# ─────────────────────────────────────────────────────────────────────────────
+
+CAMPOS_SEM_CONSUMIDOR = [
+    ("identity.default_language",
+     "DEPRECADO: nada o lê. A língua da resposta vem de language.strategy/allowed/fallback "
+     "e a da interface de frontend.language.default. Ligar um terceiro campo criava "
+     "ambiguidade sobre qual ganha."),
+    ("identity.timezone",
+     "Sem consumidor: o core lê o fuso da env TZ. NÃO está deprecado — quando for ligado "
+     "como perfil > env > default, passa a client_write e esta entrada sai daqui, no mesmo commit."),
+]
+
+
+@pytest.mark.parametrize("path,motivo", CAMPOS_SEM_CONSUMIDOR,
+                         ids=[p for p, _ in CAMPOS_SEM_CONSUMIDOR])
+def test_campo_sem_consumidor_fica_escondido(path, motivo):
+    """Um campo editável que não faz nada é pior do que um campo ausente: o
+    cliente muda-o, acredita que mudou algo, e o suporte descobre meses
+    depois. Motivo por campo: """
+    assert exp.exposure_of(path) == exp.INTERNAL, (
+        f"'{path}' voltou a estar visível. {motivo}"
+    )
+
+
+def test_o_campo_deprecado_esta_marcado_no_proprio_schema():
+    """A marca tem de estar onde um consumidor que só lê JSON Schema a veja —
+    não só num comentário que ninguém importa."""
+    from genesis_profile_schema.client_profile_schema import ClientProfileSchema
+
+    js = ClientProfileSchema.model_json_schema()
+    campo = js["$defs"]["ProfileIdentity"]["properties"]["default_language"]
+    assert campo.get("deprecated") is True, campo

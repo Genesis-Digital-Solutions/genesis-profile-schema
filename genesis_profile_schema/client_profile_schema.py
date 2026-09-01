@@ -122,7 +122,23 @@ class ProfileIdentity(BaseModel):
     # Vazio = sem papel explícito. O core aceita ainda o alias legacy `role`
     # (fora do schema, só retrocompat). Formalizado v0.1.43 (era fantasma).
     assistant_role: str = ""
-    default_language: str = "auto"
+    # ⚠️ DEPRECADO (v0.1.51) — NENHUM consumidor o lê. Verificado a 1 Set 2026
+    # nos três repos: o `prompt_builder` do core lê deste bloco só company_name,
+    # assistant_name, assistant_role e register; a língua da resposta vem de
+    # `language.*` (o orquestrador constrói a LanguagePolicy com
+    # strategy/allowed/aliases/fallback) e o frontend usa
+    # `frontend.language.default`. Este campo é um TERCEIRO campo de língua que
+    # não decide nada — ligá-lo criava ambiguidade sobre qual ganha, que é pior
+    # do que o silêncio. Mantido por retrocompat (a frota tem-no no blob);
+    # nunca mostrar em UI. Classificado `internal` em exposure.py.
+    default_language: str = Field(default="auto", json_schema_extra={"deprecated": True})
+    # Sem consumidor em runtime (1 Set 2026): o core lê o fuso da env `TZ`
+    # (config/settings.py). Ao contrário do default_language, este NÃO está
+    # deprecado — tem caso de produto (datas, horários de atendimento) e a
+    # intenção é ligá-lo como perfil > env > default, o padrão que
+    # `pricing.usd_to_eur` e `guestAccess.realtimeSessionEstEur` já usam.
+    # Até lá é `internal`: não se desenha controlo para um campo que não faz
+    # nada, senão o cliente escolhe um fuso e acredita que mudou algo.
     timezone: str = "Europe/Lisbon"
     logo_url: str = ""
     register: Literal["formal", "informal", "mirror"] = "formal"
@@ -969,6 +985,14 @@ class ProfileLanguage(BaseModel):
     strategy: Literal["auto_detect", "restricted", "frontend_locked"] = "auto_detect"
     allowed: List[str] = Field(default_factory=lambda: ["*"])
     aliases: Dict[str, str] = Field(default_factory=lambda: dict(_DEFAULT_LANGUAGE_ALIASES))
+    # ⚠️ NÃO é um código de língua — é o NOME CANÓNICO, que vai como INSTRUÇÃO
+    # para o modelo. `allowed` e `aliases` falam ISO; este fala prosa, e são
+    # dois espaços de valores no mesmo bloco.
+    # Verificado no core: `prompt_builder` constrói com ele o bloco de língua
+    # injectado no system prompt, e `language_detector` resolve o ISO por
+    # `_CANONICAL_TO_ISO[verdict.language]` — um "pt-PT" seco dá instrução
+    # pior E `iso_code` vazio, em silêncio.
+    # Por isso é `client_read` em exposure.py: quem o escreve somos nós.
     fallback: str = _DEFAULT_LANGUAGE_FALLBACK
 
 

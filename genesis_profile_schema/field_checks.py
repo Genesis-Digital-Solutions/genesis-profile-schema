@@ -170,17 +170,21 @@ def regex_risks(patterns) -> List[Tuple[str, str]]:
 
 
 # ─────────────────────────────────────────────────────────────────────────────
-# Códigos de língua
+# Códigos de língua — FORMA, nunca pertença
 #
-# NÃO há lista fechada, e isso é desenho, não omissão: a estratégia
-# `auto_detect` é multilíngua total e `language.allowed` aceita `["*"]`. Um
-# `Literal` fecharia um campo que o produto abre de propósito.
+# Estas funções respondem "isto tem cara de etiqueta de língua?" e mais nada.
+# QUE línguas existem é o `languages.py`, e de propósito noutro módulo: aqui
+# nunca se pode consultar o mapa, senão `language.allowed` deixava de aceitar
+# uma língua de fora — e aceita, porque `auto_detect` é multilíngua total e
+# `["*"]` é válido. Há um teste a exigir que `looks_like_language_tag("sw")`
+# continue a dar `True` com o "sw" fora do mapa.
 #
 # Também não se pode validar `language.fallback` com esta função: o default do
 # próprio schema é a FRASE "Portuguese (European Portuguese - pt-PT)", porque
-# esse campo é instrução para o modelo, não um código. `allowed` e `aliases`
-# é que falam em códigos. São dois espaços de valores no mesmo bloco — saber
-# qual é qual é metade do trabalho de quem desenha o formulário.
+# esse campo é instrução para o modelo, não um código — o espaço dele é o
+# `CANONICAL_NAMES`. E `frontend.language.*` é um terceiro espaço, o `UI_LANGS`,
+# esse fechado. São três; saber qual é qual é metade do trabalho de quem
+# desenha o formulário.
 # ─────────────────────────────────────────────────────────────────────────────
 
 _LANGUAGE_TAG = re.compile(r"^[A-Za-z]{2,3}(?:-[A-Za-z]{4})?(?:-(?:[A-Za-z]{2}|\d{3}))?$")

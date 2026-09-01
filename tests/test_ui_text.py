@@ -253,3 +253,28 @@ def test_a_nota_de_operador_nao_vai_na_projeccao():
     despejo = json.dumps(ui.annotated_json_schema("pt-PT"), ensure_ascii=False)
     nota = ui.note_of("retrieval.weak_grounding_ceiling", "pt-PT")
     assert nota and nota not in despejo
+
+
+def test_campo_sem_consumidor_nao_promete_comportamento():
+    """`identity.default_language` tinha ajuda a descrever um comportamento que
+    o campo NÃO tem ("idioma inicial da conversa"). Texto errado é pior do que
+    texto nenhum: descreve uma funcionalidade inexistente com autoridade."""
+    for locale in ui.LOCALES:
+        assert ui.help_of("identity.default_language", locale) is None, (
+            "voltou a haver ajuda a prometer comportamento num campo que nada lê"
+        )
+        assert ui.note_of("identity.default_language", locale), (
+            "a nota de operador tem de explicar porque está aqui"
+        )
+        assert ui.note_of("identity.timezone", locale)
+
+
+def test_o_idioma_de_recurso_avisa_que_nao_e_um_codigo():
+    """O rótulo sozinho ("Idioma de recurso") convida a escrever `pt-PT`. A
+    ajuda tem de dizer que o valor é uma instrução, não um código."""
+    for locale in ui.LOCALES:
+        ajuda = ui.help_of("language.fallback", locale)
+        assert ajuda, "language.fallback sem ajuda"
+        assert "Portuguese (European Portuguese - pt-PT)" in ajuda, (
+            "a ajuda tem de mostrar a FORMA do valor, não só descrevê-la"
+        )

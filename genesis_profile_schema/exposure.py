@@ -72,10 +72,10 @@ EXPOSURE: Dict[str, str] = {
     "identity.assistant_name": _W,
     "identity.assistant_role": _W,
     "identity.company_name": _W,
-    "identity.default_language": _W,
+    "identity.default_language": _I,  # DEPRECADO: nenhum consumidor o le; a lingua vem de language.* e frontend.language.default
     "identity.logo_url": _W,
     "identity.register": _W,
-    "identity.timezone": _W,
+    "identity.timezone": _I,  # sem consumidor (o core le a env TZ); interno ate ser ligado como perfil > env > default
 
     # ──────────────────────────────────────────────────────────────────────
     # Personalidade — o cliente escolhe o tom, nao reescreve as instrucoes
@@ -138,7 +138,7 @@ EXPOSURE: Dict[str, str] = {
     # ──────────────────────────────────────────────────────────────────────
     "language.aliases": _I,  # tabela de normalizacao interna
     "language.allowed": _W,
-    "language.fallback": _W,
+    "language.fallback": _R,  # NOME CANONICO que vai como instrucao ao modelo, nao um codigo ISO: quem o escreve somos nos
     "language.strategy": _W,
 
     # ──────────────────────────────────────────────────────────────────────

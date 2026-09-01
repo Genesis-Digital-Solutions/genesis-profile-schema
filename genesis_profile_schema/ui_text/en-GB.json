@@ -725,10 +725,34 @@
    "label": "Languages"
   },
   "frontend.language.default": {
-   "label": "Frontend default language"
+   "label": "Frontend default language",
+   "help": "The language the interface opens in before the visitor picks another.",
+   "note": "CLOSED value space: the 8 languages in the fecore's UI_LANGS, as bare codes (pt, not pt-PT). A regional code degrades silently in pickLang.",
+   "options": {
+    "pt": "Portuguese",
+    "en": "English",
+    "es": "Spanish",
+    "fr": "French",
+    "de": "German",
+    "it": "Italian",
+    "nl": "Dutch",
+    "ar": "Arabic"
+   }
   },
   "frontend.language.enabled": {
-   "label": "Available languages"
+   "label": "Available languages",
+   "help": "The languages the visitor can pick in the interface selector. Not to be confused with Allowed languages, which is the assistant's reply policy.",
+   "note": "Reaches the chat selector UNFILTERED — a code outside UI_LANGS renders an entry whose strings fall back to English or Portuguese.",
+   "options": {
+    "pt": "Portuguese",
+    "en": "English",
+    "es": "Spanish",
+    "fr": "French",
+    "de": "German",
+    "it": "Italian",
+    "nl": "Dutch",
+    "ar": "Arabic"
+   }
   },
   "frontend.legalNotice": {
    "label": "Legal notice (home screen)",
@@ -976,9 +1000,8 @@
    "label": "Company name"
   },
   "identity.default_language": {
-   "label": "Default language",
-   "help": "The conversation’s starting language before the user has typed anything. \"auto\" detects from the browser/message.",
-   "note": "\"auto\" for auto-detect; or ISO code (pt-PT, en, es)"
+   "label": "Default language (unused)",
+   "note": "Deprecated in v0.1.51: nothing reads it. The answer language comes from `language.strategy`/`allowed`/`fallback`, and the interface language from `frontend.language.default`. Kept only for backward compatibility with what is already in the blob."
   },
   "identity.logo_url": {
    "label": "Logo URL"
@@ -994,7 +1017,8 @@
    }
   },
   "identity.timezone": {
-   "label": "Timezone"
+   "label": "Time zone (not wired yet)",
+   "note": "No runtime consumer: the core reads the time zone from the TZ env var. Not deprecated — the intent is to wire it as profile > env > default. Until then no control is drawn, so nobody picks a zone and believes it changed something."
   },
   "ingest.alerts": {
    "label": "Ingestion alerts",
@@ -1022,15 +1046,17 @@
   "language.aliases": {
    "label": "Language aliases",
    "help": "Maps one language code to another that stands in for it (e.g. treat pt-BR as pt-PT).",
-   "note": "Silent normalizations in any strategy. E.g. pt-BR → pt-PT (bot always responds in European PT)"
+   "note": "Silent normalizations in any strategy (e.g. pt-BR → pt-PT). Both keys AND values are LANGUAGE_CODES."
   },
   "language.allowed": {
    "label": "Allowed languages",
-   "note": "[\"*\"] = any; or ISO list [\"pt-PT\", \"en\", \"es\"] (only relevant for \"restricted\")"
+   "help": "The languages the assistant may reply in. Leave «*» for no limit, or list codes (pt-PT, en, es). Only takes effect under the «Detect, but only within the allowed list» strategy.",
+   "note": "[\"*\"] = any; or codes from LANGUAGE_CODES in genesis_profile_schema.languages (only relevant for \"restricted\"). Open list: a code from outside is accepted."
   },
   "language.fallback": {
    "label": "Fallback language",
-   "note": "Language when restricted detects off-list, or frontend_locked has no hint"
+   "help": "The language the assistant answers in when it cannot follow the user's. Set by Genesis, because the value is an instruction to the model (\"Portuguese (European Portuguese - pt-PT)\") rather than a code like in Allowed languages.",
+   "note": "⚠️ Canonical NAME, not an ISO code — the value space is CANONICAL_NAMES in genesis_profile_schema.languages (57). prompt_builder injects it into the system prompt and language_detector resolves the ISO through CANONICAL_TO_ISO; a bare \"pt-PT\" gives a weaker instruction AND an empty iso_code, silently."
   },
   "language.strategy": {
    "label": "Language strategy",
