@@ -183,3 +183,72 @@ def test_o_campo_deprecado_esta_marcado_no_proprio_schema():
     js = ClientProfileSchema.model_json_schema()
     campo = js["$defs"]["ProfileIdentity"]["properties"]["default_language"]
     assert campo.get("deprecated") is True, campo
+
+
+# ── formatos de data no JSON Schema (issue #1 do gaibo, v0.1.53) ─────────────
+
+def test_os_campos_de_data_declaram_o_formato_no_json_schema():
+    """O gaibo deriva o controlo do `format` (date picker / data localizada),
+    como já deriva as cores do `pattern`. Prometido no issue #1 a 1 Set 2026."""
+    from genesis_profile_schema import leaf_shapes
+
+    shapes = leaf_shapes()
+    esperado = {
+        "compliance.classification.classified_at": "date-time",
+        "compliance.classification.legal_review_date": "date",
+        "compliance.classification.next_review_due": "date",
+        "compliance.annex_iv_generated_at": "date-time",
+    }
+    import json
+    from genesis_profile_schema import ClientProfileSchema
+
+    esquema = ClientProfileSchema.model_json_schema()
+
+    def no(caminho):
+        # resolve o caminho no schema seguindo $refs
+        defs = esquema.get("$defs", {})
+        atual = esquema
+        for seg in caminho.split("."):
+            props = atual.get("properties", {})
+            atual = props[seg]
+            while "$ref" in atual:
+                atual = defs[atual["$ref"].split("/")[-1]]
+            if "allOf" in atual and len(atual["allOf"]) == 1 and "$ref" in atual["allOf"][0]:
+                atual = defs[atual["allOf"][0]["$ref"].split("/")[-1]]
+        return atual
+
+    for caminho, formato in esperado.items():
+        assert no(caminho).get("format") == formato, caminho
+
+
+def test_a_anotacao_de_formato_nao_mexe_na_validacao():
+    """Deliberado: o mesmo modelo CARREGA o perfil que serve o bot, e há
+    valores históricos imperfeitos nestes campos. O picker previne para a
+    frente; o passado carrega na mesma."""
+    from genesis_profile_schema import ClientProfileSchema
+
+    p = ClientProfileSchema.model_validate({
+        "compliance": {
+            "classification": {
+                "classified_at": "texto livre de 2025",
+                "legal_review_date": "ainda por marcar",
+            },
+        },
+    })
+    assert p.compliance.classification.classified_at == "texto livre de 2025"
+
+
+def test_date_field_do_latest_version_NAO_tem_formato_de_data():
+    """`retrieval.latest_version.date_field` parece uma data e não é — é o
+    NOME de um campo do índice (default `source_last_modified`). Um `format`
+    aqui punha um date picker em cima de um nome de campo; avisado ao gaibo
+    no issue #1 para as heurísticas por sufixo deles.
+
+    Verificado no JSON Schema CRU (o leaf_shapes não transporta `format` —
+    uma asserção sobre ele passava sem testar nada)."""
+    from genesis_profile_schema import ClientProfileSchema
+
+    esquema = ClientProfileSchema.model_json_schema()
+    no = esquema["$defs"]["ProfileLatestVersion"]["properties"]["date_field"]
+    assert no.get("type") == "string"
+    assert "format" not in no, no

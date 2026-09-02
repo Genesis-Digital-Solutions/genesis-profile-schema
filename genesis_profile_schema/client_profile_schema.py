@@ -1488,11 +1488,13 @@ class ProfileComplianceClassification(BaseModel):
     justification: str = ""          # justificação humana (auto-gerada + editável)
     annex_iii_answers: Dict[str, bool] = Field(default_factory=dict)
     classified_by: str = ""          # quem classificou (nome/email)
-    classified_at: str = ""          # ISO datetime
+    # `format` no JSON Schema (gaibo deriva o controlo); validação intacta.
+    classified_at: str = Field(default="", json_schema_extra={"format": "date-time"})
     reviewed_by_legal: bool = False  # jurista validou (opcional; não bloqueia `limited`)
-    legal_review_date: str = ""
+    legal_review_date: str = Field(default="", json_schema_extra={"format": "date"})
     legal_reviewer: str = ""
-    next_review_due: str = ""        # re-avaliar anualmente / em mudança de uso
+    # re-avaliar anualmente / em mudança de uso
+    next_review_due: str = Field(default="", json_schema_extra={"format": "date"})
 
 
 class ProfileComplianceHighRisk(BaseModel):
@@ -1524,7 +1526,8 @@ class ProfileCompliance(BaseModel):
     # deployer (cliente), formalizada por cláusula contratual.
     deployer_content_responsibility: bool = True
     annex_iv_doc_url: str = ""        # link p/ documentação técnica gerada (blob)
-    annex_iv_generated_at: str = ""   # ISO datetime da última geração
+    # ISO datetime da última geração; `format` para a UI, validação intacta.
+    annex_iv_generated_at: str = Field(default="", json_schema_extra={"format": "date-time"})
     # v0.1.45 (28 Ago 2026, pack AI Act): identificação estruturada do
     # deployment para a análise por deployment que o baseline jurídico exige
     # (setor do cliente + caso de uso concreto). Texto livre curto, opcionais

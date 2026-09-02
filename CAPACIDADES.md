@@ -134,6 +134,13 @@ distintos e não se sobrepõem.
 | `language.aliases` (chave e valor) | `LANGUAGE_CODES` | **não, por desenho** |
 | `frontend.language.default` / `enabled` | `UI_LANGS` (8 códigos secos) | sim |
 
+Desde a v0.1.53, os quatro campos de data do `compliance` declaram
+`format: "date"`/`"date-time"` no JSON Schema (via `json_schema_extra`, só
+anotação — a validação continua a aceitar texto livre, porque o modelo também
+CARREGA perfis com valores históricos imperfeitos). ⚠️ O
+`retrieval.latest_version.date_field` parece data e NÃO é (é o nome de um campo
+do índice) — há teste a proibir-lhe um `format`.
+
 O `ISO_TO_CANONICAL` **veio do core** na v0.1.51 (`core/agent/language_detector.py`),
 onde era privado — e era por isso que nem o Studio nem o backoffice do cliente
 conseguiam validar nem renderizar nenhum destes campos. O core passou a importar
