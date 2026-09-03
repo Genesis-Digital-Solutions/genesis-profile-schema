@@ -44,7 +44,7 @@ warnings.filterwarnings(
     category=UserWarning,
 )
 
-from typing import Any, Dict, List, Literal, Optional, Union
+from typing import Annotated, Any, Dict, List, Literal, Optional, Union
 from pydantic import BaseModel, ConfigDict, Field, model_validator
 
 
@@ -687,7 +687,11 @@ class ProfileRetrievalIndex(BaseModel):
     `rerank_mode` decide se os chunks desse índice tornam o GPT rerank elegível
     (`llm`) ou se basta o reranker semântico do Azure (`semantic_only`).
     Índice não listado = `llm` (default)."""
-    model_config = ConfigDict(extra="allow")
+    # allow_inf_nan=False (v0.1.54): `ge=0.0` deixava passar `inf` — e um
+    # `weight: 1e400` no blob virava `inf`, com `0.0 * inf = nan` a contaminar
+    # os scores no merge (azure_search_client) e a ordenação a ficar
+    # arbitrária. `nan` já era recusado pelo `ge`; `inf` não era.
+    model_config = ConfigDict(extra="allow", allow_inf_nan=False)
 
     name: str
     weight: float = Field(default=1.0, ge=0.0)
@@ -699,7 +703,23 @@ class ProfileRetrieval(BaseModel):
     Knobs de RAG/retrieval por cliente. Antes só env vars (KB_*, RAG_*) — logo
     invisíveis e não-afináveis por cliente no Console. Agora no perfil.
 
-    Regra: qualidade acima de custo. Sem limites superiores — na dúvida, subir.
+    **Regra de limites** (revista Set 2026; substitui "sem limites superiores —
+    na dúvida, subir", que se estava a ler como "nunca pôr tecto nenhum"):
+
+      1. Não se BAIXA um limite por parecer grande. Baixa-se com prova de que
+         não piora a resposta — medida no Agent Tester, nunca por intuição.
+      2. Um limite que o pipeline não honra não é generosidade, é mentira.
+         O `top_k` satura em 50: o semantic reranker do Azure tem hard limit
+         de 50 docs/query e o core corta lá (`AZURE_SEMANTIC_RERANK_MAX_K`).
+         Configurar 200 entrega 50 e deixa o operador a acreditar noutra coisa.
+      3. Os tectos aqui existem para apanhar o ZERO A MAIS, não para poupar.
+         Ficam muito acima de qualquer uso legítimo (a frota vive em 5–35);
+         quem precisar de mais sobe o tecto de propósito — isso é uma decisão,
+         não um acidente de digitação.
+      4. Qualidade acima de custo continua a valer. Mas gastar tokens que
+         comprovadamente não melhoram a resposta não é qualidade, é desperdício:
+         a p90 de chunk medida na frota (~1130 tokens), ir de `top_k` 20 → 50
+         leva o contexto de ~22k para ~57k tokens POR TURNO.
     """
     model_config = ConfigDict(extra="allow")
 
@@ -710,7 +730,14 @@ class ProfileRetrieval(BaseModel):
     # qualquer cliente via Studio com efeito em ≤TTL, sem redeploy do CA.
     search_index_names: List[str] = Field(default_factory=list)
 
-    top_k: int = Field(default=20, ge=1)                       # KB_TOP_K
+    # Tecto 200 (v0.1.54) — ver regra 3 no docstring. NÃO é o limite útil (esse
+    # é 50, onde o reranker satura); é a rede que apanha o zero a mais. 200 é
+    # ~6× o máximo da frota (35) e 4× a saturação, logo não estorva ninguém.
+    # Vale sobretudo pelo caminho degradado: quando o semantic reranker falha,
+    # o core cai em `hybrid` e o `raw_k` passa SEM corte — com `top_k` de 4
+    # dígitos, o custo dispara no pior momento possível. Acima de 50 o core
+    # avisa no arranque da tool que o valor não vai ser honrado.
+    top_k: int = Field(default=20, ge=1, le=200)               # KB_TOP_K
     # Corte final de contexto: nº de chunks (ordenados por reranker_score,
     # determinístico) que passam ao modelo ANTES da expansão de vizinhos.
     # 0 = OFF (passa todos, comportamento histórico). Opt-in por cliente para
@@ -1463,8 +1490,17 @@ class ProfileFrontend(BaseModel):
     # pré-selecionado. O fecore lê do /client-config com fallback ao
     # environment. Formalizados v0.1.43 (eram fantasmas em toda a frota, com
     # exatamente estes valores).
-    shareExpiryOptionsDays: List[int] = Field(default_factory=lambda: [7, 30])
-    shareDefaultExpiryDays: int = Field(default=7, ge=1)
+    # Tecto 30 (v0.1.54): NÃO é uma redução — é o limite que o core sempre
+    # aplicou (`MAX_EXPIRY_DAYS` em core/handlers/shared.py, com um segundo
+    # clamp em shares_store). Sem ele o schema aceitava 999999, o modal
+    # oferecia esse prazo ao utilizador e o servidor entregava 30 dias em
+    # silêncio: o contrato mentia. Para prazos maiores sobe-se primeiro o
+    # MAX_EXPIRY_DAYS do core e só depois este `le`.
+    shareExpiryOptionsDays: List[Annotated[int, Field(ge=1, le=30)]] = Field(
+        default_factory=lambda: [7, 30],
+        max_length=30,
+    )
+    shareDefaultExpiryDays: int = Field(default=7, ge=1, le=30)
     # Género gramatical do assistente (afeta artigos nas labels fixas do FE).
     assistantGender: Literal["feminine", "masculine", "neutral"] = "masculine"
 

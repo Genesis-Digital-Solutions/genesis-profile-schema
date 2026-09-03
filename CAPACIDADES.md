@@ -236,7 +236,34 @@ um campo removido do modelo continua a viver no blob sem dar erro.
 
 - **`extra="allow"` em todo o lado.** Uma chave inventada é aceite sem erro. É
   por isso que o Studio tem o `profile_schema_guard.py`; a validação Pydantic
-  sozinha não apanha typos.
+  sozinha não apanha typos. **O caso extremo já aconteceu**: o envelope do
+  `GET /admin/profile/get` (`{profile, etag, last_modified}`) validava como se
+  fosse um perfil — `client_id` a `None`, `identity` nos defaults, perfil real
+  enterrado numa chave extra, resposta 200. O core recusa-o desde Set 2026
+  (`profile_save_guards.py`); o schema continua a aceitá-lo, por desenho.
+- **`ge=` não trava o infinito** (corrigido v0.1.54). `weight: float = Field(ge=0.0)`
+  aceitava `1e400` → `inf`, e no merge dos scores `0.0 * inf = nan` tornava a
+  ordenação do retrieval arbitrária. `nan` já era recusado pelo `ge`; `inf` não.
+  Fechado com `allow_inf_nan=False` no `ProfileRetrievalIndex`. Qualquer campo
+  `float` novo que multiplique alguma coisa precisa do mesmo.
+- **A regra dos limites foi reescrita conscientemente (v0.1.54).** O docstring da
+  `ProfileRetrieval` dizia "sem limites superiores — na dúvida, subir" e estava a
+  ser lido como "nunca pôr tecto nenhum". A instrução original era **não baixar um
+  limite se isso piorar o funcionamento** — não "é proibido pensar em tectos".
+  Agora estão lá as quatro alíneas. O ponto que muda decisões: **acima de 50 o
+  `top_k` não é honrado** (hard limit do semantic reranker do Azure, cortado no
+  `azure_search_client`), por isso 200 configurados entregam 50 e o operador fica
+  a acreditar noutra coisa. O tecto `le=200` é rede para o zero a mais, não
+  política de custo — há um teste que falha se alguém o apertar abaixo de 4×50.
+  Medido a 3 Set 2026 em dois índices vivos (1417 chunks): **~330 tokens/chunk em
+  média, ~1130 no p90** — subir o `top_k` de 20 para 50 leva o contexto de ~22k
+  para ~57k tokens por turno, a p90.
+- **Um limite que o schema não declara é um contrato que mente** (v0.1.54).
+  `shareDefaultExpiryDays` aceitava 999999; o core sempre cortou em 30
+  (`MAX_EXPIRY_DAYS`). O modal oferecia o prazo grande, o servidor entregava 30
+  dias, ninguém via. Agora `le=30` aqui e nos itens de `shareExpiryOptionsDays`.
+  **Para prazos maiores sobe-se primeiro o core, depois este `le`** — nunca ao
+  contrário.
 - **O dialecto dos caminhos.** Índice-free: uma lista de objectos é percorrida
   ao MESMO caminho da lista (`retrieval.indexes.name`). `leaf_paths()` é a
   travessia canónica — havia três escritas à mão, cada uma com o seu dialecto.
