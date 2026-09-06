@@ -342,6 +342,9 @@ EXPOSURE: Dict[str, str] = {
     "compliance.high_risk.enabled": _R,
     "compliance.high_risk.human_oversight_contact": _W,
     "compliance.high_risk.log_retention_days": _R,
+    # retenção de dados pessoais: decisão do deployer (igual a voice.transcription.retention_days)
+    "compliance.retention.conversations_anonymous_days": _W,
+    "compliance.retention.conversations_authenticated_days": _W,
     "compliance.high_risk.oversight_procedure_url": _W,
     "compliance.high_risk.serious_incident_contact": _W,
     "compliance.sector": _W,

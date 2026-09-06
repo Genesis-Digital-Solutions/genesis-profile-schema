@@ -116,6 +116,18 @@
    "label": "Retenção de registos (dias)",
    "help": "Artigo 12: o mínimo legal é de seis meses, ou seja 180 dias."
   },
+  "compliance.retention": {
+   "label": "Retenção das conversas (RGPD)",
+   "help": "Quanto tempo as conversas ficam guardadas na base de dados, em dias. O assistente aplica-o a cada conversa e mensagem que guarda. O prazo de uma conversa recomeça a cada turno novo; 0 significa sem expiração."
+  },
+  "compliance.retention.conversations_anonymous_days": {
+   "label": "Conversas anónimas (dias)",
+   "help": "Retenção para visitantes sem sessão iniciada. Por omissão 90 dias; 0 guarda para sempre."
+  },
+  "compliance.retention.conversations_authenticated_days": {
+   "label": "Conversas com sessão iniciada (dias)",
+   "help": "Retenção para utilizadores autenticados, que também podem apagar o próprio histórico. Por omissão 0, ou seja sem expiração."
+  },
   "compliance.high_risk.oversight_procedure_url": {
    "label": "Procedimento de supervisão (ligação)",
    "help": "Ligação para o procedimento interno que descreve como a supervisão é feita."

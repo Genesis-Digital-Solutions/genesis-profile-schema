@@ -1548,16 +1548,35 @@ class ProfileComplianceHighRisk(BaseModel):
     serious_incident_contact: str = ""   # Art. 73 — reporting de incidentes graves
 
 
+class ProfileComplianceRetention(BaseModel):
+    """
+    Retenção das conversas (RGPD Art. 5(1)(e)) — em dias; 0 = sem expiração.
+    É o ÚNICO sub-bloco de `compliance` com efeito funcional: o genai-core
+    escreve o `ttl` de cada documento de conversa e de mensagem a partir daqui
+    (v0.1.55, Set 2026). Antes a retenção era o default do container Cosmos
+    fixado no provisioning (10 ou 180 dias), igual para todos e invisível.
+    O prazo da conversa conta a partir do último turno; o de cada mensagem
+    a partir de quando foi escrita.
+    """
+    model_config = ConfigDict(extra="allow")
+
+    conversations_anonymous_days: int = Field(default=90, ge=0)
+    conversations_authenticated_days: int = Field(default=0, ge=0)
+
+
 class ProfileCompliance(BaseModel):
     """
-    Bloco de conformidade EU AI Act — metadata, sem efeito funcional no
-    data plane (v1). Fonte de verdade para o badge ⚖️ do Dashboard, a tab
-    Conformidade do editor e o gerador de documentação Anexo IV.
+    Bloco de conformidade EU AI Act — metadata sem efeito funcional no data
+    plane (v1), com UMA exceção: `retention` (RGPD), que o genai-core aplica
+    aos documentos das conversas. Fonte de verdade para o badge ⚖️ do
+    Dashboard, a tab Conformidade do editor e o gerador de documentação
+    Anexo IV.
     """
     model_config = ConfigDict(extra="allow")
 
     classification: ProfileComplianceClassification = Field(default_factory=ProfileComplianceClassification)
     high_risk: ProfileComplianceHighRisk = Field(default_factory=ProfileComplianceHighRisk)
+    retention: ProfileComplianceRetention = Field(default_factory=ProfileComplianceRetention)
     # Transparência Art. 50 — responsabilidade do conteúdo indexado é do
     # deployer (cliente), formalizada por cláusula contratual.
     deployer_content_responsibility: bool = True

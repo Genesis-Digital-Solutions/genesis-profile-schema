@@ -116,6 +116,18 @@
    "label": "Log retention (days)",
    "help": "Article 12: the legal minimum is six months, that is 180 days."
   },
+  "compliance.retention": {
+   "label": "Conversation retention (GDPR)",
+   "help": "How long conversations are kept in the database, in days. The assistant applies this to every conversation and message it stores. A conversation's clock restarts with each new turn; 0 means never expire."
+  },
+  "compliance.retention.conversations_anonymous_days": {
+   "label": "Anonymous conversations (days)",
+   "help": "Retention for visitors who are not signed in. Default 90 days; 0 keeps them forever."
+  },
+  "compliance.retention.conversations_authenticated_days": {
+   "label": "Signed-in conversations (days)",
+   "help": "Retention for signed-in users, who can also delete their own history. Default 0, that is no expiry."
+  },
   "compliance.high_risk.oversight_procedure_url": {
    "label": "Oversight procedure link",
    "help": "Link to the internal procedure describing how oversight is carried out."
