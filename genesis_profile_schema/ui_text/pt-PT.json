@@ -1206,6 +1206,10 @@
    "label": "Usar o nome do login",
    "help": "Na primeira sessão autenticada, guarda o nome e o domínio do email do utilizador para personalizar saudações."
   },
+  "memory.exclude_special_categories": {
+   "label": "Não aprender dados sensíveis",
+   "help": "O assistente recusa memorizar categorias especiais do RGPD: saúde, religião, opiniões políticas, orientação sexual, filiação sindical, origem étnica, dados genéticos ou biométricos e registo criminal. Recomendado manter ligado."
+  },
   "multiProfile.disabledSlugs": {
    "label": "Slugs desativados",
    "help": "Desativa uma variante sem apagar o respetivo perfil, para poder voltar a ligá-la depois."

@@ -416,6 +416,7 @@ EXPOSURE: Dict[str, str] = {
     "memory.min_confidence": _I,
     "memory.extraction_mode": _R,
     "memory.seed_from_identity": _R,
+    "memory.exclude_special_categories": _R,
 
     # ──────────────────────────────────────────────────────────────────────
     # Multi-perfil

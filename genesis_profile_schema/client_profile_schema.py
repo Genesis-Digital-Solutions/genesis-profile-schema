@@ -892,6 +892,10 @@ class ProfileMemory(BaseModel):
     extraction_mode: Literal["gated", "always", "off"] = "gated"
     # Semear nome/domínio do login na primeira sessão autenticada.
     seed_from_identity: bool = True
+    # v0.1.57 (T1): não aprender categorias especiais RGPD art. 9 (saúde,
+    # religião, política, orientação sexual, sindicato, etnia, genética/
+    # biometria, registo criminal). Ligado por defeito.
+    exclude_special_categories: bool = True
 
 
 class ProfileToolLimits(BaseModel):
