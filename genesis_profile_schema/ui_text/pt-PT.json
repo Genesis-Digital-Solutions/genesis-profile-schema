@@ -202,7 +202,8 @@
    "help": "Campo MSAL (Microsoft), escrito na configuração da aplicação."
   },
   "frontend.auth.mode": {
-   "label": "Exigência de autenticação"
+   "label": "Exigência de autenticação",
+   "help": "Login PRÓPRIO do assistente (Microsoft/OIDC): 'none' não oferece login, 'optional' oferece, 'required' exige. É independente da identidade de widget: com 'Identidade de widget' ativa, o utilizador é identificado pelo site onde o widget está embebido em QUALQUER modo — em 'none' e 'optional' sem nada visível; em 'required' essa identidade conta como credencial."
   },
   "frontend.auth.provider": {
    "label": "Fornecedor de autenticação"
@@ -266,7 +267,8 @@
    "label": "Algoritmo de assinatura"
   },
   "frontend.auth.widget_identity.enabled": {
-   "label": "Ativa"
+   "label": "Ativa",
+   "help": "Aceita a identidade do utilizador assinada pelo backend do site onde o widget está embebido (padrão Intercom/Zendesk). Funciona em qualquer 'Exigência de autenticação', incluindo 'none' — não exige nem oferece login próprio. Ligar só depois de o segredo existir no Key Vault."
   },
   "frontend.auth.widget_identity.max_age_s": {
    "label": "Validade do token (s)",

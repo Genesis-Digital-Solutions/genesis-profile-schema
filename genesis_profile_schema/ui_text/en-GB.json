@@ -202,7 +202,8 @@
    "help": "An MSAL (Microsoft) field, written into the app configuration."
   },
   "frontend.auth.mode": {
-   "label": "Authentication requirement"
+   "label": "Authentication requirement",
+   "help": "The assistant's OWN sign-in (Microsoft/OIDC): 'none' offers no sign-in, 'optional' offers it, 'required' demands it. Independent of widget identity: with 'Widget identity' enabled, the user is identified by the host site in ANY mode — invisibly in 'none' and 'optional'; in 'required' that identity counts as the credential."
   },
   "frontend.auth.provider": {
    "label": "Authentication provider"
@@ -266,7 +267,8 @@
    "label": "Signing algorithm"
   },
   "frontend.auth.widget_identity.enabled": {
-   "label": "Enabled"
+   "label": "Enabled",
+   "help": "Accept the user identity signed by the backend of the site the widget is embedded in (Intercom/Zendesk pattern). Works with any 'Authentication requirement', including 'none' — it neither requires nor offers the assistant's own sign-in. Enable only after the secret exists in Key Vault."
   },
   "frontend.auth.widget_identity.max_age_s": {
    "label": "Token validity (s)",
