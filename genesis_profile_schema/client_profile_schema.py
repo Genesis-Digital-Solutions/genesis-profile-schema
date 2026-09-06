@@ -873,11 +873,25 @@ class ProfileRuntime(BaseModel):
 
 
 class ProfileMemory(BaseModel):
-    """Memória de utilizador (factos). Antes env vars (USER_MEMORY_*)."""
+    """Memória de utilizador (factos). Antes env vars (USER_MEMORY_*).
+
+    v0.1.56 (T0 da memória, Set 2026): os três knobs que só existiam em env
+    por deployment passam a ser por cliente — `min_confidence`
+    (USER_MEMORY_MIN_CONFIDENCE), `extraction_mode` (USER_MEMORY_AGGRESSIVE=1
+    equivale a "always") e `seed_from_identity` (JWT_SEED_ENABLED). O core lê
+    perfil › env › default.
+    """
     model_config = ConfigDict(extra="allow")
 
     enabled: bool = True                                       # USER_MEMORY_ENABLED
     max_facts: int = Field(default=30, ge=0)                  # USER_MEMORY_MAX_FACTS
+    # Confiança mínima (0-1) para um facto entrar no prompt.
+    min_confidence: float = Field(default=0.4, ge=0.0, le=1.0)
+    # gated = só quando o utilizador fala de si (gate de 1.ª pessoa, 8 línguas);
+    # always = em todos os turnos autenticados; off = nunca aprende (lê o que já tem).
+    extraction_mode: Literal["gated", "always", "off"] = "gated"
+    # Semear nome/domínio do login na primeira sessão autenticada.
+    seed_from_identity: bool = True
 
 
 class ProfileToolLimits(BaseModel):

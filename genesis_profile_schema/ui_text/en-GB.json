@@ -1189,6 +1189,23 @@
   "memory.max_facts": {
    "label": "Maximum facts stored"
   },
+  "memory.min_confidence": {
+   "label": "Minimum fact confidence",
+   "help": "Between 0 and 1. Facts the assistant inferred with confidence below this value are not used in answers."
+  },
+  "memory.extraction_mode": {
+   "label": "When to learn new facts",
+   "help": "\"gated\": only when the user talks about themselves (recommended). \"always\": on every message from signed-in users. \"off\": learns nothing new but keeps using what it already knows.",
+   "options": {
+    "gated": "Only when the user talks about themselves",
+    "always": "On every message from signed-in users",
+    "off": "Learn nothing new"
+   }
+  },
+  "memory.seed_from_identity": {
+   "label": "Use the sign-in name",
+   "help": "On the first signed-in session, stores the user's name and email domain to personalise greetings."
+  },
   "multiProfile.disabledSlugs": {
    "label": "Disabled slugs",
    "help": "Switches a variant off without deleting its profile, so it can be switched back on later."

@@ -1189,6 +1189,23 @@
   "memory.max_facts": {
    "label": "Máximo de factos guardados"
   },
+  "memory.min_confidence": {
+   "label": "Confiança mínima de um facto",
+   "help": "Entre 0 e 1. Factos que o assistente inferiu com confiança abaixo deste valor não são usados nas respostas."
+  },
+  "memory.extraction_mode": {
+   "label": "Quando aprender factos novos",
+   "help": "\"gated\": só quando o utilizador fala de si próprio (recomendado). \"always\": em todas as mensagens de utilizadores autenticados. \"off\": não aprende nada de novo, mas continua a usar o que já sabe.",
+   "options": {
+    "gated": "Só quando o utilizador fala de si próprio",
+    "always": "Em todas as mensagens de utilizadores autenticados",
+    "off": "Não aprender nada de novo"
+   }
+  },
+  "memory.seed_from_identity": {
+   "label": "Usar o nome do login",
+   "help": "Na primeira sessão autenticada, guarda o nome e o domínio do email do utilizador para personalizar saudações."
+  },
   "multiProfile.disabledSlugs": {
    "label": "Slugs desativados",
    "help": "Desativa uma variante sem apagar o respetivo perfil, para poder voltar a ligá-la depois."
