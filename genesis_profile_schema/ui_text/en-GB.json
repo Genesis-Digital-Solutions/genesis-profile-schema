@@ -1210,6 +1210,40 @@
    "label": "Do not learn sensitive data",
    "help": "The assistant refuses to memorise GDPR special categories: health, religion, political opinions, sexual orientation, trade-union membership, ethnic origin, genetic or biometric data and criminal records. Recommended on."
   },
+  "memory.about_me_enabled": {
+   "label": "“About me” field in the memory panel",
+   "help": "The user can write, in the memory panel, who they are and how they want answers. The assistant uses that text in every conversation."
+  },
+  "memory.about_me_max_chars": {
+   "label": "Maximum length of “About me”"
+  },
+  "memory.onboarding_title": {
+   "label": "Title of the “Create my profile” card",
+   "help": "Shown as the first card of the start screen to signed-in users who have not answered yet. Empty = “Create my profile” in the user's language."
+  },
+  "memory.onboarding_intro": {
+   "label": "Questionnaire introduction",
+   "help": "Sentence explaining what the questions are for (for example: “To tailor answers to your day-to-day”)."
+  },
+  "memory.onboarding.key": {
+   "label": "Question identifier",
+   "help": "Lowercase letters, digits and _ (e.g. experience, lead_source). Rewording the question keeps the user's answer; changing the identifier discards it."
+  },
+  "memory.onboarding.question": {
+   "label": "Question"
+  },
+  "memory.onboarding.options": {
+   "label": "Answer options",
+   "help": "Closed list shown as buttons. Empty = the user types the answer."
+  },
+  "memory.onboarding.usage_hint": {
+   "label": "How to use the answer",
+   "help": "Guidance for the assistant (e.g. “if they prefer the street, suggest prospecting and positioning topics”). Goes into the prompt next to the answer."
+  },
+  "memory.relevance_top_k": {
+   "label": "Context facts by relevance",
+   "help": "How many “ongoing” and “other” facts go into each answer, picked by similarity to the question. Identity, work and preferences always go in. 0 = all."
+  },
   "multiProfile.disabledSlugs": {
    "label": "Disabled slugs",
    "help": "Switches a variant off without deleting its profile, so it can be switched back on later."

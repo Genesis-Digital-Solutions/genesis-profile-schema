@@ -417,6 +417,16 @@ EXPOSURE: Dict[str, str] = {
     "memory.extraction_mode": _R,
     "memory.seed_from_identity": _R,
     "memory.exclude_special_categories": _R,
+    # T2 (v0.1.58): memoria declarada — o questionario e conteudo do cliente.
+    "memory.about_me_enabled": _R,
+    "memory.about_me_max_chars": _I,
+    "memory.onboarding_title": _W,
+    "memory.onboarding_intro": _W,
+    "memory.onboarding.key": _W,
+    "memory.onboarding.question": _W,
+    "memory.onboarding.options": _W,
+    "memory.onboarding.usage_hint": _W,
+    "memory.relevance_top_k": _I,
 
     # ──────────────────────────────────────────────────────────────────────
     # Multi-perfil

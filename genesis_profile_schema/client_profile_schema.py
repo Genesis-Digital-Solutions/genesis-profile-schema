@@ -872,6 +872,24 @@ class ProfileRuntime(BaseModel):
     agent_mode: Literal["auto", "fast", "balanced", "thinking"] = "balanced"
 
 
+class ProfileMemoryOnboardingQuestion(BaseModel):
+    """Uma pergunta do questionário "Criar o meu perfil" (T2 da memória,
+    schema v0.1.58, Set 2026). O mecanismo é do produto; o CONTEÚDO é do
+    cliente — nada aqui sabe de imobiliário, emprego ou água.
+
+    `key`: identificador estável da resposta (slug); reformular a pergunta
+    mantém a resposta do utilizador. `options` vazio = resposta livre.
+    `usage_hint`: como o assistente deve usar a resposta (vai para o prompt,
+    junto da resposta; ex. "prefere a rua → puxar angariações").
+    """
+    model_config = ConfigDict(extra="allow")
+
+    key: str = Field(default="", pattern=r"^(?:[a-z][a-z0-9_]{0,39})?$")
+    question: Union[str, I18nMap] = ""
+    options: List[str] = Field(default_factory=list)
+    usage_hint: str = ""
+
+
 class ProfileMemory(BaseModel):
     """Memória de utilizador (factos). Antes env vars (USER_MEMORY_*).
 
@@ -884,7 +902,9 @@ class ProfileMemory(BaseModel):
     model_config = ConfigDict(extra="allow")
 
     enabled: bool = True                                       # USER_MEMORY_ENABLED
-    max_facts: int = Field(default=30, ge=0)                  # USER_MEMORY_MAX_FACTS
+    # 150 desde v0.1.58 (T2): 30 era um default herdado; com seleção por
+    # relevância o teto deixou de ditar o tamanho do prompt.
+    max_facts: int = Field(default=150, ge=0)                 # USER_MEMORY_MAX_FACTS
     # Confiança mínima (0-1) para um facto entrar no prompt.
     min_confidence: float = Field(default=0.4, ge=0.0, le=1.0)
     # gated = só quando o utilizador fala de si (gate de 1.ª pessoa, 8 línguas);
@@ -896,6 +916,21 @@ class ProfileMemory(BaseModel):
     # religião, política, orientação sexual, sindicato, etnia, genética/
     # biometria, registo criminal). Ligado por defeito.
     exclude_special_categories: bool = True
+    # v0.1.58 (T2 — memória DECLARADA): duas camadas que o utilizador escreve
+    # ele próprio, por oposição aos factos inferidos em conversa.
+    #   1) "Sobre mim e como quero as respostas": texto livre no painel de
+    #      memória (agnóstico ao cliente, sem configuração).
+    #   2) Questionário de perfil configurado pelo cliente (card no ecrã
+    #      inicial para utilizadores identificados; respostas no painel).
+    about_me_enabled: bool = True
+    about_me_max_chars: int = Field(default=1500, ge=0)
+    onboarding_title: Union[str, I18nMap] = ""
+    onboarding_intro: Union[str, I18nMap] = ""
+    onboarding: List[ProfileMemoryOnboardingQuestion] = Field(default_factory=list)
+    # v0.1.58 (T2, 2.ª fatia): factos de contexto ("em curso"/"outros") que
+    # entram no prompt por parecença com a pergunta; identidade, profissional
+    # e preferências entram sempre. 0 = sem seleção (todos os ativos).
+    relevance_top_k: int = Field(default=10, ge=0)
 
 
 class ProfileToolLimits(BaseModel):

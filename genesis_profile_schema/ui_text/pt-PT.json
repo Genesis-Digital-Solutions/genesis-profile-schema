@@ -1210,6 +1210,40 @@
    "label": "Não aprender dados sensíveis",
    "help": "O assistente recusa memorizar categorias especiais do RGPD: saúde, religião, opiniões políticas, orientação sexual, filiação sindical, origem étnica, dados genéticos ou biométricos e registo criminal. Recomendado manter ligado."
   },
+  "memory.about_me_enabled": {
+   "label": "Campo “Sobre mim” no painel de memória",
+   "help": "O utilizador pode escrever, no painel de memória, quem é e como quer as respostas. O assistente usa esse texto em todas as conversas."
+  },
+  "memory.about_me_max_chars": {
+   "label": "Tamanho máximo do “Sobre mim”"
+  },
+  "memory.onboarding_title": {
+   "label": "Título do cartão “Criar o meu perfil”",
+   "help": "Aparece como primeiro cartão do ecrã inicial a utilizadores identificados que ainda não responderam. Vazio = “Criar o meu perfil” na língua do utilizador."
+  },
+  "memory.onboarding_intro": {
+   "label": "Introdução do questionário",
+   "help": "Frase que explica para que servem as perguntas (por exemplo: “Para adaptar as respostas ao seu dia a dia”)."
+  },
+  "memory.onboarding.key": {
+   "label": "Identificador da pergunta",
+   "help": "Minúsculas, dígitos e _ (ex.: experiencia, fonte_clientes). Reformular a pergunta mantém a resposta do utilizador; mudar o identificador descarta-a."
+  },
+  "memory.onboarding.question": {
+   "label": "Pergunta"
+  },
+  "memory.onboarding.options": {
+   "label": "Opções de resposta",
+   "help": "Lista fechada mostrada como botões. Vazia = o utilizador escreve a resposta."
+  },
+  "memory.onboarding.usage_hint": {
+   "label": "Como usar a resposta",
+   "help": "Indicação para o assistente (ex.: “se prefere a rua, sugerir temas de angariação e posicionamento”). Vai para o prompt junto da resposta."
+  },
+  "memory.relevance_top_k": {
+   "label": "Factos de contexto por relevância",
+   "help": "Quantos factos de “em curso” e “outros” entram em cada resposta, escolhidos por parecença com a pergunta. Identidade, trabalho e preferências entram sempre. 0 = todos."
+  },
   "multiProfile.disabledSlugs": {
    "label": "Slugs desativados",
    "help": "Desativa uma variante sem apagar o respetivo perfil, para poder voltar a ligá-la depois."
