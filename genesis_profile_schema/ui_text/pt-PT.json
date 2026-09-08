@@ -1168,6 +1168,10 @@
   "mcp.servers.name": {
    "label": "Nome do servidor"
   },
+  "mcp.servers.protocol_era": {
+   "label": "Era do protocolo MCP",
+   "help": "Que versão do protocolo MCP este servidor fala. «Automático» começa pelo protocolo antigo (com handshake), que é o que a frota usa, e passa ao novo (2026-07-28, sem sessão) apenas se o servidor provar que só fala o novo. «Antigo» nunca muda; «Novo» vai direto ao novo, para um servidor que já se sabe que não suporta o antigo."
+  },
   "mcp.servers.timeout_seconds": {
    "label": "Tempo limite (segundos)"
   },

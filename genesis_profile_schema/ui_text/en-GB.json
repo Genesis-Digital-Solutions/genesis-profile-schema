@@ -1168,6 +1168,10 @@
   "mcp.servers.name": {
    "label": "Server name"
   },
+  "mcp.servers.protocol_era": {
+   "label": "MCP protocol era",
+   "help": "Which MCP protocol version this server speaks. “Automatic” starts with the older, handshake-based protocol — what the fleet uses — and moves to the new one (2026-07-28, sessionless) only if the server proves it speaks nothing else. “Legacy” never switches; “Modern” goes straight to the new one, for a server already known not to support the old."
+  },
   "mcp.servers.timeout_seconds": {
    "label": "Timeout (seconds)"
   },

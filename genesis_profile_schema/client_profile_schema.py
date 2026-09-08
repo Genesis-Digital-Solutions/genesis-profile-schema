@@ -1039,6 +1039,22 @@ class ProfileMCPServer(BaseModel):
     # ERP para uma fila (ex.: {"lookup_tool": "erp_get_customer_history"}). Lido
     # pelo resolver/gates; forma livre (extra="allow") enquanto estabiliza.
     erp: Optional[Dict[str, Any]] = None
+    # protocol_era — era do protocolo MCP que este server fala (Set 2026):
+    #   `auto` (default)  arranca no caminho legacy (`initialize`, o que a frota
+    #                     fala) e sobe para `2026-07-28` só quando o servidor
+    #                     PROVA que é moderno, com um erro do range reservado da
+    #                     spec (-32020/-32021/-32022);
+    #   `legacy`          força o handshake e nunca sobe;
+    #   `modern`          força `2026-07-28` (stateless, `_meta` por pedido, sem
+    #                     handshake) — para um servidor modern-only conhecido,
+    #                     poupando a tentativa legacy.
+    # ⚠️ ORDEM DE ROLLOUT OBRIGATÓRIA: o `MCPServerConfig` do genai-core é
+    # `extra="forbid"` e o bloco `mcp` do perfil é validado DIRETAMENTE contra
+    # ele. Um perfil com este campo lido por um core que ainda não o conhece faz
+    # a config MCP INTEIRA ser rejeitada — o cliente fica sem uma única tool, em
+    # silêncio. Escrever este campo (Studio/GAIBO) SÓ depois de a frota ter o
+    # core que o aceita.
+    protocol_era: Literal["auto", "legacy", "modern"] = "auto"
 
 
 class ProfileMCP(BaseModel):
