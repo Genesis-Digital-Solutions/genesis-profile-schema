@@ -252,3 +252,26 @@ def test_date_field_do_latest_version_NAO_tem_formato_de_data():
     no = esquema["$defs"]["ProfileLatestVersion"]["properties"]["date_field"]
     assert no.get("type") == "string"
     assert "format" not in no, no
+
+
+def test_tool_config_shapes_ve_dentro_do_mapa_aberto_sem_o_fechar():
+    """`tools.config` é mapa aberto e continua a sê-lo: as formas dos blocos
+    tipados saem por `tool_config_shapes()`, NÃO por `leaf_shapes()` — senão
+    cada campo de cada tool passava a exigir entrada em EXPOSURE."""
+    from genesis_profile_schema.client_profile_schema import _KNOWN_TOOL_CONFIG_MODELS
+
+    formas = exp.tool_config_shapes()
+    assert formas
+    assert all(p.startswith("tools.config.") for p in formas)
+    # Um bloco por modelo conhecido, todos representados.
+    blocos = {p.split(".")[2] for p in formas}
+    assert blocos == set(_KNOWN_TOOL_CONFIG_MODELS)
+    # A forma diz o que o modelo diz: um Literal é enum, um bool é boolean.
+    assert formas["tools.config.search_web.mode"]["enum"] == ("agent", "native", "")
+    assert formas["tools.config.record_contact_details.notify_on_capture"]["type"] == "boolean"
+    # E nada disto vazou para a travessia do perfil.
+    assert not (set(formas) & set(exp.leaf_shapes()))
+    assert "tools.config" in exp.open_map_paths()
+    # Cópia, não a cache: mexer no devolvido não envenena a próxima chamada.
+    formas["tools.config.search_web.mode"]["enum"] = None
+    assert exp.tool_config_shapes()["tools.config.search_web.mode"]["enum"]

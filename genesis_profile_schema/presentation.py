@@ -15,7 +15,25 @@ camada existe para resolver.
 
 Por isso `control_for()` deriva primeiro e só consulta a tabela para o que o
 schema não consegue dizer: **qual das strings é prosa, qual é código, qual é
-um endereço**. São 40 e poucas decisões em vez de 359.
+um endereço, qual é o nome de algo escolhido de uma lista**. São 40 e poucas
+decisões em vez de 359.
+
+A derivação vê também DENTRO de `tools.config`. O perfil declara-o como mapa
+aberto, mas os blocos com modelo tipado (`search_web`, `generate_boq`, …)
+dizem sozinhos que `mode` é uma lista fechada e `retention_days` um número —
+`exposure.tool_config_shapes()` traz essas formas e a tabela não as repete.
+
+DUAS ESCOLHAS, NÃO UMA
+──────────────────────
+`select` é uma lista FECHADA: o schema (ou `languages.py`) enumera os valores
+e um valor fora deles é um erro. `combobox` é texto livre COM sugestões: o
+campo guarda o nome de algo de um catálogo que vive noutro sítio — os presets
+de `tool_playbooks` do genai-core — e um valor que a lista não conhece é
+legítimo (o core ignora-o, avisando). Desenhar um `<select>` fechado nesse
+campo proibiria um preset válido no dia em que o produto lançasse um novo;
+desenhar uma textarea (o que esta camada fazia até à v0.1.59, issue #6) diz
+que é prosa, e não é. Os valores sugeridos, com nome, estão em `ui_text`
+(`options_of`) — para um `combobox` são sugestões, nunca uma allowlist.
 
 O QUE A TABELA NÃO FAZ
 ──────────────────────
@@ -33,11 +51,12 @@ serve ou não é outra conversa, e para as origens do CSP está em
 from functools import lru_cache
 from typing import Dict, Optional, Tuple
 
-from genesis_profile_schema.exposure import leaf_shapes, normalise_path
+from genesis_profile_schema.exposure import leaf_shapes, normalise_path, tool_config_shapes
 
 TOGGLE = "toggle"
 NUMBER = "number"
 SELECT = "select"
+COMBOBOX = "combobox"     # texto livre com sugestões — ver "DUAS ESCOLHAS, NÃO UMA"
 COLOUR = "colour"
 URL = "url"
 EMAIL = "email"
@@ -48,7 +67,7 @@ MULTILINE = "multiline"
 TEXT = "text"
 
 CONTROLS: Tuple[str, ...] = (
-    TOGGLE, NUMBER, SELECT, COLOUR, URL, EMAIL, DATE, DATETIME, CODE, MULTILINE, TEXT,
+    TOGGLE, NUMBER, SELECT, COMBOBOX, COLOUR, URL, EMAIL, DATE, DATETIME, CODE, MULTILINE, TEXT,
 )
 
 LIST = "list"
@@ -62,6 +81,10 @@ MAP = "map"
 # `code`      — expressões que se escrevem em monoespaçado e não se corrigem
 #               ortograficamente: regex e caminhos de campo.
 # `url`/`email`/`date` — o teclado e o validador certos no telemóvel.
+# `select`    — lista fechada que o schema tipa como `str` mas cujo espaço de
+#               valores o pacote publica (`languages.UI_LANGS`).
+# `combobox`  — nome de um preset de um catálogo que vive fora do contrato:
+#               sugestões em `ui_text`, texto livre aceite.
 #
 # Um caminho de mapa aberto ou de lista descreve o controlo de CADA VALOR lá
 # dentro (o `personality.tone_instructions` é um mapa cujos valores são
@@ -88,12 +111,27 @@ CONTROL_OVERRIDES: Dict[str, str] = {
     "frontend.insightsPanel.quickInsights.prompt": MULTILINE,
     "frontend.insightsPanel.quickInsights.questions.prompt": MULTILINE,
     "frontend.starterPrompts.prompt": MULTILINE,
-    # Dentro do mapa aberto `tools.config` — o texto de prompt de duas tools
+    # Dentro do mapa aberto `tools.config` — as instruções livres de duas tools
     # que o cliente edita (ver as excepções em exposure.py).
     "tools.config.extract_legal_terms.prompt_custom": MULTILINE,
-    "tools.config.extract_legal_terms.prompt_preset": MULTILINE,
     "tools.config.generate_boq.prompt_custom": MULTILINE,
-    "tools.config.generate_boq.prompt_preset": MULTILINE,
+
+    # ── nome de um preset (texto livre com sugestões) ─────────────────────
+    # O catálogo é `PRESETS` em core/agent/tool_playbooks.py do genai-core:
+    # Python do produto, sem endpoint. Um preset desconhecido é inerte a
+    # montante (o core regista e ignora), por isso NÃO é lista fechada — as
+    # sugestões estão em `ui_text` e o campo aceita o que a lista ainda não
+    # conhece. Estiveram como `multiline` até à v0.1.59 (issue #6 do gaibo).
+    "tools.config.extract_legal_terms.prompt_preset": COMBOBOX,
+    "tools.config.generate_boq.prompt_preset": COMBOBOX,
+
+    # ── lista fechada que o schema tipa como texto ───────────────────────
+    # O espaço de valores é `languages.UI_LANGS` (as línguas que o fecore sabe
+    # desenhar) e as etiquetas estão em `ui_text` — há teste a exigir que
+    # coincidam. Uma língua fora da lista não é "ainda não sugerida", é uma
+    # interface que abre noutra língua: fechado, logo `select`.
+    "frontend.language.default": SELECT,
+    "frontend.language.enabled": SELECT,
 
     # ── código ───────────────────────────────────────────────────────────
     "product_identification.patterns": CODE,
@@ -140,7 +178,13 @@ CONTROL_OVERRIDES: Dict[str, str] = {
 
 @lru_cache(maxsize=1)
 def _shapes() -> Dict[str, Dict[str, object]]:
-    return leaf_shapes()
+    """As formas do perfil, mais as dos blocos tipados de `tools.config`.
+
+    As do perfil ganham se um caminho existir nos dois (não existe hoje: o
+    perfil pára no mapa aberto) — a ordem do merge é a garantia, não a
+    esperança.
+    """
+    return {**tool_config_shapes(), **leaf_shapes()}
 
 
 @lru_cache(maxsize=1)

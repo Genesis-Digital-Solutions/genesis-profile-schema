@@ -15,6 +15,7 @@ from .exposure import (
     open_map_paths,
     orphan_entries,
     paths_at,
+    tool_config_shapes,
     unclassified_paths,
 )
 from .field_checks import (
@@ -77,6 +78,7 @@ __all__ = [
     "open_map_paths",
     "orphan_entries",
     "paths_at",
+    "tool_config_shapes",
     "unclassified_paths",
     "DEFAULT_LOCALE",
     "annotated_json_schema",

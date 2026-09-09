@@ -665,12 +665,17 @@ def _resolve(node: Any, defs: Dict[str, Any]) -> Dict[str, Any]:
     return node if isinstance(node, dict) else {}
 
 
-@lru_cache(maxsize=1)
-def _walk_schema() -> Tuple[Tuple[str, ...], Tuple[str, ...], Dict[str, Tuple[str, ...]],
-                            Dict[str, Dict[str, Any]]]:
-    from genesis_profile_schema.client_profile_schema import ClientProfileSchema
+_Walk = Tuple[Tuple[str, ...], Tuple[str, ...], Dict[str, Tuple[str, ...]],
+              Dict[str, Dict[str, Any]]]
 
-    js = ClientProfileSchema.model_json_schema()
+
+def _walk_json_schema(js: Dict[str, Any], root: Tuple[str, ...]) -> _Walk:
+    """Uma travessia de UM JSON Schema, com os caminhos prefixados por `root`.
+
+    É a mesma travessia para o perfil inteiro (`root=()`) e para cada bloco
+    tipado de `tools.config` (`root=("tools", "config", "<tool>")`) — uma só
+    definição do que é folha, mapa aberto, lista fechada e forma.
+    """
     defs = js.get("$defs", {})
     leaves: List[str] = []
     open_maps: List[str] = []
@@ -718,8 +723,44 @@ def _walk_schema() -> Tuple[Tuple[str, ...], Tuple[str, ...], Dict[str, Tuple[st
             "enum": enums.get(dotted),
         })
 
-    walk(js, [])
+    walk(js, list(root))
     return tuple(dict.fromkeys(leaves)), tuple(dict.fromkeys(open_maps)), enums, shapes
+
+
+@lru_cache(maxsize=1)
+def _walk_schema() -> _Walk:
+    from genesis_profile_schema.client_profile_schema import ClientProfileSchema
+
+    return _walk_json_schema(ClientProfileSchema.model_json_schema(), ())
+
+
+@lru_cache(maxsize=1)
+def _walk_tool_configs() -> Dict[str, Dict[str, Any]]:
+    from genesis_profile_schema.client_profile_schema import _KNOWN_TOOL_CONFIG_MODELS
+
+    shapes: Dict[str, Dict[str, Any]] = {}
+    for tool, model in _KNOWN_TOOL_CONFIG_MODELS.items():
+        shapes.update(
+            _walk_json_schema(model.model_json_schema(), ("tools", "config", tool))[3]
+        )
+    return shapes
+
+
+def tool_config_shapes() -> Dict[str, Dict[str, Any]]:
+    """`{caminho: {type, items_type, pattern, enum}}` das folhas DENTRO de
+    `tools.config`, para os blocos que têm modelo tipado.
+
+    `tools.config` é um mapa aberto: a travessia do perfil pára nele, e por isso
+    `leaf_shapes()` não sabe que `tools.config.search_web.mode` é uma lista
+    fechada nem que `…generate_boq.scale.min_drawing_span_mm` é um número. Os
+    blocos com modelo (`_KNOWN_TOOL_CONFIG_MODELS`) sabem — e é daqui que
+    `presentation.py` deriva o controlo desses campos em vez de os escrever à mão.
+
+    Deliberadamente SEPARADO de `leaf_paths()`/`leaf_shapes()`: estas folhas não
+    entram na regra "toda a folha tem entrada em EXPOSURE" — o bloco é interno em
+    conjunto, com excepções por caminho exacto, e isso não muda aqui.
+    """
+    return {k: dict(v) for k, v in _walk_tool_configs().items()}
 
 
 def leaf_paths() -> Tuple[str, ...]:

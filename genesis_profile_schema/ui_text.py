@@ -24,7 +24,10 @@ DOIS REGISTOS, DE PROPÓSITO
   note     — detalhe técnico nosso (envs, precedências, acoplamentos). Voz de
              operador. O Studio mostra-a; uma montra de cliente não.
   options  — o nome de cada valor de uma lista fechada. Sem isto o cliente lê
-             `soft_redirect`.
+             `soft_redirect`. Num campo cujo controlo é `combobox`
+             (`presentation.control_for`) são os valores SUGERIDOS, com nome —
+             o campo continua a aceitar texto livre; é o controlo que diz se a
+             lista fecha, não a presença de `options`.
 
 As duas vozes não são um luxo: as hints do Studio dizem coisas como "passa
 para tool.__init__", que é exactamente o que um cliente não deve ler, e são

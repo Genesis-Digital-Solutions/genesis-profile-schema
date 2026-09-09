@@ -1597,7 +1597,11 @@
   },
   "tools.config.extract_legal_terms.prompt_preset": {
    "label": "Predefinição de instruções",
-   "help": "Preset do produto vindo do catálogo tool_playbooks. Vazio deixa apenas o contrato base."
+   "help": "Preset do produto vindo do catálogo tool_playbooks. Vazio deixa apenas o contrato base. As sugestões são os presets conhecidos à data; um nome que não esteja na lista é aceite e, se o produto não o conhecer, ignorado.",
+   "options": {
+    "": "Nenhuma — só o contrato base",
+    "contracts": "Contratos comerciais"
+   }
   },
   "tools.config.extract_legal_terms.schema": {
    "label": "Esquema de extração",
@@ -1615,7 +1619,14 @@
   },
   "tools.config.generate_boq.prompt_preset": {
    "label": "Norma de medição",
-   "help": "Preset do catálogo tool_playbooks (por exemplo pronic_pt, pomi_gcc, cesmm_civil, nrm2_building). Vazio deixa apenas o contrato base."
+   "help": "Preset do catálogo tool_playbooks. Vazio deixa apenas o contrato base. As sugestões são as normas conhecidas à data; um nome que não esteja na lista é aceite e, se o produto não o conhecer, ignorado.",
+   "options": {
+    "": "Nenhuma — só o contrato base",
+    "pronic_pt": "ProNIC / LNEC (Portugal)",
+    "pomi_gcc": "POMI (Golfo)",
+    "cesmm_civil": "CESMM (obras civis)",
+    "nrm2_building": "NRM2 (edifícios)"
+   }
   },
   "tools.config.generate_boq.rates": {
    "label": "Tabela de preços",

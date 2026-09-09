@@ -82,17 +82,36 @@ por anotar e aparece em `annotation_conflicts()` — hoje zero, porque
 
 ### 5. Que controlo desenhar — `presentation.py`
 
-`control_for(path)` devolve `toggle`, `number`, `select`, `colour`, `url`,
-`email`, `date`, `datetime`, `code`, `multiline` ou `text`; `collection_of()`
-devolve `list`, `map` ou nada. São duas perguntas separadas de propósito: uma
-lista de textos longos é `multiline` + `list`.
+`control_for(path)` devolve `toggle`, `number`, `select`, `combobox`, `colour`,
+`url`, `email`, `date`, `datetime`, `code`, `multiline` ou `text`;
+`collection_of()` devolve `list`, `map` ou nada. São duas perguntas separadas
+de propósito: uma lista de textos longos é `multiline` + `list`.
+
+**`select` e `combobox` são duas escolhas diferentes.** `select` é lista
+fechada — o schema (ou `languages.py`) enumera os valores e um valor fora deles
+é erro. `combobox` é texto livre COM sugestões: o campo guarda o nome de algo
+de um catálogo que vive fora do contrato (os `prompt_preset` das tools, cujo
+catálogo é o `PRESETS` do genai-core, sem endpoint), e um valor que a lista não
+conhece é legítimo — o core ignora-o, avisando. As sugestões, com nome, estão
+em `ui_text` (`options_of`); é o controlo que diz se a lista fecha, não a
+presença de `options`. Há teste a exigir que todo o `combobox` tenha sugestões
+nas duas línguas e não seja `enum`, e outro — o que teria apanhado o issue #6
+do gaibo sozinho — a exigir que qualquer campo com valores nomeados no
+catálogo tenha um controlo de escolha (`select` ou `combobox`), nunca prosa.
 
 **Quase tudo se deriva** do próprio schema — booleanos, números, listas
-fechadas e os 57 campos com o `pattern` de cor. A tabela só carrega o que o
-contrato não consegue dizer: qual das strings é prosa, qual é código, qual é um
-endereço. Há teste a chumbar se a tabela crescer para mais de um quarto das
-folhas, e outro a chumbar se um override estiver a repetir o que a derivação já
-dava. O padrão das cores é lido do `client_profile_schema`, não copiado.
+fechadas e os 57 campos com o `pattern` de cor. A derivação vê também **dentro
+de `tools.config`**: o perfil declara-o mapa aberto, mas os blocos com modelo
+tipado (`_KNOWN_TOOL_CONFIG_MODELS`) dizem sozinhos que `search_web.mode` é
+lista fechada e `record_contact_details.retention_days` é número —
+`exposure.tool_config_shapes()` traz essas formas, SEM as tornar folhas do
+perfil (não exigem entrada em `EXPOSURE`). A tabela só carrega o que o contrato
+não consegue dizer: qual das strings é prosa, qual é código, qual é um
+endereço, qual é o nome de um preset, e as duas listas fechadas que o schema
+tipa como `str` (`frontend.language.*`, espaço `UI_LANGS`). Há teste a chumbar
+se a tabela crescer para mais de um quarto das folhas, e outro a chumbar se um
+override estiver a repetir o que a derivação já dava. O padrão das cores é lido
+do `client_profile_schema`, não copiado.
 
 ### 6. Valores perigosos — `field_checks.py`
 
@@ -171,8 +190,11 @@ a língua está no mapa, e um `False` é motivo para AVISAR, nunca para bloquear
 3. **Nomear** — `label` nas duas línguas; `help` se for interruptor ou número
    visível ao cliente; `options` se for lista fechada visível; `note` se houver
    detalhe operacional nosso.
-4. **Controlo** — só se o schema não conseguir dizê-lo sozinho: prosa, código
-   ou endereço vão a `CONTROL_OVERRIDES`. Tipo, lista fechada e cor derivam-se.
+4. **Controlo** — só se o schema não conseguir dizê-lo sozinho: prosa, código,
+   endereço ou nome de um catálogo externo (`combobox`, com as sugestões em
+   `options`) vão a `CONTROL_OVERRIDES`. Tipo, lista fechada e cor derivam-se —
+   também dentro dos blocos tipados de `tools.config`. Um `str` com `options`
+   no catálogo tem de ser `select` ou `combobox`; o teste chumba se for prosa.
 5. **Gates** — `python -m pytest tests/` tem de passar. Ele chumba se ficares a
    meio de qualquer um dos passos acima.
 6. **Versão** — `pyproject.toml`. Alteração só de texto é patch; campo novo é
@@ -190,8 +212,9 @@ um campo removido do modelo continua a viver no blob sem dar erro.
 
 ## Invariantes que os testes protegem
 
-172 testes em `tests/` — `test_exposure.py`, `test_ui_text.py`,
-`test_presentation.py`, `test_field_checks.py` e `test_languages.py`:
+198 testes em `tests/` — `test_exposure.py`, `test_ui_text.py`,
+`test_presentation.py`, `test_field_checks.py`, `test_languages.py` e
+`test_value_bounds.py`:
 
 - Toda a folha do schema está classificada; nenhuma entrada morta.
 - Áreas inteiramente internas — `retrieval`, `mcp`, `runtime`, `pricing`,
@@ -207,6 +230,10 @@ um campo removido do modelo continua a viver no blob sem dar erro.
   ajuda; listas fechadas visíveis têm os valores nomeados **nos dois sentidos**
   (um membro novo no schema chumba; um membro removido deixa texto órfão que
   também chumba).
+- Valores nomeados no catálogo implicam um controlo de escolha: `select` se a
+  lista fecha, `combobox` se aceita texto livre. Um `combobox` tem sempre
+  sugestões nas duas línguas e nunca assenta num `enum`. Os `enum` dos blocos
+  tipados de `tools.config` derivam sem linha na tabela.
 - Catálogo em falta devolve vazio em vez de rebentar — texto de interface não
   derruba serviços.
 - Os campos SEM CONSUMIDOR ficam escondidos, com o motivo por campo. Um campo

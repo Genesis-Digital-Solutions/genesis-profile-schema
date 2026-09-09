@@ -1597,7 +1597,11 @@
   },
   "tools.config.extract_legal_terms.prompt_preset": {
    "label": "Instruction preset",
-   "help": "A product preset from the tool_playbooks catalogue. Empty leaves only the base contract."
+   "help": "A product preset from the tool_playbooks catalogue. Empty leaves only the base contract. The suggestions are the presets known at the time; a name not on the list is accepted and, if the product does not know it, ignored.",
+   "options": {
+    "": "None — base contract only",
+    "contracts": "Commercial contracts"
+   }
   },
   "tools.config.extract_legal_terms.schema": {
    "label": "Extraction schema",
@@ -1615,7 +1619,14 @@
   },
   "tools.config.generate_boq.prompt_preset": {
    "label": "Measurement standard",
-   "help": "A preset from the tool_playbooks catalogue (for example pronic_pt, pomi_gcc, cesmm_civil, nrm2_building). Empty leaves only the base contract."
+   "help": "A preset from the tool_playbooks catalogue. Empty leaves only the base contract. The suggestions are the standards known at the time; a name not on the list is accepted and, if the product does not know it, ignored.",
+   "options": {
+    "": "None — base contract only",
+    "pronic_pt": "ProNIC / LNEC (Portugal)",
+    "pomi_gcc": "POMI (Gulf)",
+    "cesmm_civil": "CESMM (civil engineering)",
+    "nrm2_building": "NRM2 (buildings)"
+   }
   },
   "tools.config.generate_boq.rates": {
    "label": "Rate table",
