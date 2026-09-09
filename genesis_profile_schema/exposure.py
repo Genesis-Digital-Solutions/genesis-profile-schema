@@ -362,9 +362,18 @@ EXPOSURE: Dict[str, str] = {
     "voice.kb_top_n": _I,
     "voice.language": _W,
     "voice.queue": _W,
-    "voice.transcription.enabled": _R,
+    # voice.transcription.* — RESERVADO, NAO IMPLEMENTADO (v0.1.61, 9 Set 2026).
+    # Verificado nos tres repos: nenhum consumidor le este bloco (o loader do
+    # canal de voz do core nao o toca, nao existe input_audio_transcription, e
+    # nao ha transcricao persistida da sessao). Estava `enabled` client_read e
+    # `retention_days` client_write: o cliente via um campo de RETENCAO de
+    # dados pessoais e podia edita-lo, o que faz acreditar que existe
+    # transcricao com retencao controlada — crenca que pode entrar num DPA e
+    # que seria falsa. Internos ate haver consumidor; quem implementar a
+    # transcricao reabre a exposicao no MESMO commit em que o consumidor nasce.
+    "voice.transcription.enabled": _I,
     "voice.transcription.model": _I,
-    "voice.transcription.retention_days": _W,  # retencao de dados pessoais: decisao do deployer
+    "voice.transcription.retention_days": _I,
     "voice.transfer_number": _W,
     "voice.voice": _W,
     "voice.web.enabled": _R,

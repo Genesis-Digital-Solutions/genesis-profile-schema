@@ -309,6 +309,18 @@ um campo removido do modelo continua a viver no blob sem dar erro.
   qual, e o `pickLang` do `client-config.service` procura a chave exacta. Um
   código com região (`pt-PT`) renderiza uma entrada cujas strings caem para
   inglês ou português — degrada em silêncio, não dá erro.
+- **`voice.transcription.*` é RESERVADO e NÃO IMPLEMENTADO** (v0.1.61, 9 Set
+  2026). Declarado desde a v0.1.32 (`{enabled, retention_days, model}`), mas
+  verificado nos três repos: **nada o lê** — o loader do canal de voz do core
+  ignora-o, não existe `input_audio_transcription`, e o core não persiste
+  transcrição da sessão de voz. Estava `enabled` em `client_read` e
+  `retention_days` em `client_write`, ou seja o cliente via e editava um campo
+  de **retenção de dados pessoais** que não retém nada — e essa crença podia
+  entrar num DPA. Os três caminhos passaram a `internal` e estão na lista
+  `CAMPOS_SEM_CONSUMIDOR` do `test_exposure.py`. O campo NÃO foi removido de
+  propósito (perfis existentes carregam-no; o GAIBO tem pin próprio). Quem
+  implementar a transcrição reabre a exposição no MESMO commit em que o
+  consumidor nascer.
 - **`identity.timezone` é lido desde a v0.1.52** — o core resolve perfil > env
   `TZ` > `Europe/Lisbon` em `core/agent/clock.py`, e daí saem o bloco temporal
   do system prompt e o fast-path do "que horas são?". É a hora de NEGÓCIO do

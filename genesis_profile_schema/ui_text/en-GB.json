@@ -1801,20 +1801,20 @@
    "help": "Must match one of the queues defined under review queues."
   },
   "voice.transcription": {
-   "label": "Call transcription",
-   "help": "A verbatim transcript, strictly opt-in: the client is the data controller. Off by default, leaving only the reconstructed summary."
+   "label": "Call transcription (reserved)",
+   "help": "RESERVED — NOT IMPLEMENTED yet. No part of the platform reads these fields today: calls are neither transcribed nor stored. Turning them on has no effect. Internal fields until the capability exists."
   },
   "voice.transcription.enabled": {
-   "label": "Keep the transcript",
-   "help": "Stores a transcript of calls."
+   "label": "Keep the transcript (reserved)",
+   "help": "RESERVED — not implemented. Stores nothing."
   },
   "voice.transcription.model": {
-   "label": "Transcription deployment",
-   "help": "The name of a transcription deployment. Do not use the gpt-4o family."
+   "label": "Transcription deployment (reserved)",
+   "help": "RESERVED — not implemented. The name of a transcription deployment, for when the capability exists."
   },
   "voice.transcription.retention_days": {
-   "label": "Transcript retention (days)",
-   "help": "How many days transcripts are kept before deletion."
+   "label": "Transcript retention (days) (reserved)",
+   "help": "RESERVED — not implemented. There are no transcripts, so there is no retention to set. Do not rely on this as a retention guarantee in a contract or DPA."
   },
   "voice.transfer_number": {
    "label": "Call transfer phone number"

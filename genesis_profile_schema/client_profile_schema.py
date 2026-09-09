@@ -1670,9 +1670,35 @@ class ProfileCompliance(BaseModel):
 # ─────────────────────────────────────────────────────────────────────────────
 
 class ProfileVoiceTranscription(BaseModel):
-    """Transcrição integral verbatim da chamada (OPT-IN; RGPD: a câmara é o
-    responsável pelo tratamento). `model` = NOME de deployment de transcrição
-    (não usar família gpt-4o). OFF por default → só o resumo reconstituído."""
+    """RESERVADO — **NÃO IMPLEMENTADO**. Ligar estes campos não produz efeito
+    nenhum.
+
+    Intenção original (v0.1.32, Jul 2026): transcrição integral verbatim da
+    chamada, opt-in, com retenção controlada (RGPD: o cliente é o responsável
+    pelo tratamento). `model` seria o NOME de um deployment de transcrição.
+
+    ESTADO REAL, verificado a 9 Set 2026 nos três repos: **nenhum consumidor
+    lê este bloco**. O loader do canal de voz do genai-core
+    (`voice/config.py::load_voice_config`) monta o `VoiceConfig` a partir de
+    `enabled/deployment/voice/language/greeting/instructions/queue/
+    transfer_number/aiDisclosure/kb_top_n/category_hints` e ignora
+    `transcription`; não existe uso de `input_audio_transcription` da Realtime
+    API em lado nenhum, e o core não persiste transcrição da sessão de voz
+    (ver `docs/capacidades/10-voz-e-canais.md`, "O que não existe").
+
+    PORQUE É QUE ISTO É UM RISCO DE COMPLIANCE, e não só código morto: um
+    campo de retenção editável faz acreditar que existe transcrição com
+    retenção controlada. Essa crença pode entrar num DPA — e seria falsa.
+    Por isso, desde v0.1.61, os três caminhos são `internal` em
+    `exposure.py`: o cliente deixa de os ver e de os poder editar.
+
+    NÃO removido do schema por opção deliberada: perfis existentes carregam o
+    bloco (default_factory), o GAIBO tem pin próprio e pode ficar atrás, e
+    remover uma folha obrigaria a coordenar três re-pins para não ganhar nada.
+    Fica declarado e honesto. A transcrição real é matéria do pack
+    `CONTEXT_PACK_captura_na_voz.md`, com decisões ainda em aberto; quem a
+    implementar reabre a exposição no MESMO commit em que o consumidor nasce.
+    """
     model_config = ConfigDict(extra="allow", protected_namespaces=())
     enabled: bool = False
     retention_days: Optional[int] = None

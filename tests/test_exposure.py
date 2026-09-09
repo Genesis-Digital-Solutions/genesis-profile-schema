@@ -161,6 +161,23 @@ CAMPOS_SEM_CONSUMIDOR = [
      "DEPRECADO: nada o lê. A língua da resposta vem de language.strategy/allowed/fallback "
      "e a da interface de frontend.language.default. Ligar um terceiro campo criava "
      "ambiguidade sobre qual ganha."),
+    # v0.1.61 (9 Set 2026) — nota jurídica: campo fantasma com risco de
+    # compliance. Verificado nos três repos que nada lê `voice.transcription`
+    # (o loader do canal de voz do core não o toca, não existe
+    # `input_audio_transcription`, não há transcrição persistida da sessão).
+    # `retention_days` estava client_write: o cliente via e editava um campo de
+    # RETENÇÃO DE DADOS PESSOAIS que não retém nada — a crença de que existe
+    # transcrição com retenção controlada pode entrar num DPA e seria falsa.
+    ("voice.transcription.enabled",
+     "RESERVADO/NÃO IMPLEMENTADO: nenhum consumidor lê o bloco. Reabrir só no "
+     "commit em que a transcrição de voz passar a existir de facto "
+     "(CONTEXT_PACK_captura_na_voz.md)."),
+    ("voice.transcription.model",
+     "RESERVADO/NÃO IMPLEMENTADO: nenhum consumidor lê o bloco."),
+    ("voice.transcription.retention_days",
+     "RESERVADO/NÃO IMPLEMENTADO: retenção de uma transcrição que não é "
+     "produzida. Editável, dava ao cliente a garantia falsa de que há "
+     "transcrição com retenção controlada."),
 ]
 
 
