@@ -178,6 +178,44 @@ a língua está no mapa, e um `False` é motivo para AVISAR, nunca para bloquear
 
 ---
 
+## Camada 8 — o que o prompt base impõe: `house_rules.py` + `house_rules/<locale>.json`
+
+A primeira camada que NÃO descreve a forma do perfil: descreve o comportamento
+que o prompt base do bot impõe a toda a frota, para que quem escreve
+`custom_instructions` (Studio hoje, backoffice do cliente ao re-pinar) seja
+avisado quando o texto desfaz uma regra da casa. Existe porque as
+`custom_instructions` GANHAM ao prompt base por desenho e o Studio e o gaibo não
+falam um com o outro — este pacote é o único canal.
+
+- **Registo** (`HOUSE_RULES`, dict por `rule_id`): classe `invariant` (há portão
+  em código; uma instrução contrária não tem efeito) · `strong_default` (só
+  prompt; a instrução do cliente ganha de facto) · `lever` (já é campo do
+  perfil) · `guidance` (apresentação). Por regra: onde vive o portão, a frase
+  literal do `prompt_builder` (`anchor`) e os `lever_paths`. Severidade por
+  classe em `SEVERITY_BY_CLASS` (`no_effect | warning | note | info`) — contrato
+  com quem desenha o aviso.
+- **Texto por língua** em `house_rules/pt-PT.json` e `en-GB.json`: `title`,
+  `summary` (o que o produto impõe), `boundary` (o que o cliente PODE fazer),
+  `example_conflict`, `example_ok`. Mesma tolerância do `ui_text`; viaja no
+  `package-data`. `describe(locale)` funde registo e texto.
+- **Separação playbook/cliente** (`custom_instructions_text.split_playbook_blocks`):
+  corta os playbooks MCP copiados para o campo pelo cabeçalho
+  `## … [genesis-mcp-<x>-playbook-vN]` até ao próximo `## ` ou à primeira linha em
+  branco (os 4 playbooks reais não têm nem um nem outro por dentro). Sem isto um
+  lint reporta como colisão do cliente a nossa própria cópia congelada.
+- **A régua:** um invariante só é invariante com portão em código; a lista de
+  invariantes é fechada no teste, com motivo. **A direcção** é julgada sobre o
+  texto do cliente (restringir é sempre seguro); este registo só diz o que cada
+  regra impõe.
+- **O que impede o registo de mentir:** o core (que pina este pacote) tem
+  `tests/test_house_rules_anchors.py` a confirmar que cada `anchor` continua no
+  `prompt_builder`. Regra sem âncora só quando o portão é só código/config.
+- **O lint em si NÃO vive aqui** — é do consumidor (Studio:
+  `custom_instructions_lint.py`). O pacote dá a lista e o corte, para que os
+  dois lados avisem contra o mesmo.
+
+---
+
 ## Checklist: acrescentar um campo
 
 1. **Modelo** — o campo em `client_profile_schema.py`, com tipo, default seguro
@@ -338,6 +376,14 @@ um campo removido do modelo continua a viver no blob sem dar erro.
 - **Os catálogos são dados.** `[tool.setuptools.package-data]` no `pyproject` é
   o que os faz viajar no wheel. Sem essa linha o pacote instala sem os JSON e o
   catálogo fica vazio em produção, em silêncio.
+- **`runtime.agent_mode` é um vocabulário, não um esforço** (v0.1.62, 16 Set
+  2026): aceita `fast | balanced | thinking | max | auto` — os nomes que o
+  Studio mostra (Rápido, Equilibrado, Pensamento, Máximo, Auto router) e que o
+  genai-core traduz em `reasoning_effort` numa tabela fixa
+  (`core/managers/effort_modes.py`). O esforço técnico (`xhigh`, `high`) e o
+  modo Pro NÃO entram aqui. O core valida o perfil no save com este `Literal`,
+  logo um valor novo só chega ao Studio depois do re-pin no core — o Studio
+  que o ofereça antes recebe 422. Teste: `tests/test_runtime_agent_mode.py`.
 
 ---
 
@@ -354,5 +400,10 @@ um campo removido do modelo continua a viver no blob sem dar erro.
 - **Classificação por cliente.** A tabela é do PRODUTO, igual para toda a frota.
   Se um dia houver override por cliente, só pode ESTREITAR o que a tabela
   permite, nunca alargar.
-- **Consumo do `exposure`/`ui_text` pelos backoffices.** Estão publicados e
-  testados; o Studio e o gaibo ainda lêem os seus catálogos locais.
+- **Consumo do `exposure`/`ui_text` pelos backoffices.** O gaibo já consome
+  ambos do pacote (`field_text.py`, `upstream_exposure.py`); o Studio usa o
+  `exposure` na baseline e o `ui_text` nos espaços de valores, mas as hints do
+  editor continuam locais.
+- **O lint de `custom_instructions`.** O registo de regras e o corte de
+  playbooks estão aqui (camada 8); a chamada ao juiz LLM e o ecrã são do
+  consumidor. O gaibo só vê o registo depois de re-pinar.

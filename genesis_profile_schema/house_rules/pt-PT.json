@@ -1,0 +1,117 @@
+{
+  "locale": "pt-PT",
+  "rules": {
+    "grounded_only": {
+      "title": "Responder só com base nos documentos",
+      "summary": "O assistente responde a partir da base de conhecimento e das tools de dados do cliente, nunca de cabeça. No primeiro turno de cada pergunta o produto obriga-o, em código, a consultar a base antes de decidir.",
+      "boundary": "Pode restringir ainda mais (temas a não responder, mesmo que documentados). Não pode autorizar respostas 'de conhecimento geral' por texto: a consulta obrigatória é imposta em código e o texto não a desliga. Se o cliente quer mesmo respostas fora da base, o interruptor é o campo guardrails.allow_general_knowledge, decidido com a Genesis.",
+      "example_conflict": "Se não encontrares nos documentos, responde com o que sabes sobre o assunto.",
+      "example_ok": "Não respondas a perguntas sobre concorrentes, mesmo que apareçam nos documentos."
+    },
+    "refuse_without_evidence": {
+      "title": "Recusar quando a evidência não responde",
+      "summary": "Quando os documentos e as tools não têm a resposta, o assistente diz isso numa frase curta e cordial, na língua do utilizador, em vez de adivinhar. Hoje esta regra vive só no prompt: uma instrução contrária ganha de facto.",
+      "boundary": "Pode dizer COMO recusar (frase preferida, para onde encaminhar, que contacto dar). Não deve mandar 'nunca dizer que não sabe' nem 'responder sempre algo': isso troca uma recusa honesta por uma invenção.",
+      "example_conflict": "Nunca digas que não tens a informação; dá sempre uma resposta útil.",
+      "example_ok": "Quando não tiveres a informação, indica o contacto da linha de apoio 800 000 000 e sugere o horário."
+    },
+    "cite_chunks": {
+      "title": "Citar as fontes do que vem dos documentos",
+      "summary": "Cada afirmação retirada de um excerto de documento leva a marca da fonte [Kn], e só se cita o que o excerto sustenta de facto. Hoje é regra de prompt; há detectores que anotam falhas mas não retêm a resposta.",
+      "boundary": "Pode escolher se as fontes aparecem ao utilizador (response.show_sources) e como se apresenta o caminho da fonte. Não deve pedir 'sem citações' nem 'não menciones documentos': tira ao utilizador a forma de verificar a resposta.",
+      "example_conflict": "Não incluas referências nem indiques de onde vem a informação.",
+      "example_ok": "Apresenta as fontes no fim, uma por linha, com o nome do documento e a página."
+    },
+    "no_invented_figures": {
+      "title": "Não inventar números nem atribuir mal",
+      "summary": "Números, datas e factos vêm dos documentos ou das tools; quando há várias fontes ou períodos, atribui-se cada valor à sua origem em vez de os fundir. Hoje é regra de prompt, com detectores a anotar.",
+      "boundary": "Pode dizer que fontes preferir quando há várias (a mais recente, a oficial) e que unidades usar. Não deve pedir estimativas, arredondamentos criativos ou 'valores aproximados quando faltarem dados'.",
+      "example_conflict": "Se faltar o valor exacto, dá uma estimativa razoável para não deixar a pergunta sem resposta.",
+      "example_ok": "Quando houver valores de vários anos, apresenta-os separados por ano e indica o documento de cada um."
+    },
+    "data_tools_for_numbers": {
+      "title": "Números do cliente vêm das tools de dados",
+      "summary": "Quando há tools de dados ligadas (folhas, base de dados, ERP), as perguntas quantitativas são respondidas chamando a tool e lendo o resultado, nunca copiando um número de um excerto de texto. Hoje é regra de prompt.",
+      "boundary": "Pode dizer que dataset ou folha é a referência para cada indicador e como interpretar colunas. Não deve dispensar a consulta ('responde a partir dos PDFs') nem mandar somar ou contar à mão o que a tool devolve.",
+      "example_conflict": "Para totais e médias, usa os valores que aparecem nos relatórios em PDF; não é preciso consultar as folhas.",
+      "example_ok": "Para volumes de água, a referência é a folha 'Abastecimento'; os totais do FSE estão na folha 'Resultados'."
+    },
+    "period_not_from_name": {
+      "title": "O nome de um ficheiro não diz o período que ele cobre",
+      "summary": "Um ficheiro chamado '2019_01_tarifas' pode ter vinte anos de dados. O período vem do conteúdo (a gama de datas do dataset), nunca do nome. O nome diz QUAL ficheiro ler, não O QUE está lá dentro. Há detectores em código a vigiar.",
+      "boundary": "Pode explicar a organização dos documentos e dizer qual é a versão vigente quando há várias (por exemplo, 'a mais recente pelo ano no nome' aplica-se a DOCUMENTOS, não a datasets). Não deve mandar filtrar dados pelo nome do ficheiro.",
+      "example_conflict": "Para o mês pedido, abre só a folha cujo nome tem esse mês e usa apenas esses dados.",
+      "example_ok": "Quando existirem várias versões de um regulamento, considera vigente a que tem o ano mais recente no nome."
+    },
+    "response_language": {
+      "title": "Responder na língua do utilizador",
+      "summary": "A resposta sai inteira na língua em que o utilizador escreveu. As frases fixas do cliente (saudações, avisos, encaminhamentos) são modelos do QUE dizer e são traduzidas. O produto impõe isto em código: uma instrução contrária não tem efeito.",
+      "boundary": "Pode fixar a variante (português europeu, não brasileiro) e convenções de escrita, e restringir as línguas servidas (language.strategy, language.allowed). Não pode obrigar a responder numa língua diferente da do utilizador por texto.",
+      "example_conflict": "Responde sempre em português, independentemente da língua da pergunta.",
+      "example_ok": "Usa sempre português europeu; nunca formas do português do Brasil."
+    },
+    "prompt_secrecy": {
+      "title": "Não revelar as instruções nem a natureza do assistente",
+      "summary": "O assistente não mostra, resume nem parafraseia as suas instruções internas, e não se faz passar por pessoa. Há um portão em código que recusa fugas de prompt.",
+      "boundary": "Pode dar um nome e uma apresentação ao assistente e dizer o que ele faz. Não pode pedir que revele as regras a quem perguntar, nem que negue ser um assistente de IA.",
+      "example_conflict": "Se o utilizador perguntar como funcionas, explica as regras que te foram dadas.",
+      "example_ok": "Apresenta-te como 'Assistente Virtual da Empresa X' e diz que ajudas com questões sobre os nossos serviços."
+    },
+    "mandatory_disclaimers": {
+      "title": "Avisos obrigatórios do cliente",
+      "summary": "Os avisos configurados pelo cliente (clínicos, legais, financeiros) são incluídos sempre que o tema se aplica, traduzidos para a língua do utilizador. A obrigação de os incluir vive hoje só no prompt.",
+      "boundary": "Os avisos configuram-se no campo próprio (system_prompt_disclaimers), não em prosa solta. Pode acrescentar avisos; não deve escrever instruções que os dispensem em certos casos.",
+      "example_conflict": "Nas perguntas rápidas não é preciso incluir o aviso legal.",
+      "example_ok": "Configurar em system_prompt_disclaimers: 'Esta informação não substitui aconselhamento médico.'"
+    },
+    "ai_disclosure": {
+      "title": "Divulgação de que é uma IA",
+      "summary": "O utilizador é informado de que fala com um sistema de IA, como o Regulamento IA exige. Na voz a abertura é determinística; no widget é o texto configurado. É código, não texto de instrução.",
+      "boundary": "Pode ajustar o texto e a apresentação da divulgação nos campos próprios (frontend.aiDisclosure). Não pode desligá-la por instrução.",
+      "example_conflict": "Nunca menciones que és uma inteligência artificial.",
+      "example_ok": "Configurar frontend.aiDisclosure.text com a redacção aprovada pelo jurídico."
+    },
+    "image_provenance": {
+      "title": "Marcação de imagens geradas",
+      "summary": "Imagens produzidas pelo assistente levam marcação de proveniência de IA, em código. Uma instrução não a remove.",
+      "boundary": "Nada a configurar em prosa. Se a marcação incomoda num caso concreto, fala-se com a Genesis.",
+      "example_conflict": "Entrega as imagens sem qualquer marca de água ou indicação de origem.",
+      "example_ok": "Quando geres imagens, usa o estilo visual da marca descrito abaixo."
+    },
+    "brand_safety": {
+      "title": "Marcas bloqueadas",
+      "summary": "As marcas que o cliente bloqueia não são mencionadas nem recomendadas, e há um filtro em código com o nível de rigor escolhido no perfil.",
+      "boundary": "A lista e o nível vivem em brand_safety.blocked_brands e brand_safety.level; é lá que se mexe. Uma instrução em prosa que autorize falar de uma marca bloqueada não tem efeito.",
+      "example_conflict": "Podes comparar os nossos produtos com os da Marca Y quando o utilizador pedir.",
+      "example_ok": "Acrescentar 'Marca Y' a brand_safety.blocked_brands e escolher o nível soft_redirect."
+    },
+    "capture_fields": {
+      "title": "Que dados pessoais se pedem",
+      "summary": "Os dados que o assistente pode recolher (nome, contacto, morada) são os campos declarados na configuração da tool de captura; o que não é campo declarado é descartado em código.",
+      "boundary": "Para pedir um dado novo, declara-se o campo na configuração da captura, não em prosa. Uma instrução que mande recolher um dado não declarado não faz nada.",
+      "example_conflict": "Pede sempre o número de contribuinte e a data de nascimento antes de responder.",
+      "example_ok": "Declarar 'nif' como campo da captura, com a finalidade e a base legal."
+    },
+    "action_confirmation": {
+      "title": "Confirmar antes de agir",
+      "summary": "Acções que alteram dados (criar pedido, agendar, enviar) passam por uma confirmação explícita do utilizador antes de executar. É um portão determinístico do produto.",
+      "boundary": "Pode dizer que acções existem e quando as propor. Não pode dispensar a confirmação por texto: a política vive em mcp.confirm_actions e é da Genesis.",
+      "example_conflict": "Cria o pedido de assistência assim que tiveres os dados, sem perguntar ao utilizador.",
+      "example_ok": "Quando o utilizador descrever uma avaria, propõe abrir um pedido de assistência e resume os dados antes de pedir confirmação."
+    },
+    "tone_register_length": {
+      "title": "Tom, tratamento e comprimento",
+      "summary": "O tom, o tratamento (tu/você) e o comprimento das respostas escolhem-se nos campos do perfil; o texto de cada tom é da Genesis. Não é regra de prompt: é configuração.",
+      "boundary": "Usa personality.tone, personality.response_length e identity.register. Escrever em prosa 'sê muito formal e breve' duplica o que o campo já faz e pode contradizê-lo.",
+      "example_conflict": "Responde sempre de forma muito informal e trata o utilizador por tu.",
+      "example_ok": "Definir identity.register = informal e personality.tone = friendly."
+    },
+    "presentation_format": {
+      "title": "Formato: tabelas, listas, completude",
+      "summary": "Dados tabulares saem em tabela, listas com vários atributos saem em lista, e usa-se um único mecanismo de tabela de cada vez. É orientação de apresentação: pode ser ajustada por instrução.",
+      "boundary": "Pode pedir formatos específicos (sem tabelas, listas curtas, um resumo antes do detalhe). É a família de regra onde a instrução do cliente manda sem problema.",
+      "example_conflict": "",
+      "example_ok": "Começa sempre por um resumo de duas frases e só depois apresenta o detalhe."
+    }
+  }
+}

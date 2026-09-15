@@ -1,0 +1,117 @@
+{
+  "locale": "en-GB",
+  "rules": {
+    "grounded_only": {
+      "title": "Answer only from the documents",
+      "summary": "The assistant answers from the client's knowledge base and data tools, never from memory. On the first turn of every question the product forces it, in code, to consult the knowledge base before deciding.",
+      "boundary": "You may restrict further (topics not to answer, even when documented). You cannot authorise 'general knowledge' answers by text: the mandatory lookup is enforced in code and text does not switch it off. If the client genuinely wants answers beyond the knowledge base, the switch is guardrails.allow_general_knowledge, agreed with Genesis.",
+      "example_conflict": "If you cannot find it in the documents, answer with what you know about the topic.",
+      "example_ok": "Do not answer questions about competitors, even if they appear in the documents."
+    },
+    "refuse_without_evidence": {
+      "title": "Decline when the evidence does not answer",
+      "summary": "When the documents and tools do not hold the answer, the assistant says so in one short, warm sentence in the user's language instead of guessing. Today this rule lives only in the prompt: a contrary instruction genuinely wins.",
+      "boundary": "You may say HOW to decline (preferred wording, where to redirect, which contact to give). Do not instruct 'never say you don't know' or 'always give some answer': that trades an honest refusal for an invention.",
+      "example_conflict": "Never say you lack the information; always give a useful answer.",
+      "example_ok": "When you lack the information, give the support line 800 000 000 and mention the opening hours."
+    },
+    "cite_chunks": {
+      "title": "Cite the sources of what comes from documents",
+      "summary": "Every statement taken from a document excerpt carries its source marker [Kn], and only what the excerpt truly supports is cited. Today this is a prompt rule; detectors annotate failures but do not withhold the answer.",
+      "boundary": "You may choose whether sources are shown to the user (response.show_sources) and how the source path is presented. Do not ask for 'no citations' or 'do not mention documents': it removes the user's way of checking the answer.",
+      "example_conflict": "Do not include references or indicate where the information comes from.",
+      "example_ok": "List the sources at the end, one per line, with the document name and page."
+    },
+    "no_invented_figures": {
+      "title": "Never invent figures or misattribute",
+      "summary": "Numbers, dates and facts come from documents or tools; with several sources or periods, each value is attributed to its origin instead of merged. Today a prompt rule, with detectors annotating.",
+      "boundary": "You may say which sources to prefer when several exist (most recent, official) and which units to use. Do not ask for estimates, creative rounding or 'approximate values when data is missing'.",
+      "example_conflict": "If the exact value is missing, give a reasonable estimate so the question is not left unanswered.",
+      "example_ok": "When values exist for several years, present them separated by year and name the document for each."
+    },
+    "data_tools_for_numbers": {
+      "title": "Client figures come from the data tools",
+      "summary": "When data tools are connected (spreadsheets, database, ERP), quantitative questions are answered by calling the tool and reading its result, never by copying a number out of a text excerpt. Today a prompt rule.",
+      "boundary": "You may say which dataset or sheet is the reference for each indicator and how to read columns. Do not waive the lookup ('answer from the PDFs') or ask the assistant to sum or count by hand what the tool returns.",
+      "example_conflict": "For totals and averages use the values shown in the PDF reports; there is no need to query the spreadsheets.",
+      "example_ok": "For water volumes the reference is the 'Supply' sheet; FSE totals are on the 'Results' sheet."
+    },
+    "period_not_from_name": {
+      "title": "A file name does not say what period it covers",
+      "summary": "A file called '2019_01_rates' may hold twenty years of data. The period comes from the content (the dataset's date range), never from the name. The name says WHICH file to read, not WHAT is inside. Detectors in code watch for this.",
+      "boundary": "You may explain how documents are organised and which version is current when several exist (for instance, 'the most recent by the year in the name' applies to DOCUMENTS, not datasets). Do not instruct filtering data by file name.",
+      "example_conflict": "For the requested month, open only the sheet whose name contains that month and use only that data.",
+      "example_ok": "When several versions of a regulation exist, treat the one with the most recent year in its name as current."
+    },
+    "response_language": {
+      "title": "Answer in the user's language",
+      "summary": "The whole answer comes out in the language the user wrote in. The client's fixed phrases (greetings, notices, redirects) are templates for WHAT to say and are translated. The product enforces this in code: a contrary instruction has no effect.",
+      "boundary": "You may fix the variant (European, not Brazilian Portuguese) and writing conventions, and restrict the languages served (language.strategy, language.allowed). You cannot force a reply in a language other than the user's by text.",
+      "example_conflict": "Always reply in Portuguese, whatever the language of the question.",
+      "example_ok": "Always use European Portuguese; never Brazilian Portuguese forms."
+    },
+    "prompt_secrecy": {
+      "title": "Do not reveal the instructions or the assistant's nature",
+      "summary": "The assistant does not show, summarise or paraphrase its internal instructions, and does not pass itself off as a person. A code gate refuses prompt leaks.",
+      "boundary": "You may give the assistant a name and an introduction and say what it does. You cannot ask it to reveal its rules on request, or to deny being an AI assistant.",
+      "example_conflict": "If the user asks how you work, explain the rules you were given.",
+      "example_ok": "Introduce yourself as 'Company X Virtual Assistant' and say you help with questions about our services."
+    },
+    "mandatory_disclaimers": {
+      "title": "The client's mandatory notices",
+      "summary": "Notices configured by the client (clinical, legal, financial) are included whenever the topic applies, translated into the user's language. The obligation to include them lives only in the prompt today.",
+      "boundary": "Notices are configured in their own field (system_prompt_disclaimers), not in loose prose. You may add notices; do not write instructions that waive them in some cases.",
+      "example_conflict": "For quick questions there is no need to include the legal notice.",
+      "example_ok": "Configure in system_prompt_disclaimers: 'This information does not replace medical advice.'"
+    },
+    "ai_disclosure": {
+      "title": "Disclosure that it is an AI",
+      "summary": "The user is told they are talking to an AI system, as the AI Act requires. On voice the opening is deterministic; in the widget it is the configured text. It is code, not instruction text.",
+      "boundary": "You may adjust the wording and presentation of the disclosure in its own fields (frontend.aiDisclosure). You cannot switch it off by instruction.",
+      "example_conflict": "Never mention that you are an artificial intelligence.",
+      "example_ok": "Set frontend.aiDisclosure.text to the wording approved by legal."
+    },
+    "image_provenance": {
+      "title": "Marking of generated images",
+      "summary": "Images produced by the assistant carry AI provenance marking, in code. An instruction does not remove it.",
+      "boundary": "Nothing to configure in prose. If the marking is a problem in a specific case, talk to Genesis.",
+      "example_conflict": "Deliver the images without any watermark or indication of origin.",
+      "example_ok": "When generating images, use the brand's visual style described below."
+    },
+    "brand_safety": {
+      "title": "Blocked brands",
+      "summary": "Brands the client blocks are neither mentioned nor recommended, and a code filter applies the strictness level chosen in the profile.",
+      "boundary": "The list and the level live in brand_safety.blocked_brands and brand_safety.level; that is where to change them. A prose instruction authorising talk about a blocked brand has no effect.",
+      "example_conflict": "You may compare our products with Brand Y's when the user asks.",
+      "example_ok": "Add 'Brand Y' to brand_safety.blocked_brands and choose the soft_redirect level."
+    },
+    "capture_fields": {
+      "title": "Which personal data is requested",
+      "summary": "The data the assistant may collect (name, contact, address) is the set of fields declared in the capture tool's configuration; anything not declared is discarded in code.",
+      "boundary": "To request a new item, declare the field in the capture configuration, not in prose. An instruction asking to collect an undeclared item does nothing.",
+      "example_conflict": "Always ask for the tax number and date of birth before answering.",
+      "example_ok": "Declare 'tax_id' as a capture field, with its purpose and legal basis."
+    },
+    "action_confirmation": {
+      "title": "Confirm before acting",
+      "summary": "Actions that change data (create a request, schedule, send) go through an explicit user confirmation before executing. It is a deterministic product gate.",
+      "boundary": "You may say which actions exist and when to propose them. You cannot waive confirmation by text: the policy lives in mcp.confirm_actions and belongs to Genesis.",
+      "example_conflict": "Create the support request as soon as you have the details, without asking the user.",
+      "example_ok": "When the user describes a fault, propose opening a support request and summarise the details before asking for confirmation."
+    },
+    "tone_register_length": {
+      "title": "Tone, form of address and length",
+      "summary": "Tone, form of address (formal/informal) and answer length are chosen in profile fields; the text behind each tone belongs to Genesis. This is not a prompt rule: it is configuration.",
+      "boundary": "Use personality.tone, personality.response_length and identity.register. Writing 'be very formal and brief' in prose duplicates what the field already does and may contradict it.",
+      "example_conflict": "Always reply very informally and address the user by their first name.",
+      "example_ok": "Set identity.register = informal and personality.tone = friendly."
+    },
+    "presentation_format": {
+      "title": "Format: tables, lists, completeness",
+      "summary": "Tabular data comes out as a table, multi-attribute lists as lists, and a single table mechanism is used at a time. This is presentation guidance: it may be adjusted by instruction.",
+      "boundary": "You may ask for specific formats (no tables, short lists, a summary before the detail). This is the rule family where the client's instruction simply wins.",
+      "example_conflict": "",
+      "example_ok": "Always start with a two-sentence summary and only then present the detail."
+    }
+  }
+}

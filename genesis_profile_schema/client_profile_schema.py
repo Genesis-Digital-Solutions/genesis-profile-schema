@@ -863,13 +863,17 @@ class ProfileRuntime(BaseModel):
     internal_model: str = ""     # deployment do mini interno (ex.: "gpt-5.4-mini"); INTERNAL_MODEL
 
     # Esforço de raciocínio DEFAULT do agent, usado quando o request não traz
-    # um modo do LLM picker. Mapeado no genai-core para reasoning_effort (GPT-5):
-    #   fast → floor (none p/ 5.1+, minimal p/ 5.0) · balanced → medium · thinking → high
+    # um modo do LLM picker. Tabela FIXA no genai-core
+    # (core/managers/effort_modes.py, 16 Set 2026) — o mesmo vocabulário é o
+    # último segmento dos ids do picker (`azure:<modelo>:<modo>`):
+    #   fast → low (o agente nunca corre no floor do modelo) · balanced → medium
+    #   · thinking → high · max → max (só 5.6+/6 na Responses API; o core
+    #   baixa-o para xhigh/high nas outras famílias)
     # "auto": reservado para Azure Model Router — pressupõe que `agent_model` é
     # um deployment de router; o genai-core passa-lhe um effort base e deixa o
     # router escolher o modelo subjacente. Só aplicável ao agent (o interno é
     # sempre tratado como "fast").
-    agent_mode: Literal["auto", "fast", "balanced", "thinking"] = "balanced"
+    agent_mode: Literal["auto", "fast", "balanced", "thinking", "max"] = "balanced"
 
 
 class ProfileMemoryOnboardingQuestion(BaseModel):
