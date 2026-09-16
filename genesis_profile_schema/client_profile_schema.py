@@ -1727,6 +1727,29 @@ class ProfileVoiceWeb(BaseModel):
     enabled: bool = False
 
 
+class ProfileVoiceAgent(BaseModel):
+    """Ponte voz → agente completo (v0.1.64, Set 2026 — Bloco D do parecer
+    Astra). Quando ligada, a sessão realtime (telefone e widget) ganha a tool
+    `consultar_agente`: entrega a pergunta a um turno completo do core (MCP,
+    tabular, memória, guards de grounding, gate de confirmação) e lê a
+    resposta em voz. OFF por default — sem isto a voz continua a correr só as
+    tools directas (pesquisa na KB, tickets).
+
+    `mode` = o mesmo vocabulário de `runtime.agent_mode` (o core traduz em
+    `reasoning_effort`); `fast` por default porque na voz a latência é
+    silêncio ao telefone. `timeout_s` e `max_speech_chars` são tectos
+    internos: o primeiro é quanto a voz espera pelo core antes de devolver
+    uma resposta FALÁVEL de espera (nunca silêncio), o segundo é o tamanho da
+    resposta convertida para fala. Nunca reduzir abaixo dos pisos declarados
+    aqui — um turno do core em `balanced` demora até 20 s medidos."""
+    model_config = ConfigDict(extra="allow")
+
+    enabled: bool = False
+    mode: Literal["fast", "balanced", "thinking", "max", "auto"] = "fast"
+    timeout_s: int = Field(default=30, ge=10)
+    max_speech_chars: int = Field(default=900, ge=300)
+
+
 class ProfileVoice(BaseModel):
     """Canal de voz telefónico (Realtime). Comportamento por cliente; os
     segredos (VOICE-OPENAI-ENDPOINT/API-KEY/WEBHOOK-SECRET) vivem no Key Vault,
@@ -1753,6 +1776,8 @@ class ProfileVoice(BaseModel):
     # v0.1.43 (era fantasma; default do core é ligado).
     aiDisclosure: bool = True
     web: ProfileVoiceWeb = Field(default_factory=ProfileVoiceWeb)
+    # Ponte voz → agente completo (v0.1.64). Vale para os DOIS canais.
+    agent: ProfileVoiceAgent = Field(default_factory=ProfileVoiceAgent)
     transcription: ProfileVoiceTranscription = Field(default_factory=ProfileVoiceTranscription)
 
 

@@ -377,6 +377,13 @@ EXPOSURE: Dict[str, str] = {
     "voice.transfer_number": _W,
     "voice.voice": _W,
     "voice.web.enabled": _R,
+    # voice.agent.* — ponte voz → agente completo (v0.1.64, Set 2026). O
+    # cliente vê se está ligada e em que modo; os tectos de espera e de fala
+    # são afinação interna (a latência do core é nossa, não dele).
+    "voice.agent.enabled": _R,
+    "voice.agent.mode": _R,
+    "voice.agent.timeout_s": _I,
+    "voice.agent.max_speech_chars": _I,
 
     # ──────────────────────────────────────────────────────────────────────
     # Vozes TTS

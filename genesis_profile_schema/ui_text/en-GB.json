@@ -1830,6 +1830,33 @@
   "voice.voice": {
    "label": "Assistant voice"
   },
+  "voice.agent": {
+   "label": "Full assistant by voice",
+   "help": "When on, voice (phone and site) can hand a question to the full assistant — the same one as the chat, with all its tools and checks — and read the answer aloud. Without it, voice answers only from the direct knowledge-base search and requests."
+  },
+  "voice.agent.enabled": {
+   "label": "Consult the full assistant by voice",
+   "help": "On = voice can ask the full assistant for help with questions that need more than the knowledge base (data, connected systems, actions). Each consultation counts as one assistant message, on top of the voice minutes."
+  },
+  "voice.agent.mode": {
+   "label": "Assistant mode for voice consultations",
+   "help": "Fast is recommended for voice: the more the assistant thinks, the longer the person waits in silence.",
+   "options": {
+    "fast": "Fast",
+    "balanced": "Balanced",
+    "thinking": "Thinking",
+    "max": "Maximum",
+    "auto": "Auto router"
+   }
+  },
+  "voice.agent.timeout_s": {
+   "label": "Maximum wait for the assistant (seconds)",
+   "help": "After this time, voice says the consultation is taking longer and offers alternatives instead of staying silent."
+  },
+  "voice.agent.max_speech_chars": {
+   "label": "Maximum length of the answer converted to speech",
+   "help": "Longer answers are shortened for speech; never cut mid-sentence."
+  },
   "voice.web.enabled": {
    "label": "Real-time voice on the site",
    "help": "Switches on the server-side voice service. This is what makes the chat's voice button work."

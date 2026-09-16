@@ -1830,6 +1830,33 @@
   "voice.voice": {
    "label": "Voz do assistente"
   },
+  "voice.agent": {
+   "label": "Agente completo por voz",
+   "help": "Quando ligado, a voz (telefone e site) pode entregar uma pergunta ao assistente completo — o mesmo do chat, com todas as suas ferramentas e verificações — e ler a resposta em voz. Sem isto, a voz responde só com a pesquisa directa na base de conhecimento e os pedidos."
+  },
+  "voice.agent.enabled": {
+   "label": "Consultar o assistente completo por voz",
+   "help": "Ligado = a voz pode pedir ajuda ao assistente completo para perguntas que exigem mais do que a base de conhecimento (dados, sistemas ligados, acções). Cada consulta conta como uma mensagem do assistente, além dos minutos de voz."
+  },
+  "voice.agent.mode": {
+   "label": "Modo do assistente nas consultas por voz",
+   "help": "Rápido é o recomendado na voz: quanto mais o assistente pensa, mais tempo a pessoa espera em silêncio.",
+   "options": {
+    "fast": "Rápido",
+    "balanced": "Equilibrado",
+    "thinking": "Pensamento",
+    "max": "Máximo",
+    "auto": "Auto router"
+   }
+  },
+  "voice.agent.timeout_s": {
+   "label": "Espera máxima pelo assistente (segundos)",
+   "help": "Ao fim deste tempo a voz diz que a consulta está a demorar e oferece alternativas, em vez de ficar em silêncio."
+  },
+  "voice.agent.max_speech_chars": {
+   "label": "Tamanho máximo da resposta convertida em fala",
+   "help": "Respostas mais longas são resumidas para fala; nunca cortadas a meio de uma frase."
+  },
   "voice.web.enabled": {
    "label": "Voz em tempo real no site",
    "help": "Liga o serviço de voz do lado do servidor. É este que faz o botão de voz do chat funcionar."

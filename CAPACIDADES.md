@@ -391,6 +391,12 @@ um campo removido do modelo continua a viver no blob sem dar erro.
   perfil > env > default. **Zero é "não enviar imagens ao modelo"** — decisão de
   produto (gancho para créditos por cliente), não um limite reduzido: o texto
   extraído no upload continua a servir o turno.
+- **Ponte voz → agente completo vive em `voice.agent`** (v0.1.64, 16 Set 2026,
+  Bloco D do parecer Astra): `enabled` (OFF), `mode` (o vocabulário de
+  `runtime.agent_mode`, `fast` por default), `timeout_s` (30, piso 10) e
+  `max_speech_chars` (900, piso 300). Vale para os dois canais de voz. O
+  consumidor é o `voice/agent_bridge.py` do genai-core (tool
+  `consultar_agente`); `enabled`/`mode` são `client_read`, os tectos internos.
 
 ---
 
