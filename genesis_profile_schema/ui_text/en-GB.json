@@ -1575,6 +1575,14 @@
    "label": "Character limit per attached document",
    "help": "Maximum amount of text read from an attached document, in characters."
   },
+  "tool_limits.max_image_total_mb": {
+   "label": "Megabyte limit for images per question",
+   "help": "Total size of the attached images the model sees in one question, in megabytes. Zero stops sending images to the model; the text extracted at upload remains."
+  },
+  "tool_limits.max_images_per_turn": {
+   "label": "Image limit per question",
+   "help": "How many attached images the model sees in one question. Only applies to models with vision. Zero stops sending images to the model; the text extracted at upload remains."
+  },
   "tool_limits.max_user_prompt_chars": {
    "label": "Character limit for a question",
    "help": "Maximum size of a single question, in characters."

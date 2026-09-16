@@ -415,6 +415,8 @@ EXPOSURE: Dict[str, str] = {
     # Limites de tools
     # ──────────────────────────────────────────────────────────────────────
     "tool_limits.max_attached_doc_chars": _R,
+    "tool_limits.max_image_total_mb": _R,
+    "tool_limits.max_images_per_turn": _R,
     "tool_limits.max_user_prompt_chars": _R,
 
     # ──────────────────────────────────────────────────────────────────────

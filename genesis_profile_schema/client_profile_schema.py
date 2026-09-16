@@ -948,6 +948,14 @@ class ProfileToolLimits(BaseModel):
     max_user_prompt_chars: int = Field(default=12000, ge=0)   # MAX_USER_PROMPT_CHARS
     max_attached_doc_chars: int = Field(default=250000, ge=0) # MAX_ATTACHED_DOC_CHARS
 
+    # Imagens que o modelo VÊ por turno (C4 do parecer GPT-6 Astra, 16 Set 2026):
+    # quantas imagens anexadas entram na mensagem e quantos MB no total. Antes
+    # eram só env (MULTIMODAL_MAX_IMAGES_PER_TURN / MULTIMODAL_MAX_TOTAL_MB);
+    # o core lê perfil > env > default. 0 = o cliente não envia imagens ao
+    # modelo (fica o texto extraído no upload) — é o gancho para créditos.
+    max_images_per_turn: int = Field(default=10, ge=0)        # MULTIMODAL_MAX_IMAGES_PER_TURN
+    max_image_total_mb: int = Field(default=40, ge=0)         # MULTIMODAL_MAX_TOTAL_MB
+
 
 class ProfileQueryCache(BaseModel):
     """

@@ -384,6 +384,13 @@ um campo removido do modelo continua a viver no blob sem dar erro.
   modo Pro NÃO entram aqui. O core valida o perfil no save com este `Literal`,
   logo um valor novo só chega ao Studio depois do re-pin no core — o Studio
   que o ofereça antes recebe 422. Teste: `tests/test_runtime_agent_mode.py`.
+- **Tectos das imagens que o modelo vê vivem em `tool_limits`** (v0.1.63, 16 Set
+  2026): `max_images_per_turn` (10) e `max_image_total_mb` (40), `client_read`
+  como os limites de caracteres. Eram só env no core
+  (`MULTIMODAL_MAX_IMAGES_PER_TURN` / `MULTIMODAL_MAX_TOTAL_MB`); o core lê
+  perfil > env > default. **Zero é "não enviar imagens ao modelo"** — decisão de
+  produto (gancho para créditos por cliente), não um limite reduzido: o texto
+  extraído no upload continua a servir o turno.
 
 ---
 
