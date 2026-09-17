@@ -153,6 +153,16 @@ distintos e não se sobrepõem.
 | `language.aliases` (chave e valor) | `LANGUAGE_CODES` | **não, por desenho** |
 | `frontend.language.default` / `enabled` | `UI_LANGS` (8 códigos secos) | sim |
 
+Desde a **v0.1.65** (17 Set 2026), `compliance.config_variations` guarda as
+**variações materiais de configuração** de um deployment — capacidades ativadas
+num cliente que a frota não tem (hoje: a consulta analítica tabular), com
+finalidade, datas, se alteram a finalidade prevista ou a classificação de risco,
+o que trouxeram de novo e quem reviu. Vem da nota jurídica de 14 Set 2026: a
+variação não faz do deployment um AI system distinto, mas sem registo não há
+como o defender. Lista vazia = alinhado com o comum. É **inteiramente interno**
+(chega ao deployer pela documentação Anexo IV, não por painel do cliente) e não
+tem efeito nenhum no data plane.
+
 Desde a v0.1.53, os quatro campos de data do `compliance` declaram
 `format: "date"`/`"date-time"` no JSON Schema (via `json_schema_extra`, só
 anotação — a validação continua a aceitar texto livre, porque o modelo também

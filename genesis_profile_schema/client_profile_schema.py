@@ -1645,6 +1645,39 @@ class ProfileComplianceRetention(BaseModel):
     conversations_authenticated_days: int = Field(default=0, ge=0)
 
 
+class ProfileComplianceConfigVariation(BaseModel):
+    """
+    Registo de UMA variação material de configuração do deployment
+    (v0.1.65, 17 Set 2026 — nota jurídica complementar de 14 Set 2026).
+
+    PORQUÊ EXISTE: ativar num cliente uma capacidade que os outros não têm
+    (hoje: a consulta analítica sobre dados tabulares) **não** faz dele um AI
+    system distinto nem uma nova colocação no mercado — a arquitetura, o
+    núcleo e a finalidade informativa mantêm-se, e a capacidade pertence ao
+    catálogo comum. Mas é materialmente mais do que uma mudança de conteúdo:
+    muda o tipo de tarefas que o deployment executa. O parecer exige, por
+    isso, registo próprio por variação, com os elementos abaixo — é o que
+    permite defender a continuidade do sistema em auditoria, em vez de a
+    afirmar.
+
+    Cada entrada é um facto datado e NÃO se reescreve: uma capacidade que
+    mude de finalidade ganha entrada nova. O bloco é metadata pura — nada no
+    data plane o lê — e entra na documentação Anexo IV gerada.
+    """
+    model_config = ConfigDict(extra="allow")
+
+    capability: str = ""             # qual a capacidade adicional ativada
+    # `format` no JSON Schema (o gaibo/Studio derivam o date picker).
+    activated_at: str = Field(default="", json_schema_extra={"format": "date"})
+    purpose: str = ""                # finalidade CONCRETA da capacidade neste cliente
+    changes_intended_purpose: bool = False      # altera a intended purpose documentada?
+    changes_risk_classification: bool = False   # altera a classificação/enquadramento?
+    new_models_or_data: str = ""     # modelos, componentes ou categorias de dados novos
+    reviewed_by: str = ""            # quem fez a revisão (nome/email)
+    reviewed_at: str = Field(default="", json_schema_extra={"format": "date"})
+    notes: str = ""                  # contexto livre para o dossier
+
+
 class ProfileCompliance(BaseModel):
     """
     Bloco de conformidade EU AI Act — metadata sem efeito funcional no data
@@ -1670,6 +1703,11 @@ class ProfileCompliance(BaseModel):
     # — perfis existentes validam sem alteração; entram no Anexo IV gerado.
     sector: str = ""                  # setor do cliente (ex.: "imobiliária", "utilities")
     use_case: str = ""                # caso de uso concreto (ex.: "FAQ + captação de leads no site público")
+    # v0.1.65 (17 Set 2026): variações materiais de configuração deste
+    # deployment face à configuração comum da frota — ver a docstring de
+    # ProfileComplianceConfigVariation. Lista vazia = deployment alinhado com
+    # o comum, que é o caso da esmagadora maioria da frota.
+    config_variations: List[ProfileComplianceConfigVariation] = Field(default_factory=list)
 
 
 # ═════════════════════════════════════════════════════════════════════════════

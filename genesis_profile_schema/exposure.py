@@ -349,6 +349,20 @@ EXPOSURE: Dict[str, str] = {
     "compliance.high_risk.serious_incident_contact": _W,
     "compliance.sector": _W,
     "compliance.use_case": _W,
+    # v0.1.65 — registo de variações materiais de configuração. INTERNO por
+    # decisão: é a nossa avaliação de continuidade do AI system (quem reviu,
+    # se muda a classificação, notas para o dossier), não um painel do
+    # cliente. O que o deployer precisa de saber chega-lhe pela documentação
+    # Anexo IV gerada, que inclui estas entradas.
+    "compliance.config_variations.capability": _I,
+    "compliance.config_variations.activated_at": _I,
+    "compliance.config_variations.purpose": _I,
+    "compliance.config_variations.changes_intended_purpose": _I,
+    "compliance.config_variations.changes_risk_classification": _I,
+    "compliance.config_variations.new_models_or_data": _I,
+    "compliance.config_variations.reviewed_by": _I,
+    "compliance.config_variations.reviewed_at": _I,
+    "compliance.config_variations.notes": _I,
 
     # ──────────────────────────────────────────────────────────────────────
     # Canal de voz
