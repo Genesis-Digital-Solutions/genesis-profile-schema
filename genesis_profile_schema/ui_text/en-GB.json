@@ -184,6 +184,104 @@
       "label": "Notes for the file",
       "help": "Free context to help whoever reads the record later."
     },
+    "compliance.data_subject_rights": {
+      "label": "Data subject rights",
+      "help": "Who is the controller of the personal data processed by this service, and where people can ask them for erasure or other rights. When someone tells the assistant \"delete my data\", the reply points to this controller and this channel."
+    },
+    "compliance.data_subject_rights.controller_name": {
+      "label": "Controller",
+      "help": "Name of the organisation responsible for the personal data processed by this service (usually the customer itself). Blank uses the company name in the profile."
+    },
+    "compliance.data_subject_rights.request_channel": {
+      "label": "Channel for data subject requests",
+      "help": "Email or https address where people can ask for their data to be erased. Blank uses the profile's privacy policy. Other formats are ignored for safety."
+    },
+    "compliance.data_subject_rights.dpo_contact": {
+      "label": "Data protection officer",
+      "help": "Email or https address of the data protection officer, if there is one. Optional."
+    },
+    "compliance.config_variations.config_version_assessed": {
+      "label": "Version assessed",
+      "help": "Configuration version the assessment was made on. The Studio fills it in when recording."
+    },
+    "compliance.config_variations.change_ref": {
+      "label": "Change reference",
+      "help": "Ticket or technical reference that originated the change. The Studio generates one if left blank."
+    },
+    "compliance.config_variations.materiality": {
+      "label": "Materiality assessment",
+      "help": "Conclusion on the regulatory relevance of the variation — separates the mere record from the legal decision.",
+      "options": {
+        "": "Not assessed yet",
+        "no_material_change": "No material regulatory change",
+        "material_reassessment_required": "Material change — reassessment required",
+        "classification_changed": "Classification or regulatory treatment changed"
+      }
+    },
+    "compliance.config_variations.legal_rationale": {
+      "label": "Rationale",
+      "help": "Short justification of the conclusion, e.g. \"feature from the common catalogue; no change to intended purpose\"."
+    },
+    "compliance.config_variations.controls_impacted": {
+      "label": "Controls impacted",
+      "help": "Impact checklist: which obligations or documents this variation may affect.",
+      "options": {
+        "ai_act_classification": "EU AI Act classification",
+        "intended_purpose": "Intended purpose",
+        "art50_transparency": "Article 50 transparency/marking",
+        "prohibited_practices": "Prohibited practices screening",
+        "high_risk_assessment": "High-risk assessment",
+        "gdpr_purposes": "GDPR processing purposes",
+        "personal_data_categories": "Categories of personal data",
+        "retention": "Retention",
+        "subprocessors_transfers": "Subprocessors / international transfers",
+        "dpia": "DPIA or other privacy reassessment",
+        "contractual_docs": "Contractual documentation",
+        "technical_docs": "Technical documentation"
+      }
+    },
+    "compliance.config_variations.evidence_refs": {
+      "label": "Evidence",
+      "help": "Links or references supporting the decision: technical documentation, tests, legal note, approval."
+    },
+    "compliance.config_variations.required_actions": {
+      "label": "Required actions",
+      "help": "What has to be done because of this assessment, with owner and status."
+    },
+    "compliance.config_variations.required_actions.action": {
+      "label": "Action",
+      "help": "For example, \"update the Article 50 notice before production\"."
+    },
+    "compliance.config_variations.required_actions.owner": {
+      "label": "Owner",
+      "help": "Who handles the action."
+    },
+    "compliance.config_variations.required_actions.done": {
+      "label": "Done",
+      "help": "Tick when the action is complete."
+    },
+    "compliance.config_variations.reassessment_triggers": {
+      "label": "Reassessment triggers",
+      "help": "What requires this variation to be assessed again — preferable to relying on a date alone.",
+      "options": {
+        "intended_purpose_change": "Change of intended purpose",
+        "model_change": "Model change",
+        "sdk_api_change": "Relevant SDK/API change",
+        "new_personal_data_category": "New category of personal data",
+        "new_subprocessor": "New subprocessor",
+        "region_change": "Region change",
+        "new_feature": "New feature",
+        "regulatory_change": "Relevant regulatory change"
+      }
+    },
+    "compliance.config_variations.reassessment_notes": {
+      "label": "Reassessment notes",
+      "help": "Any other trigger or detail that does not fit the list."
+    },
+    "compliance.retention.redact_on_expiry": {
+      "label": "Keep the numbers at the end of the period",
+      "help": "At the end of the retention period the content and identity of conversations are erased, but the numbers without personal data remain (cost, tokens, quality indicators). Off, the whole document is deleted at the end of the period, as before."
+    },
     "contacts.attribute_paths": {
       "label": "Contact attributes",
       "help": "Maps an attribute name to the path it is read from on the request."
@@ -1882,20 +1980,20 @@
       "help": "Must match one of the queues defined under review queues."
     },
     "voice.transcription": {
-      "label": "Call transcription (reserved)",
-      "help": "RESERVED — NOT IMPLEMENTED yet. No part of the platform reads these fields today: calls are neither transcribed nor stored. Turning them on has no effect. Internal fields until the capability exists."
+      "label": "Transcript of voice conversations on the site",
+      "help": "GPT-Live engine on the site only. Stores what the visitor and the assistant said, in the same conversation that already holds the assistant consultations. It is a recording of personal data (GDPR): it requires a legal basis and a mention in the DPA and privacy policy; the visitor sees the notice \"this conversation is transcribed\". Off by default — when off, nothing leaves the browser besides the minutes used."
     },
     "voice.transcription.enabled": {
-      "label": "Keep the transcript (reserved)",
-      "help": "RESERVED — not implemented. Stores nothing."
+      "label": "Keep the transcript of voice conversations",
+      "help": "On = the visitor's and the assistant's sentences are stored in the session conversation, with the conversation retention (or the one set below). Requires a mention in the client's DPA and privacy policy."
     },
     "voice.transcription.model": {
-      "label": "Transcription deployment (reserved)",
-      "help": "RESERVED — not implemented. The name of a transcription deployment, for when the capability exists."
+      "label": "Transcription deployment (no effect on the site)",
+      "help": "No consumer: with the GPT-Live engine the transcript comes from the session itself. Reserved for a possible phone channel."
     },
     "voice.transcription.retention_days": {
-      "label": "Transcript retention (days) (reserved)",
-      "help": "RESERVED — not implemented. There are no transcripts, so there is no retention to set. Do not rely on this as a retention guarantee in a contract or DPA."
+      "label": "Transcript retention (days)",
+      "help": "Empty, 0 or an invalid value = the profile's conversation retention. Counted from each stored sentence."
     },
     "voice.transfer_number": {
       "label": "Call transfer phone number"
@@ -1933,6 +2031,18 @@
     "voice.web.enabled": {
       "label": "Real-time voice on the site",
       "help": "Switches on the server-side voice service. This is what makes the chat's voice button work."
+    },
+    "voice.web.engine": {
+      "label": "Voice engine on the site",
+      "help": "Realtime is the usual engine (ephemeral token, the browser talks directly to the model). GPT-Live is full-duplex: it listens while it speaks, natural interruptions, delegation to the full assistant while the conversation continues; billed per second of session (silence included) and capped in concurrent sessions per subscription — if the session cannot start, the site falls back to Realtime automatically.",
+      "options": {
+        "realtime": "Realtime (turn-based)",
+        "live": "GPT-Live (full-duplex)"
+      }
+    },
+    "voice.web.live_deployment": {
+      "label": "GPT-Live model deployment",
+      "help": "Name of the gpt-live-1 deployment on the client's Foundry resource (GlobalStandard; available in Sweden Central, France Central and East US 2). The Generator creates it when the engine is GPT-Live. Without it the GPT-Live engine does not start."
     },
     "voices.by_locale": {
       "label": "Voice per language"

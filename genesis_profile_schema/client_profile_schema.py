@@ -45,7 +45,7 @@ warnings.filterwarnings(
 )
 
 from typing import Annotated, Any, Dict, List, Literal, Optional, Union
-from pydantic import BaseModel, ConfigDict, Field, model_validator
+from pydantic import BaseModel, ConfigDict, Field, field_validator, model_validator
 
 
 # ─────────────────────────────────────────────────────────────────────────────
@@ -1675,6 +1675,72 @@ class ProfileComplianceRetention(BaseModel):
 
     conversations_anonymous_days: int = Field(default=90, ge=0)
     conversations_authenticated_days: int = Field(default=0, ge=0)
+    # v0.1.68 (22 Set 2026): no fim do prazo, apagar só as PALAVRAS e guardar
+    # os NÚMEROS (custo, tokens, flags de qualidade), em vez de o Cosmos apagar
+    # o documento inteiro e levar o custo com ele. Ligado: o `ttl` ganha uma
+    # margem de rede (30 dias) e a rotina de retenção que o Studio corre à
+    # noite redige o conteúdo no fim do prazo. Desligado (default): tudo
+    # exatamente como antes. Opt-in por cliente de propósito — liga-se num
+    # cliente, verifica-se, e só depois na frota.
+    redact_on_expiry: bool = False
+
+
+#: Resultado da avaliação de materialidade de uma variação (nota jurídica de
+#: 22 Set 2026, §12.3). "" = ainda não avaliada.
+VariationMateriality = Literal[
+    "", "no_material_change", "material_reassessment_required", "classification_changed",
+]
+
+#: Controlos regulatórios que uma variação pode afetar (§12.5) — checklist de
+#: impacto, não obrigação de os ter todos.
+VariationControl = Literal[
+    "ai_act_classification", "intended_purpose", "art50_transparency",
+    "prohibited_practices", "high_risk_assessment", "gdpr_purposes",
+    "personal_data_categories", "retention", "subprocessors_transfers",
+    "dpia", "contractual_docs", "technical_docs",
+]
+
+#: O que obriga a voltar a avaliar a variação (§12.8) — preferível a só uma data.
+VariationTrigger = Literal[
+    "intended_purpose_change", "model_change", "sdk_api_change",
+    "new_personal_data_category", "new_subprocessor", "region_change",
+    "new_feature", "regulatory_change",
+]
+
+
+class ProfileComplianceVariationAction(BaseModel):
+    """Uma medida ou condição resultante da avaliação (§12.7), com dono e
+    estado — "atualizar o aviso do Art. 50 antes de produção", "acrescentar o
+    fornecedor ao registo de subprocessadores"."""
+    model_config = ConfigDict(extra="allow")
+
+    action: str = ""
+    owner: str = ""
+    done: bool = False
+
+
+class ProfileComplianceDataSubjectRights(BaseModel):
+    """Quem é o responsável pelo tratamento e por onde se lhe pedem os direitos
+    (v0.1.68, 22 Set 2026 — nota jurídica sobre "apagar os meus dados", §10).
+
+    Quando um titular diz ao assistente "apaga os meus dados", a resposta
+    identifica este responsável e dá este canal — em vez de "contacte o
+    operador", que a nota desaconselha expressamente. São factos do CLIENTE
+    (é ele o responsável; a Genesis é subcontratante), por isso editáveis por
+    ele.
+
+    Consumidor: `core/compliance/data_subject_rights.py`. Sem nome, o core usa
+    `identity.company_name` — EXCETO o default do schema ("Genesis Digital
+    Solutions"), que apresentaria a Genesis como responsável. Sem canal, usa
+    `frontend.privacyPolicyUrl`. O core só aceita um canal com forma de email
+    ou de URL https; outra coisa conta como ausente (o valor aparece dentro
+    de uma resposta renderizada como markdown).
+    """
+    model_config = ConfigDict(extra="allow")
+
+    controller_name: str = ""     # ex.: "Câmara Municipal de Exemplo"
+    request_channel: str = ""     # email ou URL https para pedidos de titulares
+    dpo_contact: str = ""         # email ou URL https do encarregado de proteção de dados (opcional)
 
 
 class ProfileComplianceConfigVariation(BaseModel):
@@ -1709,6 +1775,19 @@ class ProfileComplianceConfigVariation(BaseModel):
     reviewed_at: str = Field(default="", json_schema_extra={"format": "date"})
     notes: str = ""                  # contexto livre para o dossier
 
+    # v0.1.68 (22 Set 2026) — campos jurídicos da nota de 22 Set (§12-13).
+    # O objetivo é preservar a LÓGICA da decisão sem transformar cada
+    # alteração técnica num processo pesado: quase todos são opcionais.
+    config_version_assessed: str = ""   # versão do perfil sobre a qual recaiu a avaliação (o Studio preenche)
+    change_ref: str = ""                # ticket / referência da alteração técnica (o Studio gera se vazio)
+    materiality: VariationMateriality = ""
+    legal_rationale: str = ""           # fundamentação curta ("capacidade do catálogo comum; sem mudança de finalidade")
+    controls_impacted: List[VariationControl] = Field(default_factory=list)
+    evidence_refs: List[str] = Field(default_factory=list)   # links / referências (docs, testes, nota jurídica)
+    required_actions: List[ProfileComplianceVariationAction] = Field(default_factory=list)
+    reassessment_triggers: List[VariationTrigger] = Field(default_factory=list)
+    reassessment_notes: str = ""
+
 
 class ProfileCompliance(BaseModel):
     """
@@ -1740,6 +1819,9 @@ class ProfileCompliance(BaseModel):
     # ProfileComplianceConfigVariation. Lista vazia = deployment alinhado com
     # o comum, que é o caso da esmagadora maioria da frota.
     config_variations: List[ProfileComplianceConfigVariation] = Field(default_factory=list)
+    # v0.1.68: responsável pelo tratamento e canal para pedidos de titulares.
+    data_subject_rights: ProfileComplianceDataSubjectRights = Field(
+        default_factory=ProfileComplianceDataSubjectRights)
 
 
 # ═════════════════════════════════════════════════════════════════════════════
@@ -1752,49 +1834,70 @@ class ProfileCompliance(BaseModel):
 # ─────────────────────────────────────────────────────────────────────────────
 
 class ProfileVoiceTranscription(BaseModel):
-    """RESERVADO — **NÃO IMPLEMENTADO**. Ligar estes campos não produz efeito
-    nenhum.
+    """Transcrição das conversas por voz NO WIDGET com o motor GPT-Live
+    (`voice.web.engine = "live"`). **OFF por defeito** — é gravação de dados
+    pessoais (RGPD): exige base legal e menção no DPA e na política de
+    privacidade do cliente; o visitante vê o aviso «esta conversa é
+    transcrita» no modo voz.
 
-    Intenção original (v0.1.32, Jul 2026): transcrição integral verbatim da
-    chamada, opt-in, com retenção controlada (RGPD: o cliente é o responsável
-    pelo tratamento). `model` seria o NOME de um deployment de transcrição.
+    Consumidor (v0.1.68, 22 Set 2026): `core/handlers/live_web.py` do
+    genai-core — o browser envia as linhas (papel, texto, instante) só quando
+    `enabled` é verdadeiro (o `/client-config` autoriza-o), e o core grava-as
+    na conversa `voice:live:<sessão>`, ao lado dos turnos delegados ao
+    agente, com o TTL das conversas do perfil (`compliance.retention.*`) ou
+    `retention_days` quando definido. Com o toggle desligado nada sai do
+    browser além do usage. Desenho: `codigo/CONTEXT_PACK_voz_gpt_live_B.md` §5.7.
 
-    ESTADO REAL, verificado a 9 Set 2026 nos três repos: **nenhum consumidor
-    lê este bloco**. O loader do canal de voz do genai-core
-    (`voice/config.py::load_voice_config`) monta o `VoiceConfig` a partir de
-    `enabled/deployment/voice/language/greeting/instructions/queue/
-    transfer_number/aiDisclosure/kb_top_n/category_hints` e ignora
-    `transcription`; não existe uso de `input_audio_transcription` da Realtime
-    API em lado nenhum, e o core não persiste transcrição da sessão de voz
-    (ver `docs/capacidades/10-voz-e-canais.md`, "O que não existe").
-
-    PORQUE É QUE ISTO É UM RISCO DE COMPLIANCE, e não só código morto: um
-    campo de retenção editável faz acreditar que existe transcrição com
-    retenção controlada. Essa crença pode entrar num DPA — e seria falsa.
-    Por isso, desde v0.1.61, os três caminhos são `internal` em
-    `exposure.py`: o cliente deixa de os ver e de os poder editar.
-
-    NÃO removido do schema por opção deliberada: perfis existentes carregam o
-    bloco (default_factory), o GAIBO tem pin próprio e pode ficar atrás, e
-    remover uma folha obrigaria a coordenar três re-pins para não ganhar nada.
-    Fica declarado e honesto. A transcrição real é matéria do pack
-    `CONTEXT_PACK_captura_na_voz.md`, com decisões ainda em aberto; quem a
-    implementar reabre a exposição no MESMO commit em que o consumidor nasce.
+    HISTÓRICO: nasceu RESERVADO na v0.1.32 (Jul 2026) e ficou sem consumidor
+    até esta versão; entre v0.1.61 e v0.1.67 os três caminhos eram `internal`
+    exactamente para nenhum cliente ver um campo de retenção de transcrições
+    que não existiam (crença que podia entrar num DPA). `model` continua SEM
+    consumidor: no GPT-Live as transcrições vêm da própria sessão; fica para
+    um eventual canal telefónico com deployment de transcrição.
     """
     model_config = ConfigDict(extra="allow", protected_namespaces=())
     enabled: bool = False
+    # None = a retenção das conversas do perfil (compliance.retention.*).
+    # SEM `ge=1`: o campo foi editável no GAIBO até à v0.1.61 (que ainda tem pin
+    # antigo) e pode haver perfis com 0 gravado. Um validador que recusasse o 0
+    # faria o core responder 422 a QUALQUER gravação desse perfil, de qualquer
+    # tab, até alguém o corrigir à mão — sem proteger ninguém (regra do
+    # CAPACIDADES). Em vez disso normaliza-se: 0, negativo, vazio ou lixo → None.
     retention_days: Optional[int] = None
-    model: Optional[str] = None
+    model: Optional[str] = None     # sem consumidor (ver docstring)
+
+    @field_validator("retention_days", mode="before")
+    @classmethod
+    def _retention_days_or_none(cls, v):
+        if v is None or v == "" or isinstance(v, bool):
+            return None
+        try:
+            n = int(v)
+        except (TypeError, ValueError):
+            return None
+        return n if n >= 1 else None
 
 
 class ProfileVoiceWeb(BaseModel):
     """Canal de voz realtime NO BROWSER (par do frontend.features.voiceMode,
     que só controla a UI). Partilha deployment/voz do bloco voice — o backend
     exige enabled=true E voice.deployment definido. Formalizado v0.1.43
-    (era fantasma)."""
+    (era fantasma).
+
+    v0.1.68 (22 Set 2026, caminho B do parecer Astra): `engine` escolhe o
+    MOTOR do widget — `realtime` (o de sempre: token efémero, WebRTC directo,
+    `voice.deployment`) ou `live` (GPT-Live full-duplex: o core cria a sessão
+    com `live_deployment`, delegação `client` para a ponte do agente; só
+    widget — o telefone continua no Realtime). Default `realtime`: zero
+    regressão na frota. `live` sem `live_deployment` = o core recusa e cai no
+    Realtime (fallback automático, decisão do Bruno). Consumidor:
+    `core/handlers/live_web.py` do genai-core; o Studio cria o deployment
+    `gpt-live-1` quando o motor é `live`."""
     model_config = ConfigDict(extra="allow")
 
     enabled: bool = False
+    engine: Literal["realtime", "live"] = "realtime"
+    live_deployment: str = ""       # ex.: gpt-live-1 (GlobalStandard; só Sweden/France Central, East US 2)
 
 
 class ProfileVoiceAgent(BaseModel):

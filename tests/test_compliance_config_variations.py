@@ -98,3 +98,94 @@ def test_a_anotacao_de_formato_nao_valida_a_data():
     valida é o MESMO que serve o bot."""
     v = ProfileComplianceConfigVariation.model_validate({"activated_at": "ago/2026"})
     assert v.activated_at == "ago/2026"
+
+
+# ─── v0.1.68: campos jurídicos (nota de 22 Set 2026, §12-13) ────────────────
+
+CAMINHOS_068 = [
+    "compliance.config_variations.config_version_assessed",
+    "compliance.config_variations.change_ref",
+    "compliance.config_variations.materiality",
+    "compliance.config_variations.legal_rationale",
+    "compliance.config_variations.controls_impacted",
+    "compliance.config_variations.evidence_refs",
+    "compliance.config_variations.required_actions.action",
+    "compliance.config_variations.required_actions.owner",
+    "compliance.config_variations.required_actions.done",
+    "compliance.config_variations.reassessment_triggers",
+    "compliance.config_variations.reassessment_notes",
+]
+
+
+def test_entrada_da_v065_continua_a_carregar_sem_os_campos_novos():
+    """Os registos feitos com a v0.1.65 não têm nada disto."""
+    v = ProfileComplianceConfigVariation.model_validate({"capability": "tabular", "purpose": "x"})
+    assert v.materiality == "" and v.controls_impacted == [] and v.required_actions == []
+
+
+def test_entrada_completa_da_v068():
+    v = ProfileComplianceConfigVariation.model_validate({
+        "capability": "consulta analítica tabular",
+        "config_version_assessed": "v42", "change_ref": "CV-2026-09-22-001",
+        "materiality": "no_material_change",
+        "legal_rationale": "capacidade do catálogo comum; sem mudança de finalidade",
+        "controls_impacted": ["technical_docs", "art50_transparency"],
+        "evidence_refs": ["https://x/nota.pdf"],
+        "required_actions": [{"action": "atualizar o Anexo IV", "owner": "Bruno", "done": False}],
+        "reassessment_triggers": ["model_change", "new_personal_data_category"],
+    })
+    assert v.required_actions[0].owner == "Bruno"
+    assert "model_change" in v.reassessment_triggers
+
+
+@pytest.mark.parametrize("campo,valor", [
+    ("materiality", "talvez"),
+    ("controls_impacted", ["inventado"]),
+    ("reassessment_triggers", ["qualquer"]),
+])
+def test_vocabularios_fechados(campo, valor):
+    """Campos novos, sem valores históricos: aqui o vocabulário fechado não
+    impede ninguém de carregar e evita que o Anexo IV mostre um código cru."""
+    from pydantic import ValidationError
+    with pytest.raises(ValidationError):
+        ProfileComplianceConfigVariation.model_validate({campo: valor})
+
+
+@pytest.mark.parametrize("caminho", CAMINHOS_068)
+def test_campos_juridicos_sao_internos(caminho):
+    assert exp.exposure_of(caminho) == exp.INTERNAL
+
+
+@pytest.mark.parametrize("caminho", [
+    "compliance.config_variations.controls_impacted",
+    "compliance.config_variations.reassessment_triggers",
+])
+def test_listas_fechadas_sao_escolha_multipla(caminho):
+    from genesis_profile_schema.presentation import collection_of, control_for
+    assert control_for(caminho) == "select" and collection_of(caminho) == "list"
+
+
+# ─── v0.1.68: responsável pelo tratamento (nota de 21 Set 2026, §10) ───────
+
+def test_bloco_de_direitos_existe_vazio_por_defeito():
+    p = ClientProfileSchema.model_validate({"client_id": "acme"})
+    d = p.compliance.data_subject_rights
+    assert d.controller_name == "" and d.request_channel == "" and d.dpo_contact == ""
+
+
+@pytest.mark.parametrize("caminho", [
+    "compliance.data_subject_rights.controller_name",
+    "compliance.data_subject_rights.request_channel",
+    "compliance.data_subject_rights.dpo_contact",
+])
+def test_direitos_sao_do_cliente(caminho):
+    """O responsável pelo tratamento é o cliente — é a ele que cabe mantê-lo."""
+    assert exp.exposure_of(caminho) == exp.CLIENT_WRITE
+
+
+def test_canal_nao_e_validado_no_modelo():
+    """Um valor mal formado tem de continuar a CARREGAR (o mesmo modelo serve
+    o bot); quem o recusa é o core ao mostrá-lo, não o schema ao ler."""
+    p = ClientProfileSchema.model_validate(
+        {"client_id": "a", "compliance": {"data_subject_rights": {"request_channel": "javascript:x"}}})
+    assert p.compliance.data_subject_rights.request_channel == "javascript:x"

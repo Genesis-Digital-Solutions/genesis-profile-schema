@@ -345,6 +345,9 @@ EXPOSURE: Dict[str, str] = {
     # retenção de dados pessoais: decisão do deployer (igual a voice.transcription.retention_days)
     "compliance.retention.conversations_anonymous_days": _W,
     "compliance.retention.conversations_authenticated_days": _W,
+    # O PRAZO é decisão do deployer; guardar métricas sem conteúdo depois dele
+    # é operação nossa (subcontratante) — o cliente vê, não altera.
+    "compliance.retention.redact_on_expiry": _R,
     "compliance.high_risk.oversight_procedure_url": _W,
     "compliance.high_risk.serious_incident_contact": _W,
     "compliance.sector": _W,
@@ -363,6 +366,25 @@ EXPOSURE: Dict[str, str] = {
     "compliance.config_variations.reviewed_by": _I,
     "compliance.config_variations.reviewed_at": _I,
     "compliance.config_variations.notes": _I,
+    # v0.1.68 — campos jurídicos do registo (nota de 22 Set 2026). Internos
+    # pelo mesmo motivo do resto do registo.
+    "compliance.config_variations.config_version_assessed": _I,
+    "compliance.config_variations.change_ref": _I,
+    "compliance.config_variations.materiality": _I,
+    "compliance.config_variations.legal_rationale": _I,
+    "compliance.config_variations.controls_impacted": _I,
+    "compliance.config_variations.evidence_refs": _I,
+    "compliance.config_variations.required_actions.action": _I,
+    "compliance.config_variations.required_actions.owner": _I,
+    "compliance.config_variations.required_actions.done": _I,
+    "compliance.config_variations.reassessment_triggers": _I,
+    "compliance.config_variations.reassessment_notes": _I,
+    # v0.1.68 — responsável pelo tratamento e canal para pedidos de titulares.
+    # São factos do DEPLOYER (o cliente é o responsável; a Genesis é
+    # subcontratante) — a ele cabe mantê-los certos.
+    "compliance.data_subject_rights.controller_name": _W,
+    "compliance.data_subject_rights.request_channel": _W,
+    "compliance.data_subject_rights.dpo_contact": _W,
 
     # ──────────────────────────────────────────────────────────────────────
     # Canal de voz
@@ -376,21 +398,24 @@ EXPOSURE: Dict[str, str] = {
     "voice.kb_top_n": _I,
     "voice.language": _W,
     "voice.queue": _W,
-    # voice.transcription.* — RESERVADO, NAO IMPLEMENTADO (v0.1.61, 9 Set 2026).
-    # Verificado nos tres repos: nenhum consumidor le este bloco (o loader do
-    # canal de voz do core nao o toca, nao existe input_audio_transcription, e
-    # nao ha transcricao persistida da sessao). Estava `enabled` client_read e
-    # `retention_days` client_write: o cliente via um campo de RETENCAO de
-    # dados pessoais e podia edita-lo, o que faz acreditar que existe
-    # transcricao com retencao controlada — crenca que pode entrar num DPA e
-    # que seria falsa. Internos ate haver consumidor; quem implementar a
-    # transcricao reabre a exposicao no MESMO commit em que o consumidor nasce.
-    "voice.transcription.enabled": _I,
+    # voice.transcription.* — transcricao das conversas por voz no widget
+    # GPT-Live (v0.1.68, 22 Set 2026). Entre v0.1.61 e v0.1.67 eram os tres
+    # `internal` porque NAO havia consumidor e um campo de retencao visivel
+    # faria acreditar numa transcricao que nao existia. O consumidor nasceu
+    # (core `live_web.py`), e a exposicao reabre no mesmo commit, como estava
+    # prometido: o cliente VE se a transcricao esta ligada e com que retencao
+    # (e materia de DPA), mas quem a liga somos nos (client_read, nao write).
+    # `model` continua sem consumidor — interno.
+    "voice.transcription.enabled": _R,
     "voice.transcription.model": _I,
-    "voice.transcription.retention_days": _I,
+    "voice.transcription.retention_days": _R,
     "voice.transfer_number": _W,
     "voice.voice": _W,
     "voice.web.enabled": _R,
+    # voice.web.engine / live_deployment — motor do widget (v0.1.68): infra
+    # nossa (deployment, regiao, quota, fallback), nao e escolha do cliente.
+    "voice.web.engine": _I,
+    "voice.web.live_deployment": _I,
     # voice.agent.* — ponte voz → agente completo (v0.1.64, Set 2026). O
     # cliente vê se está ligada e em que modo; os tectos de espera e de fala
     # são afinação interna (a latência do core é nossa, não dele).
@@ -742,10 +767,13 @@ def _walk_json_schema(js: Dict[str, Any], root: Tuple[str, ...]) -> _Walk:
         leaves.append(dotted)
         if kind == "object":
             open_maps.append(dotted)
-        members = shape.get("enum")
+        item_shape = _resolve(shape.get("items", {}), defs) if kind == "array" else {}
+        # Numa LISTA de valores fechados (List[Literal[...]]) o enum vive nos
+        # itens, não no campo — sem isto a derivação dava `text` a uma escolha
+        # múltipla (v0.1.68, primeira lista deste tipo no schema).
+        members = shape.get("enum") or (item_shape.get("enum") if item_shape else None)
         if isinstance(members, list) and members and dotted not in enums:
             enums[dotted] = tuple(str(m) for m in members)
-        item_shape = _resolve(shape.get("items", {}), defs) if kind == "array" else {}
         shapes.setdefault(dotted, {
             "type": kind,
             # Tipo de CADA entrada, quando o campo é uma lista: sem isto um

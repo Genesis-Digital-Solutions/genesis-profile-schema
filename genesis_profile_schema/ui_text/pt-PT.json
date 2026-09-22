@@ -184,6 +184,104 @@
       "label": "Notas para o dossier",
       "help": "Contexto livre que ajude quem ler o registo mais tarde."
     },
+    "compliance.data_subject_rights": {
+      "label": "Direitos dos titulares",
+      "help": "Quem é o responsável pelo tratamento dos dados deste serviço e por onde as pessoas lhe podem pedir o apagamento ou outros direitos. Quando alguém diz ao assistente \"apaga os meus dados\", a resposta indica este responsável e este canal."
+    },
+    "compliance.data_subject_rights.controller_name": {
+      "label": "Responsável pelo tratamento",
+      "help": "Nome da entidade responsável pelos dados pessoais tratados neste serviço (normalmente a própria empresa ou organismo). Em branco, usa-se o nome da empresa do perfil."
+    },
+    "compliance.data_subject_rights.request_channel": {
+      "label": "Canal para pedidos de titulares",
+      "help": "Email ou endereço https onde as pessoas podem pedir o apagamento dos seus dados. Em branco, usa-se a política de privacidade do perfil. Outros formatos são ignorados por segurança."
+    },
+    "compliance.data_subject_rights.dpo_contact": {
+      "label": "Encarregado de proteção de dados",
+      "help": "Email ou endereço https do encarregado de proteção de dados, se existir. Opcional."
+    },
+    "compliance.config_variations.config_version_assessed": {
+      "label": "Versão avaliada",
+      "help": "Versão da configuração sobre a qual recaiu a avaliação. O Studio preenche-a ao registar."
+    },
+    "compliance.config_variations.change_ref": {
+      "label": "Referência da alteração",
+      "help": "Ticket ou referência técnica que originou a alteração. O Studio gera uma se ficar em branco."
+    },
+    "compliance.config_variations.materiality": {
+      "label": "Avaliação de materialidade",
+      "help": "Conclusão sobre a relevância regulatória da variação — distingue o simples registo da decisão jurídica.",
+      "options": {
+        "": "Por avaliar",
+        "no_material_change": "Sem alteração regulatória material",
+        "material_reassessment_required": "Alteração material — exige reavaliação",
+        "classification_changed": "Classificação ou enquadramento alterado"
+      }
+    },
+    "compliance.config_variations.legal_rationale": {
+      "label": "Fundamentação",
+      "help": "Justificação curta da conclusão, por exemplo \"capacidade do catálogo comum; sem mudança de finalidade\"."
+    },
+    "compliance.config_variations.controls_impacted": {
+      "label": "Controlos afetados",
+      "help": "Lista de verificação de impacto: que obrigações ou documentos esta variação pode afetar.",
+      "options": {
+        "ai_act_classification": "Classificação AI Act",
+        "intended_purpose": "Finalidade prevista",
+        "art50_transparency": "Transparência/marcação Art. 50",
+        "prohibited_practices": "Práticas proibidas",
+        "high_risk_assessment": "Avaliação de alto risco",
+        "gdpr_purposes": "Finalidades RGPD",
+        "personal_data_categories": "Categorias de dados pessoais",
+        "retention": "Conservação",
+        "subprocessors_transfers": "Subprocessadores / transferências",
+        "dpia": "AIPD ou outra reavaliação de privacidade",
+        "contractual_docs": "Documentação contratual",
+        "technical_docs": "Documentação técnica"
+      }
+    },
+    "compliance.config_variations.evidence_refs": {
+      "label": "Evidência",
+      "help": "Ligações ou referências que sustentam a decisão: documentação técnica, testes, nota jurídica, aprovação."
+    },
+    "compliance.config_variations.required_actions": {
+      "label": "Medidas resultantes",
+      "help": "O que tem de ser feito por causa desta avaliação, com responsável e estado."
+    },
+    "compliance.config_variations.required_actions.action": {
+      "label": "Medida",
+      "help": "Por exemplo, \"atualizar o aviso do Art. 50 antes de produção\"."
+    },
+    "compliance.config_variations.required_actions.owner": {
+      "label": "Responsável",
+      "help": "Quem trata da medida."
+    },
+    "compliance.config_variations.required_actions.done": {
+      "label": "Concluída",
+      "help": "Assinala quando a medida estiver feita."
+    },
+    "compliance.config_variations.reassessment_triggers": {
+      "label": "Gatilhos de reavaliação",
+      "help": "O que obriga a voltar a avaliar esta variação — preferível a depender só de uma data.",
+      "options": {
+        "intended_purpose_change": "Alteração da finalidade prevista",
+        "model_change": "Mudança de modelo",
+        "sdk_api_change": "Alteração relevante de SDK/API",
+        "new_personal_data_category": "Nova categoria de dados pessoais",
+        "new_subprocessor": "Novo subprocessador",
+        "region_change": "Mudança de região",
+        "new_feature": "Nova funcionalidade",
+        "regulatory_change": "Alteração regulatória relevante"
+      }
+    },
+    "compliance.config_variations.reassessment_notes": {
+      "label": "Notas sobre a reavaliação",
+      "help": "Outro gatilho ou pormenor que não caiba na lista."
+    },
+    "compliance.retention.redact_on_expiry": {
+      "label": "Guardar os números no fim do prazo",
+      "help": "No fim do prazo de conservação apaga-se o conteúdo e a identidade das conversas, mas ficam os números sem dados pessoais (custo, tokens, indicadores de qualidade). Desligado, o documento inteiro é apagado no fim do prazo, como sempre."
+    },
     "contacts.attribute_paths": {
       "label": "Atributos do contacto",
       "help": "Mapa do nome do atributo para o caminho de onde é lido no pedido."
@@ -1882,20 +1980,20 @@
       "help": "Tem de corresponder a uma das filas definidas em filas de revisão."
     },
     "voice.transcription": {
-      "label": "Transcrição da chamada (reservado)",
-      "help": "RESERVADO — ainda NÃO IMPLEMENTADO. Nenhum componente da plataforma lê estes campos hoje: as chamadas não são transcritas nem guardadas. Ligá-los não produz efeito. Campos internos até a capacidade existir."
+      "label": "Transcrição das conversas por voz no site",
+      "help": "Só no motor GPT-Live do site. Guarda o que o visitante e o assistente disseram, na mesma conversa onde já ficam as consultas ao assistente. É gravação de dados pessoais (RGPD): exige base legal e menção no DPA e na política de privacidade; o visitante vê o aviso «esta conversa é transcrita». Desligado por defeito — desligado, nada sai do navegador além dos minutos usados."
     },
     "voice.transcription.enabled": {
-      "label": "Guardar a transcrição (reservado)",
-      "help": "RESERVADO — não implementado. Não guarda nada."
+      "label": "Guardar a transcrição das conversas por voz",
+      "help": "Ligado = as frases do visitante e do assistente ficam guardadas na conversa da sessão, com a retenção das conversas (ou a definida abaixo). Requer menção no DPA e na política de privacidade do cliente."
     },
     "voice.transcription.model": {
-      "label": "Modelo de transcrição (reservado)",
-      "help": "RESERVADO — não implementado. Nome de um deployment de transcrição, para quando a capacidade existir."
+      "label": "Modelo de transcrição (sem efeito no site)",
+      "help": "Sem consumidor: no motor GPT-Live a transcrição vem da própria sessão. Reservado para um eventual canal telefónico."
     },
     "voice.transcription.retention_days": {
-      "label": "Retenção da transcrição (dias) (reservado)",
-      "help": "RESERVADO — não implementado. Não há transcrições, logo não há retenção a definir. Não usar como garantia de retenção num contrato ou DPA."
+      "label": "Retenção da transcrição (dias)",
+      "help": "Vazio, 0 ou valor inválido = a retenção das conversas do perfil. Conta a partir de cada frase guardada."
     },
     "voice.transfer_number": {
       "label": "Número para transferência de chamada"
@@ -1933,6 +2031,18 @@
     "voice.web.enabled": {
       "label": "Voz em tempo real no site",
       "help": "Liga o serviço de voz do lado do servidor. É este que faz o botão de voz do chat funcionar."
+    },
+    "voice.web.engine": {
+      "label": "Motor da voz no site",
+      "help": "Realtime é o motor de sempre (token efémero, o navegador fala directamente com o modelo). GPT-Live é full-duplex: ouve enquanto fala, interrupções naturais, delegação ao assistente completo enquanto continua a conversar; cobra por segundo de sessão (silêncio incluído) e tem tecto de sessões em simultâneo por subscrição — se a sessão não arrancar, o site cai automaticamente no Realtime.",
+      "options": {
+        "realtime": "Realtime (turnos)",
+        "live": "GPT-Live (full-duplex)"
+      }
+    },
+    "voice.web.live_deployment": {
+      "label": "Deployment do modelo GPT-Live",
+      "help": "Nome do deployment gpt-live-1 no recurso Foundry do cliente (GlobalStandard; disponível em Sweden Central, France Central e East US 2). O Generator cria-o quando o motor é GPT-Live. Sem ele o motor GPT-Live não arranca."
     },
     "voices.by_locale": {
       "label": "Voz por idioma"

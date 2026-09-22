@@ -163,6 +163,24 @@ como o defender. Lista vazia = alinhado com o comum. É **inteiramente interno**
 (chega ao deployer pela documentação Anexo IV, não por painel do cliente) e não
 tem efeito nenhum no data plane.
 
+Desde a **v0.1.68** (22 Set 2026):
+- o registo de variações ganhou os **campos jurídicos** da nota de 22 Set
+  (versão avaliada, referência da alteração, materialidade, fundamentação,
+  controlos afetados, evidência, medidas com dono e estado, gatilhos de
+  reavaliação). Continua **interno**. `materiality`, `controls_impacted` e
+  `reassessment_triggers` são vocabulários fechados (`Literal`) — seguros por
+  serem campos novos, sem valores históricos a partir;
+- `compliance.data_subject_rights` (`controller_name`, `request_channel`,
+  `dpo_contact`) diz ao core quem é o **responsável pelo tratamento** e por
+  onde se lhe pedem direitos, para a resposta a "apaga os meus dados".
+  `client_write` — são factos do deployer. **Não** é validado no modelo: o core
+  (`core/compliance/data_subject_rights.py`) só usa um canal com forma de email
+  ou URL https, e trata o default "Genesis Digital Solutions" do `company_name`
+  como ausência (senão apresentava a Genesis, subcontratante, como responsável);
+- a derivação de controlos (`presentation.py`) passou a ver o `enum` dos ITENS
+  de uma lista: `List[Literal[...]]` é `select` + `list` (escolha múltipla).
+  Antes dava `text`, e nunca se tinha notado porque não havia nenhuma.
+
 Desde a v0.1.53, os quatro campos de data do `compliance` declaram
 `format: "date"`/`"date-time"` no JSON Schema (via `json_schema_extra`, só
 anotação — a validação continua a aceitar texto livre, porque o modelo também
@@ -357,18 +375,7 @@ um campo removido do modelo continua a viver no blob sem dar erro.
   qual, e o `pickLang` do `client-config.service` procura a chave exacta. Um
   código com região (`pt-PT`) renderiza uma entrada cujas strings caem para
   inglês ou português — degrada em silêncio, não dá erro.
-- **`voice.transcription.*` é RESERVADO e NÃO IMPLEMENTADO** (v0.1.61, 9 Set
-  2026). Declarado desde a v0.1.32 (`{enabled, retention_days, model}`), mas
-  verificado nos três repos: **nada o lê** — o loader do canal de voz do core
-  ignora-o, não existe `input_audio_transcription`, e o core não persiste
-  transcrição da sessão de voz. Estava `enabled` em `client_read` e
-  `retention_days` em `client_write`, ou seja o cliente via e editava um campo
-  de **retenção de dados pessoais** que não retém nada — e essa crença podia
-  entrar num DPA. Os três caminhos passaram a `internal` e estão na lista
-  `CAMPOS_SEM_CONSUMIDOR` do `test_exposure.py`. O campo NÃO foi removido de
-  propósito (perfis existentes carregam-no; o GAIBO tem pin próprio). Quem
-  implementar a transcrição reabre a exposição no MESMO commit em que o
-  consumidor nascer.
+- **`voice.transcription.*` passou a ter consumidor na v0.1.68** (22 Set 2026, caminho B do parecer Astra): transcrição das conversas por voz no WIDGET com o motor GPT-Live, gravada pelo core (`live_web.py`) na conversa `voice:live:<sessão>` com o TTL das conversas ou `retention_days` (0, vazio ou lixo normalizam para None = a retenção das conversas — sem `ge`, para um 0 gravado por um GAIBO antigo não bloquear a gravação do perfil). OFF por defeito — é gravação de dados pessoais (RGPD), exige DPA e aviso ao visitante. Entre v0.1.61 e v0.1.67 os três caminhos foram `internal` porque nada os lia (a promessa era reabrir a exposição no mesmo commit em que o consumidor nascesse — cumprida): `enabled` e `retention_days` são agora `client_read` (o cliente VÊ, nós ligamos); `model` continua interno e sem consumidor (a transcrição vem da própria sessão GPT-Live).
 - **`identity.timezone` é lido desde a v0.1.52** — o core resolve perfil > env
   `TZ` > `Europe/Lisbon` em `core/agent/clock.py`, e daí saem o bloco temporal
   do system prompt e o fast-path do "que horas são?". É a hora de NEGÓCIO do
@@ -420,6 +427,7 @@ um campo removido do modelo continua a viver no blob sem dar erro.
   `tools.enabled`) e a config é interna: os anexos saem para a sandbox do
   fornecedor e cada execução é uma sessão facturada. Consumidor:
   `tools/run_code/` do genai-core.
+- **`voice.web.engine` escolhe o MOTOR da voz no widget** (v0.1.68, 22 Set 2026): `realtime` (default — o de sempre, zero regressão) ou `live` (GPT-Live full-duplex, com `voice.web.live_deployment`, ex. `gpt-live-1`). Ambos internos: são infra nossa (deployment, região, quota de sessões, fallback automático ao Realtime). Só o widget — o telefone fica no Realtime. Consumidor: `core/handlers/live_web.py`; o Studio cria o deployment quando o motor é `live`.
 
 ---
 

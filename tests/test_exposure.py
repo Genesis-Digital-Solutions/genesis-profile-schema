@@ -168,16 +168,13 @@ CAMPOS_SEM_CONSUMIDOR = [
     # `retention_days` estava client_write: o cliente via e editava um campo de
     # RETENÇÃO DE DADOS PESSOAIS que não retém nada — a crença de que existe
     # transcrição com retenção controlada pode entrar num DPA e seria falsa.
-    ("voice.transcription.enabled",
-     "RESERVADO/NÃO IMPLEMENTADO: nenhum consumidor lê o bloco. Reabrir só no "
-     "commit em que a transcrição de voz passar a existir de facto "
-     "(CONTEXT_PACK_captura_na_voz.md)."),
+    # v0.1.68 (22 Set 2026): `enabled` e `retention_days` ganharam consumidor
+    # (core `live_web.py`, transcrição das sessões GPT-Live do widget) e
+    # reabriram como client_read — ver tests/test_voice_web_engine.py. Fica
+    # aqui só o que continua sem leitor.
     ("voice.transcription.model",
-     "RESERVADO/NÃO IMPLEMENTADO: nenhum consumidor lê o bloco."),
-    ("voice.transcription.retention_days",
-     "RESERVADO/NÃO IMPLEMENTADO: retenção de uma transcrição que não é "
-     "produzida. Editável, dava ao cliente a garantia falsa de que há "
-     "transcrição com retenção controlada."),
+     "SEM CONSUMIDOR: no motor GPT-Live a transcrição vem da própria sessão; "
+     "o nome de um deployment de transcrição não é lido por ninguém."),
 ]
 
 
