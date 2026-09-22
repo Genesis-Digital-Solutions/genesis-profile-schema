@@ -1798,7 +1798,14 @@ class ProfileVoice(BaseModel):
     deployment: str = ""          # ex.: gpt-realtime-2.1-mini
     voice: str = "marin"
     language: str = "pt-PT"
-    greeting: str = ""
+    # Saudação da primeira fala. Desde a v0.1.66 (22 Set 2026) aceita o mapa
+    # i18n `{lang: texto}` como `welcomeMessage` — a sessão de voz do widget
+    # passou a falar a língua seleccionada no frontend, e uma saudação numa
+    # língua só saía colada à divulgação de IA noutra. A `str` continua válida
+    # e é lida como estando na língua de `voice.language` (é o que toda a
+    # frota tem hoje). O core NUNCA cai para outra língua: sem saudação na
+    # língua da sessão diz só a divulgação de IA, nessa língua.
+    greeting: Union[str, I18nMap] = ""
     instructions: str = ""
     queue: str = "tickets"        # fila de tickets (reviewQueues.<queue>)
     # Categorias sugeridas ao modelo ao registar um pedido. Mesmo conceito e

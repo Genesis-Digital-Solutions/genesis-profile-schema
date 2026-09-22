@@ -407,6 +407,12 @@ um campo removido do modelo continua a viver no blob sem dar erro.
   `max_speech_chars` (900, piso 300). Vale para os dois canais de voz. O
   consumidor é o `voice/agent_bridge.py` do genai-core (tool
   `consultar_agente`); `enabled`/`mode` são `client_read`, os tectos internos.
+- **`voice.greeting` é `str | {lang: texto}`** (v0.1.66, 22 Set 2026), o mesmo
+  padrão de `welcomeMessage`: a sessão de voz do widget passou a falar a língua
+  seleccionada no frontend, e a saudação tinha de a acompanhar. A `str` continua
+  válida e o core lê-a como estando em `voice.language`. Regra do consumidor
+  (`voice/greeting.py` do genai-core): sem saudação na língua da sessão diz-se só
+  a divulgação de IA nessa língua — nunca se cola a saudação de outra.
 
 ---
 

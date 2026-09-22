@@ -1833,7 +1833,8 @@
       "help": "Off by default. The credentials for the channel live in Key Vault and never in the profile."
     },
     "voice.greeting": {
-      "label": "Opening greeting on the call"
+      "label": "Opening greeting on the call",
+      "help": "The first sentence, per enabled frontend language. The AI disclosure is added by the system in the session language. If a language has no greeting, the assistant says only the disclosure in that language — never the greeting in another one."
     },
     "voice.instructions": {
       "label": "Voice assistant instructions"

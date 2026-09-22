@@ -1833,7 +1833,8 @@
       "help": "Desligado por defeito. As credenciais do canal vivem no Key Vault e nunca no perfil."
     },
     "voice.greeting": {
-      "label": "Saudação inicial da chamada"
+      "label": "Saudação inicial da chamada",
+      "help": "A primeira frase, por língua activa do frontend. A divulgação de IA é acrescentada pelo sistema, na língua da sessão. Se faltar a saudação numa língua, o assistente diz só a divulgação nessa língua — nunca a saudação noutra."
     },
     "voice.instructions": {
       "label": "Instruções para o assistente de voz"
