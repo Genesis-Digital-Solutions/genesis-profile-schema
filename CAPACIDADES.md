@@ -413,6 +413,13 @@ um campo removido do modelo continua a viver no blob sem dar erro.
   válida e o core lê-a como estando em `voice.language`. Regra do consumidor
   (`voice/greeting.py` do genai-core): sem saudação na língua da sessão diz-se só
   a divulgação de IA nessa língua — nunca se cola a saudação de outra.
+- **`tools.config.run_code` é o bloco tipado da análise com código** (v0.1.67,
+  22 Set 2026, F3 do parecer Astra): `deployment`, `timeout_s` (120, piso 60),
+  `max_runs_per_turn` (2, piso 1), `memory` (1g/4g/16g/64g), `max_output_files`
+  (5, piso 1), `allow_attachments`. A tool é OFF por omissão (só em
+  `tools.enabled`) e a config é interna: os anexos saem para a sandbox do
+  fornecedor e cada execução é uma sessão facturada. Consumidor:
+  `tools/run_code/` do genai-core.
 
 ---
 

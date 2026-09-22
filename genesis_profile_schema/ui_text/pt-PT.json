@@ -1787,6 +1787,38 @@
       "label": "Retenção do registo (dias)",
       "help": "Contados a partir do último contacto e não da criação, porque o registo vai sendo atualizado ao longo da conversa. Vazio ou 0 significa sem expiração."
     },
+    "tools.config.run_code": {
+      "label": "Análise com código"
+    },
+    "tools.config.run_code.allow_attachments": {
+      "label": "Enviar os anexos da conversa para a sandbox",
+      "help": "Ligado, os ficheiros anexados pelo utilizador podem ser lidos pelo Python na sandbox do fornecedor. Desligado, a ferramenta só calcula sobre os dados que o assistente lhe passa no pedido."
+    },
+    "tools.config.run_code.deployment": {
+      "label": "Modelo que corre a sandbox",
+      "help": "Vazio usa o modelo do assistente quando é GPT-5.x ou GPT-6; senão o modelo interno."
+    },
+    "tools.config.run_code.max_output_files": {
+      "label": "Ficheiros gerados por execução",
+      "help": "Quantos ficheiros criados pelo código se trazem para o armazenamento do cliente e se mostram no chat."
+    },
+    "tools.config.run_code.max_runs_per_turn": {
+      "label": "Execuções por resposta",
+      "help": "Cada execução pode abrir uma sessão facturada à parte dos tokens (por minuto, mínimo cinco minutos)."
+    },
+    "tools.config.run_code.memory": {
+      "label": "Memória da sandbox",
+      "options": {
+        "1g": "1 GB (base)",
+        "4g": "4 GB",
+        "16g": "16 GB",
+        "64g": "64 GB"
+      }
+    },
+    "tools.config.run_code.timeout_s": {
+      "label": "Espera máxima por execução (segundos)",
+      "help": "A sandbox pode demorar; passado este tempo o assistente responde sem o resultado em vez de ficar pendurado."
+    },
     "tools.config.search_web": {
       "label": "Pesquisa na web"
     },

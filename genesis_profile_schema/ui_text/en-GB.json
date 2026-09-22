@@ -1787,6 +1787,38 @@
       "label": "Record retention (days)",
       "help": "Counted from the last contact rather than from creation, because the record is updated as the conversation goes on. Empty or 0 means no expiry."
     },
+    "tools.config.run_code": {
+      "label": "Code analysis"
+    },
+    "tools.config.run_code.allow_attachments": {
+      "label": "Send conversation attachments to the sandbox",
+      "help": "On, files attached by the user can be read by the Python sandbox at the provider. Off, the tool only computes over data the assistant passes in the request."
+    },
+    "tools.config.run_code.deployment": {
+      "label": "Model that runs the sandbox",
+      "help": "Empty uses the assistant's model when it is GPT-5.x or GPT-6; otherwise the internal model."
+    },
+    "tools.config.run_code.max_output_files": {
+      "label": "Generated files per run",
+      "help": "How many files created by the code are brought to the client's storage and shown in the chat."
+    },
+    "tools.config.run_code.max_runs_per_turn": {
+      "label": "Runs per answer",
+      "help": "Each run may open a session billed separately from tokens (per minute, five-minute minimum)."
+    },
+    "tools.config.run_code.memory": {
+      "label": "Sandbox memory",
+      "options": {
+        "1g": "1 GB (base)",
+        "4g": "4 GB",
+        "16g": "16 GB",
+        "64g": "64 GB"
+      }
+    },
+    "tools.config.run_code.timeout_s": {
+      "label": "Maximum wait per run (seconds)",
+      "help": "The sandbox can take a while; after this the assistant answers without the result instead of hanging."
+    },
     "tools.config.search_web": {
       "label": "Web search"
     },

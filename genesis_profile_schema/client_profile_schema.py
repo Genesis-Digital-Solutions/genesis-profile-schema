@@ -549,9 +549,41 @@ class ProfileToolRecallPastConversationsConfig(BaseModel):
     min_similarity: float = Field(default=0.3, ge=0.0, le=1.0)
 
 
+class ProfileToolRunCodeConfig(BaseModel):
+    """tools.config.run_code — análise com código (v0.1.67, 22 Set 2026; F3 do
+    parecer GPT-6 Astra). A tool corre Python numa sandbox do Azure OpenAI
+    (`code_interpreter` da Responses API) sobre os anexos da conversa e os
+    dados que o modelo lhe passa; devolve números calculados, gráficos e
+    ficheiros. OFF por omissão: a tool só existe quando `run_code` está em
+    `tools.enabled` — os dados do anexo SAEM para o container do fornecedor,
+    é decisão por cliente.
+
+    Tectos com piso (nunca reduzir abaixo): uma sessão de código factura-se
+    à parte dos tokens, por minuto com mínimo de 5 minutos, e o container
+    expira ao fim de 20 minutos sem uso."""
+    model_config = ConfigDict(extra="allow")
+
+    # Deployment que corre a sandbox. Vazio = o do agente quando é GPT-5.x/6
+    # (a hosted tool é exclusiva da Responses API), senão o modelo interno.
+    deployment: str = ""
+    # Espera máxima por uma execução (a Responses espera indefinidamente
+    # pelo Python; sem tecto a conversa fica pendurada).
+    timeout_s: int = Field(default=120, ge=60)
+    # Execuções por turno: cada uma pode abrir uma sessão facturada.
+    max_runs_per_turn: int = Field(default=2, ge=1)
+    # Memória do container (preço por sessão cresce com ela).
+    memory: Literal["1g", "4g", "16g", "64g"] = "1g"
+    # Ficheiros gerados que se trazem para o blob do cliente por execução.
+    max_output_files: int = Field(default=5, ge=1)
+    # Os anexos da conversa podem ir para a sandbox (False = só cálculo puro
+    # sobre dados passados no pedido).
+    allow_attachments: bool = True
+
+
 # Mapa key de tools.config → model tipado. Tools fora deste mapa passam sem
 # validação estrutural (estrutura aberta, como sempre).
 _KNOWN_TOOL_CONFIG_MODELS: Dict[str, Any] = {
+    "run_code": ProfileToolRunCodeConfig,
     "search_web": ProfileToolSearchWebConfig,
     "generate_image": ProfileToolGenerateImageConfig,
     "extract_legal_terms": ProfileToolLegalExtractConfig,
