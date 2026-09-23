@@ -580,6 +580,8 @@ class ProfileToolRunCodeConfig(BaseModel):
     allow_attachments: bool = True
 
 
+from genesis_profile_schema.tool_cv_analysis import ProfileToolCvAnalysisConfig  # noqa: E402
+
 # Mapa key de tools.config → model tipado. Tools fora deste mapa passam sem
 # validação estrutural (estrutura aberta, como sempre).
 _KNOWN_TOOL_CONFIG_MODELS: Dict[str, Any] = {
@@ -592,6 +594,7 @@ _KNOWN_TOOL_CONFIG_MODELS: Dict[str, Any] = {
     "create_ticket": ProfileToolCreateTicketConfig,
     "read_attached_document": ProfileToolReadAttachedDocumentConfig,
     "recall_past_conversations": ProfileToolRecallPastConversationsConfig,
+    "analyse_cv": ProfileToolCvAnalysisConfig,
 }
 
 

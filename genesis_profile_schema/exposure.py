@@ -646,8 +646,8 @@ EXPOSURE: Dict[str, str] = {
     # ──────────────────────────────────────────────────────────────────────
     # Excepções por caminho exacto dentro de mapas abertos
     #
-    # `tools.config` é interno em bloco, mas o TEXTO de prompt de duas tools é
-    # do cliente. Caminhos exactos, nunca prefixos: os modelos de tool-config
+    # `tools.config` é interno em bloco, mas o TEXTO de prompt de algumas tools
+    # é do cliente. Caminhos exactos, nunca prefixos: os modelos de tool-config
     # são `extra="allow"`, e um prefixo admitiria chaves inventadas.
     # Deliberadamente ausentes: `tools.config.record_contact_details.*` —
     # `notify_emails` é um canal de saída de PII e `legal_basis` é uma
@@ -662,6 +662,27 @@ EXPOSURE: Dict[str, str] = {
     "tools.config.generate_boq.rates.unit": _W,
     "tools.config.generate_boq.rates.price": _W,
     "tools.config.generate_boq.rates.label": _W,
+    # Triagem de CVs (v0.1.71): o domínio, a retenção do registo (obrigação do
+    # cliente enquanto responsável pela implantação — D3, decisão de 23 Set
+    # 2026: editável entre 183 e 365) e as vagas-tipo. Lote, paralelismo e
+    # deployment ficam internos: são custo e quota, não domínio.
+    "tools.config.analyse_cv.prompt_preset": _W,
+    "tools.config.analyse_cv.prompt_custom": _W,
+    "tools.config.analyse_cv.retention_days": _W,
+    "tools.config.analyse_cv.job_templates": _W,
+    "tools.config.analyse_cv.job_templates.id": _W,
+    "tools.config.analyse_cv.job_templates.title": _W,
+    "tools.config.analyse_cv.job_templates.requirements": _W,
+    "tools.config.analyse_cv.job_templates.criteria": _W,
+    "tools.config.analyse_cv.job_templates.criteria.type": _W,
+    "tools.config.analyse_cv.job_templates.criteria.description": _W,
+    "tools.config.analyse_cv.job_templates.criteria.must_have": _W,
+    "tools.config.analyse_cv.job_templates.criteria.weight": _W,
+    "tools.config.analyse_cv.job_templates.criteria.scale": _W,
+    "tools.config.analyse_cv.job_templates.criteria.scale.dimension": _W,
+    "tools.config.analyse_cv.job_templates.criteria.scale.min_level": _W,
+    "tools.config.analyse_cv.job_templates.criteria.scale.subject": _W,
+    "tools.config.analyse_cv.job_templates.criteria.needs_protected_attr": _W,
 }
 
 

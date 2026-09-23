@@ -111,10 +111,12 @@ CONTROL_OVERRIDES: Dict[str, str] = {
     "frontend.insightsPanel.quickInsights.prompt": MULTILINE,
     "frontend.insightsPanel.quickInsights.questions.prompt": MULTILINE,
     "frontend.starterPrompts.prompt": MULTILINE,
-    # Dentro do mapa aberto `tools.config` — as instruções livres de duas tools
+    # Dentro do mapa aberto `tools.config` — as instruções livres das tools
     # que o cliente edita (ver as excepções em exposure.py).
     "tools.config.extract_legal_terms.prompt_custom": MULTILINE,
     "tools.config.generate_boq.prompt_custom": MULTILINE,
+    "tools.config.analyse_cv.prompt_custom": MULTILINE,
+    "tools.config.analyse_cv.job_templates.requirements": MULTILINE,
 
     # ── nome de um preset (texto livre com sugestões) ─────────────────────
     # O catálogo é `PRESETS` em core/agent/tool_playbooks.py do genai-core:
@@ -124,6 +126,7 @@ CONTROL_OVERRIDES: Dict[str, str] = {
     # conhece. Estiveram como `multiline` até à v0.1.59 (issue #6 do gaibo).
     "tools.config.extract_legal_terms.prompt_preset": COMBOBOX,
     "tools.config.generate_boq.prompt_preset": COMBOBOX,
+    "tools.config.analyse_cv.prompt_preset": COMBOBOX,
 
     # ── lista fechada que o schema tipa como texto ───────────────────────
     # O espaço de valores é `languages.UI_LANGS` (as línguas que o fecore sabe

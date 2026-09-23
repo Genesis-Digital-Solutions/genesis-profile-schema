@@ -1743,6 +1743,112 @@
       "help": "An open structure: each tool defines its own fields, so a new tool needs no schema change.",
       "note": "(open JSON — key = tool name, value = dict of parameters)"
     },
+    "tools.config.analyse_cv": {
+      "label": "CV screening"
+    },
+    "tools.config.analyse_cv.prompt_preset": {
+      "label": "Recruitment area",
+      "help": "A preset from the tool_playbooks catalogue, added to the fixed rules of the evaluation and of the criteria proposal — it never relaxes them. Empty leaves only the fixed rules. A name not on the list is accepted and, if the product does not know it, ignored.",
+      "options": {
+        "": "None — fixed rules only",
+        "general": "General",
+        "technology": "Technology",
+        "regulated_health": "Healthcare (regulated professions)"
+      }
+    },
+    "tools.config.analyse_cv.prompt_custom": {
+      "label": "Client free-text instructions",
+      "help": "Added to the fixed evaluation rules — they never replace them. Use them for sector context (vocabulary, equivalent roles). If the text contains discriminatory wording (age, dates as a cut-off, career breaks, gender, nationality, family, health, \"native\"…), the WHOLE text is left out of the evaluation and the screening runs with the fixed rules only."
+    },
+    "tools.config.analyse_cv.retention_days": {
+      "label": "Screening record retention (days)",
+      "help": "How long the process, the verdicts and the decisions are kept, counted from the last change to the process (normally the end of the screening). Between 183 (6 months) and 365. The candidate's original PDF is always deleted after 200 days."
+    },
+    "tools.config.analyse_cv.max_batch": {
+      "label": "CVs per process",
+      "help": "Minimum 50, maximum 500."
+    },
+    "tools.config.analyse_cv.parallelism": {
+      "label": "CVs evaluated in parallel",
+      "help": "Bounded by the tokens-per-minute quota of the client's model."
+    },
+    "tools.config.analyse_cv.deployment": {
+      "label": "Screening model",
+      "help": "Empty uses the assistant's model."
+    },
+    "tools.config.analyse_cv.job_templates": {
+      "label": "Job templates",
+      "help": "Templates the recruiter picks in the first step instead of pasting the job ad. The criteria are always shown for confirmation before evaluating."
+    },
+    "tools.config.analyse_cv.job_templates.id": {
+      "label": "Identifier",
+      "help": "Lower-case letters, digits, hyphen and underscore."
+    },
+    "tools.config.analyse_cv.job_templates.title": {
+      "label": "Template name"
+    },
+    "tools.config.analyse_cv.job_templates.requirements": {
+      "label": "Job ad text",
+      "help": "Optional. Kept with the process for reference."
+    },
+    "tools.config.analyse_cv.job_templates.criteria": {
+      "label": "Criteria"
+    },
+    "tools.config.analyse_cv.job_templates.criteria.type": {
+      "label": "Criterion type",
+      "options": {
+        "EDUCATION": "Education",
+        "EXPERIENCE": "Experience",
+        "LANGUAGE": "Language",
+        "CERTIFICATION": "Certification",
+        "SKILL": "Skill",
+        "DOMAIN": "Sector",
+        "LOCATION": "Location",
+        "AVAILABILITY": "Availability",
+        "LEGAL": "Legal requirement",
+        "OTHER": "Other"
+      }
+    },
+    "tools.config.analyse_cv.job_templates.criteria.description": {
+      "label": "Criterion",
+      "help": "Short and verifiable in a CV."
+    },
+    "tools.config.analyse_cv.job_templates.criteria.must_have": {
+      "label": "Mandatory",
+      "help": "Mandatory criteria decide the suggestion (fit, review, not fit); nice-to-have criteria only rank."
+    },
+    "tools.config.analyse_cv.job_templates.criteria.weight": {
+      "label": "Weight (nice-to-have)",
+      "help": "From 1 to 3. Only counts for nice-to-have criteria and never changes a verdict."
+    },
+    "tools.config.analyse_cv.job_templates.criteria.scale": {
+      "label": "Orderable threshold"
+    },
+    "tools.config.analyse_cv.job_templates.criteria.scale.dimension": {
+      "label": "Scale",
+      "options": {
+        "education": "Education level",
+        "language": "Language level",
+        "years": "Years of experience"
+      }
+    },
+    "tools.config.analyse_cv.job_templates.criteria.scale.min_level": {
+      "label": "Minimum level",
+      "help": "For example: Bachelor's degree, B2, 3."
+    },
+    "tools.config.analyse_cv.job_templates.criteria.scale.subject": {
+      "label": "Field or language",
+      "help": "For example: Environmental Engineering, English."
+    },
+    "tools.config.analyse_cv.job_templates.criteria.needs_protected_attr": {
+      "label": "Personal data needed",
+      "help": "Only when the criterion really needs it; the mask lets the evaluator see it. A criterion that does not justify it loses it when the process is created.",
+      "options": {
+        "work_permit": "EU work authorisation",
+        "driving_licence": "Driving licence",
+        "min_age": "Legal minimum age"
+      }
+    },
     "tools.config.extract_legal_terms": {
       "label": "Legal term extraction",
       "help": "A document extraction engine with a per-profile schema. Each field comes back with its value and the page or clause reference where it was found."

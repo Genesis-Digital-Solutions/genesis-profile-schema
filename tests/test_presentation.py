@@ -76,7 +76,7 @@ def test_prompt_preset_deixou_de_ser_prosa():
     e `control_for` mandava desenhar uma textarea para o nome de um preset.
     O teste nomeia o caso para o erro não voltar por um copy-paste do vizinho
     `prompt_custom`, que É prosa."""
-    for tool in ("generate_boq", "extract_legal_terms"):
+    for tool in ("generate_boq", "extract_legal_terms", "analyse_cv"):
         assert pr.control_for(f"tools.config.{tool}.prompt_preset") == pr.COMBOBOX
         assert pr.control_for(f"tools.config.{tool}.prompt_custom") == pr.MULTILINE
 

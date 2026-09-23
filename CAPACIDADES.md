@@ -443,6 +443,16 @@ um campo removido do modelo continua a viver no blob sem dar erro.
   `tools.enabled`) e a config é interna: os anexos saem para a sandbox do
   fornecedor e cada execução é uma sessão facturada. Consumidor:
   `tools/run_code/` do genai-core.
+- **`tools.config.analyse_cv` é o bloco tipado da Triagem de CVs** (v0.1.71,
+  23 Set 2026, épico Análise de CVs, Fase 4), em módulo próprio
+  (`tool_cv_analysis.py`): `prompt_preset`/`prompt_custom` (overlay de domínio),
+  `retention_days` (183–365), `max_batch` (50–500), `parallelism` (1–16),
+  `deployment` e `job_templates` (vagas-tipo com critérios na forma que o
+  workspace confirma; tectos = os do motor: 40 critérios, 500 chars, 30 000 de
+  anúncio). Pisos e tectos = os que o core aplica. O cliente edita domínio,
+  retenção e vagas-tipo; lote, paralelismo e deployment são internos. **Não há**
+  interruptor da máscara nem do texto escondido — são contrato (D2). Consumidor:
+  `tools/cv_analysis/jobs/settings.py` do genai-core.
 - **`voice.web.engine` escolhe o MOTOR da voz no widget** (v0.1.68, 22 Set 2026): `realtime` (default — o de sempre, zero regressão) ou `live` (GPT-Live full-duplex, com `voice.web.live_deployment`, ex. `gpt-live-1`). Ambos internos: são infra nossa (deployment, região, quota de sessões, fallback automático ao Realtime). Só o widget — o telefone fica no Realtime. Consumidor: `core/handlers/live_web.py`; o Studio cria o deployment quando o motor é `live`.
 
 ---

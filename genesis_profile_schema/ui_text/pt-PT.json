@@ -1743,6 +1743,112 @@
       "help": "Estrutura aberta: cada ferramenta define os seus próprios campos, pelo que uma ferramenta nova não obriga a alterar o esquema.",
       "note": "(JSON aberto — chave = nome da tool, valor = dict de parâmetros)"
     },
+    "tools.config.analyse_cv": {
+      "label": "Triagem de CVs"
+    },
+    "tools.config.analyse_cv.prompt_preset": {
+      "label": "Área de recrutamento",
+      "help": "Preset do catálogo tool_playbooks, acrescentado às regras fixas da avaliação e da proposta de critérios — nunca as relaxa. Vazio deixa só as regras fixas. Um nome que não esteja na lista é aceite e, se o produto não o conhecer, ignorado.",
+      "options": {
+        "": "Nenhuma — só as regras fixas",
+        "general": "Generalista",
+        "technology": "Tecnologia",
+        "regulated_health": "Saúde (profissões reguladas)"
+      }
+    },
+    "tools.config.analyse_cv.prompt_custom": {
+      "label": "Instruções livres do cliente",
+      "help": "Acrescentadas às regras fixas da avaliação — nunca as substituem. Servem para contexto do sector (vocabulário, funções equivalentes). Se o texto tiver linguagem discriminatória (idade, datas como corte, pausas na carreira, género, nacionalidade, família, saúde, «nativo»…), o texto INTEIRO fica fora da avaliação e a triagem corre só com as regras fixas."
+    },
+    "tools.config.analyse_cv.retention_days": {
+      "label": "Retenção do registo da triagem (dias)",
+      "help": "Quanto tempo ficam guardados o processo, os veredictos e as decisões, contados desde a última alteração do processo (normalmente o fim da triagem). Entre 183 (6 meses) e 365. O PDF original do candidato apaga-se sempre aos 200 dias."
+    },
+    "tools.config.analyse_cv.max_batch": {
+      "label": "CVs por processo",
+      "help": "Mínimo 50, máximo 500."
+    },
+    "tools.config.analyse_cv.parallelism": {
+      "label": "CVs avaliados em paralelo",
+      "help": "Limitado pela quota de tokens por minuto do modelo do cliente."
+    },
+    "tools.config.analyse_cv.deployment": {
+      "label": "Modelo da triagem",
+      "help": "Vazio usa o modelo do assistente."
+    },
+    "tools.config.analyse_cv.job_templates": {
+      "label": "Vagas-tipo",
+      "help": "Modelos que o recrutador escolhe no primeiro passo em vez de colar o anúncio. Os critérios aparecem sempre para confirmar antes de avaliar."
+    },
+    "tools.config.analyse_cv.job_templates.id": {
+      "label": "Identificador",
+      "help": "Minúsculas, algarismos, hífen e sublinhado."
+    },
+    "tools.config.analyse_cv.job_templates.title": {
+      "label": "Nome da vaga-tipo"
+    },
+    "tools.config.analyse_cv.job_templates.requirements": {
+      "label": "Texto do anúncio",
+      "help": "Opcional. Fica guardado com o processo como referência."
+    },
+    "tools.config.analyse_cv.job_templates.criteria": {
+      "label": "Critérios"
+    },
+    "tools.config.analyse_cv.job_templates.criteria.type": {
+      "label": "Tipo de critério",
+      "options": {
+        "EDUCATION": "Formação",
+        "EXPERIENCE": "Experiência",
+        "LANGUAGE": "Língua",
+        "CERTIFICATION": "Certificação",
+        "SKILL": "Competência",
+        "DOMAIN": "Sector",
+        "LOCATION": "Localização",
+        "AVAILABILITY": "Disponibilidade",
+        "LEGAL": "Requisito legal",
+        "OTHER": "Outro"
+      }
+    },
+    "tools.config.analyse_cv.job_templates.criteria.description": {
+      "label": "Critério",
+      "help": "Curto e verificável num CV."
+    },
+    "tools.config.analyse_cv.job_templates.criteria.must_have": {
+      "label": "Obrigatório",
+      "help": "Os obrigatórios decidem a sugestão (apto, rever, não apto); os desejáveis só ordenam."
+    },
+    "tools.config.analyse_cv.job_templates.criteria.weight": {
+      "label": "Peso (desejáveis)",
+      "help": "De 1 a 3. Só conta nos desejáveis e nunca muda um veredicto."
+    },
+    "tools.config.analyse_cv.job_templates.criteria.scale": {
+      "label": "Limiar ordenável"
+    },
+    "tools.config.analyse_cv.job_templates.criteria.scale.dimension": {
+      "label": "Escala",
+      "options": {
+        "education": "Escolaridade",
+        "language": "Nível de língua",
+        "years": "Anos de experiência"
+      }
+    },
+    "tools.config.analyse_cv.job_templates.criteria.scale.min_level": {
+      "label": "Nível mínimo",
+      "help": "Por exemplo: Licenciatura, B2, 3."
+    },
+    "tools.config.analyse_cv.job_templates.criteria.scale.subject": {
+      "label": "Área ou língua",
+      "help": "Por exemplo: Engenharia do Ambiente, Inglês."
+    },
+    "tools.config.analyse_cv.job_templates.criteria.needs_protected_attr": {
+      "label": "Dado pessoal necessário",
+      "help": "Só quando o critério precisa mesmo dele; a máscara deixa-o ver ao avaliador. Um critério que não o justifique perde-o ao criar o processo.",
+      "options": {
+        "work_permit": "Autorização de trabalho na UE",
+        "driving_licence": "Carta de condução",
+        "min_age": "Idade mínima legal"
+      }
+    },
     "tools.config.extract_legal_terms": {
       "label": "Extração de termos legais",
       "help": "Motor de extração documental com esquema próprio por perfil. Cada campo é devolvido com o valor e a referência de página ou cláusula onde foi encontrado."
