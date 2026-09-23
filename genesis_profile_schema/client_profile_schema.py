@@ -1022,7 +1022,20 @@ class ProfileAiDisclosure(BaseModel):
 # ─────────────────────────────────────────────────────────────────────────────
 
 class ProfileAudio(BaseModel):
-    """Configuração da tool `transcribe_audio` por cliente (STT)."""
+    """Configuração da tool `transcribe_audio` por cliente (STT).
+
+    v0.1.69 (23 Set 2026, bloco 7 do `CONTEXT_PACK_voz_gpt_live_B.md` §9):
+    `live_transcription_enabled` liga a transcrição de REUNIÕES em tempo real
+    pelo microfone no widget (Azure Speech `ConversationTranscriber` no
+    browser, diarização em tempo real, phrase list desta secção). **OFF por
+    defeito** — é gravação de pessoas (RGPD: aviso/consentimento no ecrã, DPA)
+    e custa ~1,30–1,60 USD por hora de reunião (STT 1,00 + diarização 0,30 +
+    LID contínuo 0,30, verificados na API de preços do Azure). Consumidores:
+    `core/handlers/meeting_transcript.py` (`POST /transcripts/live`) e o
+    `/client-config` (`transcription.live`); o fecore só arranca o transcritor
+    quando o core o diz. `live_max_duration_min` é o tecto de UMA reunião —
+    4 h por defeito e **nunca abaixo** (`ge=240`, decisão do pack).
+    """
     model_config = ConfigDict(extra="allow")
 
     phrase_list: List[str] = Field(default_factory=list)
@@ -1032,6 +1045,14 @@ class ProfileAudio(BaseModel):
     max_speakers: int = Field(default=10, ge=1, le=36)
     max_duration_min: int = Field(default=120, ge=1, le=240)
     speech_locale: str = Field(default="pt-PT")
+    live_transcription_enabled: bool = Field(
+        default=False,
+        json_schema_extra={"requires_tool": "transcribe_audio"},
+    )
+    live_max_duration_min: int = Field(
+        default=240, ge=240,
+        json_schema_extra={"requires_tool": "transcribe_audio"},
+    )
 
 
 # ─────────────────────────────────────────────────────────────────────────────
@@ -1361,9 +1382,14 @@ class ProfileFrontendFeatures(BaseModel):
     # ignora-a com a fila desligada. Formalizado v0.1.43.
     reviewQueueHome: bool = False
     # Workspace de visuais dedicados por tool (o fecore abre um visual completo
-    # pedido pela tool). Opt-OUT deliberado: ausente ⇒ ligado, daí default True.
-    # Formalizado v0.1.43 (era hardcode do editor do Studio).
-    toolWorkspace: bool = True
+    # pedido pela tool — fatura, BoQ). OPT-IN desde 22 Set 2026 (decisão do
+    # Bruno): o core só resolve `workspace` no /client-config com `true`
+    # explícito (`is not True`). O default TEM de ser False: o core funde o blob
+    # por cima de `ClientProfileSchema().to_blob_dict()` (DEFAULT_PROFILE), e a
+    # migração de clientes do Studio parte do mesmo dict — com True aqui, todo o
+    # perfil SEM a chave recebia o layout dedicado ao ligar a tool (foi o que
+    # aconteceu até à v0.1.69). Formalizado v0.1.43; default corrigido v0.1.69.
+    toolWorkspace: bool = False
     # REMOVIDOS (campos mortos, nenhum componente os lia):
     #   showQuestionsMenu, enableFollowupSuggestions
     # REMOVIDO enableFeedback: feedback é sempre-on no frontend, sem flag.

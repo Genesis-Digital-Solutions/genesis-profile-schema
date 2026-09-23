@@ -327,6 +327,14 @@ um campo removido do modelo continua a viver no blob sem dar erro.
 
 ## Armadilhas medidas
 
+- **Um default aqui é comportamento em produção, não só documentação.** O core
+  funde o perfil do Blob por cima de `ClientProfileSchema().to_blob_dict()`
+  (`DEFAULT_PROFILE`) e a migração de clientes do Studio parte do mesmo dict:
+  a chave AUSENTE no Blob vale o default deste ficheiro. Caso real:
+  `toolWorkspace` ficou a `True` (comentário "opt-OUT") depois de o core passar
+  a opt-in — todo o perfil sem a chave recebia o layout dedicado ao ligar a
+  fatura/BoQ. Corrigido v0.1.69 com teste (`test_tool_workspace_default.py`).
+  Mudar o sentido de uma flag no core obriga a mudar o default AQUI.
 - **`extra="allow"` em todo o lado.** Uma chave inventada é aceite sem erro. É
   por isso que o Studio tem o `profile_schema_guard.py`; a validação Pydantic
   sozinha não apanha typos. **O caso extremo já aconteceu**: o envelope do
@@ -376,6 +384,7 @@ um campo removido do modelo continua a viver no blob sem dar erro.
   código com região (`pt-PT`) renderiza uma entrada cujas strings caem para
   inglês ou português — degrada em silêncio, não dá erro.
 - **`voice.transcription.*` passou a ter consumidor na v0.1.68** (22 Set 2026, caminho B do parecer Astra): transcrição das conversas por voz no WIDGET com o motor GPT-Live, gravada pelo core (`live_web.py`) na conversa `voice:live:<sessão>` com o TTL das conversas ou `retention_days` (0, vazio ou lixo normalizam para None = a retenção das conversas — sem `ge`, para um 0 gravado por um GAIBO antigo não bloquear a gravação do perfil). OFF por defeito — é gravação de dados pessoais (RGPD), exige DPA e aviso ao visitante. Entre v0.1.61 e v0.1.67 os três caminhos foram `internal` porque nada os lia (a promessa era reabrir a exposição no mesmo commit em que o consumidor nascesse — cumprida): `enabled` e `retention_days` são agora `client_read` (o cliente VÊ, nós ligamos); `model` continua interno e sem consumidor (a transcrição vem da própria sessão GPT-Live).
+- **`audio.live_transcription_enabled` + `audio.live_max_duration_min` (v0.1.69, 23 Set 2026, bloco 7 do pack GPT-Live §9)**: transcrição de REUNIÕES em tempo real pelo microfone no widget (Azure Speech `ConversationTranscriber` no browser; pós-produção pela tool `transcribe_audio` com `source="live"`). OFF por defeito — gravação de pessoas (RGPD) e ~1,30–1,60 USD/h. O toggle é `client_read` (o cliente vê, nós ligamos — matéria de DPA e de custo); o tecto é `internal`, 240 min por defeito e com piso `ge=240` (nunca abaixo, decisão do pack). Ambos com `requires_tool: transcribe_audio`. Consumidores: core `meeting_transcript.py` e `/client-config` (`transcription.live`); o peso `transcription_per_minute` do bloco `billing` é do Studio, não do schema.
 - **`identity.timezone` é lido desde a v0.1.52** — o core resolve perfil > env
   `TZ` > `Europe/Lisbon` em `core/agent/clock.py`, e daí saem o bloco temporal
   do system prompt e o fast-path do "que horas são?". É a hora de NEGÓCIO do

@@ -7,6 +7,16 @@
     "audio.glossary": {
       "label": "Terminology glossary"
     },
+    "audio.live_transcription_enabled": {
+      "label": "Real-time meeting transcription through the microphone",
+      "help": "On = the assistant gains the \"Transcribe meeting\" button: what is said in the room is transcribed live in the browser, with automatic speaker separation (Speaker 1, 2, …), and the minutes are generated at the end. It is a recording of people (GDPR): participants must be informed — the screen shows a fixed notice — and the processing goes into the DPA and the privacy policy. It costs about 1.30 to 1.60 USD per hour of meeting, on top of the per-minute credits. Off by default.",
+      "note": "Consumers: core `meeting_transcript.py` (POST /transcripts/live, gated by this toggle + the transcribe_audio tool being enabled) and `/client-config` (`transcription.live`). Minutes count towards credits with the `transcription_per_minute` weight (billing block). Phrase list and glossary are the ones in this section."
+    },
+    "audio.live_max_duration_min": {
+      "label": "Maximum duration of a live meeting (minutes)",
+      "help": "Cap of one real-time transcription session. 240 (4 hours) by default and never below that; the screen ends the session when the cap is reached.",
+      "note": "Mirrors the core credits clamp (4 h); the value reaches the fecore via /client-config (`transcription.maxDurationMin`)."
+    },
     "audio.max_duration_min": {
       "label": "Maximum duration (minutes)"
     },
@@ -806,7 +816,7 @@
     },
     "frontend.features.toolWorkspace": {
       "label": "Dedicated tool workspace",
-      "help": "The tool opens a full visual instead of answering inside the chat. On by default."
+      "help": "The tool opens a full visual instead of answering inside the chat (invoice, bill of quantities). Off by default: enabling the tool does not change the client's screen until this is switched on."
     },
     "frontend.features.turnOnVoiceRecorder": {
       "label": "Voice recorder",

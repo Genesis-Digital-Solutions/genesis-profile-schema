@@ -7,6 +7,16 @@
     "audio.glossary": {
       "label": "Glossário de termos"
     },
+    "audio.live_transcription_enabled": {
+      "label": "Transcrição de reuniões em tempo real pelo microfone",
+      "help": "Ligado = o assistente ganha o botão «Transcrever reunião»: o que se diz na sala é transcrito ao vivo no navegador, com separação automática de intervenientes (Interveniente 1, 2, …), e no fim gera-se a acta. É gravação de pessoas (RGPD): os participantes têm de ser avisados — o ecrã mostra o aviso fixo — e o tratamento entra no DPA e na política de privacidade. Custa cerca de 1,30 a 1,60 USD por hora de reunião, além dos créditos por minuto. Desligado por defeito.",
+      "note": "Consumidores: core `meeting_transcript.py` (POST /transcripts/live, gate deste toggle + tool transcribe_audio ligada) e `/client-config` (`transcription.live`). Os minutos entram nos créditos com o peso `transcription_per_minute` (bloco billing). Phrase list e glossário são os desta secção."
+    },
+    "audio.live_max_duration_min": {
+      "label": "Duração máxima de uma reunião ao vivo (minutos)",
+      "help": "Tecto de uma sessão de transcrição em tempo real. 240 (4 horas) por defeito e nunca abaixo disso; o ecrã termina a sessão ao chegar ao tecto.",
+      "note": "Espelha o clamp de créditos (4 h) do core; o valor chega ao fecore pelo /client-config (`transcription.maxDurationMin`)."
+    },
     "audio.max_duration_min": {
       "label": "Duração máxima (minutos)"
     },
@@ -806,7 +816,7 @@
     },
     "frontend.features.toolWorkspace": {
       "label": "Espaço dedicado das ferramentas",
-      "help": "A ferramenta abre um visual completo em vez de responder dentro do chat. Ligado por omissão."
+      "help": "A ferramenta abre um visual completo em vez de responder dentro do chat (fatura, mapa de quantidades). Desligado por omissão: ligar a ferramenta não muda o ecrã do cliente enquanto isto não estiver ligado."
     },
     "frontend.features.turnOnVoiceRecorder": {
       "label": "Gravador de voz",

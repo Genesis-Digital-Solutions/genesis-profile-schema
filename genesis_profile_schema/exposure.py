@@ -436,6 +436,12 @@ EXPOSURE: Dict[str, str] = {
     # ──────────────────────────────────────────────────────────────────────
     "audio.disfluency_removal": _I,
     "audio.glossary": _W,
+    # audio.live_* — transcricao de REUNIOES em tempo real pelo microfone
+    # (v0.1.69, 23 Set 2026). O cliente VE se esta ligada (e materia de DPA
+    # e de custo por hora), mas quem a liga somos nos — igual a
+    # voice.transcription.enabled. O tecto da reuniao e infra nossa.
+    "audio.live_transcription_enabled": _R,
+    "audio.live_max_duration_min": _I,
     "audio.max_duration_min": _I,
     "audio.max_speakers": _I,
     "audio.phrase_bias": _I,
