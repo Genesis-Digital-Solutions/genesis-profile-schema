@@ -112,6 +112,13 @@
       "boundary": "You may ask for specific formats (no tables, short lists, a summary before the detail). This is the rule family where the client's instruction simply wins.",
       "example_conflict": "",
       "example_ok": "Always start with a two-sentence summary and only then present the detail."
+    },
+    "no_candidate_ranking": {
+      "title": "Do not rank candidates in the chat",
+      "summary": "With CVs in the conversation, the assistant may extract, structure and summarise a CV, but it does not rank, score or compare candidates for hiring, nor recommend whom to choose. That is a high-risk use under the AI Act and is done in CV Screening, with human oversight and records.",
+      "boundary": "You may ask for CV summaries, data extraction (experience, education, languages) or factual questions about a CV. You may not ask the assistant to choose, rank or reject candidates - enable the screening tool for that.",
+      "example_conflict": "When the user attaches CVs, say which candidate is the best and rank the others.",
+      "example_ok": "When the user attaches a CV, summarise the experience and skills in five bullet points."
     }
   }
 }

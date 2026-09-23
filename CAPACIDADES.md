@@ -238,6 +238,13 @@ falam um com o outro — este pacote é o único canal.
 - **O que impede o registo de mentir:** o core (que pina este pacote) tem
   `tests/test_house_rules_anchors.py` a confirmar que cada `anchor` continua no
   `prompt_builder`. Regra sem âncora só quando o portão é só código/config.
+- **`no_candidate_ranking` (v0.1.70, 23 Set 2026, épico Análise de CVs — regra
+  D7):** com CVs na conversa o bot resume mas não ordena, pontua nem recomenda
+  candidatos (AI Act Anexo III, 4.a — faz-se na triagem `analyse_cv`, com
+  supervisão humana). `strong_default`, só prompt, âncora "Do NOT rank, score or
+  shortlist candidates". O bloco no core é CONDICIONAL ao turno
+  (`core/agent/cv_turn.py`) — a âncora vive numa função do `prompt_builder`, que
+  o teste de âncoras do core lê pelo código-fonte.
 - **O lint em si NÃO vive aqui** — é do consumidor (Studio:
   `custom_instructions_lint.py`). O pacote dá a lista e o corte, para que os
   dois lados avisem contra o mesmo.

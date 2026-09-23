@@ -270,6 +270,23 @@ HOUSE_RULES: Dict[str, Dict[str, object]] = {
         "anchor": "Which table mechanism",
         "lever_paths": (),
     },
+    # 17 — não ordenar candidatos no chat (épico Análise de CVs, regra D7,
+    # 23 Set 2026). Ordenar/recomendar candidatos para contratar é uso de alto
+    # risco no AI Act (Anexo III, 4.a) e faz-se na triagem, com supervisão
+    # humana e registo. Só prompt — o texto do cliente ganha, por isso o lint
+    # avisa com força (strong_default).
+    "no_candidate_ranking": {
+        "class": STRONG_DEFAULT,
+        "enforcement": "prompt",
+        "enforcement_note": (
+            "Bloco <candidate_screening> do prompt_builder, emitido só quando o "
+            "turno envolve CVs (core/agent/cv_turn.py, na cauda variável). A "
+            "triagem com supervisão humana é a tool analyse_cv (workspace "
+            "cv_screening, contrato 36)."
+        ),
+        "anchor": "Do NOT rank, score or shortlist candidates",
+        "lever_paths": (),
+    },
 }
 
 # ─────────────────────────────────────────────────────────────────────────────

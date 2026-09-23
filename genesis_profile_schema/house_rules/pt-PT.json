@@ -112,6 +112,13 @@
       "boundary": "Pode pedir formatos específicos (sem tabelas, listas curtas, um resumo antes do detalhe). É a família de regra onde a instrução do cliente manda sem problema.",
       "example_conflict": "",
       "example_ok": "Começa sempre por um resumo de duas frases e só depois apresenta o detalhe."
+    },
+    "no_candidate_ranking": {
+      "title": "Não ordenar candidatos no chat",
+      "summary": "Com CVs na conversa, o assistente pode extrair, estruturar e resumir um CV, mas não ordena, pontua nem compara candidatos para contratar, nem recomenda quem escolher. Isso é uso de alto risco no AI Act e faz-se na Triagem de CVs, com supervisão humana e registo.",
+      "boundary": "Pode pedir resumos de um CV, a extracção de dados (experiência, formação, línguas) ou perguntas factuais sobre ele. Não pode pedir que o assistente escolha, ordene ou elimine candidatos — para isso liga-se a tool de triagem.",
+      "example_conflict": "Quando o utilizador anexar CVs, indica qual é o melhor candidato e ordena os restantes.",
+      "example_ok": "Quando o utilizador anexar um CV, resume a experiência e as competências em cinco pontos."
     }
   }
 }
