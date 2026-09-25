@@ -470,6 +470,11 @@ EXPOSURE: Dict[str, str] = {
     "tool_limits.max_image_total_mb": _R,
     "tool_limits.max_images_per_turn": _R,
     "tool_limits.max_user_prompt_chars": _R,
+    # C5 (v0.1.72): documento anexado INTEIRO no contexto. Interno (D6): e
+    # uma alavanca de custo nossa — um turno frio no GPT-6 Astra com o tecto
+    # cheio custa ~1,90 USD de input — e depende do modelo do cliente.
+    "tool_limits.attached_inline.enabled": _I,
+    "tool_limits.attached_inline.max_tokens": _I,
 
     # ──────────────────────────────────────────────────────────────────────
     # Memoria de utilizador
@@ -504,6 +509,13 @@ EXPOSURE: Dict[str, str] = {
     # ──────────────────────────────────────────────────────────────────────
     "guestAccess.dailyBudgetEur": _I,  # teto de gasto nosso
     "guestAccess.enabled": _R,
+    # Quem pode entrar (v0.1.72, contrato 42): controlo de acesso — Genesis
+    # decide com o cliente e configura no Studio; expor ao cliente no GAIBO é
+    # decisão futura (é uma fronteira de segurança).
+    "access.allowedRoles": _I,
+    "access.allowedGroups": _I,
+    "access.allowedEmailDomains": _I,
+    "access.allowedProviders": _I,
     "guestAccess.rateLimits.perDay": _R,
     "guestAccess.rateLimits.perHour": _R,
     "guestAccess.rateLimits.perMinute": _R,
@@ -598,6 +610,7 @@ EXPOSURE: Dict[str, str] = {
     "mcp.servers.auth.client_secret_env": _I,
     "mcp.servers.auth.issuer": _I,
     "mcp.servers.auth.per_user": _I,
+    "mcp.servers.auth.variant_scope": _I,
     "mcp.servers.auth.revocation_url": _I,
     "mcp.servers.auth.scopes": _I,
     "mcp.servers.auth.token": _I,

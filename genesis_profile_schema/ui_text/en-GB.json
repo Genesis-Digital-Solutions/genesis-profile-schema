@@ -417,7 +417,30 @@
     },
     "frontend.auth.tenantMode": {
       "label": "Tenant scope",
-      "help": "An MSAL (Microsoft) field, written into the app configuration."
+      "help": "An MSAL (Microsoft) field, written into the app configuration. «ciam» = Entra External ID (login for people without a Microsoft account), with the CIAM tenant Authority."
+    },
+    "access": {
+      "label": "Who can enter"
+    },
+    "access.allowedRoles": {
+      "label": "App roles",
+      "help": "Only people with one of these roles in the token get in. Recommended.",
+      "note": "`roles` claim (core/authz/variant.py). With the block present, anonymous users and guests never get in."
+    },
+    "access.allowedGroups": {
+      "label": "Groups (IDs)",
+      "help": "Only members of one of these groups get in.",
+      "note": "`groups` claim; Entra overage (>200 groups) → refused."
+    },
+    "access.allowedEmailDomains": {
+      "label": "Email domains",
+      "help": "Only people with a verified email from one of these domains get in.",
+      "note": "Email with email_verified/xms_edov or UPN on Entra; never preferred_username."
+    },
+    "access.allowedProviders": {
+      "label": "Accepted issuers",
+      "help": "Only identities from these trusted issuers count.",
+      "note": "Ids from frontend.auth.providers; \"tester\" = Agent Tester."
     },
     "frontend.auth.widget_identity": {
       "label": "Widget identity",
@@ -1286,6 +1309,11 @@
       "label": "Authenticate per user",
       "help": "When off, authentication happens once for the whole tenant."
     },
+    "mcp.servers.auth.variant_scope": {
+      "label": "One account per variant",
+      "help": "When on, each variant connects its own service account (instead of one account for the whole client).",
+      "note": "Token keyed variant:<slug> (core/handlers/mcp_oauth.py). No variant in the request means no token."
+    },
     "mcp.servers.auth.revocation_url": {
       "label": "Revocation URL"
     },
@@ -1718,6 +1746,19 @@
       "label": "Approved standard phrases",
       "help": "Phrases the assistant may include even though they don't come from the documents. Listing them here stops them being flagged as invented.",
       "note": "Standard phrases the bot was instructed to optionally include via custom_instructions, but that do NOT come from RAG chunks. Listing here avoids hallucination flags from judges."
+    },
+    "tool_limits.attached_inline": {
+      "label": "Whole attached document (long context)"
+    },
+    "tool_limits.attached_inline.enabled": {
+      "label": "Send the whole attached document to the model",
+      "help": "When on, attached documents that fit under the ceiling go in whole and in order, in a message at the start of the conversation, instead of the assistant looking them up piece by piece. Only on GPT-5 and GPT-6 reasoning models (not the router nor non-OpenAI Foundry models); whatever does not fit is still looked up piece by piece. Images and meeting transcripts never go in whole.",
+      "note": "C5 (core/agent/attached_inline.py). Off by default = the same prompt as before. Fleet kill switch in the env: ATTACHED_INLINE_DISABLE=1."
+    },
+    "tool_limits.attached_inline.max_tokens": {
+      "label": "Whole-document ceiling (tokens)",
+      "help": "Maximum total, in tokens, of the documents that go in whole. Between 1,000 and 190,000; above this the request would cross the 272,000-token price threshold. A token is about 4 characters of text: to use the whole ceiling, the character limit per attached document must be at least 4 times larger.",
+      "note": "The core honours at most HARD_LINE − RESERVE (260k − 70k) and falls back to pieces on a turn whose estimated request would cross the HARD_LINE."
     },
     "tool_limits.max_attached_doc_chars": {
       "label": "Character limit per attached document",

@@ -972,6 +972,9 @@ class ProfileMemory(BaseModel):
     relevance_top_k: int = Field(default=10, ge=0)
 
 
+from genesis_profile_schema.attached_inline import ProfileAttachedInline  # noqa: E402
+
+
 class ProfileToolLimits(BaseModel):
     """
     Limites de input/output. Sempre visíveis (nunca esconder/baixar limites).
@@ -981,7 +984,11 @@ class ProfileToolLimits(BaseModel):
     model_config = ConfigDict(extra="allow")
 
     max_user_prompt_chars: int = Field(default=12000, ge=0)   # MAX_USER_PROMPT_CHARS
-    max_attached_doc_chars: int = Field(default=250000, ge=0) # MAX_ATTACHED_DOC_CHARS
+    # v0.1.72 (C5, decisão D3 do Bruno, 25 Set 2026): 250 000 → 800 000, para
+    # um documento de ~190k tokens (o tecto do attached_inline) caber inteiro
+    # (~4,2 chars/token em PT). O texto vive no Blob do shared store do core
+    # (o item Cosmos só guarda metadata), por isso não bate no limite de 2 MB.
+    max_attached_doc_chars: int = Field(default=800000, ge=0) # MAX_ATTACHED_DOC_CHARS
 
     # Imagens que o modelo VÊ por turno (C4 do parecer GPT-6 Astra, 16 Set 2026):
     # quantas imagens anexadas entram na mensagem e quantos MB no total. Antes
@@ -990,6 +997,9 @@ class ProfileToolLimits(BaseModel):
     # modelo (fica o texto extraído no upload) — é o gancho para créditos.
     max_images_per_turn: int = Field(default=10, ge=0)        # MULTIMODAL_MAX_IMAGES_PER_TURN
     max_image_total_mb: int = Field(default=40, ge=0)         # MULTIMODAL_MAX_TOTAL_MB
+
+    # C5 (v0.1.72): documento anexado INTEIRO no contexto — attached_inline.py.
+    attached_inline: ProfileAttachedInline = Field(default_factory=ProfileAttachedInline)
 
 
 class ProfileQueryCache(BaseModel):
@@ -1085,6 +1095,10 @@ class ProfileMCPAuth(BaseModel):
     issuer: Optional[str] = None
     audience: Optional[str] = None       # Atlassian-specific
     per_user: bool = False               # default per-tenant
+    # v0.1.72: token da conta partilhada POR VARIANTE (chave "variant:<slug>")
+    # em vez de um para o cliente inteiro — frentes do mesmo cliente ligadas a
+    # contas diferentes do mesmo provider. Sem variante no pedido: sem token.
+    variant_scope: bool = False
 
 
 class ProfileMCPServer(BaseModel):
@@ -1549,8 +1563,11 @@ class ProfileFrontendAuth(BaseModel):
     mode: Literal["none", "optional", "required"] = "optional"
     provider: Literal["msal", "oidc"] = "msal"
 
-    # MSAL (Microsoft)
-    tenantMode: Literal["single", "multi"] = "single"
+    # MSAL (Microsoft). "ciam" (v0.1.72) = Microsoft Entra External ID — login
+    # para quem não tem conta Microsoft, com o MESMO MSAL e a `authority` do
+    # tenant CIAM (https://<tenant>.ciamlogin.com/...); o fecore só o honra com
+    # authority *.ciamlogin.com em https.
+    tenantMode: Literal["single", "multi", "ciam"] = "single"
     clientId: str = ""
     tenantId: str = ""
     apiScopes: List[str] = Field(default_factory=list)
@@ -1563,6 +1580,24 @@ class ProfileFrontendAuth(BaseModel):
     # Backend — validação de tokens (L1) e identidade de widget (L2)
     providers: List[ProfileAuthProvider] = Field(default_factory=list)
     widget_identity: ProfileWidgetIdentity = Field(default_factory=ProfileWidgetIdentity)
+
+
+class ProfileAccess(BaseModel):
+    """
+    Quem pode entrar nesta frente (v0.1.72; contrato 42). Aplicado pelo
+    genai-core (`core/authz/variant.py`) sobre a identidade VERIFICADA:
+      - bloco ausente (None) = sem restrição (comportamento de sempre);
+      - presente = só identidade forte (anónimos e convidados nunca entram) que
+        cumpra TODAS as listas preenchidas; dentro de cada lista basta um valor;
+      - vale no perfil base e em cada variante, cada um com o seu — a variante
+        nunca herda o do base.
+    """
+    model_config = ConfigDict(extra="allow")
+
+    allowedRoles: List[str] = Field(default_factory=list)          # claim `roles` (app roles)
+    allowedGroups: List[str] = Field(default_factory=list)         # claim `groups` (overage → recusa)
+    allowedEmailDomains: List[str] = Field(default_factory=list)   # só email VERIFICADO / UPN no Entra
+    allowedProviders: List[str] = Field(default_factory=list)      # ids dos emissores confiáveis ("tester" = Agent Tester)
 
 
 class ProfileFrontendCsp(BaseModel):
@@ -2257,6 +2292,11 @@ class ClientProfileSchema(BaseModel):
     # Modo Convidado para demos (v0.1.35) — só tem efeito em VARIANTES servidas
     # por backends com env DEMO_ENVIRONMENT (fecho duplo); inerte por default.
     guestAccess: ProfileGuestAccess = Field(default_factory=ProfileGuestAccess)
+
+    # Quem pode entrar (v0.1.72). None = sem restrição — NUNCA um default
+    # preenchido: o DEFAULT_PROFILE do core é este dump e um `{}` por omissão
+    # exigiria identidade forte a toda a frota.
+    access: Optional[ProfileAccess] = None
 
     # Overrides de preços por modelo (Auditoria v0.1.35) — vazio = tabela
     # builtin do backend. Consumido pelo cálculo de custos (M5.1).

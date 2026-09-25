@@ -454,6 +454,25 @@ um campo removido do modelo continua a viver no blob sem dar erro.
   interruptor da máscara nem do texto escondido — são contrato (D2). Consumidor:
   `tools/cv_analysis/jobs/settings.py` do genai-core.
 - **`voice.web.engine` escolhe o MOTOR da voz no widget** (v0.1.68, 22 Set 2026): `realtime` (default — o de sempre, zero regressão) ou `live` (GPT-Live full-duplex, com `voice.web.live_deployment`, ex. `gpt-live-1`). Ambos internos: são infra nossa (deployment, região, quota de sessões, fallback automático ao Realtime). Só o widget — o telefone fica no Realtime. Consumidor: `core/handlers/live_web.py`; o Studio cria o deployment quando o motor é `live`.
+- **`tool_limits.attached_inline` põe o documento anexado INTEIRO no contexto**
+  (v0.1.72, 25 Set 2026, C5 do parecer Astra), em módulo próprio
+  (`attached_inline.py`): `enabled` (OFF = prompt de sempre no core) e
+  `max_tokens` (default = máximo = 190 000, piso 1 000) — o tecto que o core
+  honra abaixo do corte de preço dos 272k de input; o schema recusa mais do que
+  isso. Os dois são internos (alavanca de custo nossa). Na mesma versão o
+  default da frota de `max_attached_doc_chars` subiu de 250 000 para 800 000
+  (≈190k tokens em PT) — um perfil com o valor explícito mantém o seu.
+  Consumidor: `core/agent/attached_inline.py` do genai-core.
+- **`access` — quem pode entrar numa frente** (v0.1.72, 25 Set 2026, contrato
+  42): `ProfileAccess` na raiz (`allowedRoles`, `allowedGroups`,
+  `allowedEmailDomains`, `allowedProviders`). **Default `None`, nunca um objeto**:
+  o `to_blob_dict()` é o `DEFAULT_PROFILE` do genai-core e um `{}` por omissão
+  exigiria identidade forte a toda a frota (teste `test_access_and_ciam.py`).
+  Interno por agora (fronteira de segurança; expor no GAIBO é decisão futura).
+  Consumidores: `core/authz/variant.py` (genai-core) e o `variant-access.component`
+  do Studio. Na mesma versão, **`frontend.auth.tenantMode` aceita `"ciam"`**
+  (Entra External ID, com `authority` `*.ciamlogin.com`; o fecore trata-o em
+  `services/auth/variant-auth.ts` e no `msal-auth.service.ts`).
 
 ---
 

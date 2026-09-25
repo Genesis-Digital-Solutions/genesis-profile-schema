@@ -417,7 +417,30 @@
     },
     "frontend.auth.tenantMode": {
       "label": "Âmbito do tenant",
-      "help": "Campo MSAL (Microsoft), escrito na configuração da aplicação."
+      "help": "Campo MSAL (Microsoft), escrito na configuração da aplicação. «ciam» = Entra External ID (login para quem não tem conta Microsoft), com a Authority do tenant CIAM."
+    },
+    "access": {
+      "label": "Quem pode entrar"
+    },
+    "access.allowedRoles": {
+      "label": "Papéis de aplicação (App roles)",
+      "help": "Só entra quem tiver um destes papéis no token. Recomendado.",
+      "note": "Claim `roles` (core/authz/variant.py). Presente o bloco, anónimos e convidados nunca entram."
+    },
+    "access.allowedGroups": {
+      "label": "Grupos (IDs)",
+      "help": "Só entra quem pertencer a um destes grupos.",
+      "note": "Claim `groups`; overage do Entra (>200 grupos) → recusa."
+    },
+    "access.allowedEmailDomains": {
+      "label": "Domínios de email",
+      "help": "Só entra quem tiver um email verificado de um destes domínios.",
+      "note": "Email com email_verified/xms_edov ou UPN no Entra; nunca o preferred_username."
+    },
+    "access.allowedProviders": {
+      "label": "Emissores aceites",
+      "help": "Só valem identidades destes emissores confiáveis.",
+      "note": "Ids de frontend.auth.providers; \"tester\" = Agent Tester."
     },
     "frontend.auth.widget_identity": {
       "label": "Identidade de widget",
@@ -1286,6 +1309,11 @@
       "label": "Autenticar por utilizador",
       "help": "Desligado, a autenticação é feita uma só vez para todo o cliente."
     },
+    "mcp.servers.auth.variant_scope": {
+      "label": "Uma conta por variante",
+      "help": "Ligado, cada variante liga a sua própria conta do serviço (em vez de uma conta para o cliente inteiro).",
+      "note": "Token com a chave variant:<slug> (core/handlers/mcp_oauth.py). Sem variante no pedido não há token."
+    },
     "mcp.servers.auth.revocation_url": {
       "label": "URL de revogação"
     },
@@ -1718,6 +1746,19 @@
       "label": "Frases padrão permitidas",
       "help": "Frases que o assistente pode incluir mesmo não vindo dos documentos. Listá-las aqui evita que sejam assinaladas como invenção.",
       "note": "Frases standard que o bot foi instruído a poder incluir nas respostas via custom_instructions, mas que NÃO vêm dos chunks RAG. Listar aqui evita que sejam marcadas como hallucination pelos judges."
+    },
+    "tool_limits.attached_inline": {
+      "label": "Documento anexado inteiro (contexto longo)"
+    },
+    "tool_limits.attached_inline.enabled": {
+      "label": "Enviar o documento anexado inteiro ao modelo",
+      "help": "Quando ligado, os documentos anexados que cabem no tecto vão inteiros e por ordem numa mensagem no início da conversa, em vez de o assistente os consultar aos pedaços. Só nos modelos de raciocínio GPT-5 e GPT-6 (não no router nem em modelos Foundry que não sejam da OpenAI); o que não cabe continua a ser consultado aos pedaços. Imagens e transcrições de reuniões nunca vão inteiras.",
+      "note": "C5 (core/agent/attached_inline.py). Default desligado = prompt igual ao de antes. Kill-switch de frota no env: ATTACHED_INLINE_DISABLE=1."
+    },
+    "tool_limits.attached_inline.max_tokens": {
+      "label": "Tecto do documento inteiro (tokens)",
+      "help": "Soma máxima, em tokens, dos documentos que vão inteiros. Entre 1 000 e 190 000; acima disto o pedido passaria o corte de preço dos 272 000 tokens. Um token são cerca de 4 caracteres em português: para usar o tecto todo, o limite de caracteres por documento anexado tem de ser pelo menos 4 vezes maior.",
+      "note": "O core honra no máximo HARD_LINE − RESERVE (260k − 70k) e volta aos pedaços num turno em que o pedido estimado passaria o HARD_LINE."
     },
     "tool_limits.max_attached_doc_chars": {
       "label": "Limite de caracteres por documento anexado",
