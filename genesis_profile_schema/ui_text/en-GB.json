@@ -1123,6 +1123,10 @@
       "label": "Competitor brands",
       "note": "(legacy — prefer Brand Safety)"
     },
+    "guardrails.force_web_on_temporal": {
+      "label": "Force web on time-sensitive questions",
+      "note": "on a question about the present («today», «current») the knowledge base did not answer, forces a web search on the next turn; requires the search_web tool; the env FORCE_WEB_ON_TEMPORAL=1 turns it on on top"
+    },
     "guestAccess.dailyBudgetEur": {
       "label": "Daily budget (euros)",
       "help": "Once it runs out, the demo variant is disabled automatically and comes back at midnight UTC. Zero means no budget."
@@ -1553,6 +1557,15 @@
       "help": "How many follow-up questions are suggested. 0 = none.",
       "note": "number of suggested follow-ups (0 = none)"
     },
+    "response.image_min_score": {
+      "label": "Minimum image relevance",
+      "note": "minimum reranker score (0–4) of the excerpt the image comes from for it to accompany the answer; 2 = moderately relevant"
+    },
+    "response.max_images": {
+      "label": "Maximum images per answer",
+      "help": "How many images from the documents may accompany an answer (1 to 5). Only images relevant to the question are shown — if none is, the answer has no image.",
+      "note": "a ceiling, not a quota: only relevant images, most relevant first"
+    },
     "response.show_images": {
       "label": "Show images",
       "help": "Lets answers include images taken from the documents."
@@ -1771,6 +1784,21 @@
     "tool_limits.max_images_per_turn": {
       "label": "Image limit per question",
       "help": "How many attached images the model sees in one question. Only applies to models with vision. Zero stops sending images to the model; the text extracted at upload remains."
+    },
+    "tool_limits.image_detail": {
+      "label": "Resolution the model sees images at",
+      "help": "auto = as always (on GPT-5.6/6 it is the original resolution: a phone photo ≈ 14,400 tokens per question). high = the API downsizes to ~2,048 px (up to ~3,000 tokens, −80%).",
+      "note": "measure in the Agent Tester with photos of documents before changing: small text may be lost in high"
+    },
+    "tool_limits.visual_attachments_position": {
+      "label": "Where images and PDFs seen by the model go",
+      "help": "last = in each question's message (as before; paid in full every turn). start = in a fixed message at the start of the conversation, in upload order — from the 2nd question on they are paid at cache price.",
+      "note": "validate with an Agent Tester run before changing: the model then sees the image far from the question"
+    },
+    "tool_limits.pdf_native_max_pages": {
+      "label": "PDF seen by the model (max pages)",
+      "help": "An attached PDF with up to this many pages is sent to the model as a file — the model sees the pages (charts, tables, scans), not just the text. 0 = off.",
+      "note": "only on vision models via the Responses API; costs image tokens per page on every turn the PDF is attached"
     },
     "tool_limits.max_user_prompt_chars": {
       "label": "Character limit for a question",

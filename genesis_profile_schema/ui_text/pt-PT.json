@@ -1123,6 +1123,10 @@
       "label": "Marcas concorrentes",
       "note": "(legacy — preferir Brand Safety)"
     },
+    "guardrails.force_web_on_temporal": {
+      "label": "Forçar a web em perguntas temporais",
+      "note": "numa pergunta sobre o presente («hoje», «atual») que a base de conhecimento não respondeu, obriga uma pesquisa web no turno seguinte; exige a tool search_web; a env FORCE_WEB_ON_TEMPORAL=1 liga por cima"
+    },
     "guestAccess.dailyBudgetEur": {
       "label": "Orçamento diário (euros)",
       "help": "Ao esgotar-se, a variante é desativada automaticamente e volta a ficar disponível à meia-noite UTC. Zero desliga o limite."
@@ -1553,6 +1557,15 @@
       "help": "Quantas perguntas de seguimento são sugeridas. 0 = nenhuma.",
       "note": "número de follow-ups sugeridos (0 = nenhum)"
     },
+    "response.image_min_score": {
+      "label": "Relevância mínima da imagem",
+      "note": "nota mínima do reranker (0–4) do excerto de onde vem a imagem para ela acompanhar a resposta; 2 = moderadamente relevante"
+    },
+    "response.max_images": {
+      "label": "Máximo de imagens por resposta",
+      "help": "Quantas imagens dos documentos podem acompanhar uma resposta (1 a 5). Só aparecem as relevantes para a pergunta — se nenhuma for, a resposta sai sem imagem.",
+      "note": "tecto, não quota: só as imagens relevantes, das mais para as menos"
+    },
     "response.show_images": {
       "label": "Mostrar imagens",
       "help": "Permite que a resposta inclua imagens vindas dos documentos."
@@ -1771,6 +1784,21 @@
     "tool_limits.max_images_per_turn": {
       "label": "Limite de imagens por pergunta",
       "help": "Quantas imagens anexadas o modelo vê numa pergunta. Só conta em modelos com visão. Zero desliga o envio de imagens ao modelo; fica o texto extraído no carregamento."
+    },
+    "tool_limits.image_detail": {
+      "label": "Resolução com que o modelo vê as imagens",
+      "help": "auto = a de sempre (no GPT-5.6/6 é a resolução original: uma foto de telemóvel ≈ 14 400 tokens por pergunta). high = a API reduz a ~2 048 px (até ~3 000 tokens, −80 %).",
+      "note": "medir no Agent Tester com fotos de documentos antes de mudar: o texto miúdo pode perder-se em high"
+    },
+    "tool_limits.visual_attachments_position": {
+      "label": "Onde vão as imagens e os PDFs vistos pelo modelo",
+      "help": "last = na mensagem de cada pergunta (como até aqui; pagam-se inteiros em cada turno). start = numa mensagem fixa no início da conversa, em ordem de upload — a partir da 2.ª pergunta pagam a preço de cache.",
+      "note": "validar com uma run do Agent Tester antes de mudar: o modelo passa a ver a imagem longe da pergunta"
+    },
+    "tool_limits.pdf_native_max_pages": {
+      "label": "PDF visto pelo modelo (máx. páginas)",
+      "help": "Um PDF anexado com até este número de páginas é enviado ao modelo como ficheiro — o modelo vê as páginas (gráficos, tabelas, digitalizações), não só o texto. 0 = desligado.",
+      "note": "só em modelos com visão pela Responses API; custa tokens de imagem por página em cada turno em que o PDF está anexado"
     },
     "tool_limits.max_user_prompt_chars": {
       "label": "Limite de caracteres da pergunta",

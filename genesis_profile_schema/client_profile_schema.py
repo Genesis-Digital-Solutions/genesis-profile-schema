@@ -163,6 +163,16 @@ class ProfileResponse(BaseModel):
 
     show_sources: bool = True
     show_images: bool = True
+    # Imagens do KB por resposta (v0.1.73, 26 Set 2026 — core
+    # `tools/knowledge_base/image_selection.py`): só as dos chunks RELEVANTES
+    # dos documentos citados, das mais relevantes para as menos, até este
+    # máximo. É um tecto, não uma quota: sem imagem relevante não sai nenhuma.
+    # Default 2 = o comportamento de antes (env MAX_INJECTED_IMAGES).
+    max_images: int = Field(default=2, ge=1, le=5)
+    # Nota mínima do reranker do AI Search (0–4) do chunk de onde vem a imagem
+    # para ela acompanhar a resposta. 2 = "moderadamente relevante" na escala
+    # da Azure. Lever interno de calibração (Genesis), não do cliente.
+    image_min_score: float = Field(default=2.0, ge=0, le=4)
     # Gate REAL dos follow-ups (a flag frontend `enableFollowupSuggestions` era
     # morta — o componente nunca a lia). Off por defeito.
     suggest_followups: bool = False
@@ -182,6 +192,20 @@ class ProfileGuardrails(BaseModel):
     competitor_brands: List[str] = Field(default_factory=list)
     blocked_words: List[str] = Field(default_factory=list)
     allow_general_knowledge: bool = False
+    # v0.1.73 — já lido pelo core (runtime `_maybe_force_web_preventive`) e
+    # até aqui só via extra="allow": numa pergunta temporal ("hoje", "atual")
+    # em que a KB não respondeu, força a pesquisa web no turno seguinte. Off
+    # por defeito (= ausente); a env FORCE_WEB_ON_TEMPORAL=1 liga por cima.
+    force_web_on_temporal: bool = Field(
+        default=False, json_schema_extra={"requires_tool": "search_web"},
+    )
+
+    @field_validator("force_web_on_temporal", mode="before")
+    @classmethod
+    def _force_web_null_is_off(cls, v):
+        # O campo viveu sem tipo (extra="allow"): um `null` antigo gravado à mão
+        # não pode chumbar o próximo save — vale o mesmo que ausente.
+        return False if v is None else v
     # v0.1.48 — o aviso ao utilizador do verificador de citações
     # (core/agent/citation_support.py) é decisão de PRODUTO por cliente: em
     # bots documentais onde se age sobre números o aviso é diferenciador; num
@@ -997,6 +1021,24 @@ class ProfileToolLimits(BaseModel):
     # modelo (fica o texto extraído no upload) — é o gancho para créditos.
     max_images_per_turn: int = Field(default=10, ge=0)        # MULTIMODAL_MAX_IMAGES_PER_TURN
     max_image_total_mb: int = Field(default=40, ge=0)         # MULTIMODAL_MAX_TOTAL_MB
+    # v0.1.73 — PDF anexado VISTO pelo modelo (core/agent/multimodal_pdf.py):
+    # num modelo com visão e pela Responses API, um PDF com até N páginas vai
+    # como ficheiro (texto + imagem de cada página — gráficos, tabelas
+    # desenhadas, digitalizações). 0 = desligado (só o texto extraído, como
+    # antes). Custa tokens de imagem por página em CADA turno com o PDF anexado.
+    pdf_native_max_pages: int = Field(default=0, ge=0, le=100)  # PDF_NATIVE_MAX_PAGES
+    # v0.1.73 — ONDE vão as imagens e os PDFs vistos pelo modelo
+    # (core/agent/visual_attachments.py): "last" = na mensagem do utilizador
+    # de cada turno (como até aqui; nunca entram no prompt cache); "start" =
+    # numa mensagem FIXA no início da conversa, em ordem de upload — a partir
+    # do 2.º turno pagam a preço de cache. Validar com uma run antes de mudar.
+    visual_attachments_position: Literal["last", "start"] = "last"
+    # v0.1.73 — RESOLUÇÃO com que o modelo vê as imagens anexadas (o `detail`
+    # da API; core/agent/multimodal_input.py). "auto" = o de sempre (no
+    # GPT-5.6/6 = resolução original: uma foto de 12 MP ≈ 14 400 tokens);
+    # "high" = a API reduz a ~2 048 px (até ~3 000 tokens, −80 %) — risco no
+    # texto miúdo de fotos de documentos. Medir antes de mudar.
+    image_detail: Literal["auto", "high"] = "auto"
 
     # C5 (v0.1.72): documento anexado INTEIRO no contexto — attached_inline.py.
     attached_inline: ProfileAttachedInline = Field(default_factory=ProfileAttachedInline)

@@ -105,9 +105,12 @@ EXPOSURE: Dict[str, str] = {
     # ──────────────────────────────────────────────────────────────────────
     # Resposta — preferencias de apresentacao
     # ──────────────────────────────────────────────────────────────────────
+    "guardrails.force_web_on_temporal": _I,  # decide chamadas a web que pagamos nos
     "response.explainability_summary": _W,
     "response.extractive_mode": _W,
     "response.followup_count": _W,
+    "response.image_min_score": _I,  # lever de calibracao nosso (nota minima do reranker da imagem)
+    "response.max_images": _W,
     "response.show_images": _W,
     "response.show_sources": _W,
     "response.suggest_followups": _W,
@@ -469,6 +472,11 @@ EXPOSURE: Dict[str, str] = {
     "tool_limits.max_attached_doc_chars": _R,
     "tool_limits.max_image_total_mb": _R,
     "tool_limits.max_images_per_turn": _R,
+    # Lever de CUSTO nosso (tokens por página em cada turno), como o attached_inline.
+    "tool_limits.pdf_native_max_pages": _I,
+    # Lever de CUSTO/qualidade nosso, como o anterior.
+    "tool_limits.visual_attachments_position": _I,
+    "tool_limits.image_detail": _I,
     "tool_limits.max_user_prompt_chars": _R,
     # C5 (v0.1.72): documento anexado INTEIRO no contexto. Interno (D6): e
     # uma alavanca de custo nossa — um turno frio no GPT-6 Astra com o tecto

@@ -91,3 +91,58 @@ def test_top_k_ceiling_is_well_above_the_useful_limit():
         if getattr(m, "le", None) is not None
     )
     assert ceiling >= 4 * 50, "o tecto do top_k não é lugar para apertar custo"
+
+
+# ── 4. imagens por resposta (v0.1.73) ────────────────────────────────────────
+
+def test_max_images_defaults_to_two_and_is_bounded():
+    from genesis_profile_schema.client_profile_schema import ProfileResponse
+    r = ProfileResponse()
+    assert r.max_images == 2 and r.image_min_score == 2.0    # = comportamento anterior
+    for ok in (1, 5):
+        assert ProfileResponse(max_images=ok).max_images == ok
+    for bad in (0, 6, -1):
+        with pytest.raises(ValidationError):
+            ProfileResponse(max_images=bad)
+    for bad in (-0.1, 4.1, float("inf")):
+        with pytest.raises(ValidationError):
+            ProfileResponse(image_min_score=bad)
+
+
+def test_visual_attachments_position_defaults_to_last():
+    """«last» = comportamento de sempre; só «last»/«start» passam."""
+    from genesis_profile_schema.client_profile_schema import ProfileToolLimits
+    assert ProfileToolLimits().visual_attachments_position == "last"
+    assert ProfileToolLimits(visual_attachments_position="start").visual_attachments_position == "start"
+    with pytest.raises(ValidationError):
+        ProfileToolLimits(visual_attachments_position="middle")
+
+
+def test_image_detail_defaults_to_auto():
+    """«auto» = o `detail` que o core sempre enviou; só «auto»/«high» passam
+    («low» e «original» ficam de fora de propósito)."""
+    from genesis_profile_schema.client_profile_schema import ProfileToolLimits
+    assert ProfileToolLimits().image_detail == "auto"
+    assert ProfileToolLimits(image_detail="high").image_detail == "high"
+    for bad in ("low", "original", "HIGH"):
+        with pytest.raises(ValidationError):
+            ProfileToolLimits(image_detail=bad)
+
+
+def test_pdf_native_max_pages_off_by_default_and_bounded():
+    """PDF visto pelo modelo (v0.1.73): 0 = desligado; 0–100 páginas somadas por turno."""
+    from genesis_profile_schema.client_profile_schema import ProfileToolLimits
+    assert ProfileToolLimits().pdf_native_max_pages == 0
+    for ok in (0, 1, 100):
+        assert ProfileToolLimits(pdf_native_max_pages=ok).pdf_native_max_pages == ok
+    for bad in (-1, 101):
+        with pytest.raises(ValidationError):
+            ProfileToolLimits(pdf_native_max_pages=bad)
+
+
+def test_force_web_on_temporal_null_is_off():
+    from genesis_profile_schema.client_profile_schema import ProfileGuardrails
+    assert ProfileGuardrails().force_web_on_temporal is False
+    assert ProfileGuardrails(force_web_on_temporal=None).force_web_on_temporal is False
+    assert ProfileGuardrails(force_web_on_temporal=True).force_web_on_temporal is True
+
