@@ -4,6 +4,11 @@
     "audio.disfluency_removal": {
       "label": "Remover hesitações"
     },
+    "audio.files_retention_days": {
+      "label": "Retenção das actas e dos áudios (dias)",
+      "help": "Quantos dias ficam guardadas as actas Word geradas e os ficheiros de áudio carregados, a contar da criação. Vazio = o mesmo prazo das conversas deste assistente, com um máximo de 180 dias. Um pedido de apagamento de um titular ou o «apagar conversa» apagam-nos sempre, antes do prazo.",
+      "note": "Aplicado pela regra de lifecycle da conta de storage do cliente (Studio `lifecycle_policy.py`) no provisioning e em cada rollout — uma alteração conta a partir do rollout seguinte. Tecto de 180 dias."
+    },
     "audio.glossary": {
       "label": "Glossário de termos"
     },

@@ -1108,6 +1108,16 @@ class ProfileAudio(BaseModel):
         default=240, ge=240,
         json_schema_extra={"requires_tool": "transcribe_audio"},
     )
+    # v0.1.74 (30 Set 2026) — retenção das ACTAS Word e dos ÁUDIOS carregados no
+    # storage do cliente (`upload/audio-transcripts/`, `upload/audio-uploads/`).
+    # Até aqui ficavam para sempre. None = a das conversas do perfil
+    # (`compliance.retention.*`), com TECTO de 180 dias (decisão do Bruno). Quem
+    # aplica é a lifecycle da conta de storage (Studio, `lifecycle_policy.py`),
+    # no provisioning e em cada rollout. O apagamento RGPD apaga-os sempre.
+    files_retention_days: Optional[int] = Field(
+        default=None, ge=1, le=180,
+        json_schema_extra={"requires_tool": "transcribe_audio"},
+    )
 
 
 # ─────────────────────────────────────────────────────────────────────────────

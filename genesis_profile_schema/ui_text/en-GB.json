@@ -4,6 +4,11 @@
     "audio.disfluency_removal": {
       "label": "Strip disfluencies"
     },
+    "audio.files_retention_days": {
+      "label": "Retention of minutes and audio files (days)",
+      "help": "How many days the generated Word minutes and the uploaded audio files are kept, counted from creation. Empty = the same period as this assistant's conversations, capped at 180 days. A data subject erasure request or «delete conversation» always deletes them, before the period ends.",
+      "note": "Applied by the lifecycle rule of the customer's storage account (Studio `lifecycle_policy.py`) at provisioning and on every rollout — a change counts from the next rollout. Capped at 180 days."
+    },
     "audio.glossary": {
       "label": "Terminology glossary"
     },

@@ -69,3 +69,14 @@ def test_controlos_derivados_e_textos_nas_duas_linguas():
         assert "RGPD" in t["help"] or "GDPR" in t["help"]
         assert "USD" in t["help"]
         assert text_for("audio.live_max_duration_min", loc)["help"]
+
+
+def test_retencao_das_actas_e_audios_v0174():
+    """None = a das conversas (tecto 180, aplicado pelo Studio); 1..180."""
+    import pytest as _pt
+    assert ProfileAudio().files_retention_days is None
+    assert ProfileAudio(files_retention_days=30).files_retention_days == 30
+    assert ProfileAudio(files_retention_days=180).files_retention_days == 180
+    for mau in (0, 181, -1):
+        with _pt.raises(Exception):
+            ProfileAudio(files_retention_days=mau)

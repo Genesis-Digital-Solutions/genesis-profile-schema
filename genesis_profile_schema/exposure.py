@@ -445,6 +445,9 @@ EXPOSURE: Dict[str, str] = {
     # voice.transcription.enabled. O tecto da reuniao e infra nossa.
     "audio.live_transcription_enabled": _R,
     "audio.live_max_duration_min": _I,
+    # Retenção das actas/áudios (v0.1.74): o cliente VÊ (é matéria de DPA);
+    # quem define somos nós, como a própria transcrição.
+    "audio.files_retention_days": _R,
     "audio.max_duration_min": _I,
     "audio.max_speakers": _I,
     "audio.phrase_bias": _I,
