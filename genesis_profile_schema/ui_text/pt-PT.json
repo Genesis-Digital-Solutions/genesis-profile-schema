@@ -5,8 +5,8 @@
       "label": "Remover hesitações"
     },
     "audio.files_retention_days": {
-      "label": "Retenção das actas e dos áudios (dias)",
-      "help": "Quantos dias ficam guardadas as actas Word geradas e os ficheiros de áudio carregados, a contar da criação. Vazio = o mesmo prazo das conversas deste assistente, com um máximo de 180 dias. Um pedido de apagamento de um titular ou o «apagar conversa» apagam-nos sempre, antes do prazo.",
+      "label": "Retenção das atas e dos áudios (dias)",
+      "help": "Quantos dias ficam guardadas as atas Word geradas e os ficheiros de áudio carregados, a contar da criação. Vazio = o mesmo prazo das conversas deste assistente, com um máximo de 180 dias. Um pedido de apagamento de um titular ou o «apagar conversa» apagam-nos sempre, antes do prazo.",
       "note": "Aplicado pela regra de lifecycle da conta de storage do cliente (Studio `lifecycle_policy.py`) no provisioning e em cada rollout — uma alteração conta a partir do rollout seguinte. Tecto de 180 dias."
     },
     "audio.glossary": {
@@ -14,7 +14,7 @@
     },
     "audio.live_transcription_enabled": {
       "label": "Transcrição de reuniões em tempo real pelo microfone",
-      "help": "Ligado = o assistente ganha o botão «Transcrever reunião»: o que se diz na sala é transcrito ao vivo no navegador, com separação automática de intervenientes (Interveniente 1, 2, …), e no fim gera-se a acta. É gravação de pessoas (RGPD): os participantes têm de ser avisados — o ecrã mostra o aviso fixo — e o tratamento entra no DPA e na política de privacidade. Custa cerca de 1,30 a 1,60 USD por hora de reunião, além dos créditos por minuto. Desligado por defeito.",
+      "help": "Ligado = o assistente ganha o botão «Transcrever reunião»: o que se diz na sala é transcrito ao vivo no navegador, com separação automática de intervenientes (Interveniente 1, 2, …), e no fim gera-se a ata. É gravação de pessoas (RGPD): os participantes têm de ser avisados — o ecrã mostra o aviso fixo — e o tratamento entra no DPA e na política de privacidade. Custa cerca de 1,30 a 1,60 USD por hora de reunião, além dos créditos por minuto. Desligado por defeito.",
       "note": "Consumidores: core `meeting_transcript.py` (POST /transcripts/live, gate deste toggle + tool transcribe_audio ligada) e `/client-config` (`transcription.live`). Os minutos entram nos créditos com o peso `transcription_per_minute` (bloco billing). Phrase list e glossário são os desta secção."
     },
     "audio.live_max_duration_min": {
@@ -38,7 +38,7 @@
       "label": "Idioma da transcrição"
     },
     "brand_safety": {
-      "note": "Protecção contra menção de marcas concorrentes. soft_redirect=instrução no prompt; hard_block=mais assertivo; post_filter=redacção sobre resposta final."
+      "note": "Proteção contra menção de marcas concorrentes. soft_redirect=instrução no prompt; hard_block=mais assertivo; post_filter=redação sobre resposta final."
     },
     "brand_safety.blocked_brands": {
       "label": "Marcas bloqueadas"
@@ -963,7 +963,7 @@
     "frontend.shareDefaultExpiryDays": {
       "label": "Validade pré-selecionada (dias)",
       "help": "Valor que aparece escolhido quando alguém partilha uma conversa.",
-      "note": "Valor pré-seleccionado no modal de partilha (dias)"
+      "note": "Valor pré-selecionado no modal de partilha (dias)"
     },
     "frontend.shareExpiryOptionsDays": {
       "label": "Opções de validade (dias)",
@@ -1109,7 +1109,7 @@
       }
     },
     "guardrails": {
-      "note": "Bloqueios genéricos. Para protecção activa contra marcas concorrentes usa a tab Brand Safety."
+      "note": "Bloqueios genéricos. Para proteção ativa contra marcas concorrentes usa a tab Brand Safety."
     },
     "guardrails.allow_general_knowledge": {
       "label": "Permitir conhecimento geral",
@@ -1256,7 +1256,7 @@
     "language.strategy": {
       "label": "Estratégia de idioma",
       "help": "\"auto_detect\" segue o idioma da mensagem; \"restricted\" limita à lista Permitidos; \"frontend_locked\" segue sempre o idioma da interface.",
-      "note": "Política de língua. auto_detect=detecta; restricted=detecta mas limitado à lista; frontend_locked=usa o que vier do toggle.",
+      "note": "Política de língua. auto_detect=deteta; restricted=deteta mas limitado à lista; frontend_locked=usa o que vier do toggle.",
       "options": {
         "auto_detect": "Detetar a língua do utilizador",
         "restricted": "Detetar, mas só dentro da lista permitida",
@@ -1528,7 +1528,7 @@
     "product_identification.strict_mode": {
       "label": "Modo restritivo",
       "help": "Aperta as instruções dadas ao modelo sobre os códigos detetados.",
-      "note": "(activa bloco mais restritivo no system prompt — força citação literal)"
+      "note": "(ativa bloco mais restritivo no system prompt — força citação literal)"
     },
     "query_cache": {
       "note": "Query cache exact-match (hash da query normalizada). Default OFF em B2B com queries únicas — só ligar em FAQ-style / demos."
@@ -1810,7 +1810,7 @@
       "help": "Tamanho máximo de uma pergunta, em caracteres."
     },
     "tools": {
-      "note": "Tools activas no agente. config é um dicionário por tool (passa para tool.__init__)."
+      "note": "Tools ativas no agente. config é um dicionário por tool (passa para tool.__init__)."
     },
     "tools.config": {
       "label": "Configuração por ferramenta",
@@ -1832,7 +1832,7 @@
     },
     "tools.config.analyse_cv.prompt_custom": {
       "label": "Instruções livres do cliente",
-      "help": "Acrescentadas às regras fixas da avaliação — nunca as substituem. Servem para contexto do sector (vocabulário, funções equivalentes). Se o texto tiver linguagem discriminatória (idade, datas como corte, pausas na carreira, género, nacionalidade, família, saúde, «nativo»…), o texto INTEIRO fica fora da avaliação e a triagem corre só com as regras fixas."
+      "help": "Acrescentadas às regras fixas da avaliação — nunca as substituem. Servem para contexto do setor (vocabulário, funções equivalentes). Se o texto tiver linguagem discriminatória (idade, datas como corte, pausas na carreira, género, nacionalidade, família, saúde, «nativo»…), o texto INTEIRO fica fora da avaliação e a triagem corre só com as regras fixas."
     },
     "tools.config.analyse_cv.retention_days": {
       "label": "Retenção do registo da triagem (dias)",
@@ -2154,7 +2154,7 @@
     },
     "voice.greeting": {
       "label": "Saudação inicial da chamada",
-      "help": "A primeira frase, por língua activa do frontend. A divulgação de IA é acrescentada pelo sistema, na língua da sessão. Se faltar a saudação numa língua, o assistente diz só a divulgação nessa língua — nunca a saudação noutra."
+      "help": "A primeira frase, por língua ativa do frontend. A divulgação de IA é acrescentada pelo sistema, na língua da sessão. Se faltar a saudação numa língua, o assistente diz só a divulgação nessa língua — nunca a saudação noutra."
     },
     "voice.instructions": {
       "label": "Instruções para o assistente de voz"
@@ -2193,11 +2193,11 @@
     },
     "voice.agent": {
       "label": "Agente completo por voz",
-      "help": "Quando ligado, a voz (telefone e site) pode entregar uma pergunta ao assistente completo — o mesmo do chat, com todas as suas ferramentas e verificações — e ler a resposta em voz. Sem isto, a voz responde só com a pesquisa directa na base de conhecimento e os pedidos."
+      "help": "Quando ligado, a voz (telefone e site) pode entregar uma pergunta ao assistente completo — o mesmo do chat, com todas as suas ferramentas e verificações — e ler a resposta em voz. Sem isto, a voz responde só com a pesquisa direta na base de conhecimento e os pedidos."
     },
     "voice.agent.enabled": {
       "label": "Consultar o assistente completo por voz",
-      "help": "Ligado = a voz pode pedir ajuda ao assistente completo para perguntas que exigem mais do que a base de conhecimento (dados, sistemas ligados, acções). Cada consulta conta como uma mensagem do assistente, além dos minutos de voz."
+      "help": "Ligado = a voz pode pedir ajuda ao assistente completo para perguntas que exigem mais do que a base de conhecimento (dados, sistemas ligados, ações). Cada consulta conta como uma mensagem do assistente, além dos minutos de voz."
     },
     "voice.agent.mode": {
       "label": "Modo do assistente nas consultas por voz",
@@ -2224,7 +2224,7 @@
     },
     "voice.web.engine": {
       "label": "Motor da voz no site",
-      "help": "Realtime é o motor de sempre (token efémero, o navegador fala directamente com o modelo). GPT-Live é full-duplex: ouve enquanto fala, interrupções naturais, delegação ao assistente completo enquanto continua a conversar; cobra por segundo de sessão (silêncio incluído) e tem tecto de sessões em simultâneo por subscrição — se a sessão não arrancar, o site cai automaticamente no Realtime.",
+      "help": "Realtime é o motor de sempre (token efémero, o navegador fala diretamente com o modelo). GPT-Live é full-duplex: ouve enquanto fala, interrupções naturais, delegação ao assistente completo enquanto continua a conversar; cobra por segundo de sessão (silêncio incluído) e tem tecto de sessões em simultâneo por subscrição — se a sessão não arrancar, o site cai automaticamente no Realtime.",
       "options": {
         "realtime": "Realtime (turnos)",
         "live": "GPT-Live (full-duplex)"
