@@ -7,7 +7,7 @@
     "audio.files_retention_days": {
       "label": "Retenção das atas e dos áudios (dias)",
       "help": "Quantos dias ficam guardadas as atas Word geradas e os ficheiros de áudio carregados, a contar da criação. Vazio = o mesmo prazo das conversas deste assistente, com um máximo de 180 dias. Um pedido de apagamento de um titular ou o «apagar conversa» apagam-nos sempre, antes do prazo.",
-      "note": "Aplicado pela regra de lifecycle da conta de storage do cliente (Studio `lifecycle_policy.py`) no provisioning e em cada rollout — uma alteração conta a partir do rollout seguinte. Tecto de 180 dias."
+      "note": "Aplicado pela regra de lifecycle da conta de storage do cliente (Studio `lifecycle_policy.py`) no provisioning e em cada rollout — uma alteração conta a partir do rollout seguinte. Teto de 180 dias."
     },
     "audio.glossary": {
       "label": "Glossário de termos"
@@ -19,7 +19,7 @@
     },
     "audio.live_max_duration_min": {
       "label": "Duração máxima de uma reunião ao vivo (minutos)",
-      "help": "Tecto de uma sessão de transcrição em tempo real. 240 (4 horas) por defeito e nunca abaixo disso; o ecrã termina a sessão ao chegar ao tecto.",
+      "help": "Teto de uma sessão de transcrição em tempo real. 240 (4 horas) por defeito e nunca abaixo disso; o ecrã termina a sessão ao chegar ao teto.",
       "note": "Espelha o clamp de créditos (4 h) do core; o valor chega ao fecore pelo /client-config (`transcription.maxDurationMin`)."
     },
     "audio.max_duration_min": {
@@ -27,6 +27,53 @@
     },
     "audio.max_speakers": {
       "label": "Número máximo de oradores"
+    },
+    "audio.municipal_minutes.enabled": {
+      "label": "Ata de órgão autárquico",
+      "help": "Ligado = a transcrição de reuniões gera a minuta e a ata no formato legal (Lei 75/2013, art. 57.º): cabeçalho, presenças, ordem do dia por ponto, votações, deliberações, encerramento e assinaturas em branco. É um rascunho para quem lavra a ata: o valor legal vem da aprovação e da assinatura.",
+      "note": "Consumido pelo core (`tools/transcribe_audio/municipal/`) e pelo ecrã de transcrição do fecore (`transcription.municipal` no /client-config)."
+    },
+    "audio.municipal_minutes.mandate": {
+      "label": "Mandato",
+      "help": "Por exemplo, 2025–2029. Aparece no cabeçalho da ata."
+    },
+    "audio.municipal_minutes.members.name": {
+      "label": "Nome",
+      "help": "Nome completo, como deve aparecer na ata."
+    },
+    "audio.municipal_minutes.members.party": {
+      "label": "Partido ou lista",
+      "help": "Sigla do partido, coligação ou movimento. A ata nunca deduz o partido do que se diz na reunião: usa só este campo."
+    },
+    "audio.municipal_minutes.members.role": {
+      "label": "Cargo",
+      "help": "Por exemplo, Presidente, Vice-Presidente, Vereador, 1.º Secretário."
+    },
+    "audio.municipal_minutes.members.substitute": {
+      "label": "Substituto",
+      "help": "Ligado = membro que entra em substituição de um efetivo. No ecrã da reunião indica-se quem substitui quem."
+    },
+    "audio.municipal_minutes.members": {
+      "label": "Membros do órgão",
+      "help": "A lista oficial do mandato. A ata tira daqui nomes, cargos e partidos; no ecrã de cada reunião marcam-se as presenças, as faltas e as substituições."
+    },
+    "audio.municipal_minutes.organ_name": {
+      "label": "Nome do órgão",
+      "help": "Por exemplo, Câmara Municipal de Évora ou Assembleia de Freguesia do Lumiar."
+    },
+    "audio.municipal_minutes.organ_type": {
+      "label": "Tipo de órgão",
+      "help": "Dá o nome do órgão nas fórmulas da ata («A Câmara deliberou…», «A Assembleia deliberou…») e diz quem preside: o cargo «Presidente» na câmara e na junta, «Presidente da Mesa» nas assembleias.",
+      "options": {
+        "camara_municipal": "Câmara municipal",
+        "assembleia_municipal": "Assembleia municipal",
+        "junta_freguesia": "Junta de freguesia",
+        "assembleia_freguesia": "Assembleia de freguesia"
+      }
+    },
+    "audio.municipal_minutes.recorder": {
+      "label": "Quem lavra a ata",
+      "help": "Trabalhador designado para lavrar a ata. Pode mudar-se em cada reunião."
     },
     "audio.phrase_bias": {
       "label": "Peso das expressões (1 a 20)"
@@ -315,7 +362,7 @@
     "custom_instructions": {
       "label": "Instruções personalizadas",
       "help": "Texto livre acrescentado às instruções do assistente: políticas de negócio, exemplos, encaminhamentos. Complementa as secções estruturadas, não as substitui.",
-      "note": "Texto livre injectado no system prompt entre <domain> e <conversation_rules>. Aqui escreves regras específicas que não cabem nas secções estruturadas (políticas de negócio, exemplos, redireccionamentos)."
+      "note": "Texto livre injetado no system prompt entre <domain> e <conversation_rules>. Aqui escreves regras específicas que não cabem nas secções estruturadas (políticas de negócio, exemplos, redirecionamentos)."
     },
     "domain.description": {
       "label": "Descrição do domínio",
@@ -931,8 +978,8 @@
     },
     "frontend.language.enabled": {
       "label": "Idiomas disponíveis",
-      "help": "As línguas que o visitante pode escolher no selector da interface. Não confundir com os Idiomas permitidos, que são a política de resposta do assistente.",
-      "note": "Chega ao selector do chat SEM filtro — um código fora do UI_LANGS renderiza uma entrada cujas strings caem para inglês ou português.",
+      "help": "As línguas que o visitante pode escolher no seletor da interface. Não confundir com os Idiomas permitidos, que são a política de resposta do assistente.",
+      "note": "Chega ao seletor do chat SEM filtro — um código fora do UI_LANGS renderiza uma entrada cujas strings caem para inglês ou português.",
       "options": {
         "pt": "Português",
         "en": "Inglês",
@@ -1489,7 +1536,7 @@
     "personality.tone_instructions": {
       "label": "Instruções de tom",
       "help": "Instrução detalhada por tom (professional, formal, friendly, technical, commercial) — a entrada usada é a que corresponde ao Tom escolhido acima.",
-      "note": "Mapeia cada `tone` para uma instrução injectada no system prompt. Podes adicionar tons customizados além dos 5 default."
+      "note": "Mapeia cada `tone` para uma instrução injetada no system prompt. Podes adicionar tons customizados além dos 5 default."
     },
     "pricing.currency": {
       "label": "Moeda"
@@ -1507,7 +1554,7 @@
       "note": "Usado no cálculo de custos. Vazio = env, com fallback ao default do backend."
     },
     "product_identification": {
-      "note": "Detecção de códigos alfanuméricos na query (SKUs, part numbers). Crítico para catálogos B2B — embeddings são fracos em códigos."
+      "note": "Deteção de códigos alfanuméricos na query (SKUs, part numbers). Crítico para catálogos B2B — embeddings são fracos em códigos."
     },
     "product_identification.enabled": {
       "label": "Ativar deteção de códigos de produto",
@@ -1546,7 +1593,7 @@
       "note": "(default 86400 = 24h)"
     },
     "response": {
-      "note": "Comportamento da resposta — fontes visíveis, imagens, follow-ups, modo extractivo."
+      "note": "Comportamento da resposta — fontes visíveis, imagens, follow-ups, modo extrativo."
     },
     "response.explainability_summary": {
       "label": "Resumo de explicabilidade",
@@ -1569,7 +1616,7 @@
     "response.max_images": {
       "label": "Máximo de imagens por resposta",
       "help": "Quantas imagens dos documentos podem acompanhar uma resposta (1 a 5). Só aparecem as relevantes para a pergunta — se nenhuma for, a resposta sai sem imagem.",
-      "note": "tecto, não quota: só as imagens relevantes, das mais para as menos"
+      "note": "teto, não quota: só as imagens relevantes, das mais para as menos"
     },
     "response.show_images": {
       "label": "Mostrar imagens",
@@ -1770,12 +1817,12 @@
     },
     "tool_limits.attached_inline.enabled": {
       "label": "Enviar o documento anexado inteiro ao modelo",
-      "help": "Quando ligado, os documentos anexados que cabem no tecto vão inteiros e por ordem numa mensagem no início da conversa, em vez de o assistente os consultar aos pedaços. Só nos modelos de raciocínio GPT-5 e GPT-6 (não no router nem em modelos Foundry que não sejam da OpenAI); o que não cabe continua a ser consultado aos pedaços. Imagens e transcrições de reuniões nunca vão inteiras.",
+      "help": "Quando ligado, os documentos anexados que cabem no teto vão inteiros e por ordem numa mensagem no início da conversa, em vez de o assistente os consultar aos pedaços. Só nos modelos de raciocínio GPT-5 e GPT-6 (não no router nem em modelos Foundry que não sejam da OpenAI); o que não cabe continua a ser consultado aos pedaços. Imagens e transcrições de reuniões nunca vão inteiras.",
       "note": "C5 (core/agent/attached_inline.py). Default desligado = prompt igual ao de antes. Kill-switch de frota no env: ATTACHED_INLINE_DISABLE=1."
     },
     "tool_limits.attached_inline.max_tokens": {
-      "label": "Tecto do documento inteiro (tokens)",
-      "help": "Soma máxima, em tokens, dos documentos que vão inteiros. Entre 1 000 e 190 000; acima disto o pedido passaria o corte de preço dos 272 000 tokens. Um token são cerca de 4 caracteres em português: para usar o tecto todo, o limite de caracteres por documento anexado tem de ser pelo menos 4 vezes maior.",
+      "label": "Teto do documento inteiro (tokens)",
+      "help": "Soma máxima, em tokens, dos documentos que vão inteiros. Entre 1 000 e 190 000; acima disto o pedido passaria o corte de preço dos 272 000 tokens. Um token são cerca de 4 caracteres em português: para usar o teto todo, o limite de caracteres por documento anexado tem de ser pelo menos 4 vezes maior.",
       "note": "O core honra no máximo HARD_LINE − RESERVE (260k − 70k) e volta aos pedaços num turno em que o pedido estimado passaria o HARD_LINE."
     },
     "tool_limits.max_attached_doc_chars": {
@@ -1876,7 +1923,7 @@
         "LANGUAGE": "Língua",
         "CERTIFICATION": "Certificação",
         "SKILL": "Competência",
-        "DOMAIN": "Sector",
+        "DOMAIN": "Setor",
         "LOCATION": "Localização",
         "AVAILABILITY": "Disponibilidade",
         "LEGAL": "Requisito legal",
@@ -2092,7 +2139,7 @@
     },
     "tools.config.run_code.max_runs_per_turn": {
       "label": "Execuções por resposta",
-      "help": "Cada execução pode abrir uma sessão facturada à parte dos tokens (por minuto, mínimo cinco minutos)."
+      "help": "Cada execução pode abrir uma sessão faturada à parte dos tokens (por minuto, mínimo cinco minutos)."
     },
     "tools.config.run_code.memory": {
       "label": "Memória da sandbox",
@@ -2224,7 +2271,7 @@
     },
     "voice.web.engine": {
       "label": "Motor da voz no site",
-      "help": "Realtime é o motor de sempre (token efémero, o navegador fala diretamente com o modelo). GPT-Live é full-duplex: ouve enquanto fala, interrupções naturais, delegação ao assistente completo enquanto continua a conversar; cobra por segundo de sessão (silêncio incluído) e tem tecto de sessões em simultâneo por subscrição — se a sessão não arrancar, o site cai automaticamente no Realtime.",
+      "help": "Realtime é o motor de sempre (token efémero, o navegador fala diretamente com o modelo). GPT-Live é full-duplex: ouve enquanto fala, interrupções naturais, delegação ao assistente completo enquanto continua a conversar; cobra por segundo de sessão (silêncio incluído) e tem teto de sessões em simultâneo por subscrição — se a sessão não arrancar, o site cai automaticamente no Realtime.",
       "options": {
         "realtime": "Realtime (turnos)",
         "live": "GPT-Live (full-duplex)"

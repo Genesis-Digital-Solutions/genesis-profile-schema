@@ -1076,6 +1076,40 @@ class ProfileAiDisclosure(BaseModel):
 # Audio — Configuração da tool transcribe_audio por cliente
 # ─────────────────────────────────────────────────────────────────────────────
 
+class ProfileMunicipalMember(BaseModel):
+    """Um membro do órgão autárquico — a lista OFICIAL de onde a ata tira nomes,
+    cargos e partidos (regra R4 do pack da transcrição: nunca da fala).
+    `substitute` = entra em substituição de um efetivo."""
+    model_config = ConfigDict(extra="allow")
+
+    name: str = Field(default="", max_length=120)
+    role: str = Field(default="", max_length=80)     # «Presidente», «Vereador», «1.º Secretário»…
+    party: str = Field(default="", max_length=60)    # sigla/lista; vazio = sem filiação declarada
+    substitute: bool = False
+
+
+class ProfileMunicipalMinutes(BaseModel):
+    """v0.1.76 (30 Set 2026) — modelo de ATA DE ÓRGÃO AUTÁRQUICO (Lei 75/2013,
+    Anexo I, art. 57.º; CPA art. 34.º). Com `enabled`, a transcrição de reuniões
+    gera a MINUTA e a ATA integral no formato legal (cabeçalho, presenças, ordem
+    do dia por ponto, votações, deliberações, encerramento, assinaturas em
+    branco) em vez da ata genérica. O órgão e a lista de membros do mandato vêm
+    DAQUI; o que muda em cada reunião (tipo, número, local, ordem do dia,
+    presenças e substituições) entra no ecrã da reunião. A IA é apoio a quem
+    lavra: o valor legal vem da aprovação e da assinatura.
+    Consumidores: core `tools/transcribe_audio/municipal/`, `/client-config`
+    (`transcription.municipal`) e o ecrã de transcrição do fecore."""
+    model_config = ConfigDict(extra="allow")
+
+    enabled: bool = Field(default=False, json_schema_extra={"requires_tool": "transcribe_audio"})
+    organ_type: Literal["camara_municipal", "assembleia_municipal", "junta_freguesia",
+                        "assembleia_freguesia"] = "camara_municipal"
+    organ_name: str = Field(default="", max_length=200)   # «Câmara Municipal de …»
+    mandate: str = Field(default="", max_length=40)       # «2025–2029»
+    recorder: str = Field(default="", max_length=120)     # quem lavra por omissão (trabalhador designado)
+    members: List[ProfileMunicipalMember] = Field(default_factory=list, max_length=80)
+
+
 class ProfileAudio(BaseModel):
     """Configuração da tool `transcribe_audio` por cliente (STT).
 
@@ -1116,6 +1150,11 @@ class ProfileAudio(BaseModel):
     # no provisioning e em cada rollout. O apagamento RGPD apaga-os sempre.
     files_retention_days: Optional[int] = Field(
         default=None, ge=1, le=180,
+        json_schema_extra={"requires_tool": "transcribe_audio"},
+    )
+    # v0.1.76 (30 Set 2026) — ata de órgão autárquico (ver a classe).
+    municipal_minutes: ProfileMunicipalMinutes = Field(
+        default_factory=ProfileMunicipalMinutes,
         json_schema_extra={"requires_tool": "transcribe_audio"},
     )
 

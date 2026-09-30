@@ -28,6 +28,53 @@
     "audio.max_speakers": {
       "label": "Maximum number of speakers"
     },
+    "audio.municipal_minutes.enabled": {
+      "label": "Local authority minutes",
+      "help": "On = meeting transcription produces the draft (minuta) and the minutes in the legal format (Law 75/2013, art. 57): header, attendance, agenda item by item, votes, resolutions, closing and blank signature lines. It is a draft for whoever takes the minutes: legal value comes from approval and signature.",
+      "note": "Consumed by the core (`tools/transcribe_audio/municipal/`) and by the fecore transcription screen (`transcription.municipal` in /client-config)."
+    },
+    "audio.municipal_minutes.mandate": {
+      "label": "Term of office",
+      "help": "For example, 2025–2029. Shown in the minutes header."
+    },
+    "audio.municipal_minutes.members.name": {
+      "label": "Name",
+      "help": "Full name, as it must appear in the minutes."
+    },
+    "audio.municipal_minutes.members.party": {
+      "label": "Party or list",
+      "help": "Acronym of the party, coalition or movement. The minutes never infer the party from what is said in the meeting: only this field is used."
+    },
+    "audio.municipal_minutes.members.role": {
+      "label": "Role",
+      "help": "For example, Mayor, Deputy Mayor, Councillor, 1st Secretary."
+    },
+    "audio.municipal_minutes.members.substitute": {
+      "label": "Substitute",
+      "help": "On = member who stands in for a full member. The meeting screen records who replaces whom."
+    },
+    "audio.municipal_minutes.members": {
+      "label": "Members of the body",
+      "help": "The official list for the term of office. The minutes take names, roles and parties from here; attendance, absences and substitutions are marked on each meeting's screen."
+    },
+    "audio.municipal_minutes.organ_name": {
+      "label": "Name of the body",
+      "help": "For example, Câmara Municipal de Évora or Assembleia de Freguesia do Lumiar."
+    },
+    "audio.municipal_minutes.organ_type": {
+      "label": "Type of body",
+      "help": "Names the body in the minutes' formulas («A Câmara deliberou…», «A Assembleia deliberou…») and says who chairs: role «Presidente» in the executive, «Presidente da Mesa» in the assemblies.",
+      "options": {
+        "camara_municipal": "Municipal executive (câmara municipal)",
+        "assembleia_municipal": "Municipal assembly",
+        "junta_freguesia": "Parish executive (junta de freguesia)",
+        "assembleia_freguesia": "Parish assembly"
+      }
+    },
+    "audio.municipal_minutes.recorder": {
+      "label": "Minutes taken by",
+      "help": "Staff member designated to take the minutes. Can be changed at each meeting."
+    },
     "audio.phrase_bias": {
       "label": "Phrase weighting (1 to 20)"
     },
