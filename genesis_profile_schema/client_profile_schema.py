@@ -2199,6 +2199,73 @@ class ProfileReviewQueueTrigger(BaseModel):
     do: Optional[List[Dict[str, Any]]] = None
 
 
+class ProfileReviewQueueSla(BaseModel):
+    """Prazo (SLA) da fila (v0.1.77, F1.4). Precedência no core
+    (`core/managers/queue_sla.py`): `by_urgency[<urgência do pedido>]` →
+    `value` → `ingest.alerts.aging_hours` do cliente. `unit`: `hours` (horas
+    de calendário, 24/7) ou `business_days` (dias úteis: o dia da entrada não
+    conta; fins de semana e feriados de `calendar` não contam; o prazo acaba
+    no fim do N-ésimo dia útil). Ausente = o limiar do cliente, como antes."""
+    model_config = ConfigDict(extra="allow")
+    value: Optional[float] = Field(default=None, gt=0, le=8784)
+    unit: Literal["hours", "business_days"] = "hours"
+    # Chave = um valor da lista `classifier.triage.urgency` das fontes que
+    # alimentam a fila (comparação sem acentos nem maiúsculas).
+    by_urgency: Optional[Dict[str, float]] = None
+
+    @field_validator("value", mode="before")
+    @classmethod
+    def _no_bool_value(cls, v):
+        # `true` virava 1 h em silêncio (o pydantic converte bool em float).
+        if isinstance(v, bool):
+            raise ValueError("value tem de ser um número, não verdadeiro/falso")
+        return v
+
+    @field_validator("by_urgency", mode="before")
+    @classmethod
+    def _positive_by_urgency(cls, v):
+        if v is None:
+            return v
+        if not isinstance(v, dict):
+            raise ValueError("by_urgency tem de ser {urgência: prazo}")
+        import unicodedata
+
+        def _norm(s: str) -> str:
+            t = unicodedata.normalize("NFKD", s)
+            t = "".join(ch for ch in t if unicodedata.category(ch) != "Mn")
+            return " ".join(t.casefold().split())
+        out, seen = {}, set()
+        for k, n in v.items():
+            key = str(k).strip()
+            if not key:
+                raise ValueError("by_urgency: urgência vazia")
+            if _norm(key) in seen:
+                raise ValueError(f"by_urgency: urgência repetida {key[:30]!r} "
+                                 "(sem acentos nem maiúsculas é a mesma)")
+            seen.add(_norm(key))
+            if isinstance(n, bool) or n is None or isinstance(n, (list, dict)):
+                raise ValueError("prazo por urgência tem de ser um número")
+            try:
+                f = float(n)
+            except (TypeError, ValueError):
+                raise ValueError("prazo por urgência tem de ser um número")
+            if not (0 < f <= 8784):
+                raise ValueError("prazo por urgência fora de ]0, 8784]")
+            out[key] = f
+        return out
+
+    @model_validator(mode="after")
+    def _business_days_cap(self):
+        # Em dias úteis o core não passa de 366 (um ano) — recusar aqui em vez
+        # de cortar em silêncio lá.
+        if self.unit == "business_days":
+            vals = [self.value] if self.value is not None else []
+            vals += list((self.by_urgency or {}).values())
+            if any(x > 366 for x in vals):
+                raise ValueError("em dias úteis o prazo vai até 366")
+        return self
+
+
 class ProfileReviewQueue(BaseModel):
     """Uma fila de revisão human-in-the-loop, genérica e configurável. TUDO
     opcional; as LISTAS default a None (não []) para o caminho legado (Salmon)
@@ -2217,6 +2284,77 @@ class ProfileReviewQueue(BaseModel):
     # _queue_options do backend; vale também para filas legado sem spec).
     operatorNotes: bool = False
     onIngest: Optional[Dict[str, Any]] = None
+    # Prazo da fila (v0.1.77) — ver ProfileReviewQueueSla.
+    sla: Optional[ProfileReviewQueueSla] = None
+
+
+class ProfileCalendar(BaseModel):
+    """Calendário de negócio do cliente (v0.1.77, F1.4): o que conta como dia
+    útil nos prazos em `business_days` das filas. Ausente = feriados
+    nacionais de Portugal, sábado e domingo, sem feriados extra. O fuso é o
+    de `identity.timezone`.
+
+    - `national`: `PT` = os feriados obrigatórios (Código do Trabalho, art.
+      234.º, com Sexta-feira Santa e Corpo de Deus calculados pela Páscoa);
+      `none` = nenhum (cliente fora de Portugal: tudo pela lista).
+    - `weekend`: dias de descanso, 0 = segunda … 6 = domingo (no Golfo, [4, 5]).
+    - `holidays`: feriados municipais e tolerâncias — `AAAA-MM-DD` (só esse
+      dia), `MM-DD` (todos os anos) ou `easter±N` (móvel pela Páscoa, |N| ≤ 120:
+      `easter+39` = Ascensão, `easter-47` = Carnaval).
+
+    Um perfil sem `calendar` fica com `calendar: null` no blob validado (o
+    `to_blob_dict` não omite nulos) — o core e o Studio tratam null como
+    ausente; quem escreve `calendar.holidays` tem de criar o nó."""
+    model_config = ConfigDict(extra="allow")
+    national: Literal["PT", "none"] = "PT"
+    weekend: List[int] = Field(default_factory=lambda: [5, 6])
+    holidays: List[str] = Field(default_factory=list)
+
+    @field_validator("weekend", mode="before")
+    @classmethod
+    def _weekend_no_bool(cls, v):
+        # `[true]` virava `[1]` (terça-feira) em silêncio.
+        if isinstance(v, list) and any(isinstance(d, bool) for d in v):
+            raise ValueError("weekend: números de 0 a 6, não verdadeiro/falso")
+        return v
+
+    @field_validator("weekend")
+    @classmethod
+    def _weekend_days(cls, v):
+        days = sorted({int(d) for d in v})
+        if any(d < 0 or d > 6 for d in days) or len(days) >= 7:
+            raise ValueError("weekend: dias de 0 (segunda) a 6 (domingo), nunca os 7")
+        return days
+
+    @field_validator("holidays")
+    @classmethod
+    def _holiday_dates(cls, v):
+        import re
+        from datetime import date
+        out = []
+        for raw in v:
+            s = str(raw or "").strip()
+            m = re.match(r"^(\d{4})-(\d{2})-(\d{2})$", s)
+            n = re.match(r"^(\d{2})-(\d{2})$", s)
+            e = re.match(r"^easter(?:[+-](\d{1,3}))?$", s.lower())
+            try:
+                if e:
+                    if e[1] and int(e[1]) > 120:
+                        raise ValueError
+                    s = s.lower()
+                elif m:
+                    date(int(m[1]), int(m[2]), int(m[3]))
+                elif n:
+                    date(2024, int(n[1]), int(n[2]))
+                else:
+                    raise ValueError
+            except ValueError:
+                raise ValueError(f"feriado inválido {s[:20]!r}: use AAAA-MM-DD, MM-DD ou easter±N")
+            if s not in out:
+                out.append(s)
+        if len(out) > 100:
+            raise ValueError("holidays: no máximo 100 datas")
+        return out
 
 
 # ─────────────────────────────────────────────────────────────────────────────
@@ -2375,6 +2513,8 @@ class ClientProfileSchema(BaseModel):
     contacts: ProfileContacts = Field(default_factory=ProfileContacts)
     ingest: ProfileIngest = Field(default_factory=ProfileIngest)
     reviewQueues: Dict[str, ProfileReviewQueue] = Field(default_factory=dict)
+    # Calendário de negócio (v0.1.77) — dias úteis dos prazos das filas.
+    calendar: Optional[ProfileCalendar] = None
 
     # Multi-perfil por link (v0.1.34) — só tem efeito no perfil BASE; inerte
     # por default (enabled=false), como mcp/audio/voice/etc.

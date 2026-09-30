@@ -405,7 +405,14 @@ um campo removido do modelo continua a viver no blob sem dar erro.
   no `staticwebapp.config.json`; sem novo rollout não há efeito em runtime. Isso
   atrasa a exploração, não a impede — a classificação mantém-se interna.
 - **`reviewQueues`**: uma fila referida por um nome ausente deste mapa passa a
-  existir como fila fantasma no Cosmos.
+  existir como fila fantasma no Cosmos. `reviewQueues.{fila}.sla` (v0.1.77) é
+  interno como o resto da fila; o `calendar` (v0.1.77, raiz, `Optional` — um
+  perfil sem ele fica com `calendar: null` no blob validado — o `to_blob_dict`
+  não omite nulos, e o core e o Studio tratam null como ausente; quem escreve
+  `calendar.holidays` tem de criar o nó) tem os feriados municipais editáveis
+  pelo cliente (`calendar.holidays` = CLIENT_WRITE; `AAAA-MM-DD`, `MM-DD` ou
+  `easter±N`) e o país/descanso só de leitura. Booleanos recusados (não viram
+  1 h nem terça-feira); em dias úteis o prazo vai até 366.
 - **Os catálogos são dados.** `[tool.setuptools.package-data]` no `pyproject` é
   o que os faz viajar no wheel. Sem essa linha o pacote instala sem os JSON e o
   catálogo fica vazio em produção, em silêncio.

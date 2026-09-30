@@ -2290,6 +2290,22 @@
     "voices.phonetic_map": {
       "label": "Correções de pronúncia",
       "help": "Palavra escrita para a grafia que a voz deve ler (por exemplo API para «ei-pi-ái»). Acrescenta-se às substituições internas."
+    },
+    "calendar.national": {
+      "label": "Feriados nacionais",
+      "help": "De que país são os feriados nacionais que não contam como dias úteis nos prazos das filas.",
+      "options": {
+        "PT": "Portugal",
+        "none": "Nenhum (só os da lista)"
+      }
+    },
+    "calendar.weekend": {
+      "label": "Dias de descanso semanal",
+      "help": "Dias da semana que não contam como dias úteis (0 = segunda … 6 = domingo)."
+    },
+    "calendar.holidays": {
+      "label": "Feriados municipais e tolerâncias",
+      "help": "Dias que também não contam como dias úteis nos prazos das filas: AAAA-MM-DD para um dia só, MM-DD para todos os anos (ex.: 06-13 para o Santo António), easter+N / easter-N para os móveis pela Páscoa (ex.: easter+39 = Ascensão, easter-47 = Carnaval)."
     }
   }
 }

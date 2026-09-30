@@ -2290,6 +2290,22 @@
     "voices.phonetic_map": {
       "label": "Pronunciation corrections",
       "help": "Written word to the spelling the voice should read (for example API as “ay-pee-eye”). Added to the built-in substitutions."
+    },
+    "calendar.national": {
+      "label": "National holidays",
+      "help": "Which country's national holidays do not count as business days in the queue deadlines.",
+      "options": {
+        "PT": "Portugal",
+        "none": "None (only the list)"
+      }
+    },
+    "calendar.weekend": {
+      "label": "Weekly rest days",
+      "help": "Days of the week that do not count as business days (0 = Monday … 6 = Sunday)."
+    },
+    "calendar.holidays": {
+      "label": "Municipal holidays and closures",
+      "help": "Days that also do not count as business days in the queue deadlines: YYYY-MM-DD for a single day, MM-DD for every year (e.g. 06-13), easter+N / easter-N for Easter-based ones (e.g. easter+39 = Ascension, easter-47 = Carnival)."
     }
   }
 }

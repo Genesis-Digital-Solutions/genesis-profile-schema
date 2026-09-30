@@ -678,6 +678,12 @@ EXPOSURE: Dict[str, str] = {
     # Filas de revisao
     # ──────────────────────────────────────────────────────────────────────
     "reviewQueues": _I,  # nome de fila invalido cria filas fantasma em Cosmos
+    # Calendário de negócio (v0.1.77): os feriados municipais e as tolerâncias
+    # são DO CLIENTE (quem os conhece é ele); o país e o fim de semana vê-os,
+    # decidimo-los nós no arranque.
+    "calendar.national": _R,
+    "calendar.weekend": _R,
+    "calendar.holidays": _W,
     # ──────────────────────────────────────────────────────────────────────
     # Excepções por caminho exacto dentro de mapas abertos
     #
