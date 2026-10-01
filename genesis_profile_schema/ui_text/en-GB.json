@@ -2217,8 +2217,8 @@
       "help": "Must match one of the queues defined under review queues."
     },
     "voice.transcription": {
-      "label": "Transcript of voice conversations on the site",
-      "help": "GPT-Live engine on the site only. Stores what the visitor and the assistant said, in the same conversation that already holds the assistant consultations. It is a recording of personal data (GDPR): it requires a legal basis and a mention in the DPA and privacy policy; the visitor sees the notice \"this conversation is transcribed\". Off by default — when off, nothing leaves the browser besides the minutes used."
+      "label": "Transcript of voice conversations",
+      "help": "Site (GPT-Live engine) and phone calls, with separate switches. On the site it stores what the visitor and the assistant said, in the same conversation that already holds the assistant consultations. It is a recording of personal data (GDPR): it requires a legal basis and a mention in the DPA and privacy policy; the visitor sees the notice \"this conversation is transcribed\". Off by default — when off, nothing leaves the browser besides the minutes used."
     },
     "voice.transcription.enabled": {
       "label": "Keep the transcript of voice conversations",
@@ -2227,6 +2227,10 @@
     "voice.transcription.model": {
       "label": "Transcription deployment (no effect on the site)",
       "help": "No consumer: with the GPT-Live engine the transcript comes from the session itself. Reserved for a possible phone channel."
+    },
+    "voice.transcription.phone": {
+      "label": "Keep the transcript of phone calls (assistant only)",
+      "help": "On = what the ASSISTANT said in each call is stored in a conversation of its own, marked as a call on the conversations screen, with the retention set below (or the conversations'). What the caller says is NOT stored. Independent from the site transcript. Off by default; requires a mention in the client's DPA. With the full agent on, the call's conversation already stored the questions the assistant passes to the agent."
     },
     "voice.transcription.retention_days": {
       "label": "Transcript retention (days)",

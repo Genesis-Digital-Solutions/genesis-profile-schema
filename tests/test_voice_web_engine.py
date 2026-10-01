@@ -72,3 +72,18 @@ def test_o_motor_e_um_select_com_nomes_nas_duas_linguas():
         assert "GPT-Live" in t["options"]["live"]
         label = str(text_for("voice.transcription", loc)["label"]).lower()
         assert "reservado" not in label and "reserved" not in label
+
+
+def test_transcricao_das_chamadas_e_um_interruptor_proprio():
+    """v0.1.78: `voice.transcription.phone` (só o assistente, fase 1) é OFF por
+    defeito e independente do `enabled` do site — ligar um não liga o outro."""
+    t = ProfileVoiceTranscription()
+    assert t.phone is False and t.enabled is False
+    prof = ClientProfileSchema.model_validate(
+        {"client_id": "x", "voice": {"transcription": {"phone": True}}})
+    assert prof.voice.transcription.phone is True
+    assert prof.voice.transcription.enabled is False
+    assert exp.exposure_of("voice.transcription.phone") == exp.CLIENT_READ
+    for loc in ("pt-PT", "en-GB"):
+        assert text_for("voice.transcription.phone", loc)
+

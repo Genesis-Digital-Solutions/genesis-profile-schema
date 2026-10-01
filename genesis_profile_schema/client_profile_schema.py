@@ -1990,7 +1990,8 @@ class ProfileCompliance(BaseModel):
 
 class ProfileVoiceTranscription(BaseModel):
     """Transcrição das conversas por voz NO WIDGET com o motor GPT-Live
-    (`voice.web.engine = "live"`). **OFF por defeito** — é gravação de dados
+    (`voice.web.engine = "live"`) e, desde a v0.1.78, das CHAMADAS (só o
+    assistente, `phone` — ver o campo). **OFF por defeito** — é gravação de dados
     pessoais (RGPD): exige base legal e menção no DPA e na política de
     privacidade do cliente; o visitante vê o aviso «esta conversa é
     transcrita» no modo voz.
@@ -2020,6 +2021,15 @@ class ProfileVoiceTranscription(BaseModel):
     # CAPACIDADES). Em vez disso normaliza-se: 0, negativo, vazio ou lixo → None.
     retention_days: Optional[int] = None
     model: Optional[str] = None     # sem consumidor (ver docstring)
+    # v0.1.78 (1 Out 2026, fase 1 da transcrição das chamadas): guarda o que o
+    # ASSISTENTE disse em cada chamada telefónica, na conversa
+    # `voice:<call_id>` (a mesma das consultas ao agente), com a mesma `retention_days`. Interruptor
+    # PRÓPRIO, separado do `enabled` (que é do site): ligar um nunca liga o
+    # outro — cada canal tem o seu aviso e a sua menção no DPA. OFF por
+    # defeito. Consumidor: genai-core `voice/phone_transcript.py`. O que o
+    # CHAMADOR diz fica para a fase 2 (consentimento + deployment de
+    # transcrição) e não é ligado por este campo.
+    phone: bool = False
 
     @field_validator("retention_days", mode="before")
     @classmethod

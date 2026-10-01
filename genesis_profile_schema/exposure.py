@@ -410,6 +410,9 @@ EXPOSURE: Dict[str, str] = {
     # (e materia de DPA), mas quem a liga somos nos (client_read, nao write).
     # `model` continua sem consumidor — interno.
     "voice.transcription.enabled": _R,
+    # v0.1.78: transcricao das CHAMADAS (so o assistente, fase 1). Mesma
+    # regra do `enabled`: o cliente ve (materia de DPA), quem liga somos nos.
+    "voice.transcription.phone": _R,
     "voice.transcription.model": _I,
     "voice.transcription.retention_days": _R,
     "voice.transfer_number": _W,

@@ -2217,8 +2217,8 @@
       "help": "Tem de corresponder a uma das filas definidas em filas de revisão."
     },
     "voice.transcription": {
-      "label": "Transcrição das conversas por voz no site",
-      "help": "Só no motor GPT-Live do site. Guarda o que o visitante e o assistente disseram, na mesma conversa onde já ficam as consultas ao assistente. É gravação de dados pessoais (RGPD): exige base legal e menção no DPA e na política de privacidade; o visitante vê o aviso «esta conversa é transcrita». Desligado por defeito — desligado, nada sai do navegador além dos minutos usados."
+      "label": "Transcrição das conversas por voz",
+      "help": "Site (motor GPT-Live) e chamadas telefónicas, com interruptores separados. No site guarda o que o visitante e o assistente disseram, na mesma conversa onde já ficam as consultas ao assistente. É gravação de dados pessoais (RGPD): exige base legal e menção no DPA e na política de privacidade; o visitante vê o aviso «esta conversa é transcrita». Desligado por defeito — desligado, nada sai do navegador além dos minutos usados."
     },
     "voice.transcription.enabled": {
       "label": "Guardar a transcrição das conversas por voz",
@@ -2227,6 +2227,10 @@
     "voice.transcription.model": {
       "label": "Modelo de transcrição (sem efeito no site)",
       "help": "Sem consumidor: no motor GPT-Live a transcrição vem da própria sessão. Reservado para um eventual canal telefónico."
+    },
+    "voice.transcription.phone": {
+      "label": "Guardar a transcrição das chamadas telefónicas (só o assistente)",
+      "help": "Ligado = o que o ASSISTENTE disse em cada chamada fica guardado numa conversa própria da chamada, identificada como chamada no ecrã de conversas, com a retenção definida abaixo (ou a das conversas). O que o chamador diz NÃO é guardado. Independente da transcrição do site. Desligado por defeito; requer menção no DPA do cliente. Com o agente completo ligado, a conversa da chamada já guardava as perguntas que o assistente passa ao agente."
     },
     "voice.transcription.retention_days": {
       "label": "Retenção da transcrição (dias)",
