@@ -605,6 +605,7 @@ class ProfileToolRunCodeConfig(BaseModel):
 
 
 from genesis_profile_schema.tool_cv_analysis import ProfileToolCvAnalysisConfig  # noqa: E402
+from genesis_profile_schema.intake_schema import ProfileIntake  # noqa: E402
 
 # Mapa key de tools.config → model tipado. Tools fora deste mapa passam sem
 # validação estrutural (estrutura aberta, como sempre).
@@ -2525,6 +2526,9 @@ class ClientProfileSchema(BaseModel):
     reviewQueues: Dict[str, ProfileReviewQueue] = Field(default_factory=dict)
     # Calendário de negócio (v0.1.77) — dias úteis dos prazos das filas.
     calendar: Optional[ProfileCalendar] = None
+    # Questionários regulados com metodologia determinística (v0.1.79, épico
+    # Intake). Vazio = inerte; o modelo vive em `intake_schema.py`.
+    intake: ProfileIntake = Field(default_factory=ProfileIntake)
 
     # Multi-perfil por link (v0.1.34) — só tem efeito no perfil BASE; inerte
     # por default (enabled=false), como mcp/audio/voice/etc.

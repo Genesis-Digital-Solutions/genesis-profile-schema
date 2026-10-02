@@ -2310,6 +2310,10 @@
     "calendar.holidays": {
       "label": "Feriados municipais e tolerâncias",
       "help": "Dias que também não contam como dias úteis nos prazos das filas: AAAA-MM-DD para um dia só, MM-DD para todos os anos (ex.: 06-13 para o Santo António), easter+N / easter-N para os móveis pela Páscoa (ex.: easter+39 = Ascensão, easter-47 = Carnaval)."
+    },
+    "intake.definitions": {
+      "label": "Questionários regulados",
+      "note": "Uma definição por processo (questionário aprovado + metodologia de decisão + casos de referência). Interno até o percurso existir no core; a metodologia nunca é visível a quem responde."
     }
   }
 }

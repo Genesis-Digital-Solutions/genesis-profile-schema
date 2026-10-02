@@ -687,6 +687,12 @@ EXPOSURE: Dict[str, str] = {
     "calendar.national": _R,
     "calendar.weekend": _R,
     "calendar.holidays": _W,
+    # Questionários regulados (v0.1.79, épico Intake). INTERNO por inteiro até
+    # o core os ler: a regra «campo sem consumidor fica escondido». Quando o
+    # percurso existir, abrem-se por caminho exacto o que o cliente vê
+    # (perguntas, textos) e o que edita (glossário); a metodologia — pesos,
+    # limiares, regras — fica SEMPRE interna (nunca visível a quem responde).
+    "intake.definitions": _I,
     # ──────────────────────────────────────────────────────────────────────
     # Excepções por caminho exacto dentro de mapas abertos
     #

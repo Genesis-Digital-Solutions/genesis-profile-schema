@@ -2310,6 +2310,10 @@
     "calendar.holidays": {
       "label": "Municipal holidays and closures",
       "help": "Days that also do not count as business days in the queue deadlines: YYYY-MM-DD for a single day, MM-DD for every year (e.g. 06-13), easter+N / easter-N for Easter-based ones (e.g. easter+39 = Ascension, easter-47 = Carnival)."
+    },
+    "intake.definitions": {
+      "label": "Regulated questionnaires",
+      "note": "One definition per process (approved questionnaire + decision methodology + reference cases). Internal until the journey exists in the core; the methodology is never visible to respondents."
     }
   }
 }

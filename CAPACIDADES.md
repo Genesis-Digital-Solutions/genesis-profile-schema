@@ -482,6 +482,32 @@ um campo removido do modelo continua a viver no blob sem dar erro.
   (Entra External ID, com `authority` `*.ciamlogin.com`; o fecore trata-o em
   `services/auth/variant-auth.ts` e no `msal-auth.service.ts`).
 
+- **`intake.definitions` — questionários regulados com metodologia
+  determinística** (v0.1.79, 2 Out 2026, épico Intake B1), em três módulos
+  próprios: `rules_grammar.py` (a gramática das condições — JSON estruturado
+  numa allowlist, sem `eval`, com tectos de profundidade/nós/listas/texto e
+  números finitos; devolve as referências para quem valida as confirmar; o
+  motor de regras do genai-core avalia esta MESMA gramática),
+  `field_definition.py` (a definição de campo ÚNICA do produto: os 6 tipos do
+  `form()` do core mais `multiselect`, `money`, `datetime`, `year`, `table`) e
+  `intake_schema.py` (secções, perguntas com `show_if`/`assist`/`prefill_from`,
+  glossário com allowlist de secções, e a metodologia: catálogo fechado de
+  termos — `count_matches`, `points`, `category_max`, `bonus` —, completude,
+  red flags, sequência de decisão, escalamentos e casos de referência). Toda a
+  referência é confirmada ao gravar; uma pontuação não refere outra; a
+  completude e as red flags não referem o resultado; `use_case` é allowlist sem
+  `credit_scoring`/`hiring`; `extra="forbid"` em tudo (é novo). **Interno por
+  inteiro** até o core o ler; nenhuma definição de cliente vive neste repo (os
+  testes usam uma sintética). Consumidor: `core/rules/` do genai-core.
+  Revisto no mesmo dia por uma revisão independente (13 achados, todos com
+  teste): `field_values.py` valida RESPOSTAS pelo tipo da pergunta (o mesmo
+  validador para os casos de referência e para o motor); os literais das
+  condições são confirmados contra o tipo e as opções das perguntas; `show_if`
+  sem ciclos (ordem topológica em `IntakeDefinition.visibility_order()`);
+  orçamento de nós POR DEFINIÇÃO (`MAX_DEFINITION_NODES`); números estritos
+  (`StrictNumber`: `true` e `"5"` não são números); taxas > 0; escalamentos
+  sem encadeamento.
+
 ---
 
 ## O que NÃO existe aqui
