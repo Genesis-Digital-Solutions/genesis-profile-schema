@@ -643,6 +643,7 @@ EXPOSURE: Dict[str, str] = {
     "mcp.servers.auth.token_url": _I,
     "mcp.servers.auth.type": _I,
     "mcp.servers.enabled": _I,
+    "mcp.servers.chat": _I,
     "mcp.servers.erp": _I,
     "mcp.servers.name": _I,
     "mcp.servers.protocol_era": _I,

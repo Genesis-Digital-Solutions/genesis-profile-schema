@@ -1411,6 +1411,10 @@
       "label": "Tool prefix",
       "help": "If empty, the server name is used."
     },
+    "mcp.servers.chat": {
+      "label": "Available in chat",
+      "help": "When off, the server is for automations only (queue triggers, checks and resolver): the chat assistant does not see its tools and the voice agent does not announce it."
+    },
     "mcp.servers.trusted": {
       "label": "Trusted server",
       "help": "The MCP spec treats tool descriptions as untrusted. Only on a trusted server is each tool description passed to the model, after sanitising; otherwise a neutral description is used."

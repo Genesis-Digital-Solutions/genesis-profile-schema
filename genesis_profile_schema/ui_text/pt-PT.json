@@ -1411,6 +1411,10 @@
       "label": "Prefixo das ferramentas",
       "help": "Vazio, é usado o nome do servidor."
     },
+    "mcp.servers.chat": {
+      "label": "Disponível no chat",
+      "help": "Desligado, o servidor fica só para automações (gatilhos, verificações e resolvedor da fila): o assistente do chat não vê as suas ferramentas e o agente de voz não o anuncia."
+    },
     "mcp.servers.trusted": {
       "label": "Servidor de confiança",
       "help": "A especificação MCP trata as descrições das ferramentas como não fiáveis. Só num servidor de confiança a descrição de cada ferramenta é exposta ao modelo, já higienizada; caso contrário usa-se uma descrição neutra."

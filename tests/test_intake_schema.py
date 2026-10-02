@@ -641,3 +641,33 @@ def test_escalamentos_com_destinos_diferentes_para_o_mesmo_resultado():
         {"key": "outro", "label": _t("O"), "when": {"q": "fundos", "eq": "yes"},
          "replace_outcomes": ["ok"], "set_outcome": "info"})
     _falha(d, "destinos diferentes")
+
+
+# ── acesso de quem responde (v0.1.80, B4) ───────────────────────────────────
+
+def test_acesso_por_omissao_sao_as_decisoes():
+    a = IntakeDefinition.model_validate(_definicao()).access
+    assert (a.link_valid_days, a.session_idle_minutes, a.code_ttl_minutes, a.code_max_attempts,
+            a.max_failed_codes, a.code_min_interval_seconds, a.codes_per_day,
+            a.channels) == (30, 30, 10, 5, 3, 60, 10, ["email", "sms"])
+
+
+@pytest.mark.parametrize("campo,valor", [
+    ("code_max_attempts", 0), ("code_max_attempts", 11), ("link_valid_days", 91),
+    ("max_failed_codes", 0), ("code_min_interval_seconds", 5), ("codes_per_day", 100),
+    ("channels", []), ("channels", ["email", "email"]), ("channels", ["whatsapp"]),
+    ("session_idle_minutes", "30"), ("desconhecido", 1),
+])
+def test_acesso_nao_desliga_a_protecao(campo, valor):
+    d = _definicao()
+    d["access"] = {campo: valor}
+    with pytest.raises(ValidationError):
+        IntakeDefinition.model_validate(d)
+
+
+def test_acesso_configuravel_dentro_dos_tetos():
+    d = _definicao()
+    d["access"] = {"link_valid_days": 14, "channels": ["email"]}
+    a = IntakeDefinition.model_validate(d).access
+    assert a.link_valid_days == 14 and a.channels == ["email"] and a.code_max_attempts == 5
+

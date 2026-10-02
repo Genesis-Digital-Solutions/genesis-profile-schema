@@ -38,7 +38,7 @@ from __future__ import annotations
 
 from typing import Annotated, Any, Dict, Iterable, List, Literal, Optional, Set, Union
 
-from pydantic import AfterValidator, BaseModel, ConfigDict, Field, model_validator
+from pydantic import AfterValidator, BaseModel, ConfigDict, Field, model_validator, StrictInt
 
 from .field_definition import FieldDefinition, I18nHelp, I18nText, StrictNumber
 from .field_values import iso_value, number_fits, validate_answers
@@ -383,6 +383,30 @@ class IntakeMethodology(BaseModel):
     reference_cases: List[IntakeReferenceCase] = Field(default_factory=list, max_length=MAX_CASES)
 
 
+class IntakeAccessPolicy(BaseModel):
+    """Acesso de quem responde: link pessoal + código enviado a cada entrada
+    (decisões do Bruno, 2 Out 2026). Os valores por omissão são os decididos;
+    os tetos impedem uma configuração de desligar a proteção (nunca mais de
+    10 tentativas por código, nunca um link de 6 meses)."""
+    model_config = _CLOSED
+
+    link_valid_days: StrictInt = Field(default=30, ge=1, le=90)
+    session_idle_minutes: StrictInt = Field(default=30, ge=5, le=120)
+    code_ttl_minutes: StrictInt = Field(default=10, ge=2, le=30)
+    code_max_attempts: StrictInt = Field(default=5, ge=1, le=10)
+    max_failed_codes: StrictInt = Field(default=3, ge=1, le=10)
+    code_min_interval_seconds: StrictInt = Field(default=60, ge=30, le=600)
+    codes_per_day: StrictInt = Field(default=10, ge=1, le=30)
+    channels: List[Literal["email", "sms"]] = Field(default_factory=lambda: ["email", "sms"],
+                                                    min_length=1, max_length=2)
+
+    @model_validator(mode="after")
+    def _sem_repetidos(self) -> "IntakeAccessPolicy":
+        if len(set(self.channels)) != len(self.channels):
+            raise ValueError("canais repetidos")
+        return self
+
+
 class IntakeDefinition(BaseModel):
     """Uma definição completa (um questionário + a sua metodologia). Uma por
     veículo/processo: a chave no mapa `intake.definitions` é o seu id."""
@@ -396,6 +420,7 @@ class IntakeDefinition(BaseModel):
     questions: List[IntakeQuestion] = Field(min_length=1, max_length=MAX_QUESTIONS)
     glossary: List[IntakeGlossaryTerm] = Field(default_factory=list, max_length=MAX_GLOSSARY)
     methodology: Optional[IntakeMethodology] = None
+    access: IntakeAccessPolicy = Field(default_factory=IntakeAccessPolicy)
 
     @model_validator(mode="after")
     def _referencias(self) -> "IntakeDefinition":

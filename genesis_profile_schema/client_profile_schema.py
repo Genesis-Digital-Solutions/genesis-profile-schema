@@ -1203,6 +1203,14 @@ class ProfileMCPServer(BaseModel):
     tool_prefix: Optional[str] = None  # default = name
     timeout_seconds: int = Field(default=30, ge=5, le=300)
     enabled: bool = True
+    # chat — False = server SÓ para automações (Set 2026, genai-core): o
+    # registry não o descobre nem o põe no chat e a voz não o anuncia;
+    # triggers, gates e resolver chamam-no pelo invoker como sempre. Tipado em
+    # v0.1.80 (pedido da revisão do PR #2 do core). Default True = o
+    # comportamento de sempre. As forks (Salmon, Demos) ainda não o declaram e
+    # são `extra="forbid"`: ficam por sincronizar com o base (decisão do
+    # Bruno, 2 Out 2026).
+    chat: bool = True
     # trusted — o operador declara confiança neste server. A spec MCP trata
     # descrições/annotations do server como não-confiáveis salvo server de
     # confiança; quando True, a description de cada tool é exposta ao modelo

@@ -506,7 +506,15 @@ um campo removido do modelo continua a viver no blob sem dar erro.
   sem ciclos (ordem topológica em `IntakeDefinition.visibility_order()`);
   orçamento de nós POR DEFINIÇÃO (`MAX_DEFINITION_NODES`); números estritos
   (`StrictNumber`: `true` e `"5"` não são números); taxas > 0; escalamentos
-  sem encadeamento.
+  sem encadeamento. **v0.1.80 (2 Out 2026, B4):** `IntakeDefinition.access`
+  (`IntakeAccessPolicy`) — link pessoal + código a cada entrada: validade do
+  link, sessão por inatividade, validade e tentativas do código, códigos
+  falhados até bloquear, intervalo e máximo diário de códigos, canais
+  (`email`/`sms`). Defaults = decisões do Bruno; tetos impedem desligar a
+  proteção. Na mesma versão, **`mcp.servers[].chat`** passa a tipado
+  (`bool`, default `True`; `False` = só automações, como o core já lia). As
+  forks Salmon e Demos ainda não o declaram (`extra="forbid"`) e serão
+  sincronizadas com o base.
 
 ---
 
