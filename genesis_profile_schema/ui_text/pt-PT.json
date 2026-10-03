@@ -544,6 +544,10 @@
       "label": "Favicon",
       "help": "URL no contentor `branding` — carregado pelo Console."
     },
+    "frontend.branding.darkHeaderLogo": {
+      "label": "Logótipo nos cabeçalhos escuros",
+      "help": "Mostra o logótipo para modo escuro no cabeçalho do percurso (Intake). Desligado: aparece só o nome do cliente — use quando o logótipo não fica bem no fundo escuro."
+    },
     "frontend.branding.headerLogoHeight": {
       "label": "Altura do logótipo no cabeçalho (px)",
       "help": "0 mantém a altura predefinida."

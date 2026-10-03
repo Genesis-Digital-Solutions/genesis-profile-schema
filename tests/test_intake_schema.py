@@ -671,3 +671,42 @@ def test_acesso_configuravel_dentro_dos_tetos():
     a = IntakeDefinition.model_validate(d).access
     assert a.link_valid_days == 14 and a.channels == ["email"] and a.code_max_attempts == 5
 
+
+
+# ── apresentação (v0.1.81, B5) ──────────────────────────────────────────────
+
+def test_apresentacao_por_omissao_vazia():
+    p = IntakeDefinition.model_validate(_definicao()).presentation
+    assert p.bilingual is False and p.footer == {}
+
+
+def test_apresentacao_configuravel():
+    d = _definicao()
+    d["presentation"] = {"bilingual": True, "footer": {"pt": "Rodapé legal."}}
+    p = IntakeDefinition.model_validate(d).presentation
+    assert p.bilingual is True and p.footer == {"pt": "Rodapé legal."}
+
+
+def test_bilingue_precisa_de_duas_linguas():
+    d = _definicao()
+    d["languages"] = d["languages"][:1]
+    d["presentation"] = {"bilingual": True}
+    with pytest.raises(ValidationError):
+        IntakeDefinition.model_validate(d)
+
+
+@pytest.mark.parametrize("valor", [
+    {"bilingual": "sim"}, {"bilingual": 1}, {"footer": {"pt": "x" * 5000}}, {"footer": {"PT": "x"}},
+    {"footer": "texto"}, {"cor": "#000"},
+])
+def test_apresentacao_recusa_invalidos(valor):
+    d = _definicao()
+    d["presentation"] = valor
+    with pytest.raises(ValidationError):
+        IntakeDefinition.model_validate(d)
+
+
+def test_logo_nos_cabecalhos_escuros_ligado_por_omissao():
+    from genesis_profile_schema.client_profile_schema import ProfileFrontendBranding
+    assert ProfileFrontendBranding().darkHeaderLogo is True
+    assert ProfileFrontendBranding(darkHeaderLogo=False).darkHeaderLogo is False

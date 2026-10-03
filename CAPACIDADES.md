@@ -506,7 +506,7 @@ um campo removido do modelo continua a viver no blob sem dar erro.
   sem ciclos (ordem topológica em `IntakeDefinition.visibility_order()`);
   orçamento de nós POR DEFINIÇÃO (`MAX_DEFINITION_NODES`); números estritos
   (`StrictNumber`: `true` e `"5"` não são números); taxas > 0; escalamentos
-  sem encadeamento. **v0.1.80 (2 Out 2026, B4):** `IntakeDefinition.access`
+  sem encadeamento. **v0.1.81 (3 Out 2026, B5):** `IntakeDefinition.presentation` (`IntakePresentation`) — só aparência do percurso: `bilingual` (pergunta e opções também na outra das `languages`, por baixo) e `footer` (rodapé legal); fora do hash da metodologia, como `access`. Na mesma versão, `frontend.branding.darkHeaderLogo` (default `True`; `False` = só o nome do cliente nos cabeçalhos escuros do percurso). **v0.1.80 (2 Out 2026, B4):** `IntakeDefinition.access`
   (`IntakeAccessPolicy`) — link pessoal + código a cada entrada: validade do
   link, sessão por inatividade, validade e tentativas do código, códigos
   falhados até bloquear, intervalo e máximo diário de códigos, canais

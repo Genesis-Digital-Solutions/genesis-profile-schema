@@ -544,6 +544,10 @@
       "label": "Favicon",
       "help": "A URL in the `branding` container — uploaded via the Console."
     },
+    "frontend.branding.darkHeaderLogo": {
+      "label": "Logo on dark headers",
+      "help": "Shows the dark-mode logo in the journey header (Intake). Off: only the client name is shown — use it when the logo does not look right on the dark background."
+    },
     "frontend.branding.headerLogoHeight": {
       "label": "Header logo height (px)",
       "help": "0 keeps the default height."

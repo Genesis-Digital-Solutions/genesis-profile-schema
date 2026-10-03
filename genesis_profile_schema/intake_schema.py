@@ -38,7 +38,7 @@ from __future__ import annotations
 
 from typing import Annotated, Any, Dict, Iterable, List, Literal, Optional, Set, Union
 
-from pydantic import AfterValidator, BaseModel, ConfigDict, Field, model_validator, StrictInt
+from pydantic import AfterValidator, BaseModel, ConfigDict, Field, model_validator, StrictBool, StrictInt
 
 from .field_definition import FieldDefinition, I18nHelp, I18nText, StrictNumber
 from .field_values import iso_value, number_fits, validate_answers
@@ -58,6 +58,7 @@ __all__ = [
     "IntakeEscalation",
     "IntakeReferenceCase",
     "IntakeMethodology",
+    "IntakePresentation",
     "IntakeDefinition",
     "ProfileIntake",
 ]
@@ -407,6 +408,22 @@ class IntakeAccessPolicy(BaseModel):
         return self
 
 
+class IntakePresentation(BaseModel):
+    """Como o percurso SE APRESENTA a quem responde (v0.1.81, 3 Out 2026; B5 —
+    maquetas da proposta). Só aparência: nada aqui muda respostas,
+    visibilidade nem avaliação, por isso fica fora do hash da metodologia
+    (como `access`) — a fotografia de cada processo guarda-o na mesma.
+    Vazio = o ecrã por omissão do produto."""
+    model_config = _CLOSED
+
+    # Mostra cada pergunta e opção também na OUTRA língua da definição, por
+    # baixo (questionários bilingues aprovados assim). Com mais de duas
+    # línguas, a outra é a primeira das `languages` diferente da escolhida.
+    bilingual: StrictBool = False
+    # Rodapé legal em todos os ecrãs (texto simples, nunca HTML).
+    footer: I18nHelp = Field(default_factory=dict)
+
+
 class IntakeDefinition(BaseModel):
     """Uma definição completa (um questionário + a sua metodologia). Uma por
     veículo/processo: a chave no mapa `intake.definitions` é o seu id."""
@@ -421,10 +438,13 @@ class IntakeDefinition(BaseModel):
     glossary: List[IntakeGlossaryTerm] = Field(default_factory=list, max_length=MAX_GLOSSARY)
     methodology: Optional[IntakeMethodology] = None
     access: IntakeAccessPolicy = Field(default_factory=IntakeAccessPolicy)
+    presentation: IntakePresentation = Field(default_factory=IntakePresentation)
 
     @model_validator(mode="after")
     def _referencias(self) -> "IntakeDefinition":
         _Checker(self).run()
+        if self.presentation.bilingual and len(self.languages) < 2:
+            raise ValueError("presentation.bilingual precisa de pelo menos duas languages")
         return self
 
     def visibility_order(self) -> List[str]:

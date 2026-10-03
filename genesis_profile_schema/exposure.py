@@ -183,6 +183,7 @@ EXPOSURE: Dict[str, str] = {
     "frontend.branding.disclaimer": _W,
     "frontend.branding.disclaimerI18n": _W,
     "frontend.branding.favicon": _W,
+    "frontend.branding.darkHeaderLogo": _W,
     "frontend.branding.headerLogoHeight": _W,
     "frontend.branding.headerText": _W,
     "frontend.branding.headerTextColor": _W,

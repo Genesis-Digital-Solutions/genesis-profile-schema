@@ -1359,6 +1359,10 @@ class ProfileFrontendBranding(BaseModel):
     botAvatarShape: Literal["", "round", "soft", "square"] = ""
     botAvatarSize: int = Field(default=0, ge=0)        # px; 0 = default do tema
     headerLogoHeight: int = Field(default=0, ge=0)     # px; 0 = default do tema
+    # Nos cabeçalhos ESCUROS fora do chat (percurso do Intake, v0.1.81): mostra
+    # o `logoDark`; False = só o nome do cliente (identity.company_name), para
+    # quando o logo não fica bem no fundo escuro — decide-se ao personalizar.
+    darkHeaderLogo: bool = True
     # Texto ao lado do logo no header (ex.: "Antonius"). Multilingue (data-driven);
     # cor/tamanho opcionais (vazios = default do tema).
     headerText: I18nMap = Field(default_factory=dict)
