@@ -40,7 +40,7 @@ from typing import Annotated, Any, Dict, Iterable, List, Literal, Optional, Set,
 
 from pydantic import AfterValidator, BaseModel, ConfigDict, Field, model_validator, StrictBool, StrictInt
 
-from .field_definition import FieldDefinition, I18nHelp, I18nText, StrictNumber
+from .field_definition import FieldDefinition, I18nHelp, I18nText, StrictNumber, _i18n_checker
 from .field_values import iso_value, number_fits, validate_answers
 from .rules_grammar import KEY_PATTERN, PredicateRefs, validate_predicate
 
@@ -161,6 +161,18 @@ class IntakeQuestion(FieldDefinition):
     assist: bool = True
     prefill_from: List[Literal["id_document", "cv", "invitation", "proof_of_address"]] = Field(
         default_factory=list, max_length=4)
+    # Que dado do CONVITE se propõe (v0.1.84) — só com `invitation` em
+    # `prefill_from` (ex.: 1.5 telemóvel → "phone", 1.6 email → "email").
+    prefill_field: Optional[Literal["name", "email", "phone"]] = None
+
+    @model_validator(mode="after")
+    def _prefill_field_do_convite(self) -> "IntakeQuestion":
+        if self.prefill_field and "invitation" not in self.prefill_from:
+            raise ValueError(f"pergunta {self.key!r}: prefill_field só com prefill_from 'invitation'")
+        if self.prefill_field and (not self.editable or self.hidden):
+            # Uma proposta tem de poder ser confirmada ou corrigida por quem responde.
+            raise ValueError(f"pergunta {self.key!r}: prefill_field numa pergunta não editável ou escondida")
+        return self
 
 
 class IntakeGlossaryTerm(BaseModel):
@@ -451,6 +463,36 @@ class IntakePresentation(BaseModel):
 
 
 # ─────────────────────────────────────────────────────────────────────────────
+# Textos aprovados do percurso (v0.1.84, 3 Out 2026; Anexo II da Quadrantis)
+# ─────────────────────────────────────────────────────────────────────────────
+
+MAX_NOTICE = 12000           # a informação sobre dados pessoais do Anexo II tem ~4 500 por língua
+I18nNotice = Annotated[Dict[str, str], AfterValidator(_i18n_checker(MAX_NOTICE, True))]
+
+
+class IntakeNotice(BaseModel):
+    model_config = _CLOSED
+    title: I18nHelp = Field(default_factory=dict)
+    text: I18nNotice
+
+
+class IntakeTexts(BaseModel):
+    """Textos APROVADOS que o percurso mostra tal e qual (v0.1.84): `intro`
+    (finalidade, no início), `privacy` (informação sobre dados pessoais — a
+    tomada de conhecimento é OBRIGATÓRIA antes da 1.ª resposta), `declaration`
+    (aceite OBRIGATORIAMENTE na submissão) e `incomplete_warning` (no ecrã de
+    revisão quando falta resposta). Texto simples, nunca HTML. Fora do hash da
+    metodologia: não é o que se avalia; a fotografia de cada processo guarda-os
+    e cada aceitação regista a impressão do texto aceite."""
+    model_config = _CLOSED
+
+    intro: Optional[IntakeNotice] = None
+    privacy: Optional[IntakeNotice] = None
+    declaration: Optional[IntakeNotice] = None
+    incomplete_warning: I18nHelp = Field(default_factory=dict)
+
+
+# ─────────────────────────────────────────────────────────────────────────────
 # Revisão pela equipa (v0.1.82, 3 Out 2026; épico Intake B6)
 # ─────────────────────────────────────────────────────────────────────────────
 
@@ -505,6 +547,10 @@ class IntakeReviewPolicy(BaseModel):
     # Quem cria tem de indicar o montante previsto (sem ele a regra do
     # montante não se aplica — o processo vai a 2.ª validação por precaução).
     amount_required: StrictBool = False
+    # Execução em paralelo com a matriz antiga (v0.1.84): quem revê regista o
+    # resultado que a matriz deu, para medir a concordância motor × matriz.
+    # Desliga-se quando a matriz deixar de se usar.
+    parallel_run: StrictBool = False
 
     @model_validator(mode="after")
     def _capacidades(self) -> "IntakeReviewPolicy":
@@ -533,11 +579,20 @@ class IntakeDefinition(BaseModel):
     methodology: Optional[IntakeMethodology] = None
     access: IntakeAccessPolicy = Field(default_factory=IntakeAccessPolicy)
     presentation: IntakePresentation = Field(default_factory=IntakePresentation)
+    texts: IntakeTexts = Field(default_factory=IntakeTexts)
     review: IntakeReviewPolicy = Field(default_factory=IntakeReviewPolicy)
 
     @model_validator(mode="after")
     def _referencias(self) -> "IntakeDefinition":
         _Checker(self).run()
+        # Um texto que se ACEITA tem de existir em todas as línguas do percurso
+        # (ninguém aceita um texto que não pode ler na língua em que responde).
+        for name in ("intro", "privacy", "declaration"):
+            notice = getattr(self.texts, name)
+            if notice is not None:
+                faltam = [l for l in self.languages if not (notice.text.get(l) or "").strip()]
+                if faltam:
+                    raise ValueError(f"texts.{name}: falta o texto em {faltam}")
         if self.presentation.bilingual and len(self.languages) < 2:
             raise ValueError("presentation.bilingual precisa de pelo menos duas languages")
         dv = self.review.double_validation.outcomes

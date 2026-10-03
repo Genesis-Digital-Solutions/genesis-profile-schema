@@ -783,3 +783,64 @@ def test_fx_recusa_invalidos(valor):
     d["methodology"]["fx"] = valor
     with pytest.raises(ValidationError):
         IntakeDefinition.model_validate(d)
+
+
+# ── textos aprovados do percurso (v0.1.84) ──────────────────────────────────
+
+def _texto(n=10):
+    return {"text": {l: "x" * n for l in _definicao()["languages"]}}
+
+
+def test_textos_opcionais_e_validos():
+    d = _definicao()
+    assert IntakeDefinition.model_validate(d).texts.privacy is None
+    d["texts"] = {"intro": _texto(), "privacy": _texto(4500), "declaration": _texto(),
+                  "incomplete_warning": {"pt": "Aviso"}}
+    t = IntakeDefinition.model_validate(d).texts
+    assert len(next(iter(t.privacy.text.values()))) == 4500
+
+
+@pytest.mark.parametrize("valor", [
+    {"privacy": {"text": {"pt": "só pt"}}},                       # falta uma língua do percurso
+    {"privacy": {"text": {}}},
+    {"declaration": {"text": {"pt": "x" * 12001, "en": "x"}}},
+    {"intro": {"title": {"pt": "t"}}},                             # sem texto
+    {"outro": {}},
+])
+def test_textos_recusa_invalidos(valor):
+    d = _definicao()
+    d["texts"] = valor
+    with pytest.raises(ValidationError):
+        IntakeDefinition.model_validate(d)
+
+
+def test_prefill_field_so_com_convite():
+    d = _definicao()
+    q = d["questions"][0]
+    q["prefill_from"], q["prefill_field"] = ["invitation"], "email"
+    assert IntakeDefinition.model_validate(d).questions[0].prefill_field == "email"
+    q["prefill_from"] = ["cv"]
+    with pytest.raises(ValidationError):
+        IntakeDefinition.model_validate(d)
+    q["prefill_from"], q["prefill_field"] = ["invitation"], "morada"
+    with pytest.raises(ValidationError):
+        IntakeDefinition.model_validate(d)
+
+
+def test_execucao_em_paralelo_por_omissao_desligada():
+    d = _definicao()
+    assert IntakeDefinition.model_validate(d).review.parallel_run is False
+    d["review"] = {"parallel_run": True}
+    assert IntakeDefinition.model_validate(d).review.parallel_run is True
+    d["review"] = {"parallel_run": "sim"}
+    with pytest.raises(ValidationError):
+        IntakeDefinition.model_validate(d)
+
+
+@pytest.mark.parametrize("extra", [{"editable": False}, {"hidden": True}])
+def test_prefill_field_so_em_perguntas_que_se_confirmam(extra):
+    d = _definicao()
+    q = d["questions"][0]
+    q.update({"prefill_from": ["invitation"], "prefill_field": "email", **extra})
+    with pytest.raises(ValidationError):
+        IntakeDefinition.model_validate(d)
