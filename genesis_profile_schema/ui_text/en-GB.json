@@ -835,6 +835,11 @@
       "label": "Show answer diagnostics",
       "help": "When on, shows process transparency and an explainability summary."
     },
+    "frontend.features.shareAccess": {
+      "label": "Who can open a shared link",
+      "help": "Automatic follows the login mode (login required → only with login; optional or none → public). Public: anyone with the link. Login only: whoever has an account with the client. Creating a share always requires login.",
+      "options": {"auto": "Automatic (follows the login mode)", "public": "Public (anyone with the link)", "login": "Login only"}
+    },
     "frontend.features.enableShare": {
       "label": "Share conversation",
       "help": "Lets people generate a share link for the conversation. Its lifetime is set in the sharing section."
@@ -863,6 +868,18 @@
       "label": "Keep the \"Sources\" section in the text",
       "help": "By default that section is stripped from the answer. Enabled, it stays as the model wrote it.",
       "note": "Mirrors retrieval.context_include_source_fields — the Studio editor keeps the two in sync."
+    },
+    "frontend.features.intakeTeam": {
+      "label": "Intake team area",
+      "help": "Shows the team area for regulated questionnaires in the frontend (processes, internal sheet, review). Who can do what is decided by the app roles in each definition's review policy — without a role, the core refuses. Off by default."
+    },
+    "frontend.features.intakeTeamHome": {
+      "label": "Open in the team area",
+      "help": "The frontend starts in the Intake team area instead of the chat (the chat stays reachable). Requires the team area on."
+    },
+    "frontend.features.intakeTeamOnly": {
+      "label": "Team area only",
+      "help": "The frontend shows only the Intake team area — no chat. For clients who bought only Intake. Requires the team area on."
     },
     "frontend.features.reviewQueue": {
       "label": "Human review queue",

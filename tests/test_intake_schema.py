@@ -710,3 +710,51 @@ def test_logo_nos_cabecalhos_escuros_ligado_por_omissao():
     from genesis_profile_schema.client_profile_schema import ProfileFrontendBranding
     assert ProfileFrontendBranding().darkHeaderLogo is True
     assert ProfileFrontendBranding(darkHeaderLogo=False).darkHeaderLogo is False
+
+
+# ── revisão pela equipa (v0.1.82, B6) ───────────────────────────────────────
+
+def test_revisao_por_omissao():
+    r = IntakeDefinition.model_validate(_definicao()).review
+    assert r.roles["create"] == ["Intake.Commercial"] and r.roles["second_review"] == ["Intake.Supervisor"]
+    assert r.double_validation.min_amount is None and r.double_validation.on_red_flags is True
+    assert r.amount_required is False
+
+
+def test_revisao_configuravel():
+    d = _definicao()
+    outcome = d["methodology"]["outcomes"][0]["key"]
+    d["review"] = {"roles": {"view": ["Analista"], "review": ["Analista"]},
+                   "double_validation": {"min_amount": 500000, "currency": "EUR", "outcomes": [outcome]},
+                   "amount_required": True}
+    r = IntakeDefinition.model_validate(d).review
+    assert r.roles == {"view": ["Analista"], "review": ["Analista"]}
+    assert r.double_validation.min_amount == 500000 and r.double_validation.outcomes == [outcome]
+
+
+@pytest.mark.parametrize("valor", [
+    {"roles": {"aprovar_especial": ["X"]}},          # capacidade inventada
+    {"roles": {"quality": ["X"]}},                    # reservada até existir
+    {"roles": {"review": ["X", "X"]}},
+    {"roles": {"review": ["papel com espaço"]}},
+    {"double_validation": {"min_amount": 0}},
+    {"double_validation": {"min_amount": "500000"}},
+    {"double_validation": {"currency": "eur"}},
+    {"double_validation": {"outcomes": ["nao_existe"]}},
+    {"double_validation": {"on_red_flags": 1}},
+    {"amount_required": "sim"},
+    {"outro": 1},
+])
+def test_revisao_recusa_invalidos(valor):
+    d = _definicao()
+    d["review"] = valor
+    with pytest.raises(ValidationError):
+        IntakeDefinition.model_validate(d)
+
+
+def test_share_access_por_omissao_auto_e_fechado():
+    from genesis_profile_schema.client_profile_schema import ProfileFrontendFeatures
+    assert ProfileFrontendFeatures().shareAccess == "auto"
+    assert ProfileFrontendFeatures(shareAccess="login").shareAccess == "login"
+    with pytest.raises(ValidationError):
+        ProfileFrontendFeatures(shareAccess="todos")

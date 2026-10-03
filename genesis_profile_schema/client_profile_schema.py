@@ -1444,6 +1444,12 @@ class ProfileFrontendFeatures(BaseModel):
         json_schema_extra={"requires_field": "frontend.llmModels"},
     )
     enableShare: bool = False
+    # Quem abre um link de conversa partilhada (v0.1.82): "auto" segue o modo
+    # de login (required → só com login; optional/none → público); "public" =
+    # qualquer pessoa com o link; "login" = só quem tem login (num cliente sem
+    # login o link fica inutilizável — o Studio avisa). Criar uma partilha
+    # exige sempre login. Core: `share_gated_auth`; fecore: share.service.
+    shareAccess: Literal["auto", "public", "login"] = "auto"
     enableDocumentUpload: bool = Field(
         default=False,
         json_schema_extra={"requires_tool": "read_attached_document"},
@@ -1482,6 +1488,17 @@ class ProfileFrontendFeatures(BaseModel):
     # sentido com reviewQueue=true; o fecore ignora-a se a fila estiver off.
     # Flui para o frontend via /client-config como qualquer campo deste bloco.
     reviewQueueOnly: bool = False
+    # Área da equipa do Intake (v0.1.82, épico Intake B6) — rota /equipa do
+    # fecore: processos, folha interna, revisão e 2.ª validação. Só a mostra;
+    # QUEM pode o quê são as app roles contra `intake.definitions.*.review`
+    # (o core recusa sem papel, com a flag ligada ou não). Default false.
+    intakeTeam: bool = False
+    # Entrada pela área da equipa (v0.1.82), espelho do reviewQueueHome/Only:
+    # Home = a app ARRANCA em /equipa (chat acessível); Only = só a área da
+    # equipa (o chat fica inacessível neste frontend — imposição de UI, não
+    # de segurança). Ambas exigem intakeTeam=true; o fecore ignora-as sem ela.
+    intakeTeamHome: bool = False
+    intakeTeamOnly: bool = False
     # Task API assíncrona (/tasks) no genai-core: pedidos longos com task_id +
     # polling/webhook. OFF por defeito; liga onde um produto precise. (env
     # TASK_API_ENABLED continua a funcionar como fallback.)

@@ -835,6 +835,11 @@
       "label": "Mostrar diagnóstico da resposta",
       "help": "Ativo, mostra a transparência do processo e um resumo de explicabilidade."
     },
+    "frontend.features.shareAccess": {
+      "label": "Quem abre um link partilhado",
+      "help": "Automático segue o modo de login (login obrigatório → só com login; opcional ou sem login → público). Público: qualquer pessoa com o link. Só com login: quem tem conta no cliente. Criar uma partilha exige sempre login.",
+      "options": {"auto": "Automático (segue o modo de login)", "public": "Público (qualquer pessoa com o link)", "login": "Só com login"}
+    },
     "frontend.features.enableShare": {
       "label": "Partilhar conversa",
       "help": "Permite gerar uma ligação de partilha da conversa. A validade define-se na secção de partilha."
@@ -863,6 +868,18 @@
       "label": "Manter a secção «Fontes» do texto",
       "help": "Por omissão essa secção é removida da resposta. Ligada, fica visível tal como o modelo a escreveu.",
       "note": "Espelho de retrieval.context_include_source_fields — o editor do Studio mantém os dois em sincronia."
+    },
+    "frontend.features.intakeTeam": {
+      "label": "Área da equipa do Intake",
+      "help": "Mostra no frontend a área da equipa dos questionários regulados (processos, folha interna, revisão). Quem pode o quê decide-se pelas app roles na política de revisão de cada definição — sem papel, o core recusa. Desligada por defeito."
+    },
+    "frontend.features.intakeTeamHome": {
+      "label": "Abrir na área da equipa",
+      "help": "O frontend arranca na área da equipa do Intake em vez do chat (o chat continua acessível). Exige a área da equipa ligada."
+    },
+    "frontend.features.intakeTeamOnly": {
+      "label": "Só a área da equipa",
+      "help": "O frontend mostra apenas a área da equipa do Intake — sem chat. Para clientes que contrataram só o Intake. Exige a área da equipa ligada."
     },
     "frontend.features.reviewQueue": {
       "label": "Fila de revisão humana",

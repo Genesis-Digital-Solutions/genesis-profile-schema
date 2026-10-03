@@ -59,6 +59,9 @@ __all__ = [
     "IntakeReferenceCase",
     "IntakeMethodology",
     "IntakePresentation",
+    "INTAKE_CAPABILITIES",
+    "IntakeDoubleValidation",
+    "IntakeReviewPolicy",
     "IntakeDefinition",
     "ProfileIntake",
 ]
@@ -424,6 +427,74 @@ class IntakePresentation(BaseModel):
     footer: I18nHelp = Field(default_factory=dict)
 
 
+# ─────────────────────────────────────────────────────────────────────────────
+# Revisão pela equipa (v0.1.82, 3 Out 2026; épico Intake B6)
+# ─────────────────────────────────────────────────────────────────────────────
+
+# Capacidades da área da equipa — lista FECHADA do produto: cada uma só existe
+# se houver código que a imponha (uma capacidade inventada num perfil seria
+# falsa segurança). Crescem com as ações: `reopen` (pedir complemento /
+# reabrir) e `quality` (controlo de qualidade, D8) estão RESERVADAS — recusadas
+# até a ação existir.
+INTAKE_CAPABILITIES = ("view", "create", "review", "second_review", "export")
+_RESERVED_CAPABILITIES = ("reopen", "quality")
+
+_ROLE_RE = r"^[A-Za-z0-9][A-Za-z0-9._:-]{0,63}$"
+Role = Annotated[str, Field(pattern=_ROLE_RE)]
+
+
+def _default_roles() -> Dict[str, List[str]]:
+    return {
+        "view": ["Intake.Commercial", "Intake.Reviewer", "Intake.Supervisor", "Intake.Auditor"],
+        "create": ["Intake.Commercial"],
+        "review": ["Intake.Reviewer", "Intake.Supervisor"],
+        "second_review": ["Intake.Supervisor"],
+        "export": ["Intake.Supervisor", "Intake.Auditor"],
+    }
+
+
+class IntakeDoubleValidation(BaseModel):
+    """Quando a decisão de quem revê precisa de uma 2.ª pessoa (D3). Mudar o
+    resultado do motor obriga SEMPRE (decisão de produto, não configurável).
+    `min_amount`: montante previsto do processo (indicado por quem o cria) a
+    partir do qual é obrigatória, em `currency`; noutra moeda não há
+    conversão — conta como obrigatória (nunca se adivinha uma taxa)."""
+    model_config = _CLOSED
+
+    min_amount: Optional[StrictNumber] = Field(default=None, gt=0)
+    currency: str = Field(default="EUR", pattern=_CURRENCY_RE)
+    on_red_flags: StrictBool = True
+    outcomes: List[Key] = Field(default_factory=list, max_length=20)
+
+
+class IntakeReviewPolicy(BaseModel):
+    """Quem pode o quê na área da equipa e quando a decisão precisa de 2.ª
+    validação. `roles`: capacidade → app roles do Entra (claim `roles`) que a
+    dão; uma capacidade sem papéis não é dada a ninguém. Separação de funções
+    (fixa no produto): quem criou o processo não o revê nem o valida (D2) e
+    quem fez a 1.ª validação não faz a 2.ª. Todo o resultado é validado por
+    uma pessoa antes de ser comunicado (D1). Só operação: fora do hash da
+    metodologia, como `access`."""
+    model_config = _CLOSED
+
+    roles: Dict[str, List[Role]] = Field(default_factory=_default_roles, max_length=len(INTAKE_CAPABILITIES))
+    double_validation: IntakeDoubleValidation = Field(default_factory=IntakeDoubleValidation)
+    # Quem cria tem de indicar o montante previsto (sem ele a regra do
+    # montante não se aplica — o processo vai a 2.ª validação por precaução).
+    amount_required: StrictBool = False
+
+    @model_validator(mode="after")
+    def _capacidades(self) -> "IntakeReviewPolicy":
+        for cap, roles in self.roles.items():
+            if cap in _RESERVED_CAPABILITIES:
+                raise ValueError(f"capacidade {cap!r} ainda não existe (reservada)")
+            if cap not in INTAKE_CAPABILITIES:
+                raise ValueError(f"capacidade desconhecida {cap!r}")
+            if len(roles) > 20 or len(set(roles)) != len(roles):
+                raise ValueError(f"capacidade {cap!r}: papéis repetidos ou a mais (máx. 20)")
+        return self
+
+
 class IntakeDefinition(BaseModel):
     """Uma definição completa (um questionário + a sua metodologia). Uma por
     veículo/processo: a chave no mapa `intake.definitions` é o seu id."""
@@ -439,12 +510,19 @@ class IntakeDefinition(BaseModel):
     methodology: Optional[IntakeMethodology] = None
     access: IntakeAccessPolicy = Field(default_factory=IntakeAccessPolicy)
     presentation: IntakePresentation = Field(default_factory=IntakePresentation)
+    review: IntakeReviewPolicy = Field(default_factory=IntakeReviewPolicy)
 
     @model_validator(mode="after")
     def _referencias(self) -> "IntakeDefinition":
         _Checker(self).run()
         if self.presentation.bilingual and len(self.languages) < 2:
             raise ValueError("presentation.bilingual precisa de pelo menos duas languages")
+        dv = self.review.double_validation.outcomes
+        if dv:
+            known = {o.key for o in self.methodology.outcomes} if self.methodology else set()
+            bad = sorted(set(dv) - known)
+            if bad:
+                raise ValueError(f"review.double_validation.outcomes: resultados inexistentes {bad}")
         return self
 
     def visibility_order(self) -> List[str]:
