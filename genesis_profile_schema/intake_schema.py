@@ -476,6 +476,18 @@ class IntakeNotice(BaseModel):
     text: I18nNotice
 
 
+class IntakeWarning(BaseModel):
+    """Advertência escrita de um resultado (v0.1.85; Anexos III/IV da
+    Quadrantis): emitida DEPOIS de validado esse resultado e entregue no
+    percurso; quem respondeu confirma a receção escolhendo a Opção A (não
+    prossegue) ou B (prossegue), num campo separado da mensagem."""
+    model_config = _CLOSED
+    title: I18nText
+    text: I18nNotice
+    option_a: I18nText
+    option_b: I18nText
+
+
 class IntakeTexts(BaseModel):
     """Textos APROVADOS que o percurso mostra tal e qual (v0.1.84): `intro`
     (finalidade, no início), `privacy` (informação sobre dados pessoais — a
@@ -490,6 +502,39 @@ class IntakeTexts(BaseModel):
     privacy: Optional[IntakeNotice] = None
     declaration: Optional[IntakeNotice] = None
     incomplete_warning: I18nHelp = Field(default_factory=dict)
+    # Resultado final (chave da metodologia) → advertência a emitir (v0.1.85).
+    warnings: Dict[Key, IntakeWarning] = Field(default_factory=dict, max_length=20)
+
+
+# ─────────────────────────────────────────────────────────────────────────────
+# Comunicações (v0.1.85, 3 Out 2026; épico Intake B8 — caderno D7)
+# ─────────────────────────────────────────────────────────────────────────────
+
+_EMAIL_RE = r"^[^@\s<>\"',;]{1,64}@[A-Za-z0-9.-]{1,253}\.[A-Za-z]{2,24}$"
+
+
+class IntakeCommunications(BaseModel):
+    """O que o produto envia sozinho (por email). `invite`: o convite com o
+    link pessoal, na criação do processo. `reminders`: lembretes nos
+    `reminder_days` (dias desde o convite para o questionário; desde a emissão
+    para a advertência) — cada lembrete leva um link NOVO e o anterior deixa
+    de valer. `team_alert_day`: alerta à equipa (área da equipa e
+    `team_alert_emails`) quando ainda não houve resposta/receção. Tudo
+    desligado por omissão."""
+    model_config = _CLOSED
+
+    invite: StrictBool = False
+    reminders: StrictBool = False
+    reminder_days: List[Annotated[StrictInt, Field(ge=1, le=60)]] = Field(
+        default_factory=lambda: [3, 7], max_length=5)
+    team_alert_day: Optional[Annotated[StrictInt, Field(ge=1, le=90)]] = 15
+    team_alert_emails: List[Annotated[str, Field(pattern=_EMAIL_RE)]] = Field(default_factory=list, max_length=10)
+
+    @model_validator(mode="after")
+    def _dias(self) -> "IntakeCommunications":
+        if self.reminder_days != sorted(set(self.reminder_days)):
+            raise ValueError("reminder_days: crescentes e sem repetidos")
+        return self
 
 
 # ─────────────────────────────────────────────────────────────────────────────
@@ -510,11 +555,11 @@ Role = Annotated[str, Field(pattern=_ROLE_RE)]
 
 def _default_roles() -> Dict[str, List[str]]:
     return {
-        "view": ["Intake.Commercial", "Intake.Reviewer", "Intake.Supervisor", "Intake.Auditor"],
+        "view": ["Intake.Commercial", "Intake.Reviewer", "Intake.Supervisor", "Intake.Auditor", "Intake.Compliance"],
         "create": ["Intake.Commercial"],
         "review": ["Intake.Reviewer", "Intake.Supervisor"],
         "second_review": ["Intake.Supervisor"],
-        "export": ["Intake.Supervisor", "Intake.Auditor"],
+        "export": ["Intake.Supervisor", "Intake.Auditor", "Intake.Compliance"],
     }
 
 
@@ -580,6 +625,9 @@ class IntakeDefinition(BaseModel):
     access: IntakeAccessPolicy = Field(default_factory=IntakeAccessPolicy)
     presentation: IntakePresentation = Field(default_factory=IntakePresentation)
     texts: IntakeTexts = Field(default_factory=IntakeTexts)
+    communications: IntakeCommunications = Field(default_factory=IntakeCommunications)
+    # Fundo / OIC a que o questionário se aplica (v0.1.85; Anexos III/IV «OIC/Fund»).
+    fund: I18nHelp = Field(default_factory=dict)
     review: IntakeReviewPolicy = Field(default_factory=IntakeReviewPolicy)
 
     @model_validator(mode="after")
@@ -593,6 +641,16 @@ class IntakeDefinition(BaseModel):
                 faltam = [l for l in self.languages if not (notice.text.get(l) or "").strip()]
                 if faltam:
                     raise ValueError(f"texts.{name}: falta o texto em {faltam}")
+        if self.texts.warnings:
+            known = {o.key for o in (self.methodology.outcomes if self.methodology else [])}
+            bad = sorted(set(self.texts.warnings) - known)
+            if bad:
+                raise ValueError(f"texts.warnings: resultados inexistentes {bad}")
+            for key, w in self.texts.warnings.items():
+                for part in ("title", "text", "option_a", "option_b"):
+                    faltam = [l for l in self.languages if not (getattr(w, part).get(l) or "").strip()]
+                    if faltam:
+                        raise ValueError(f"texts.warnings.{key}.{part}: falta o texto em {faltam}")
         if self.presentation.bilingual and len(self.languages) < 2:
             raise ValueError("presentation.bilingual precisa de pelo menos duas languages")
         dv = self.review.double_validation.outcomes

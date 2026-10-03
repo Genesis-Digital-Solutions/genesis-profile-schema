@@ -734,7 +734,7 @@ def test_revisao_configuravel():
 
 @pytest.mark.parametrize("valor", [
     {"roles": {"aprovar_especial": ["X"]}},          # capacidade inventada
-    {"roles": {"quality": ["X"]}},                    # reservada até existir
+    {"roles": {"quality": ["X"]}},                    # reservada até existir (D8)
     {"roles": {"review": ["X", "X"]}},
     {"roles": {"review": ["papel com espaço"]}},
     {"double_validation": {"min_amount": 0}},
@@ -844,3 +844,54 @@ def test_prefill_field_so_em_perguntas_que_se_confirmam(extra):
     q.update({"prefill_from": ["invitation"], "prefill_field": "email", **extra})
     with pytest.raises(ValidationError):
         IntakeDefinition.model_validate(d)
+
+
+
+# ── v0.1.85: comunicações, advertências, fundo, controlo de qualidade ──────
+
+def _aviso():
+    t = {"pt": "x", "en": "x"}
+    return {"title": t, "text": t, "option_a": t, "option_b": t}
+
+
+def test_comunicacoes_desligadas_por_omissao_e_validas():
+    d = _definicao()
+    c = IntakeDefinition.model_validate(d).communications
+    assert (c.invite, c.reminders, c.reminder_days, c.team_alert_day) == (False, False, [3, 7], 15)
+    d["communications"] = {"invite": True, "reminders": True, "reminder_days": [2, 5, 9],
+                           "team_alert_emails": ["equipa@exemplo.pt"]}
+    assert IntakeDefinition.model_validate(d).communications.reminder_days == [2, 5, 9]
+
+
+@pytest.mark.parametrize("valor", [
+    {"reminder_days": [7, 3]}, {"reminder_days": [3, 3]}, {"reminder_days": [0]}, {"reminder_days": [61]},
+    {"team_alert_day": 0}, {"team_alert_emails": ["nao-e-email"]}, {"invite": "sim"}, {"outro": 1},
+])
+def test_comunicacoes_recusa_invalidos(valor):
+    d = _definicao()
+    d["communications"] = valor
+    with pytest.raises(ValidationError):
+        IntakeDefinition.model_validate(d)
+
+
+def test_advertencias_so_para_resultados_da_metodologia_e_nas_duas_linguas():
+    d = _definicao()
+    out = d["methodology"]["outcomes"][0]["key"]
+    d["texts"] = {"warnings": {out: _aviso()}}
+    assert out in IntakeDefinition.model_validate(d).texts.warnings
+    d["texts"] = {"warnings": {"inventado": _aviso()}}
+    with pytest.raises(ValidationError):
+        IntakeDefinition.model_validate(d)
+    w = _aviso(); w["option_b"] = {"pt": "só pt"}
+    d["texts"] = {"warnings": {out: w}}
+    with pytest.raises(ValidationError):
+        IntakeDefinition.model_validate(d)
+
+
+def test_fundo_e_compliance_por_omissao():
+    d = _definicao()
+    d["fund"] = {"pt": "Fundo X", "en": "Fund X"}
+    m = IntakeDefinition.model_validate(d)
+    assert m.fund["en"] == "Fund X"
+    assert "Intake.Compliance" in m.review.roles["view"] and "Intake.Compliance" in m.review.roles["export"]
+    assert "quality" not in m.review.roles
