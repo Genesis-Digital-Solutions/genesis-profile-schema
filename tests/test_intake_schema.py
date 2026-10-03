@@ -758,3 +758,28 @@ def test_share_access_por_omissao_auto_e_fechado():
     assert ProfileFrontendFeatures(shareAccess="login").shareAccess == "login"
     with pytest.raises(ValidationError):
         ProfileFrontendFeatures(shareAccess="todos")
+
+
+# ── câmbio da metodologia (v0.1.83, B8) ─────────────────────────────────────
+
+def test_fx_opcional_e_valido():
+    d = _definicao()
+    assert IntakeDefinition.model_validate(d).methodology.fx is None      # sem bloco, sem câmbio
+    d["methodology"]["fx"] = {"via_usd": {"AED": 3.6725, "SAR": 3.75}}
+    fx = IntakeDefinition.model_validate(d).methodology.fx
+    assert fx.source == "ecb" and fx.via_usd == {"AED": 3.6725, "SAR": 3.75}
+
+
+@pytest.mark.parametrize("valor", [
+    {"source": "manual"},
+    {"via_usd": {"USD": 1}},
+    {"via_usd": {"aed": 3.67}},
+    {"via_usd": {"AED": 0}},
+    {"via_usd": {"AED": "3.67"}},
+    {"outro": 1},
+])
+def test_fx_recusa_invalidos(valor):
+    d = _definicao()
+    d["methodology"]["fx"] = valor
+    with pytest.raises(ValidationError):
+        IntakeDefinition.model_validate(d)

@@ -367,6 +367,28 @@ class MethodologyApproval(BaseModel):
     at: str = Field(pattern=_DATE_RE)
 
 
+class IntakeFxPolicy(BaseModel):
+    """Câmbio das avaliações (v0.1.83, épico Intake B8; caderno A8): taxas de
+    referência do BCE do dia útil ANTERIOR à data de referência (a submissão),
+    fotografadas no processo com a fonte. O BCE não publica todas as moedas
+    (ex.: AED, SAR): essas só com `via_usd` — unidades da moeda por 1 USD
+    (ex.: AED 3.6725), um parâmetro que a Compliance aprova e que, por ser da
+    metodologia, obriga a subir a versão quando muda. Sem taxa, o montante
+    fica POR DETERMINAR e o processo vai a uma pessoa — nunca se adivinha.
+    Sem este bloco não há câmbio (o comportamento até à v0.1.82)."""
+    model_config = _CLOSED
+
+    source: Literal["ecb"] = "ecb"
+    via_usd: Dict[Annotated[str, Field(pattern=_CURRENCY_RE)], FxRate] = Field(
+        default_factory=dict, max_length=20)
+
+    @model_validator(mode="after")
+    def _via_usd_sem_usd(self) -> "IntakeFxPolicy":
+        if "USD" in self.via_usd:
+            raise ValueError("via_usd: o USD não se converte através de si próprio")
+        return self
+
+
 class IntakeMethodology(BaseModel):
     model_config = _CLOSED
 
@@ -374,6 +396,7 @@ class IntakeMethodology(BaseModel):
     effective_from: Optional[str] = Field(default=None, pattern=_DATE_RE)
     approval: Optional[MethodologyApproval] = None
     base_currency: str = Field(default="EUR", pattern=_CURRENCY_RE)
+    fx: Optional[IntakeFxPolicy] = None
     # Data de referência da avaliação (para «ano mais recente», etc.):
     # a data de SUBMISSÃO, fixada no processo — nunca a data do dia.
     reference_date: Literal["submission"] = "submission"
