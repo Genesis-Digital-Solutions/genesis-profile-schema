@@ -106,6 +106,23 @@ def test_interruptores_e_numeros_visiveis_tem_ajuda(locale):
 
 
 @pytest.mark.parametrize("locale", ui.LOCALES)
+def test_ajuda_visivel_ao_cliente_cabe_no_popover(locale):
+    """O GAIBO mostra a ajuda num popover de `CLIENT_HELP_MAX_CHARS` e encurtava
+    à mão o que passava — cópias que envelheciam a cada versão (GAIBO 3.1304).
+    Passou? Condensar a ajuda (o que o cliente precisa de ler fica) e levar o
+    detalhe de operador para a `note`."""
+    grandes = sorted(
+        (p, len(ui.help_of(p, locale) or ""))
+        for p in ui.catalogue(locale)
+        if exp.is_client_visible(p) and len(ui.help_of(p, locale) or "") > ui.CLIENT_HELP_MAX_CHARS
+    )
+    assert grandes == [], (
+        f"{len(grandes)} ajuda(s) visível(eis) ao cliente acima de "
+        f"{ui.CLIENT_HELP_MAX_CHARS} caracteres em {locale}: {grandes[:12]}"
+    )
+
+
+@pytest.mark.parametrize("locale", ui.LOCALES)
 def test_listas_fechadas_visiveis_tem_os_valores_nomeados(locale):
     """Nos DOIS sentidos: um membro novo no schema chumba aqui em vez de
     aparecer como opção sem nome, e um membro removido deixa de ter texto

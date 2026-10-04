@@ -6,7 +6,7 @@
     },
     "audio.files_retention_days": {
       "label": "Retention of minutes and audio files (days)",
-      "help": "How many days the generated Word minutes and the uploaded audio files are kept, counted from creation. Empty = the same period as this assistant's conversations, capped at 180 days. A data subject erasure request or «delete conversation» always deletes them, before the period ends.",
+      "help": "Days the generated Word minutes and uploaded audio files are kept, from creation. Empty = this assistant's conversation period, up to 180 days. A data subject erasure request or «delete conversation» always deletes them sooner.",
       "note": "Applied by the lifecycle rule of the customer's storage account (Studio `lifecycle_policy.py`) at provisioning and on every rollout — a change counts from the next rollout. Capped at 180 days."
     },
     "audio.glossary": {
@@ -14,8 +14,8 @@
     },
     "audio.live_transcription_enabled": {
       "label": "Real-time meeting transcription through the microphone",
-      "help": "On = the assistant gains the \"Transcribe meeting\" button: what is said in the room is transcribed live in the browser, with automatic speaker separation (Speaker 1, 2, …), and the minutes are generated at the end. It is a recording of people (GDPR): participants must be informed — the screen shows a fixed notice — and the processing goes into the DPA and the privacy policy. It costs about 1.30 to 1.60 USD per hour of meeting, on top of the per-minute credits. Off by default.",
-      "note": "Consumers: core `meeting_transcript.py` (POST /transcripts/live, gated by this toggle + the transcribe_audio tool being enabled) and `/client-config` (`transcription.live`). Minutes count towards credits with the `transcription_per_minute` weight (billing block). Phrase list and glossary are the ones in this section."
+      "help": "On = «Transcribe meeting» button: live transcription in the browser, speakers separated, minutes at the end. It records people (GDPR): the screen warns participants; include it in the DPA and privacy policy. ~1.30–1.60 USD/h + credits.",
+      "note": "Consumers: core `meeting_transcript.py` (POST /transcripts/live, gated by this toggle + the transcribe_audio tool being enabled) and `/client-config` (`transcription.live`). Minutes count towards credits with the `transcription_per_minute` weight (billing block). Phrase list and glossary are the ones in this section. Off by default."
     },
     "audio.live_max_duration_min": {
       "label": "Maximum duration of a live meeting (minutes)",
@@ -30,8 +30,8 @@
     },
     "audio.municipal_minutes.enabled": {
       "label": "Local authority minutes",
-      "help": "On = meeting transcription produces the draft (minuta) and the minutes in the legal format (Law 75/2013, art. 57): header, attendance, agenda item by item, votes, resolutions, closing and blank signature lines. It is a draft for whoever takes the minutes: legal value comes from approval and signature.",
-      "note": "Consumed by the core (`tools/transcribe_audio/municipal/`) and by the fecore transcription screen (`transcription.municipal` in /client-config)."
+      "help": "On = meeting transcription produces the draft and the minutes in the legal format (Law 75/2013, art. 57): attendance, agenda, votes, resolutions and blank signature lines. It is a draft: legal value comes from approval and signature.",
+      "note": "Consumed by the core (`tools/transcribe_audio/municipal/`) and by the fecore transcription screen (`transcription.municipal` in /client-config). Also includes the header and the closing of the minutes."
     },
     "audio.municipal_minutes.mandate": {
       "label": "Term of office",
@@ -342,7 +342,7 @@
     },
     "compliance.retention.redact_on_expiry": {
       "label": "Keep the numbers at the end of the period",
-      "help": "At the end of the retention period the content and identity of conversations are erased, but the numbers without personal data remain (cost, tokens, quality indicators). Off, the whole document is deleted at the end of the period, as before."
+      "help": "At the end of the retention period the content and identity of conversations are erased, but numbers without personal data remain (cost, tokens, quality indicators). Off, the whole document is deleted at the end, as before."
     },
     "contacts.attribute_paths": {
       "label": "Contact attributes",
@@ -838,7 +838,11 @@
     "frontend.features.shareAccess": {
       "label": "Who can open a shared link",
       "help": "Automatic follows the login mode (login required → only with login; optional or none → public). Public: anyone with the link. Login only: whoever has an account with the client. Creating a share always requires login.",
-      "options": {"auto": "Automatic (follows the login mode)", "public": "Public (anyone with the link)", "login": "Login only"}
+      "options": {
+        "auto": "Automatic (follows the login mode)",
+        "public": "Public (anyone with the link)",
+        "login": "Login only"
+      }
     },
     "frontend.features.enableShare": {
       "label": "Share conversation",
@@ -1894,7 +1898,7 @@
     },
     "tools.config.analyse_cv.prompt_preset": {
       "label": "Recruitment area",
-      "help": "A preset from the tool_playbooks catalogue, added to the fixed rules of the evaluation and of the criteria proposal — it never relaxes them. Empty leaves only the fixed rules. A name not on the list is accepted and, if the product does not know it, ignored.",
+      "help": "A tool_playbooks preset, added to the fixed rules of the evaluation and of the criteria proposal — it never relaxes them. Empty = fixed rules only. A name not on the list is accepted and, if the product does not know it, ignored.",
       "options": {
         "": "None — fixed rules only",
         "general": "General",
@@ -1904,7 +1908,8 @@
     },
     "tools.config.analyse_cv.prompt_custom": {
       "label": "Client free-text instructions",
-      "help": "Added to the fixed evaluation rules — they never replace them. Use them for sector context (vocabulary, equivalent roles). If the text contains discriminatory wording (age, dates as a cut-off, career breaks, gender, nationality, family, health, \"native\"…), the WHOLE text is left out of the evaluation and the screening runs with the fixed rules only."
+      "help": "Added to the fixed rules, never replacing them: use for sector context. With discriminatory wording (age, dates as a cut-off, career breaks, gender, nationality, family, health, «native»…), the whole text is ignored.",
+      "note": "Context examples: sector vocabulary, equivalent roles."
     },
     "tools.config.analyse_cv.retention_days": {
       "label": "Screening record retention (days)",
@@ -2255,7 +2260,8 @@
     },
     "voice.transcription.phone": {
       "label": "Keep the transcript of phone calls (assistant only)",
-      "help": "On = what the ASSISTANT said in each call is stored in a conversation of its own, marked as a call on the conversations screen, with the retention set below (or the conversations'). What the caller says is NOT stored. Independent from the site transcript. Off by default; requires a mention in the client's DPA. With the full agent on, the call's conversation already stored the questions the assistant passes to the agent."
+      "help": "On = what the ASSISTANT said in each call is stored in a conversation of its own, marked as a call, with the retention below (or the conversations'). What the caller says is NOT stored. Requires a mention in the client's DPA.",
+      "note": "Independent from the site transcript. Off by default. With the full agent on, the call's conversation already stored the questions the assistant passes to the agent."
     },
     "voice.transcription.retention_days": {
       "label": "Transcript retention (days)",

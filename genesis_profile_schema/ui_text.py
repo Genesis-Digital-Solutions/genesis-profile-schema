@@ -51,6 +51,15 @@ LOCALES: Tuple[str, ...] = ("pt-PT", "en-GB")
 DEFAULT_LOCALE = "pt-PT"
 
 _ENTRY_KEYS: Tuple[str, ...] = ("label", "help", "note", "options")
+
+#: Tecto da `help` nos campos que o CLIENTE vê (exposure ≠ internal) — o GAIBO
+#: mostra-a num popover de 240 caracteres e, até v0.1.85, encurtava à mão os
+#: textos que passavam, cópias que ficavam desatualizadas na versão seguinte
+#: (GAIBO 3.1304, 4 Out 2026). O detalhe de operador vai para a `note`; o que o
+#: cliente precisa de ler (RGPD, DPA, custo) fica na ajuda, condensado. Os
+#: campos `internal` só aparecem no Studio e não têm tecto.
+#: Garantido por `tests/test_ui_text.py::test_ajuda_visivel_ao_cliente_cabe_no_popover`.
+CLIENT_HELP_MAX_CHARS = 240
 _DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), "ui_text")
 
 

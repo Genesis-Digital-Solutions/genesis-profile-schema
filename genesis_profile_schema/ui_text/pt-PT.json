@@ -6,7 +6,7 @@
     },
     "audio.files_retention_days": {
       "label": "Retenção das atas e dos áudios (dias)",
-      "help": "Quantos dias ficam guardadas as atas Word geradas e os ficheiros de áudio carregados, a contar da criação. Vazio = o mesmo prazo das conversas deste assistente, com um máximo de 180 dias. Um pedido de apagamento de um titular ou o «apagar conversa» apagam-nos sempre, antes do prazo.",
+      "help": "Dias que ficam guardadas as atas Word geradas e os áudios carregados, desde a criação. Vazio = o prazo das conversas deste assistente, até 180 dias. Um pedido de apagamento do titular ou «apagar conversa» apaga-os sempre antes do prazo.",
       "note": "Aplicado pela regra de lifecycle da conta de storage do cliente (Studio `lifecycle_policy.py`) no provisioning e em cada rollout — uma alteração conta a partir do rollout seguinte. Teto de 180 dias."
     },
     "audio.glossary": {
@@ -14,8 +14,8 @@
     },
     "audio.live_transcription_enabled": {
       "label": "Transcrição de reuniões em tempo real pelo microfone",
-      "help": "Ligado = o assistente ganha o botão «Transcrever reunião»: o que se diz na sala é transcrito ao vivo no navegador, com separação automática de intervenientes (Interveniente 1, 2, …), e no fim gera-se a ata. É gravação de pessoas (RGPD): os participantes têm de ser avisados — o ecrã mostra o aviso fixo — e o tratamento entra no DPA e na política de privacidade. Custa cerca de 1,30 a 1,60 USD por hora de reunião, além dos créditos por minuto. Desligado por defeito.",
-      "note": "Consumidores: core `meeting_transcript.py` (POST /transcripts/live, gate deste toggle + tool transcribe_audio ligada) e `/client-config` (`transcription.live`). Os minutos entram nos créditos com o peso `transcription_per_minute` (bloco billing). Phrase list e glossário são os desta secção."
+      "help": "Ligado = botão «Transcrever reunião»: transcrição ao vivo no navegador, oradores separados, ata no fim. É gravação de pessoas (RGPD): o ecrã avisa os participantes; incluir no DPA e na política de privacidade. ~1,30–1,60 USD/h + créditos.",
+      "note": "Consumidores: core `meeting_transcript.py` (POST /transcripts/live, gate deste toggle + tool transcribe_audio ligada) e `/client-config` (`transcription.live`). Os minutos entram nos créditos com o peso `transcription_per_minute` (bloco billing). Phrase list e glossário são os desta secção. Desligado por defeito."
     },
     "audio.live_max_duration_min": {
       "label": "Duração máxima de uma reunião ao vivo (minutos)",
@@ -30,8 +30,8 @@
     },
     "audio.municipal_minutes.enabled": {
       "label": "Ata de órgão autárquico",
-      "help": "Ligado = a transcrição de reuniões gera a minuta e a ata no formato legal (Lei 75/2013, art. 57.º): cabeçalho, presenças, ordem do dia por ponto, votações, deliberações, encerramento e assinaturas em branco. É um rascunho para quem lavra a ata: o valor legal vem da aprovação e da assinatura.",
-      "note": "Consumido pelo core (`tools/transcribe_audio/municipal/`) e pelo ecrã de transcrição do fecore (`transcription.municipal` no /client-config)."
+      "help": "Ligado = a transcrição gera a minuta e a ata no formato legal (Lei 75/2013, art. 57.º): presenças, ordem do dia, votações, deliberações e assinaturas em branco. É um rascunho: o valor legal vem da aprovação e da assinatura.",
+      "note": "Consumido pelo core (`tools/transcribe_audio/municipal/`) e pelo ecrã de transcrição do fecore (`transcription.municipal` no /client-config). Inclui também o cabeçalho e o encerramento da ata."
     },
     "audio.municipal_minutes.mandate": {
       "label": "Mandato",
@@ -838,7 +838,11 @@
     "frontend.features.shareAccess": {
       "label": "Quem abre um link partilhado",
       "help": "Automático segue o modo de login (login obrigatório → só com login; opcional ou sem login → público). Público: qualquer pessoa com o link. Só com login: quem tem conta no cliente. Criar uma partilha exige sempre login.",
-      "options": {"auto": "Automático (segue o modo de login)", "public": "Público (qualquer pessoa com o link)", "login": "Só com login"}
+      "options": {
+        "auto": "Automático (segue o modo de login)",
+        "public": "Público (qualquer pessoa com o link)",
+        "login": "Só com login"
+      }
     },
     "frontend.features.enableShare": {
       "label": "Partilhar conversa",
@@ -1904,7 +1908,8 @@
     },
     "tools.config.analyse_cv.prompt_custom": {
       "label": "Instruções livres do cliente",
-      "help": "Acrescentadas às regras fixas da avaliação — nunca as substituem. Servem para contexto do setor (vocabulário, funções equivalentes). Se o texto tiver linguagem discriminatória (idade, datas como corte, pausas na carreira, género, nacionalidade, família, saúde, «nativo»…), o texto INTEIRO fica fora da avaliação e a triagem corre só com as regras fixas."
+      "help": "Acrescentam-se às regras fixas, nunca as substituem: servem para contexto do setor. Com linguagem discriminatória (idade, datas como corte, pausas na carreira, género, nacionalidade, família, saúde, «nativo»…), são ignoradas por inteiro.",
+      "note": "Exemplos de contexto: vocabulário do setor, funções equivalentes."
     },
     "tools.config.analyse_cv.retention_days": {
       "label": "Retenção do registo da triagem (dias)",
@@ -2255,7 +2260,8 @@
     },
     "voice.transcription.phone": {
       "label": "Guardar a transcrição das chamadas telefónicas (só o assistente)",
-      "help": "Ligado = o que o ASSISTENTE disse em cada chamada fica guardado numa conversa própria da chamada, identificada como chamada no ecrã de conversas, com a retenção definida abaixo (ou a das conversas). O que o chamador diz NÃO é guardado. Independente da transcrição do site. Desligado por defeito; requer menção no DPA do cliente. Com o agente completo ligado, a conversa da chamada já guardava as perguntas que o assistente passa ao agente."
+      "help": "Ligado = o que o ASSISTENTE disse em cada chamada fica numa conversa própria, marcada como chamada, com a retenção abaixo (ou a das conversas). O que o chamador diz NÃO é guardado. Requer menção no DPA do cliente.",
+      "note": "Independente da transcrição do site. Desligado por defeito. Com o agente completo ligado, a conversa da chamada já guardava as perguntas que o assistente passa ao agente."
     },
     "voice.transcription.retention_days": {
       "label": "Retenção da transcrição (dias)",
@@ -2334,7 +2340,7 @@
     },
     "calendar.holidays": {
       "label": "Feriados municipais e tolerâncias",
-      "help": "Dias que também não contam como dias úteis nos prazos das filas: AAAA-MM-DD para um dia só, MM-DD para todos os anos (ex.: 06-13 para o Santo António), easter+N / easter-N para os móveis pela Páscoa (ex.: easter+39 = Ascensão, easter-47 = Carnaval)."
+      "help": "Dias que também não contam como úteis nos prazos das filas: AAAA-MM-DD para um dia, MM-DD para todos os anos (ex.: 06-13, Santo António), easter+N / easter-N para os móveis (ex.: easter+39 = Ascensão, easter-47 = Carnaval)."
     },
     "intake.definitions": {
       "label": "Questionários regulados",

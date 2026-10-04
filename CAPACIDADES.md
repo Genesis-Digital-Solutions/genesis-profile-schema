@@ -68,6 +68,11 @@ Duas vozes, de propósito:
 - **`help`** — o que acontece se mexeres. Para quem usa o produto.
 - **`note`** — envs, precedências, acoplamentos. Para nós.
 
+**Tecto da `help` visível ao cliente (v0.1.86, 4 Out 2026):** `CLIENT_HELP_MAX_CHARS = 240`
+nos campos com exposure ≠ `internal` (o popover do GAIBO), com teste a chumbar. Passou? Condensar —
+o que o cliente precisa de ler (RGPD, DPA, custo, o que não se guarda) fica na ajuda; o detalhe de
+operador vai para a `note`. Não mover para a `note` o que o cliente tem de saber: ela não lhe é mostrada.
+
 A distinção não é cosmética: as hints do Studio dizem coisas como "passa para
 `tool.__init__`", que é o que um cliente não deve ler e o que nós precisamos de
 ler.
@@ -261,8 +266,8 @@ falam um com o outro — este pacote é o único canal.
    sem partir nada nem contornar um controlo nosso?* Na dúvida, `internal`:
    abrir depois é fácil, fechar depois de o cliente ter mexido não é.
 3. **Nomear** — `label` nas duas línguas; `help` se for interruptor ou número
-   visível ao cliente; `options` se for lista fechada visível; `note` se houver
-   detalhe operacional nosso.
+   visível ao cliente (até 240 caracteres nos visíveis); `options` se for lista
+   fechada visível; `note` se houver detalhe operacional nosso.
 4. **Controlo** — só se o schema não conseguir dizê-lo sozinho: prosa, código,
    endereço ou nome de um catálogo externo (`combobox`, com as sugestões em
    `options`) vão a `CONTROL_OVERRIDES`. Tipo, lista fechada e cor derivam-se —
