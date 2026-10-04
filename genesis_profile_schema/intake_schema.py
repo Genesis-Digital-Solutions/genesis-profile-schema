@@ -61,6 +61,7 @@ __all__ = [
     "IntakePresentation",
     "INTAKE_CAPABILITIES",
     "IntakeDoubleValidation",
+    "IntakeQualityPolicy",
     "IntakeReviewPolicy",
     "IntakeDefinition",
     "ProfileIntake",
@@ -544,10 +545,10 @@ class IntakeCommunications(BaseModel):
 # Capacidades da área da equipa — lista FECHADA do produto: cada uma só existe
 # se houver código que a imponha (uma capacidade inventada num perfil seria
 # falsa segurança). Crescem com as ações: `reopen` (pedir complemento /
-# reabrir) e `quality` (controlo de qualidade, D8) estão RESERVADAS — recusadas
-# até a ação existir.
-INTAKE_CAPABILITIES = ("view", "create", "review", "second_review", "export")
-_RESERVED_CAPABILITIES = ("reopen", "quality")
+# reabrir) está RESERVADA — recusada até a ação existir. `quality` (controlo
+# de qualidade mensal da Compliance, D8) existe desde a v0.1.87.
+INTAKE_CAPABILITIES = ("view", "create", "review", "second_review", "export", "quality")
+_RESERVED_CAPABILITIES = ("reopen",)
 
 _ROLE_RE = r"^[A-Za-z0-9][A-Za-z0-9._:-]{0,63}$"
 Role = Annotated[str, Field(pattern=_ROLE_RE)]
@@ -560,6 +561,7 @@ def _default_roles() -> Dict[str, List[str]]:
         "review": ["Intake.Reviewer", "Intake.Supervisor"],
         "second_review": ["Intake.Supervisor"],
         "export": ["Intake.Supervisor", "Intake.Auditor", "Intake.Compliance"],
+        "quality": ["Intake.Compliance"],
     }
 
 
@@ -575,6 +577,18 @@ class IntakeDoubleValidation(BaseModel):
     currency: str = Field(default="EUR", pattern=_CURRENCY_RE)
     on_red_flags: StrictBool = True
     outcomes: List[Key] = Field(default_factory=list, max_length=20)
+
+
+class IntakeQualityPolicy(BaseModel):
+    """Controlo de qualidade mensal pela Compliance (D8, v0.1.87): dos
+    processos VALIDADOS no mês, uma amostra aleatória de `sample_rate`, com um
+    mínimo de `sample_min` — todos, se forem menos do que o mínimo. A amostra
+    é tirada uma vez por mês fechado e fica gravada (semente incluída, para
+    se poder refazer a conta). Só operação: fora do hash da metodologia."""
+    model_config = _CLOSED
+
+    sample_rate: StrictNumber = Field(default=0.10, gt=0, le=1)
+    sample_min: StrictInt = Field(default=5, ge=1, le=100)
 
 
 class IntakeReviewPolicy(BaseModel):
@@ -596,6 +610,7 @@ class IntakeReviewPolicy(BaseModel):
     # resultado que a matriz deu, para medir a concordância motor × matriz.
     # Desliga-se quando a matriz deixar de se usar.
     parallel_run: StrictBool = False
+    quality: IntakeQualityPolicy = Field(default_factory=IntakeQualityPolicy)
 
     @model_validator(mode="after")
     def _capacidades(self) -> "IntakeReviewPolicy":

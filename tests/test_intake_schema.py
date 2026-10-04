@@ -734,7 +734,13 @@ def test_revisao_configuravel():
 
 @pytest.mark.parametrize("valor", [
     {"roles": {"aprovar_especial": ["X"]}},          # capacidade inventada
-    {"roles": {"quality": ["X"]}},                    # reservada até existir (D8)
+    {"roles": {"reopen": ["X"]}},                     # reservada até existir
+    {"quality": {"sample_rate": 0}},
+    {"quality": {"sample_rate": 1.5}},
+    {"quality": {"sample_rate": "0.1"}},
+    {"quality": {"sample_min": 0}},
+    {"quality": {"sample_min": True}},
+    {"quality": {"amostra": 3}},
     {"roles": {"review": ["X", "X"]}},
     {"roles": {"review": ["papel com espaço"]}},
     {"double_validation": {"min_amount": 0}},
@@ -894,4 +900,13 @@ def test_fundo_e_compliance_por_omissao():
     m = IntakeDefinition.model_validate(d)
     assert m.fund["en"] == "Fund X"
     assert "Intake.Compliance" in m.review.roles["view"] and "Intake.Compliance" in m.review.roles["export"]
-    assert "quality" not in m.review.roles
+    assert m.review.roles["quality"] == ["Intake.Compliance"]
+
+
+def test_controlo_de_qualidade_d8():
+    d = _definicao()
+    m = IntakeDefinition.model_validate(d)
+    assert (m.review.quality.sample_rate, m.review.quality.sample_min) == (0.10, 5)     # caderno D8
+    d["review"] = {"roles": {"view": ["C"], "quality": ["C"]}, "quality": {"sample_rate": 0.2, "sample_min": 3}}
+    r = IntakeDefinition.model_validate(d).review
+    assert r.roles["quality"] == ["C"] and r.quality.sample_rate == 0.2 and r.quality.sample_min == 3
