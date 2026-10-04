@@ -178,13 +178,18 @@ class IntakeQuestion(FieldDefinition):
 
 class IntakeGlossaryTerm(BaseModel):
     """Termo do glossário fechado e aprovado. `sections` é uma ALLOWLIST: um
-    termo sem secções não é servido em lado nenhum."""
+    termo sem secções não é servido em lado nenhum. `questions` (v0.1.88)
+    estreita mais: com perguntas, o termo só aparece NESSAS (que têm de estar
+    numa das `sections`); vazio = todas as perguntas com assistência dessas
+    secções. Onde o termo aparece não é conteúdo: fica fora do hash da
+    metodologia (o texto do termo conta)."""
     model_config = _CLOSED
 
     key: Key
     term: I18nText
     text: I18nText
     sections: List[Key] = Field(default_factory=list, max_length=MAX_SECTIONS)
+    questions: List[Key] = Field(default_factory=list, max_length=MAX_QUESTIONS)
 
 
 # ─────────────────────────────────────────────────────────────────────────────
@@ -832,10 +837,18 @@ class _Checker:
                 if q.key in r.questions:
                     raise ValueError(f"pergunta {q.key!r}: show_if refere a própria pergunta")
         _topological_order(d.questions)
+        by_key = {q.key: q for q in d.questions}
         for g in d.glossary:
             bad = sorted(set(g.sections) - sections)
             if bad:
                 raise ValueError(f"glossário {g.key!r}: secções inexistentes {bad}")
+            if len(set(g.questions)) != len(g.questions):
+                raise ValueError(f"glossário {g.key!r}: perguntas repetidas")
+            for qk in g.questions:
+                if qk not in by_key:
+                    raise ValueError(f"glossário {g.key!r}: pergunta inexistente {qk!r}")
+                if by_key[qk].section not in g.sections:
+                    raise ValueError(f"glossário {g.key!r}: a pergunta {qk!r} não está nas secções do termo")
         if d.methodology is not None:
             self.methodology(d.methodology)
 

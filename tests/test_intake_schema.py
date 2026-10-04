@@ -910,3 +910,17 @@ def test_controlo_de_qualidade_d8():
     d["review"] = {"roles": {"view": ["C"], "quality": ["C"]}, "quality": {"sample_rate": 0.2, "sample_min": 3}}
     r = IntakeDefinition.model_validate(d).review
     assert r.roles["quality"] == ["C"] and r.quality.sample_rate == 0.2 and r.quality.sample_min == 3
+
+
+def test_glossario_por_pergunta_v0188():
+    d = _definicao()
+    term = d["glossary"][0]
+    sec = term["sections"][0]
+    q_in = next(q["key"] for q in d["questions"] if q["section"] == sec)
+    term["questions"] = [q_in]
+    assert IntakeDefinition.model_validate(d).glossary[0].questions == [q_in]
+    q_out = next(q["key"] for q in d["questions"] if q["section"] != sec)
+    for bad in ([q_out], ["inexistente"], [q_in, q_in]):
+        term["questions"] = bad
+        with pytest.raises(ValidationError):
+            IntakeDefinition.model_validate(d)
