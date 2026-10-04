@@ -924,3 +924,47 @@ def test_glossario_por_pergunta_v0188():
         term["questions"] = bad
         with pytest.raises(ValidationError):
             IntakeDefinition.model_validate(d)
+
+
+def _molde(**over):
+    m = {"key": "anexo_ii", "kind": "questionnaire", "title": {"pt": "Anexo II", "en": "Annex II"},
+         "template": "anexo_ii_v1.docx", "sha256": "a" * 64, "version": "1.0", "effective_from": "2026-10-01"}
+    m.update(over)
+    return m
+
+
+def test_documentos_b7_v0189():
+    d = _definicao()
+    nok = next(o["key"] for o in d["methodology"]["outcomes"] if o["kind"] != "positive")
+    d["documents"] = [_molde(), _molde(key="adv", kind="warning", outcome=nok, template="adv.docx"),
+                      _molde(key="anexo_ii_v2", version="2.0", effective_from="2027-01-01")]
+    m = IntakeDefinition.model_validate(d)
+    assert [x.key for x in m.documents] == ["anexo_ii", "adv", "anexo_ii_v2"]
+
+
+@pytest.mark.parametrize("bad", [
+    {"kind": "warning"},                                    # advertência sem resultado
+    {"outcome": "ok"},                                      # resultado fora das advertências
+    {"kind": "warning", "outcome": "inexistente"},
+    {"template": "../segredo.docx"},
+    {"template": "anexo.pdf"},
+    {"sha256": "A" * 64},
+    {"effective_from": "1/10/2026"},
+    {"revoked_from": "2026-09-01"},                         # revogado antes de entrar em vigor
+    {"kind": "anexo"},
+])
+def test_documentos_recusados(bad):
+    d = _definicao()
+    d["documents"] = [_molde(**bad)]
+    with pytest.raises(ValidationError):
+        IntakeDefinition.model_validate(d)
+
+
+def test_documentos_versao_repetida():
+    d = _definicao()
+    d["documents"] = [_molde(), _molde(key="outro")]
+    with pytest.raises(ValidationError):
+        IntakeDefinition.model_validate(d)
+    d["documents"] = [_molde(), _molde(key="outro", version="2.0")]          # mesma data de entrada em vigor
+    with pytest.raises(ValidationError):
+        IntakeDefinition.model_validate(d)

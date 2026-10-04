@@ -62,6 +62,8 @@ __all__ = [
     "INTAKE_CAPABILITIES",
     "IntakeDoubleValidation",
     "IntakeQualityPolicy",
+    "IntakeDocumentTemplate",
+    "INTAKE_DOCUMENT_KINDS",
     "IntakeReviewPolicy",
     "IntakeDefinition",
     "ProfileIntake",
@@ -629,6 +631,46 @@ class IntakeReviewPolicy(BaseModel):
         return self
 
 
+# ─────────────────────────────────────────────────────────────────────────────
+# Documentos gerados (v0.1.89, 4 Out 2026; épico Intake B7)
+# ─────────────────────────────────────────────────────────────────────────────
+
+INTAKE_DOCUMENT_KINDS = ("questionnaire", "internal_sheet", "warning")
+_TEMPLATE_RE = r"^[A-Za-z0-9][A-Za-z0-9._-]{0,99}\.docx$"
+_SHA256_RE = r"^[0-9a-f]{64}$"
+MAX_DOCUMENTS = 20
+
+
+class IntakeDocumentTemplate(BaseModel):
+    """Um molde Word oficial do cliente (cópia com marcadores `{{…}}`), guardado
+    no armazenamento DO CLIENTE e carregado pelo Studio — nunca num repo.
+    `kind`: questionnaire (o questionário preenchido), internal_sheet (folha
+    interna) ou warning (advertência — `outcome` diz de que resultado).
+    `sha256` é a impressão do molde APROVADO: o core recusa gerar com um ficheiro
+    diferente. Versão e entrada em vigor por molde (Procedimento, ponto 2): um
+    processo usa o molde em vigor na sua data; `revoked_from` deixa de o usar.
+    Os moldes têm versão própria: ficam fora do hash da metodologia."""
+    model_config = _CLOSED
+
+    key: Key
+    kind: Literal[INTAKE_DOCUMENT_KINDS]  # type: ignore[valid-type]
+    outcome: Optional[Key] = None
+    title: I18nText
+    template: str = Field(pattern=_TEMPLATE_RE)
+    sha256: str = Field(pattern=_SHA256_RE)
+    version: str = Field(min_length=1, max_length=20, pattern=r"^[A-Za-z0-9][A-Za-z0-9._-]*$")
+    effective_from: str = Field(pattern=_DATE_RE)
+    revoked_from: Optional[str] = Field(default=None, pattern=_DATE_RE)
+
+    @model_validator(mode="after")
+    def _coerente(self) -> "IntakeDocumentTemplate":
+        if (self.kind == "warning") != (self.outcome is not None):
+            raise ValueError(f"documento {self.key!r}: `outcome` só (e sempre) nas advertências")
+        if self.revoked_from is not None and self.revoked_from <= self.effective_from:
+            raise ValueError(f"documento {self.key!r}: revogado antes de entrar em vigor")
+        return self
+
+
 class IntakeDefinition(BaseModel):
     """Uma definição completa (um questionário + a sua metodologia). Uma por
     veículo/processo: a chave no mapa `intake.definitions` é o seu id."""
@@ -649,6 +691,8 @@ class IntakeDefinition(BaseModel):
     # Fundo / OIC a que o questionário se aplica (v0.1.85; Anexos III/IV «OIC/Fund»).
     fund: I18nHelp = Field(default_factory=dict)
     review: IntakeReviewPolicy = Field(default_factory=IntakeReviewPolicy)
+    # Moldes dos documentos gerados (v0.1.89, B7).
+    documents: List[IntakeDocumentTemplate] = Field(default_factory=list, max_length=MAX_DOCUMENTS)
 
     @model_validator(mode="after")
     def _referencias(self) -> "IntakeDefinition":
@@ -673,6 +717,18 @@ class IntakeDefinition(BaseModel):
                         raise ValueError(f"texts.warnings.{key}.{part}: falta o texto em {faltam}")
         if self.presentation.bilingual and len(self.languages) < 2:
             raise ValueError("presentation.bilingual precisa de pelo menos duas languages")
+        if self.documents:
+            _unique([d.key for d in self.documents], "documentos")
+            known = {o.key for o in (self.methodology.outcomes if self.methodology else [])}
+            seen = set()
+            for doc in self.documents:
+                if doc.kind == "warning" and doc.outcome not in known:
+                    raise ValueError(f"documento {doc.key!r}: resultado inexistente {doc.outcome!r}")
+                for ident in ((doc.kind, doc.outcome, "v", doc.version), (doc.kind, doc.outcome, "d", doc.effective_from)):
+                    if ident in seen:
+                        raise ValueError(f"documento {doc.key!r}: versão ou data de entrada em vigor repetida para o "
+                                         f"mesmo tipo (qual se usava?)")
+                    seen.add(ident)
         dv = self.review.double_validation.outcomes
         if dv:
             known = {o.key for o in self.methodology.outcomes} if self.methodology else set()
