@@ -157,13 +157,16 @@ class IntakeQuestion(FieldDefinition):
     - `assist`: glossário disponível nesta pergunta (e só se a secção deixar).
     - `prefill_from`: de onde se pode PROPOR a resposta; quem responde
       confirma sempre. Vazio = nunca pré-preenchida (declarações, perguntas
-      de conhecimento).
+      de conhecimento). `previous` (v0.1.90): a resposta da avaliação
+      ANTERIOR da mesma pessoa, numa reavaliação pedida pela equipa (ex.:
+      informação insuficiente → pedir o que falta) — nunca nas perguntas que
+      são o próprio teste.
     """
     section: Key
     show_if: Optional[BaseCondition] = None
     assist: bool = True
-    prefill_from: List[Literal["id_document", "cv", "invitation", "proof_of_address"]] = Field(
-        default_factory=list, max_length=4)
+    prefill_from: List[Literal["id_document", "cv", "invitation", "proof_of_address", "previous"]] = Field(
+        default_factory=list, max_length=5)
     # Que dado do CONVITE se propõe (v0.1.84) — só com `invitation` em
     # `prefill_from` (ex.: 1.5 telemóvel → "phone", 1.6 email → "email").
     prefill_field: Optional[Literal["name", "email", "phone"]] = None
@@ -172,9 +175,9 @@ class IntakeQuestion(FieldDefinition):
     def _prefill_field_do_convite(self) -> "IntakeQuestion":
         if self.prefill_field and "invitation" not in self.prefill_from:
             raise ValueError(f"pergunta {self.key!r}: prefill_field só com prefill_from 'invitation'")
-        if self.prefill_field and (not self.editable or self.hidden):
+        if (self.prefill_field or "previous" in self.prefill_from) and (not self.editable or self.hidden):
             # Uma proposta tem de poder ser confirmada ou corrigida por quem responde.
-            raise ValueError(f"pergunta {self.key!r}: prefill_field numa pergunta não editável ou escondida")
+            raise ValueError(f"pergunta {self.key!r}: proposta (prefill) numa pergunta não editável ou escondida")
         return self
 
 
@@ -697,6 +700,15 @@ class IntakeDefinition(BaseModel):
     @model_validator(mode="after")
     def _referencias(self) -> "IntakeDefinition":
         _Checker(self).run()
+        # Nova avaliação (v0.1.90): as perguntas que são o TESTE (as que uma
+        # pontuação conta como certas/erradas — `count_matches`) nunca levam a
+        # resposta anterior proposta — responde-se de novo.
+        if self.methodology:
+            teste = {it.q for sc in self.methodology.scores for t in sc.terms
+                     if getattr(t, "kind", None) == "count_matches" for it in t.items}
+            bad = sorted(q.key for q in self.questions if q.key in teste and "previous" in q.prefill_from)
+            if bad:
+                raise ValueError(f"prefill_from 'previous' em perguntas de conhecimento (o teste): {bad[:10]}")
         # Um texto que se ACEITA tem de existir em todas as línguas do percurso
         # (ninguém aceita um texto que não pode ler na língua em que responde).
         for name in ("intro", "privacy", "declaration"):

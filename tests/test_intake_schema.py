@@ -833,6 +833,34 @@ def test_prefill_field_so_com_convite():
         IntakeDefinition.model_validate(d)
 
 
+def test_prefill_da_avaliacao_anterior():
+    """v0.1.90: `previous` = a resposta da avaliação anterior, proposta numa
+    reavaliação — só em perguntas que quem responde pode confirmar ou corrigir."""
+    d = _definicao()
+    q = d["questions"][0]
+    q["prefill_from"] = ["previous"]
+    assert IntakeDefinition.model_validate(d).questions[0].prefill_from == ["previous"]
+    q["prefill_from"] = ["invitation", "previous", "cv", "id_document", "proof_of_address"]
+    IntakeDefinition.model_validate(d)                       # as cinco origens cabem
+    q["prefill_from"], q["editable"] = ["previous"], False
+    with pytest.raises(ValidationError):
+        IntakeDefinition.model_validate(d)
+    q["editable"], q["prefill_from"] = True, ["anterior"]
+    with pytest.raises(ValidationError):
+        IntakeDefinition.model_validate(d)
+
+
+def test_previous_nunca_nas_perguntas_do_teste():
+    d = _definicao()
+    teste = {it["q"] for sc in d["methodology"]["scores"] for t in sc["terms"]
+             if t.get("kind") == "count_matches" for it in t["items"]}
+    assert teste, "a definição de exemplo tem de ter perguntas de conhecimento"
+    q = next(x for x in d["questions"] if x["key"] in teste)
+    q["prefill_from"] = ["previous"]
+    with pytest.raises(ValidationError, match="conhecimento"):
+        IntakeDefinition.model_validate(d)
+
+
 def test_execucao_em_paralelo_por_omissao_desligada():
     d = _definicao()
     assert IntakeDefinition.model_validate(d).review.parallel_run is False
