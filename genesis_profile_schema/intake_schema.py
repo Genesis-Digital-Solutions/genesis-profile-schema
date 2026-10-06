@@ -64,6 +64,9 @@ __all__ = [
     "IntakeQualityPolicy",
     "IntakeDocumentTemplate",
     "INTAKE_DOCUMENT_KINDS",
+    "IntakeSheetCell",
+    "IntakeSheetResult",
+    "INTAKE_SHEET_SOURCES",
     "IntakeReviewPolicy",
     "IntakeDefinition",
     "ProfileIntake",
@@ -680,8 +683,70 @@ class IntakeUploads(BaseModel):
 # Documentos gerados (v0.1.89, 4 Out 2026; épico Intake B7)
 # ─────────────────────────────────────────────────────────────────────────────
 
-INTAKE_DOCUMENT_KINDS = ("questionnaire", "internal_sheet", "warning")
-_TEMPLATE_RE = r"^[A-Za-z0-9][A-Za-z0-9._-]{0,99}\.docx$"
+INTAKE_DOCUMENT_KINDS = ("questionnaire", "internal_sheet", "warning", "spreadsheet")
+_TEMPLATE_RE = r"^[A-Za-z0-9][A-Za-z0-9._-]{0,99}\.(docx|xlsx)$"
+
+# ─── Folha de cálculo do cliente como molde (v0.1.92, épico Intake B13) ───────
+# Ex.: a matriz do Anexo V da Quadrantis. O core preenche as células de entrada,
+# a folha recalcula (LibreOffice) e o resultado da célula `result` entra na
+# execução em paralelo. Lista FECHADA de origens dos valores.
+INTAKE_SHEET_SOURCES = (
+    "answer",           # a resposta à pergunta (com `map` valor → texto da folha nas escolhas)
+    "amount_base",      # um montante convertido para a moeda base pela avaliação (câmbio A8)
+    "subject_name",     # o nome de quem responde
+    "fund",             # o fundo/veículo da definição
+    "evaluation_date",  # a data de referência da avaliação
+)
+# «Folha!A1» — o nome da folha sem os caracteres que o Excel proíbe.
+_CELL_RE = r"^[^:\\/?*\[\]!'\x00-\x1f]{1,31}![A-Z]{1,3}[1-9][0-9]{0,6}$"
+MAX_SHEET_CELLS = 200
+_SHEET_TEXT = 200
+
+
+class IntakeSheetCell(BaseModel):
+    """Uma célula de entrada da folha. `answer`/`amount_base` levam a
+    `question`; `map` (só em `answer`) traduz o valor da opção para o texto
+    que a folha espera (ex.: `master` → «Mestrado / Masters Degree»); numa
+    escolha múltipla escreve-se o PRIMEIRO valor do mapa que a resposta tiver
+    (a ordem do mapa é a prioridade). `not_applicable`: o texto a escrever
+    quando a pergunta não se aplica ao processo (ex.: «N/A»); uma pergunta que
+    se aplica e ficou por responder deixa a célula vazia. `not_applicable_when`
+    restringe o «N/A» a uma condição (as macros da matriz da Quadrantis só o
+    punham no ensino secundário — na habilitação «Outra» a área fica VAZIA e a
+    matriz dá «Informação insuficiente», caderno A7); sem ela, vale sempre que a
+    pergunta não se aplica."""
+    model_config = _CLOSED
+
+    ref: str = Field(pattern=_CELL_RE)
+    source: Literal[INTAKE_SHEET_SOURCES]  # type: ignore[valid-type]
+    question: Optional[Key] = None
+    map: Dict[str, Annotated[str, Field(min_length=1, max_length=_SHEET_TEXT)]] = Field(
+        default_factory=dict, max_length=100)
+    not_applicable: Optional[str] = Field(default=None, min_length=1, max_length=50)
+    not_applicable_when: Optional[BaseCondition] = None
+
+    @model_validator(mode="after")
+    def _coerente(self) -> "IntakeSheetCell":
+        needs_q = self.source in ("answer", "amount_base")
+        if needs_q != (self.question is not None):
+            raise ValueError(f"célula {self.ref}: `question` só (e sempre) com answer/amount_base")
+        if self.map and self.source != "answer":
+            raise ValueError(f"célula {self.ref}: `map` só com source answer")
+        if self.not_applicable is not None and not needs_q:
+            raise ValueError(f"célula {self.ref}: `not_applicable` só em células de uma pergunta")
+        if self.not_applicable_when is not None and self.not_applicable is None:
+            raise ValueError(f"célula {self.ref}: `not_applicable_when` só com `not_applicable`")
+        return self
+
+
+class IntakeSheetResult(BaseModel):
+    """A célula com o resultado que a folha calcula e o mapa do texto dela
+    para os resultados da metodologia (ex.: «ADEQUADO» → `adequado`)."""
+    model_config = _CLOSED
+
+    ref: str = Field(pattern=_CELL_RE)
+    outcomes: Dict[Annotated[str, Field(min_length=1, max_length=_SHEET_TEXT)], Key] = Field(
+        min_length=1, max_length=20)
 _SHA256_RE = r"^[0-9a-f]{64}$"
 MAX_DOCUMENTS = 20
 
@@ -706,11 +771,24 @@ class IntakeDocumentTemplate(BaseModel):
     version: str = Field(min_length=1, max_length=20, pattern=r"^[A-Za-z0-9][A-Za-z0-9._-]*$")
     effective_from: str = Field(pattern=_DATE_RE)
     revoked_from: Optional[str] = Field(default=None, pattern=_DATE_RE)
+    # Só nas folhas de cálculo (`kind: spreadsheet`, v0.1.92).
+    cells: List[IntakeSheetCell] = Field(default_factory=list, max_length=MAX_SHEET_CELLS)
+    result: Optional[IntakeSheetResult] = None
 
     @model_validator(mode="after")
     def _coerente(self) -> "IntakeDocumentTemplate":
         if (self.kind == "warning") != (self.outcome is not None):
             raise ValueError(f"documento {self.key!r}: `outcome` só (e sempre) nas advertências")
+        sheet = self.kind == "spreadsheet"
+        if sheet != self.template.endswith(".xlsx"):
+            raise ValueError(f"documento {self.key!r}: a folha de cálculo é .xlsx e os outros moldes .docx")
+        if sheet and not self.cells:
+            raise ValueError(f"documento {self.key!r}: uma folha de cálculo precisa de células a preencher")
+        if not sheet and (self.cells or self.result is not None):
+            raise ValueError(f"documento {self.key!r}: `cells`/`result` só nas folhas de cálculo")
+        refs = [c.ref for c in self.cells] + ([self.result.ref] if self.result else [])
+        if len(set(refs)) != len(refs):
+            raise ValueError(f"documento {self.key!r}: célula repetida")
         if self.revoked_from is not None and self.revoked_from <= self.effective_from:
             raise ValueError(f"documento {self.key!r}: revogado antes de entrar em vigor")
         return self
@@ -779,9 +857,32 @@ class IntakeDefinition(BaseModel):
             _unique([d.key for d in self.documents], "documentos")
             known = {o.key for o in (self.methodology.outcomes if self.methodology else [])}
             seen = set()
+            by_q = {q.key: q for q in self.questions}
             for doc in self.documents:
                 if doc.kind == "warning" and doc.outcome not in known:
                     raise ValueError(f"documento {doc.key!r}: resultado inexistente {doc.outcome!r}")
+                for cell in doc.cells:
+                    q = by_q.get(cell.question) if cell.question else None
+                    if cell.question and q is None:
+                        raise ValueError(f"documento {doc.key!r}, célula {cell.ref}: pergunta inexistente {cell.question!r}")
+                    if cell.not_applicable_when is not None:
+                        refs = validate_predicate(cell.not_applicable_when, allow_scores=False,
+                                                  allow_outcome_refs=False).questions
+                        bad = sorted(set(refs) - set(by_q))
+                        if bad:
+                            raise ValueError(f"documento {doc.key!r}, célula {cell.ref}: condição com perguntas "
+                                             f"inexistentes {bad}")
+                    if cell.source == "amount_base" and q.type != "money":
+                        raise ValueError(f"documento {doc.key!r}, célula {cell.ref}: amount_base só numa pergunta de montante")
+                    if cell.map:
+                        values = {str(o.value) for o in q.options or []}
+                        bad = sorted(set(cell.map) - values)
+                        if bad:
+                            raise ValueError(f"documento {doc.key!r}, célula {cell.ref}: opções inexistentes {bad}")
+                if doc.result is not None:
+                    bad = sorted(set(doc.result.outcomes.values()) - known)
+                    if bad:
+                        raise ValueError(f"documento {doc.key!r}: resultados inexistentes {bad}")
                 for ident in ((doc.kind, doc.outcome, "v", doc.version), (doc.kind, doc.outcome, "d", doc.effective_from)):
                     if ident in seen:
                         raise ValueError(f"documento {doc.key!r}: versão ou data de entrada em vigor repetida para o "

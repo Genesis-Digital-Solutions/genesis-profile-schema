@@ -1064,3 +1064,82 @@ def test_cv_e_documento_nunca_nas_perguntas_do_teste():
         q["prefill_from"] = src
         with pytest.raises(ValidationError, match="conhecimento"):
             IntakeDefinition.model_validate(d)
+
+
+# ── v0.1.92: folha de cálculo do cliente como molde (B13, Anexo V) ──────────────
+
+def _folha(**over):
+    m = _molde(key="matriz", kind="spreadsheet", title={"pt": "Matriz (Anexo V)", "en": "Matrix (Annex V)"},
+               template="matriz_v1.xlsx")
+    m["cells"] = [
+        {"ref": "Questionario!B10", "source": "answer", "question": "grau",
+         "map": {"basico": "Ensino secundário", "superior": "Licenciatura"}},
+        {"ref": "Questionario!B11", "source": "answer", "question": "areas",
+         "map": {"economia": "Economia", "direito": "Direito"}, "not_applicable": "N/A"},
+        {"ref": "Questionario!D17", "source": "amount_base", "question": "acoes.valor"},
+        {"ref": "Questionario!C17", "source": "answer", "question": "acoes.operacoes"},
+        {"ref": "Questionario!B6", "source": "subject_name"},
+        {"ref": "Questionario!B7", "source": "evaluation_date"},
+    ]
+    m["result"] = {"ref": "Motor_Calculo!B19", "outcomes": {"ADEQUADO": "ok", "NÃO ADEQUADO": "nok"}}
+    m.update(over)
+    return m
+
+
+def test_folha_de_calculo_v0192():
+    d = _definicao()
+    d["documents"] = [_molde(), _folha()]
+    m = IntakeDefinition.model_validate(d)
+    f = m.documents[1]
+    assert f.kind == "spreadsheet" and len(f.cells) == 6 and f.result.outcomes["ADEQUADO"] == "ok"
+
+
+@pytest.mark.parametrize("change", [
+    lambda f: f.update(template="matriz_v1.docx"),                                   # folha tem de ser .xlsx
+    lambda f: f.update(template="matriz_v1.xlsm"),                                   # nunca com macros
+    lambda f: f.update(cells=[]),                                                    # sem células
+    lambda f: f["cells"][0].update(question="inexistente"),
+    lambda f: f["cells"][0].update(map={"doutoramento": "Doutoramento"}),            # opção inexistente
+    lambda f: f["cells"][2].update(question="grau"),                                 # amount_base fora de montante
+    lambda f: f["cells"][2].update(map={"x": "y"}),                                  # map só em answer
+    lambda f: f["cells"][4].update(question="grau"),                                 # subject_name sem pergunta
+    lambda f: f["cells"][4].update(not_applicable="N/A"),
+    lambda f: f["cells"][0].update(ref="Questionario!b10"),
+    lambda f: f["cells"][0].update(ref="../x!A1"),
+    lambda f: f["cells"][0].update(ref="Motor_Calculo!B19"),                         # repetida com o resultado
+    lambda f: f["cells"][0].update(source="formula"),
+    lambda f: f["result"]["outcomes"].update({"OUTRO": "inexistente"}),
+    lambda f: f["result"].update(outcomes={}),
+])
+def test_folha_de_calculo_recusada(change):
+    d = _definicao()
+    f = _folha()
+    change(f)
+    d["documents"] = [f]
+    with pytest.raises(ValidationError):
+        IntakeDefinition.model_validate(d)
+
+
+def test_word_nao_leva_celulas():
+    d = _definicao()
+    d["documents"] = [_molde(cells=_folha()["cells"])]
+    with pytest.raises(ValidationError):
+        IntakeDefinition.model_validate(d)
+    d["documents"] = [_molde(template="anexo_ii_v1.xlsx")]
+    with pytest.raises(ValidationError):
+        IntakeDefinition.model_validate(d)
+
+
+def test_folha_na_com_condicao():
+    d = _definicao()
+    f = _folha()
+    f["cells"][1]["not_applicable_when"] = {"q": "grau", "eq": "basico"}
+    d["documents"] = [f]
+    IntakeDefinition.model_validate(d)
+    f["cells"][1]["not_applicable_when"] = {"q": "fantasma", "eq": "x"}
+    with pytest.raises(ValidationError):
+        IntakeDefinition.model_validate(d)
+    f["cells"][1].pop("not_applicable")
+    f["cells"][1]["not_applicable_when"] = {"q": "grau", "eq": "basico"}
+    with pytest.raises(ValidationError):                           # condição sem «N/A»
+        IntakeDefinition.model_validate(d)
