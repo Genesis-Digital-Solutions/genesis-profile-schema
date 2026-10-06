@@ -1143,3 +1143,20 @@ def test_folha_na_com_condicao():
     f["cells"][1]["not_applicable_when"] = {"q": "grau", "eq": "basico"}
     with pytest.raises(ValidationError):                           # condição sem «N/A»
         IntakeDefinition.model_validate(d)
+
+
+# ── v0.1.93: prazo de conservação dos processos (retenção) ───────────────────
+
+def test_retencao_por_omissao_nao_apaga_nada():
+    from genesis_profile_schema.intake_schema import IntakeRetention
+    r = IntakeRetention()
+    assert r.years is None and r.unevaluated_days == 90
+
+
+def test_retencao_limites():
+    from genesis_profile_schema.intake_schema import IntakeRetention
+    assert IntakeRetention(years=5).years == 5
+    for bad in ({"years": 0}, {"years": 31}, {"unevaluated_days": 6}, {"unevaluated_days": 3651},
+                {"years": 5, "outro": 1}):
+        with pytest.raises(ValidationError):
+            IntakeRetention(**bad)

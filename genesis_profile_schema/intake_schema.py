@@ -68,6 +68,7 @@ __all__ = [
     "IntakeSheetResult",
     "INTAKE_SHEET_SOURCES",
     "IntakeReviewPolicy",
+    "IntakeRetention",
     "IntakeDefinition",
     "ProfileIntake",
 ]
@@ -679,6 +680,23 @@ class IntakeUploads(BaseModel):
     retention: Literal[INTAKE_UPLOAD_RETENTION] = "delete_after_submit"  # type: ignore[valid-type]
 
 
+class IntakeRetention(BaseModel):
+    """Por quanto tempo se guarda cada PROCESSO (v0.1.93; ex.: 5 anos — art.
+    307.º-B do CVM, suporte duradouro do art. 72.º do Reg. 2017/565). Conta da
+    conclusão da avaliação (a validação final; com advertência, a receção dela
+    se for posterior; submetido e nunca validado → a submissão) ou da data da
+    subscrição registada pela equipa, se for posterior. No fim do prazo o core
+    apaga o processo, os ficheiros e a pessoa (se não tiver outros processos);
+    durante o prazo os documentos guardados ficam imutáveis (WORM).
+    Processos nunca avaliados (cancelados, ou expirados sem submissão)
+    apagam-se `unevaluated_days` depois. `years` vazio = nada se apaga
+    sozinho (como até aqui). Só operação: fora do hash da metodologia."""
+    model_config = _CLOSED
+
+    years: Optional[int] = Field(default=None, ge=1, le=30)
+    unevaluated_days: int = Field(default=90, ge=7, le=3650)
+
+
 # ─────────────────────────────────────────────────────────────────────────────
 # Documentos gerados (v0.1.89, 4 Out 2026; épico Intake B7)
 # ─────────────────────────────────────────────────────────────────────────────
@@ -818,6 +836,8 @@ class IntakeDefinition(BaseModel):
     documents: List[IntakeDocumentTemplate] = Field(default_factory=list, max_length=MAX_DOCUMENTS)
     # Ficheiros carregados por quem responde (v0.1.91, B9).
     uploads: IntakeUploads = Field(default_factory=IntakeUploads)
+    # Prazo de conservação dos processos e apagamento automático (v0.1.93).
+    retention: IntakeRetention = Field(default_factory=IntakeRetention)
 
     @model_validator(mode="after")
     def _referencias(self) -> "IntakeDefinition":
