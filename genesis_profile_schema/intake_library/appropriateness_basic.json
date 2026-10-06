@@ -1,0 +1,705 @@
+{
+ "id": "appropriateness_basic",
+ "order": 1,
+ "name": {
+  "pt": "Adequação de um investimento (conhecimento e experiência)",
+  "en": "Investment appropriateness (knowledge and experience)"
+ },
+ "description": {
+  "pt": "Formação, experiência com investimentos e um pequeno teste de conhecimento; resultado adequado / não adequado / revisão.",
+  "en": "Education, investment experience and a short knowledge test; appropriate / not appropriate / review outcome."
+ },
+ "rules": true,
+ "definition": {
+  "title": {
+   "pt": "Avaliação do carácter adequado",
+   "en": "Appropriateness assessment"
+  },
+  "use_case": "appropriateness",
+  "languages": [
+   "pt",
+   "en"
+  ],
+  "sections": [
+   {
+    "key": "s1",
+    "title": {
+     "pt": "Dados de identificação",
+     "en": "Identification"
+    }
+   },
+   {
+    "key": "s2",
+    "title": {
+     "pt": "Formação e experiência",
+     "en": "Education and experience"
+    }
+   },
+   {
+    "key": "s3",
+    "title": {
+     "pt": "Conhecimento",
+     "en": "Knowledge"
+    },
+    "assist": false
+   }
+  ],
+  "questions": [
+   {
+    "key": "1.1",
+    "section": "s1",
+    "label": {
+     "pt": "Nome completo",
+     "en": "Full name"
+    },
+    "type": "text",
+    "required": true,
+    "prefill_from": [
+     "id_document",
+     "invitation"
+    ],
+    "prefill_field": "name",
+    "prefill_document_field": "full_name"
+   },
+   {
+    "key": "1.2",
+    "section": "s1",
+    "label": {
+     "pt": "E-mail",
+     "en": "E-mail"
+    },
+    "type": "text",
+    "required": true,
+    "prefill_from": [
+     "invitation"
+    ],
+    "prefill_field": "email"
+   },
+   {
+    "key": "2.1",
+    "section": "s2",
+    "label": {
+     "pt": "Habilitações mais elevadas",
+     "en": "Highest qualifications"
+    },
+    "type": "select",
+    "required": true,
+    "prefill_from": [
+     "cv",
+     "previous"
+    ],
+    "options": [
+     {
+      "value": "secondary",
+      "label": {
+       "pt": "Ensino secundário",
+       "en": "Secondary"
+      }
+     },
+     {
+      "value": "degree",
+      "label": {
+       "pt": "Ensino superior",
+       "en": "Higher education"
+      }
+     },
+     {
+      "value": "finance_degree",
+      "label": {
+       "pt": "Ensino superior em economia, gestão ou finanças",
+       "en": "Higher education in economics, management or finance"
+      }
+     }
+    ]
+   },
+   {
+    "key": "2.2",
+    "section": "s2",
+    "label": {
+     "pt": "Já investiu em produtos semelhantes a este?",
+     "en": "Have you invested in products similar to this one?"
+    },
+    "type": "select",
+    "required": true,
+    "options": [
+     {
+      "value": "yes",
+      "label": {
+       "pt": "Sim",
+       "en": "Yes"
+      }
+     },
+     {
+      "value": "no",
+      "label": {
+       "pt": "Não",
+       "en": "No"
+      }
+     }
+    ],
+    "prefill_from": [
+     "previous"
+    ]
+   },
+   {
+    "key": "2.3",
+    "section": "s2",
+    "label": {
+     "pt": "Com que frequência?",
+     "en": "How often?"
+    },
+    "type": "select",
+    "show_if": {
+     "q": "2.2",
+     "eq": "yes"
+    },
+    "prefill_from": [
+     "previous"
+    ],
+    "options": [
+     {
+      "value": "rarely",
+      "label": {
+       "pt": "Raramente (1 a 2 vezes)",
+       "en": "Rarely (1 to 2 times)"
+      }
+     },
+     {
+      "value": "sometimes",
+      "label": {
+       "pt": "Algumas vezes (3 a 10)",
+       "en": "Sometimes (3 to 10)"
+      }
+     },
+     {
+      "value": "often",
+      "label": {
+       "pt": "Muitas vezes (mais de 10)",
+       "en": "Often (more than 10)"
+      }
+     }
+    ]
+   },
+   {
+    "key": "2.4",
+    "section": "s2",
+    "label": {
+     "pt": "Exerce ou exerceu funções no setor financeiro?",
+     "en": "Do or did you work in the financial sector?"
+    },
+    "type": "select",
+    "required": true,
+    "options": [
+     {
+      "value": "yes",
+      "label": {
+       "pt": "Sim",
+       "en": "Yes"
+      }
+     },
+     {
+      "value": "no",
+      "label": {
+       "pt": "Não",
+       "en": "No"
+      }
+     }
+    ],
+    "prefill_from": [
+     "previous"
+    ]
+   },
+   {
+    "key": "3.1",
+    "section": "s3",
+    "label": {
+     "pt": "Um investimento pode perder parte ou a totalidade do capital investido.",
+     "en": "An investment may lose part or all of the capital invested."
+    },
+    "type": "select",
+    "required": true,
+    "options": [
+     {
+      "value": "yes",
+      "label": {
+       "pt": "Sim",
+       "en": "Yes"
+      }
+     },
+     {
+      "value": "no",
+      "label": {
+       "pt": "Não",
+       "en": "No"
+      }
+     },
+     {
+      "value": "dont_know",
+      "label": {
+       "pt": "Não sei",
+       "en": "I don't know"
+      }
+     }
+    ]
+   },
+   {
+    "key": "3.2",
+    "section": "s3",
+    "label": {
+     "pt": "Rendimentos passados garantem rendimentos futuros.",
+     "en": "Past returns guarantee future returns."
+    },
+    "type": "select",
+    "required": true,
+    "options": [
+     {
+      "value": "yes",
+      "label": {
+       "pt": "Sim",
+       "en": "Yes"
+      }
+     },
+     {
+      "value": "no",
+      "label": {
+       "pt": "Não",
+       "en": "No"
+      }
+     },
+     {
+      "value": "dont_know",
+      "label": {
+       "pt": "Não sei",
+       "en": "I don't know"
+      }
+     }
+    ]
+   },
+   {
+    "key": "3.3",
+    "section": "s3",
+    "label": {
+     "pt": "Um investimento ilíquido pode não ser vendido quando se quer.",
+     "en": "An illiquid investment may not be sold when you want."
+    },
+    "type": "select",
+    "required": true,
+    "options": [
+     {
+      "value": "yes",
+      "label": {
+       "pt": "Sim",
+       "en": "Yes"
+      }
+     },
+     {
+      "value": "no",
+      "label": {
+       "pt": "Não",
+       "en": "No"
+      }
+     },
+     {
+      "value": "dont_know",
+      "label": {
+       "pt": "Não sei",
+       "en": "I don't know"
+      }
+     }
+    ]
+   },
+   {
+    "key": "3.4",
+    "section": "s3",
+    "label": {
+     "pt": "Diversificar reduz sempre o risco a zero.",
+     "en": "Diversifying always reduces risk to zero."
+    },
+    "type": "select",
+    "required": true,
+    "options": [
+     {
+      "value": "yes",
+      "label": {
+       "pt": "Sim",
+       "en": "Yes"
+      }
+     },
+     {
+      "value": "no",
+      "label": {
+       "pt": "Não",
+       "en": "No"
+      }
+     },
+     {
+      "value": "dont_know",
+      "label": {
+       "pt": "Não sei",
+       "en": "I don't know"
+      }
+     }
+    ]
+   }
+  ],
+  "glossary": [
+   {
+    "key": "investimento_iliquido",
+    "term": {
+     "pt": "Investimento ilíquido",
+     "en": "Illiquid investment"
+    },
+    "text": {
+     "pt": "Investimento que não se consegue vender depressa sem perder valor.",
+     "en": "An investment that cannot be sold quickly without losing value."
+    },
+    "sections": [
+     "s2"
+    ]
+   }
+  ],
+  "methodology": {
+   "version": "1.0",
+   "outcomes": [
+    {
+     "key": "adequado",
+     "label": {
+      "pt": "Adequado",
+      "en": "Appropriate"
+     },
+     "kind": "positive"
+    },
+    {
+     "key": "nao_adequado",
+     "label": {
+      "pt": "Não adequado",
+      "en": "Not appropriate"
+     },
+     "kind": "negative"
+    },
+    {
+     "key": "informacao_insuficiente",
+     "label": {
+      "pt": "Informação insuficiente",
+      "en": "Insufficient information"
+     },
+     "kind": "insufficient"
+    },
+    {
+     "key": "revisao",
+     "label": {
+      "pt": "Revisão manual",
+      "en": "Manual review"
+     },
+     "kind": "review"
+    }
+   ],
+   "scores": [
+    {
+     "key": "conhecimento",
+     "label": {
+      "pt": "Conhecimento",
+      "en": "Knowledge"
+     },
+     "terms": [
+      {
+       "kind": "count_matches",
+       "items": [
+        {
+         "q": "3.1",
+         "eq": "yes"
+        },
+        {
+         "q": "3.2",
+         "eq": "no"
+        },
+        {
+         "q": "3.3",
+         "eq": "yes"
+        },
+        {
+         "q": "3.4",
+         "eq": "no"
+        }
+       ]
+      }
+     ],
+     "bands": [
+      {
+       "min": 0,
+       "label": {
+        "pt": "Insuficiente",
+        "en": "Insufficient"
+       }
+      },
+      {
+       "min": 3,
+       "label": {
+        "pt": "Suficiente",
+        "en": "Sufficient"
+       }
+      }
+     ]
+    },
+    {
+     "key": "experiencia",
+     "label": {
+      "pt": "Experiência",
+      "en": "Experience"
+     },
+     "terms": [
+      {
+       "kind": "points",
+       "items": [
+        {
+         "q": "2.1",
+         "values": {
+          "degree": 1,
+          "finance_degree": 2
+         }
+        },
+        {
+         "q": "2.3",
+         "values": {
+          "rarely": 1,
+          "sometimes": 2,
+          "often": 3
+         }
+        },
+        {
+         "q": "2.4",
+         "values": {
+          "yes": 2
+         }
+        }
+       ]
+      }
+     ],
+     "bands": [
+      {
+       "min": 0,
+       "label": {
+        "pt": "Limitada",
+        "en": "Limited"
+       }
+      },
+      {
+       "min": 3,
+       "label": {
+        "pt": "Suficiente",
+        "en": "Sufficient"
+       }
+      }
+     ]
+    }
+   ],
+   "required": [
+    {
+     "q": "2.1"
+    },
+    {
+     "q": "2.2"
+    },
+    {
+     "q": "2.4"
+    },
+    {
+     "q": "3.1"
+    },
+    {
+     "q": "3.2"
+    },
+    {
+     "q": "3.3"
+    },
+    {
+     "q": "3.4"
+    }
+   ],
+   "red_flags": [
+    {
+     "key": "risco_capital",
+     "label": {
+      "pt": "Não reconhece o risco de perda de capital",
+      "en": "Does not recognise the risk of capital loss"
+     },
+     "when": {
+      "q": "3.1",
+      "in": [
+       "no",
+       "dont_know"
+      ]
+     }
+    }
+   ],
+   "decision": [
+    {
+     "key": "r1",
+     "when": {
+      "incomplete": true
+     },
+     "outcome": "informacao_insuficiente"
+    },
+    {
+     "key": "r2",
+     "when": {
+      "red_flag": true
+     },
+     "outcome": "nao_adequado"
+    },
+    {
+     "key": "r3",
+     "when": {
+      "cmp": {
+       "left": {
+        "score": "conhecimento"
+       },
+       "op": "lte",
+       "right": {
+        "const": 1
+       }
+      }
+     },
+     "outcome": "nao_adequado"
+    },
+    {
+     "key": "r4",
+     "when": {
+      "all": [
+       {
+        "cmp": {
+         "left": {
+          "score": "conhecimento"
+         },
+         "op": "gte",
+         "right": {
+          "const": 3
+         }
+        }
+       },
+       {
+        "cmp": {
+         "left": {
+          "score": "experiencia"
+         },
+         "op": "gte",
+         "right": {
+          "const": 3
+         }
+        }
+       }
+      ]
+     },
+     "outcome": "adequado"
+    }
+   ],
+   "default_outcome": "revisao",
+   "reference_cases": [
+    {
+     "key": "C1",
+     "label": "Experiente e informado",
+     "answers": {
+      "2.1": "finance_degree",
+      "2.2": "yes",
+      "2.3": "often",
+      "2.4": "no",
+      "3.1": "yes",
+      "3.2": "no",
+      "3.3": "yes",
+      "3.4": "no"
+     },
+     "expected": {
+      "outcome": "adequado",
+      "scores": {
+       "conhecimento": 4,
+       "experiencia": 5
+      },
+      "red_flags": []
+     }
+    },
+    {
+     "key": "C2",
+     "label": "Não reconhece a perda de capital",
+     "answers": {
+      "2.1": "degree",
+      "2.2": "no",
+      "2.4": "no",
+      "3.1": "dont_know",
+      "3.2": "no",
+      "3.3": "yes",
+      "3.4": "no"
+     },
+     "expected": {
+      "outcome": "nao_adequado",
+      "red_flags": [
+       "risco_capital"
+      ]
+     }
+    },
+    {
+     "key": "C3",
+     "label": "Sabe, mas sem experiência",
+     "answers": {
+      "2.1": "secondary",
+      "2.2": "no",
+      "2.4": "no",
+      "3.1": "yes",
+      "3.2": "no",
+      "3.3": "yes",
+      "3.4": "yes"
+     },
+     "expected": {
+      "outcome": "revisao",
+      "scores": {
+       "conhecimento": 3,
+       "experiencia": 0
+      }
+     }
+    },
+    {
+     "key": "C4",
+     "label": "Falta uma resposta essencial",
+     "answers": {
+      "2.1": "degree",
+      "2.2": "no",
+      "3.1": "yes",
+      "3.2": "no",
+      "3.3": "yes",
+      "3.4": "no"
+     },
+     "expected": {
+      "outcome": "informacao_insuficiente"
+     }
+    }
+   ]
+  },
+  "texts": {
+   "intro": {
+    "text": {
+     "pt": "Este questionário ajuda a [entidade] a avaliar se o investimento é adequado aos seus conhecimentos e experiência.",
+     "en": "This questionnaire helps [entity] assess whether the investment is appropriate to your knowledge and experience."
+    }
+   },
+   "privacy": {
+    "title": {
+     "pt": "Informação sobre dados pessoais",
+     "en": "Personal data information"
+    },
+    "text": {
+     "pt": "A [entidade] trata os dados pessoais deste questionário para [finalidade], com base em [fundamento]. Os dados são conservados durante [prazo] e podem ser comunicados a [destinatários], quando a lei o exija. Pode exercer os direitos de acesso, retificação, apagamento, limitação, portabilidade e oposição através de [contacto do encarregado de proteção de dados]. Tem também o direito de apresentar reclamação à autoridade de controlo.",
+     "en": "[Entity] processes the personal data in this questionnaire for [purpose], on the basis of [legal basis]. The data is kept for [period] and may be disclosed to [recipients] where required by law. You may exercise your rights of access, rectification, erasure, restriction, portability and objection through [data protection officer contact]. You also have the right to lodge a complaint with the supervisory authority."
+    }
+   },
+   "declaration": {
+    "title": {
+     "pt": "Declaração",
+     "en": "Declaration"
+    },
+    "text": {
+     "pt": "Declaro que as informações prestadas são verdadeiras, completas e atuais, e que comunicarei qualquer alteração.",
+     "en": "I declare that the information provided is true, complete and up to date, and that I will report any change."
+    }
+   }
+  }
+ }
+}

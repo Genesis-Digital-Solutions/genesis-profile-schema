@@ -149,6 +149,14 @@ class IntakeSection(BaseModel):
     assist: bool = True
 
 
+# Dados que se podem PROPOR a partir do documento de identificação (v0.1.91,
+# B9): lista FECHADA, independente do fornecedor da leitura (o core traduz).
+INTAKE_ID_DOCUMENT_FIELDS = (
+    "full_name", "given_names", "surname", "document_number", "nationality", "issuing_country",
+    "date_of_birth", "date_of_expiry", "place_of_birth", "sex", "address",
+)
+
+
 class IntakeQuestion(FieldDefinition):
     """Uma pergunta = um campo + o que o percurso precisa.
 
@@ -161,6 +169,10 @@ class IntakeQuestion(FieldDefinition):
       ANTERIOR da mesma pessoa, numa reavaliação pedida pela equipa (ex.:
       informação insuficiente → pedir o que falta) — nunca nas perguntas que
       são o próprio teste.
+    - Com várias origens, propõe-se a primeira que der valor, por ordem FIXA:
+      documento de identificação, CV, comprovativo de morada, convite,
+      avaliação anterior (o documento da própria pessoa vale mais do que o
+      que a equipa escreveu no convite).
     """
     section: Key
     show_if: Optional[BaseCondition] = None
@@ -170,12 +182,19 @@ class IntakeQuestion(FieldDefinition):
     # Que dado do CONVITE se propõe (v0.1.84) — só com `invitation` em
     # `prefill_from` (ex.: 1.5 telemóvel → "phone", 1.6 email → "email").
     prefill_field: Optional[Literal["name", "email", "phone"]] = None
+    # Que dado do DOCUMENTO DE IDENTIFICAÇÃO se propõe (v0.1.91, B9) — só com
+    # `id_document` em `prefill_from`. Sem ele, o documento não propõe nada
+    # nesta pergunta (o editor do Studio avisa).
+    prefill_document_field: Optional[Literal[INTAKE_ID_DOCUMENT_FIELDS]] = None  # type: ignore[valid-type]
 
     @model_validator(mode="after")
     def _prefill_field_do_convite(self) -> "IntakeQuestion":
         if self.prefill_field and "invitation" not in self.prefill_from:
             raise ValueError(f"pergunta {self.key!r}: prefill_field só com prefill_from 'invitation'")
-        if (self.prefill_field or "previous" in self.prefill_from) and (not self.editable or self.hidden):
+        if self.prefill_document_field and "id_document" not in self.prefill_from:
+            raise ValueError(f"pergunta {self.key!r}: prefill_document_field só com prefill_from 'id_document'")
+        if ((self.prefill_field or self.prefill_document_field or "previous" in self.prefill_from)
+                and (not self.editable or self.hidden)):
             # Uma proposta tem de poder ser confirmada ou corrigida por quem responde.
             raise ValueError(f"pergunta {self.key!r}: proposta (prefill) numa pergunta não editável ou escondida")
         return self
@@ -601,6 +620,9 @@ class IntakeQualityPolicy(BaseModel):
     sample_min: StrictInt = Field(default=5, ge=1, le=100)
 
 
+MAX_LIST_COLUMNS = 3
+
+
 class IntakeReviewPolicy(BaseModel):
     """Quem pode o quê na área da equipa e quando a decisão precisa de 2.ª
     validação. `roles`: capacidade → app roles do Entra (claim `roles`) que a
@@ -621,6 +643,9 @@ class IntakeReviewPolicy(BaseModel):
     # Desliga-se quando a matriz deixar de se usar.
     parallel_run: StrictBool = False
     quality: IntakeQualityPolicy = Field(default_factory=IntakeQualityPolicy)
+    # Colunas a mais na lista da área da equipa (v0.1.91): até 3 perguntas
+    # (ex.: País). Mostra a resposta; o resto da lista é fixo no produto.
+    list_columns: List[Key] = Field(default_factory=list, max_length=MAX_LIST_COLUMNS)
 
     @model_validator(mode="after")
     def _capacidades(self) -> "IntakeReviewPolicy":
@@ -632,6 +657,23 @@ class IntakeReviewPolicy(BaseModel):
             if len(roles) > 20 or len(set(roles)) != len(roles):
                 raise ValueError(f"capacidade {cap!r}: papéis repetidos ou a mais (máx. 20)")
         return self
+
+
+INTAKE_UPLOAD_RETENTION = ("delete_after_submit", "keep_with_process")
+
+
+class IntakeUploads(BaseModel):
+    """Os ficheiros que quem responde carrega para PROPOR respostas (v0.1.91,
+    B9): o documento de identificação e o CV (ou o PDF do LinkedIn). Pedem-se
+    SÓ quando alguma pergunta os tem em `prefill_from` — nada a ligar — e são
+    sempre opcionais: nunca bloqueiam o percurso. `retention` decide o
+    FICHEIRO: `delete_after_submit` (por omissão) apaga-o na submissão e
+    ficam os dados confirmados, os excertos e a impressão SHA-256;
+    `keep_with_process` guarda-o com o processo. Só operação: fora do hash da
+    metodologia."""
+    model_config = _CLOSED
+
+    retention: Literal[INTAKE_UPLOAD_RETENTION] = "delete_after_submit"  # type: ignore[valid-type]
 
 
 # ─────────────────────────────────────────────────────────────────────────────
@@ -696,6 +738,8 @@ class IntakeDefinition(BaseModel):
     review: IntakeReviewPolicy = Field(default_factory=IntakeReviewPolicy)
     # Moldes dos documentos gerados (v0.1.89, B7).
     documents: List[IntakeDocumentTemplate] = Field(default_factory=list, max_length=MAX_DOCUMENTS)
+    # Ficheiros carregados por quem responde (v0.1.91, B9).
+    uploads: IntakeUploads = Field(default_factory=IntakeUploads)
 
     @model_validator(mode="after")
     def _referencias(self) -> "IntakeDefinition":
@@ -706,9 +750,11 @@ class IntakeDefinition(BaseModel):
         if self.methodology:
             teste = {it.q for sc in self.methodology.scores for t in sc.terms
                      if getattr(t, "kind", None) == "count_matches" for it in t.items}
-            bad = sorted(q.key for q in self.questions if q.key in teste and "previous" in q.prefill_from)
+            # v0.1.91: também o CV e o documento — o teste responde-o a própria pessoa.
+            bad = sorted(q.key for q in self.questions
+                         if q.key in teste and {"previous", "cv", "id_document"} & set(q.prefill_from))
             if bad:
-                raise ValueError(f"prefill_from 'previous' em perguntas de conhecimento (o teste): {bad[:10]}")
+                raise ValueError(f"prefill_from 'previous'/'cv'/'id_document' em perguntas de conhecimento (o teste): {bad[:10]}")
         # Um texto que se ACEITA tem de existir em todas as línguas do percurso
         # (ninguém aceita um texto que não pode ler na língua em que responde).
         for name in ("intro", "privacy", "declaration"):
@@ -741,6 +787,11 @@ class IntakeDefinition(BaseModel):
                         raise ValueError(f"documento {doc.key!r}: versão ou data de entrada em vigor repetida para o "
                                          f"mesmo tipo (qual se usava?)")
                     seen.add(ident)
+        if self.review.list_columns:
+            _unique(self.review.list_columns, "review.list_columns")
+            bad = sorted(set(self.review.list_columns) - {q.key for q in self.questions})
+            if bad:
+                raise ValueError(f"review.list_columns: perguntas inexistentes {bad}")
         dv = self.review.double_validation.outcomes
         if dv:
             known = {o.key for o in self.methodology.outcomes} if self.methodology else set()

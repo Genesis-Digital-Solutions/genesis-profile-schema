@@ -1,0 +1,349 @@
+{
+ "id": "conflict_of_interest",
+ "order": 3,
+ "name": {
+  "pt": "Declaração de conflito de interesses",
+  "en": "Conflict of interest declaration"
+ },
+ "description": {
+  "pt": "Interesses financeiros, outras funções, relações familiares e ofertas; qualquer «Sim» vai a uma pessoa.",
+  "en": "Financial interests, other roles, family relations and gifts; any \"Yes\" goes to a person."
+ },
+ "rules": true,
+ "definition": {
+  "title": {
+   "pt": "Declaração de conflito de interesses",
+   "en": "Conflict of interest declaration"
+  },
+  "use_case": "conflict_of_interest",
+  "languages": [
+   "pt",
+   "en"
+  ],
+  "sections": [
+   {
+    "key": "s1",
+    "title": {
+     "pt": "Identificação",
+     "en": "Identification"
+    }
+   },
+   {
+    "key": "s2",
+    "title": {
+     "pt": "Interesses",
+     "en": "Interests"
+    }
+   }
+  ],
+  "questions": [
+   {
+    "key": "1.1",
+    "section": "s1",
+    "label": {
+     "pt": "Nome completo",
+     "en": "Full name"
+    },
+    "type": "text",
+    "required": true,
+    "prefill_from": [
+     "invitation"
+    ],
+    "prefill_field": "name"
+   },
+   {
+    "key": "1.2",
+    "section": "s1",
+    "label": {
+     "pt": "Função ou cargo",
+     "en": "Role or position"
+    },
+    "type": "text",
+    "required": true
+   },
+   {
+    "key": "2.1",
+    "section": "s2",
+    "label": {
+     "pt": "Tem participações ou interesses financeiros em clientes, fornecedores ou concorrentes da [entidade]?",
+     "en": "Do you hold shares or financial interests in clients, suppliers or competitors of [entity]?"
+    },
+    "type": "select",
+    "required": true,
+    "options": [
+     {
+      "value": "yes",
+      "label": {
+       "pt": "Sim",
+       "en": "Yes"
+      }
+     },
+     {
+      "value": "no",
+      "label": {
+       "pt": "Não",
+       "en": "No"
+      }
+     }
+    ]
+   },
+   {
+    "key": "2.2",
+    "section": "s2",
+    "label": {
+     "pt": "Exerce outras funções ou cargos fora da [entidade]?",
+     "en": "Do you hold other roles or positions outside [entity]?"
+    },
+    "type": "select",
+    "required": true,
+    "options": [
+     {
+      "value": "yes",
+      "label": {
+       "pt": "Sim",
+       "en": "Yes"
+      }
+     },
+     {
+      "value": "no",
+      "label": {
+       "pt": "Não",
+       "en": "No"
+      }
+     }
+    ]
+   },
+   {
+    "key": "2.3",
+    "section": "s2",
+    "label": {
+     "pt": "Algum familiar próximo trabalha ou tem negócios com a [entidade]?",
+     "en": "Does a close relative work or do business with [entity]?"
+    },
+    "type": "select",
+    "required": true,
+    "options": [
+     {
+      "value": "yes",
+      "label": {
+       "pt": "Sim",
+       "en": "Yes"
+      }
+     },
+     {
+      "value": "no",
+      "label": {
+       "pt": "Não",
+       "en": "No"
+      }
+     }
+    ]
+   },
+   {
+    "key": "2.4",
+    "section": "s2",
+    "label": {
+     "pt": "Recebeu ofertas ou benefícios de terceiros relacionados com a sua função nos últimos 12 meses?",
+     "en": "Have you received gifts or benefits from third parties related to your role in the last 12 months?"
+    },
+    "type": "select",
+    "required": true,
+    "options": [
+     {
+      "value": "yes",
+      "label": {
+       "pt": "Sim",
+       "en": "Yes"
+      }
+     },
+     {
+      "value": "no",
+      "label": {
+       "pt": "Não",
+       "en": "No"
+      }
+     }
+    ]
+   },
+   {
+    "key": "2.5",
+    "section": "s2",
+    "label": {
+     "pt": "Descreva cada situação assinalada com «Sim»",
+     "en": "Describe each situation marked \"Yes\""
+    },
+    "type": "textarea"
+   }
+  ],
+  "methodology": {
+   "version": "1.0",
+   "outcomes": [
+    {
+     "key": "sem_conflito",
+     "label": {
+      "pt": "Sem conflito declarado",
+      "en": "No conflict declared"
+     },
+     "kind": "positive"
+    },
+    {
+     "key": "conflito_potencial",
+     "label": {
+      "pt": "Conflito potencial — avaliar",
+      "en": "Potential conflict — assess"
+     },
+     "kind": "review"
+    },
+    {
+     "key": "informacao_insuficiente",
+     "label": {
+      "pt": "Informação insuficiente",
+      "en": "Insufficient information"
+     },
+     "kind": "insufficient"
+    }
+   ],
+   "required": [
+    {
+     "q": "2.1"
+    },
+    {
+     "q": "2.2"
+    },
+    {
+     "q": "2.3"
+    },
+    {
+     "q": "2.4"
+    },
+    {
+     "q": "2.5",
+     "when": {
+      "any": [
+       {
+        "q": "2.1",
+        "eq": "yes"
+       },
+       {
+        "q": "2.2",
+        "eq": "yes"
+       },
+       {
+        "q": "2.3",
+        "eq": "yes"
+       },
+       {
+        "q": "2.4",
+        "eq": "yes"
+       }
+      ]
+     }
+    }
+   ],
+   "decision": [
+    {
+     "key": "r1",
+     "when": {
+      "incomplete": true
+     },
+     "outcome": "informacao_insuficiente"
+    },
+    {
+     "key": "r2",
+     "when": {
+      "any": [
+       {
+        "q": "2.1",
+        "eq": "yes"
+       },
+       {
+        "q": "2.2",
+        "eq": "yes"
+       },
+       {
+        "q": "2.3",
+        "eq": "yes"
+       },
+       {
+        "q": "2.4",
+        "eq": "yes"
+       }
+      ]
+     },
+     "outcome": "conflito_potencial"
+    }
+   ],
+   "default_outcome": "sem_conflito",
+   "reference_cases": [
+    {
+     "key": "C1",
+     "label": "Nada a declarar",
+     "answers": {
+      "2.1": "no",
+      "2.2": "no",
+      "2.3": "no",
+      "2.4": "no"
+     },
+     "expected": {
+      "outcome": "sem_conflito"
+     }
+    },
+    {
+     "key": "C2",
+     "label": "Outra função, descrita",
+     "answers": {
+      "2.1": "no",
+      "2.2": "yes",
+      "2.3": "no",
+      "2.4": "no",
+      "2.5": "Administrador não executivo de uma associação."
+     },
+     "expected": {
+      "outcome": "conflito_potencial"
+     }
+    },
+    {
+     "key": "C3",
+     "label": "Oferta sem descrição",
+     "answers": {
+      "2.1": "no",
+      "2.2": "no",
+      "2.3": "no",
+      "2.4": "yes"
+     },
+     "expected": {
+      "outcome": "informacao_insuficiente"
+     }
+    }
+   ]
+  },
+  "texts": {
+   "intro": {
+    "text": {
+     "pt": "Esta declaração permite à [entidade] identificar e gerir situações de conflito de interesses.",
+     "en": "This declaration allows [entity] to identify and manage conflict of interest situations."
+    }
+   },
+   "privacy": {
+    "title": {
+     "pt": "Informação sobre dados pessoais",
+     "en": "Personal data information"
+    },
+    "text": {
+     "pt": "A [entidade] trata os dados pessoais deste questionário para [finalidade], com base em [fundamento]. Os dados são conservados durante [prazo] e podem ser comunicados a [destinatários], quando a lei o exija. Pode exercer os direitos de acesso, retificação, apagamento, limitação, portabilidade e oposição através de [contacto do encarregado de proteção de dados]. Tem também o direito de apresentar reclamação à autoridade de controlo.",
+     "en": "[Entity] processes the personal data in this questionnaire for [purpose], on the basis of [legal basis]. The data is kept for [period] and may be disclosed to [recipients] where required by law. You may exercise your rights of access, rectification, erasure, restriction, portability and objection through [data protection officer contact]. You also have the right to lodge a complaint with the supervisory authority."
+    }
+   },
+   "declaration": {
+    "title": {
+     "pt": "Declaração",
+     "en": "Declaration"
+    },
+    "text": {
+     "pt": "Declaro que as informações prestadas são verdadeiras, completas e atuais, e que comunicarei qualquer alteração.",
+     "en": "I declare that the information provided is true, complete and up to date, and that I will report any change."
+    }
+   }
+  }
+ }
+}

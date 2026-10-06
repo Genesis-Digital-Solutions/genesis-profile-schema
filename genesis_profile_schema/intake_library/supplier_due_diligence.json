@@ -1,0 +1,317 @@
+{
+ "id": "supplier_due_diligence",
+ "order": 5,
+ "name": {
+  "pt": "Questionário de fornecedor (due diligence)",
+  "en": "Supplier questionnaire (due diligence)"
+ },
+ "description": {
+  "pt": "Empresa, sanções, litígios e políticas; aprovado / não aprovado / revisão.",
+  "en": "Company, sanctions, litigation and policies; approved / not approved / review."
+ },
+ "rules": true,
+ "definition": {
+  "title": {
+   "pt": "Avaliação de fornecedor",
+   "en": "Supplier assessment"
+  },
+  "use_case": "supplier_due_diligence",
+  "languages": [
+   "pt",
+   "en"
+  ],
+  "sections": [
+   {
+    "key": "s1",
+    "title": {
+     "pt": "Empresa",
+     "en": "Company"
+    }
+   },
+   {
+    "key": "s2",
+    "title": {
+     "pt": "Integridade",
+     "en": "Integrity"
+    }
+   }
+  ],
+  "questions": [
+   {
+    "key": "1.1",
+    "section": "s1",
+    "label": {
+     "pt": "Denominação social",
+     "en": "Company name"
+    },
+    "type": "text",
+    "required": true
+   },
+   {
+    "key": "1.2",
+    "section": "s1",
+    "label": {
+     "pt": "Número de identificação fiscal",
+     "en": "Tax identification number"
+    },
+    "type": "text",
+    "required": true
+   },
+   {
+    "key": "1.3",
+    "section": "s1",
+    "label": {
+     "pt": "País da sede",
+     "en": "Country of the head office"
+    },
+    "type": "text",
+    "required": true
+   },
+   {
+    "key": "2.1",
+    "section": "s2",
+    "label": {
+     "pt": "A empresa, os sócios ou os administradores estão sujeitos a sanções internacionais?",
+     "en": "Are the company, its shareholders or directors subject to international sanctions?"
+    },
+    "type": "select",
+    "required": true,
+    "options": [
+     {
+      "value": "yes",
+      "label": {
+       "pt": "Sim",
+       "en": "Yes"
+      }
+     },
+     {
+      "value": "no",
+      "label": {
+       "pt": "Não",
+       "en": "No"
+      }
+     }
+    ]
+   },
+   {
+    "key": "2.2",
+    "section": "s2",
+    "label": {
+     "pt": "Há processos judiciais relevantes em curso ou nos últimos 5 anos?",
+     "en": "Are there relevant legal proceedings ongoing or in the last 5 years?"
+    },
+    "type": "select",
+    "required": true,
+    "options": [
+     {
+      "value": "yes",
+      "label": {
+       "pt": "Sim",
+       "en": "Yes"
+      }
+     },
+     {
+      "value": "no",
+      "label": {
+       "pt": "Não",
+       "en": "No"
+      }
+     }
+    ]
+   },
+   {
+    "key": "2.3",
+    "section": "s2",
+    "label": {
+     "pt": "Tem uma política anticorrupção aprovada?",
+     "en": "Do you have an approved anti-corruption policy?"
+    },
+    "type": "select",
+    "required": true,
+    "options": [
+     {
+      "value": "yes",
+      "label": {
+       "pt": "Sim",
+       "en": "Yes"
+      }
+     },
+     {
+      "value": "no",
+      "label": {
+       "pt": "Não",
+       "en": "No"
+      }
+     }
+    ]
+   },
+   {
+    "key": "2.4",
+    "section": "s2",
+    "label": {
+     "pt": "Explique as respostas que o justifiquem",
+     "en": "Explain any answers that warrant it"
+    },
+    "type": "textarea"
+   }
+  ],
+  "methodology": {
+   "version": "1.0",
+   "outcomes": [
+    {
+     "key": "aprovado",
+     "label": {
+      "pt": "Aprovado",
+      "en": "Approved"
+     },
+     "kind": "positive"
+    },
+    {
+     "key": "nao_aprovado",
+     "label": {
+      "pt": "Não aprovado",
+      "en": "Not approved"
+     },
+     "kind": "negative"
+    },
+    {
+     "key": "informacao_insuficiente",
+     "label": {
+      "pt": "Informação insuficiente",
+      "en": "Insufficient information"
+     },
+     "kind": "insufficient"
+    },
+    {
+     "key": "revisao",
+     "label": {
+      "pt": "Revisão",
+      "en": "Review"
+     },
+     "kind": "review"
+    }
+   ],
+   "required": [
+    {
+     "q": "2.1"
+    },
+    {
+     "q": "2.2"
+    },
+    {
+     "q": "2.3"
+    }
+   ],
+   "red_flags": [
+    {
+     "key": "sancoes",
+     "label": {
+      "pt": "Sujeito a sanções",
+      "en": "Subject to sanctions"
+     },
+     "when": {
+      "q": "2.1",
+      "eq": "yes"
+     }
+    }
+   ],
+   "decision": [
+    {
+     "key": "r1",
+     "when": {
+      "incomplete": true
+     },
+     "outcome": "informacao_insuficiente"
+    },
+    {
+     "key": "r2",
+     "when": {
+      "red_flag": true
+     },
+     "outcome": "nao_aprovado"
+    },
+    {
+     "key": "r3",
+     "when": {
+      "any": [
+       {
+        "q": "2.2",
+        "eq": "yes"
+       },
+       {
+        "q": "2.3",
+        "eq": "no"
+       }
+      ]
+     },
+     "outcome": "revisao"
+    }
+   ],
+   "default_outcome": "aprovado",
+   "reference_cases": [
+    {
+     "key": "C1",
+     "label": "Sem riscos",
+     "answers": {
+      "2.1": "no",
+      "2.2": "no",
+      "2.3": "yes"
+     },
+     "expected": {
+      "outcome": "aprovado",
+      "red_flags": []
+     }
+    },
+    {
+     "key": "C2",
+     "label": "Sancionado",
+     "answers": {
+      "2.1": "yes",
+      "2.2": "no",
+      "2.3": "yes"
+     },
+     "expected": {
+      "outcome": "nao_aprovado",
+      "red_flags": [
+       "sancoes"
+      ]
+     }
+    },
+    {
+     "key": "C3",
+     "label": "Sem política anticorrupção",
+     "answers": {
+      "2.1": "no",
+      "2.2": "no",
+      "2.3": "no"
+     },
+     "expected": {
+      "outcome": "revisao"
+     }
+    }
+   ]
+  },
+  "texts": {
+   "privacy": {
+    "title": {
+     "pt": "Informação sobre dados pessoais",
+     "en": "Personal data information"
+    },
+    "text": {
+     "pt": "A [entidade] trata os dados pessoais deste questionário para [finalidade], com base em [fundamento]. Os dados são conservados durante [prazo] e podem ser comunicados a [destinatários], quando a lei o exija. Pode exercer os direitos de acesso, retificação, apagamento, limitação, portabilidade e oposição através de [contacto do encarregado de proteção de dados]. Tem também o direito de apresentar reclamação à autoridade de controlo.",
+     "en": "[Entity] processes the personal data in this questionnaire for [purpose], on the basis of [legal basis]. The data is kept for [period] and may be disclosed to [recipients] where required by law. You may exercise your rights of access, rectification, erasure, restriction, portability and objection through [data protection officer contact]. You also have the right to lodge a complaint with the supervisory authority."
+    }
+   },
+   "declaration": {
+    "title": {
+     "pt": "Declaração",
+     "en": "Declaration"
+    },
+    "text": {
+     "pt": "Declaro que as informações prestadas são verdadeiras, completas e atuais, e que comunicarei qualquer alteração.",
+     "en": "I declare that the information provided is true, complete and up to date, and that I will report any change."
+    }
+   }
+  }
+ }
+}

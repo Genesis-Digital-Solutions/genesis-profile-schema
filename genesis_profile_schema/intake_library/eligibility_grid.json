@@ -1,0 +1,314 @@
+{
+ "id": "eligibility_grid",
+ "order": 4,
+ "name": {
+  "pt": "Candidatura com critérios de elegibilidade",
+  "en": "Application with eligibility criteria"
+ },
+ "description": {
+  "pt": "Critérios sim/não e idade mínima; elegível / não elegível / revisão.",
+  "en": "Yes/no criteria and minimum age; eligible / not eligible / review."
+ },
+ "rules": true,
+ "definition": {
+  "title": {
+   "pt": "Candidatura",
+   "en": "Application"
+  },
+  "use_case": "eligibility",
+  "languages": [
+   "pt",
+   "en"
+  ],
+  "sections": [
+   {
+    "key": "s1",
+    "title": {
+     "pt": "Candidato",
+     "en": "Applicant"
+    }
+   },
+   {
+    "key": "s2",
+    "title": {
+     "pt": "Critérios",
+     "en": "Criteria"
+    }
+   }
+  ],
+  "questions": [
+   {
+    "key": "1.1",
+    "section": "s1",
+    "label": {
+     "pt": "Nome completo",
+     "en": "Full name"
+    },
+    "type": "text",
+    "required": true,
+    "prefill_from": [
+     "invitation"
+    ],
+    "prefill_field": "name"
+   },
+   {
+    "key": "1.2",
+    "section": "s1",
+    "label": {
+     "pt": "Idade",
+     "en": "Age"
+    },
+    "type": "number",
+    "required": true,
+    "integer": true,
+    "min": 0,
+    "max": 130
+   },
+   {
+    "key": "2.1",
+    "section": "s2",
+    "label": {
+     "pt": "Reside na área abrangida pelo programa?",
+     "en": "Do you live in the area covered by the programme?"
+    },
+    "type": "select",
+    "required": true,
+    "options": [
+     {
+      "value": "yes",
+      "label": {
+       "pt": "Sim",
+       "en": "Yes"
+      }
+     },
+     {
+      "value": "no",
+      "label": {
+       "pt": "Não",
+       "en": "No"
+      }
+     }
+    ]
+   },
+   {
+    "key": "2.2",
+    "section": "s2",
+    "label": {
+     "pt": "Tem a situação contributiva e tributária regularizada?",
+     "en": "Are your tax and social security obligations up to date?"
+    },
+    "type": "select",
+    "required": true,
+    "options": [
+     {
+      "value": "yes",
+      "label": {
+       "pt": "Sim",
+       "en": "Yes"
+      }
+     },
+     {
+      "value": "no",
+      "label": {
+       "pt": "Não",
+       "en": "No"
+      }
+     }
+    ]
+   },
+   {
+    "key": "2.3",
+    "section": "s2",
+    "label": {
+     "pt": "Já beneficiou deste apoio nos últimos 3 anos?",
+     "en": "Have you benefited from this support in the last 3 years?"
+    },
+    "type": "select",
+    "required": true,
+    "options": [
+     {
+      "value": "yes",
+      "label": {
+       "pt": "Sim",
+       "en": "Yes"
+      }
+     },
+     {
+      "value": "no",
+      "label": {
+       "pt": "Não",
+       "en": "No"
+      }
+     }
+    ]
+   },
+   {
+    "key": "2.4",
+    "section": "s2",
+    "label": {
+     "pt": "Observações",
+     "en": "Notes"
+    },
+    "type": "textarea"
+   }
+  ],
+  "methodology": {
+   "version": "1.0",
+   "outcomes": [
+    {
+     "key": "elegivel",
+     "label": {
+      "pt": "Elegível",
+      "en": "Eligible"
+     },
+     "kind": "positive"
+    },
+    {
+     "key": "nao_elegivel",
+     "label": {
+      "pt": "Não elegível",
+      "en": "Not eligible"
+     },
+     "kind": "negative"
+    },
+    {
+     "key": "informacao_insuficiente",
+     "label": {
+      "pt": "Informação insuficiente",
+      "en": "Insufficient information"
+     },
+     "kind": "insufficient"
+    },
+    {
+     "key": "revisao",
+     "label": {
+      "pt": "Revisão",
+      "en": "Review"
+     },
+     "kind": "review"
+    }
+   ],
+   "required": [
+    {
+     "q": "1.2"
+    },
+    {
+     "q": "2.1"
+    },
+    {
+     "q": "2.2"
+    },
+    {
+     "q": "2.3"
+    }
+   ],
+   "decision": [
+    {
+     "key": "r1",
+     "when": {
+      "incomplete": true
+     },
+     "outcome": "informacao_insuficiente"
+    },
+    {
+     "key": "r2",
+     "when": {
+      "any": [
+       {
+        "q": "1.2",
+        "lt": 18
+       },
+       {
+        "q": "2.1",
+        "eq": "no"
+       },
+       {
+        "q": "2.2",
+        "eq": "no"
+       }
+      ]
+     },
+     "outcome": "nao_elegivel"
+    },
+    {
+     "key": "r3",
+     "when": {
+      "q": "2.3",
+      "eq": "yes"
+     },
+     "outcome": "revisao"
+    }
+   ],
+   "default_outcome": "elegivel",
+   "reference_cases": [
+    {
+     "key": "C1",
+     "label": "Cumpre tudo",
+     "answers": {
+      "1.2": 34,
+      "2.1": "yes",
+      "2.2": "yes",
+      "2.3": "no"
+     },
+     "expected": {
+      "outcome": "elegivel"
+     }
+    },
+    {
+     "key": "C2",
+     "label": "Menor de idade",
+     "answers": {
+      "1.2": 16,
+      "2.1": "yes",
+      "2.2": "yes",
+      "2.3": "no"
+     },
+     "expected": {
+      "outcome": "nao_elegivel"
+     }
+    },
+    {
+     "key": "C3",
+     "label": "Já beneficiou",
+     "answers": {
+      "1.2": 50,
+      "2.1": "yes",
+      "2.2": "yes",
+      "2.3": "yes"
+     },
+     "expected": {
+      "outcome": "revisao"
+     }
+    }
+   ]
+  },
+  "texts": {
+   "intro": {
+    "text": {
+     "pt": "Esta candidatura verifica se cumpre os critérios do programa [nome do programa].",
+     "en": "This application checks whether you meet the criteria of the [programme name] programme."
+    }
+   },
+   "privacy": {
+    "title": {
+     "pt": "Informação sobre dados pessoais",
+     "en": "Personal data information"
+    },
+    "text": {
+     "pt": "A [entidade] trata os dados pessoais deste questionário para [finalidade], com base em [fundamento]. Os dados são conservados durante [prazo] e podem ser comunicados a [destinatários], quando a lei o exija. Pode exercer os direitos de acesso, retificação, apagamento, limitação, portabilidade e oposição através de [contacto do encarregado de proteção de dados]. Tem também o direito de apresentar reclamação à autoridade de controlo.",
+     "en": "[Entity] processes the personal data in this questionnaire for [purpose], on the basis of [legal basis]. The data is kept for [period] and may be disclosed to [recipients] where required by law. You may exercise your rights of access, rectification, erasure, restriction, portability and objection through [data protection officer contact]. You also have the right to lodge a complaint with the supervisory authority."
+    }
+   },
+   "declaration": {
+    "title": {
+     "pt": "Declaração",
+     "en": "Declaration"
+    },
+    "text": {
+     "pt": "Declaro que as informações prestadas são verdadeiras, completas e atuais, e que comunicarei qualquer alteração.",
+     "en": "I declare that the information provided is true, complete and up to date, and that I will report any change."
+    }
+   }
+  }
+ }
+}

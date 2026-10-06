@@ -996,3 +996,71 @@ def test_documentos_versao_repetida():
     d["documents"] = [_molde(), _molde(key="outro", version="2.0")]          # mesma data de entrada em vigor
     with pytest.raises(ValidationError):
         IntakeDefinition.model_validate(d)
+
+
+# ── v0.1.91: documento de identificação, ficheiros carregados, colunas da equipa (B9) ──
+
+def test_dado_do_documento_de_identificacao():
+    d = _definicao()
+    q = d["questions"][0]
+    q["prefill_from"], q["prefill_document_field"] = ["id_document"], "nationality"
+    assert IntakeDefinition.model_validate(d).questions[0].prefill_document_field == "nationality"
+    q["prefill_from"] = ["id_document", "invitation"]
+    q["prefill_field"] = "name"                                   # as duas origens, cada uma com o seu dado
+    IntakeDefinition.model_validate(d)
+
+
+@pytest.mark.parametrize("extra", [
+    {"prefill_from": ["cv"], "prefill_document_field": "full_name"},         # sem id_document
+    {"prefill_from": ["id_document"], "prefill_document_field": "mrz"},      # fora da lista fechada
+    {"prefill_from": ["id_document"], "prefill_document_field": "full_name", "editable": False},
+    {"prefill_from": ["id_document"], "prefill_document_field": "full_name", "hidden": True},
+])
+def test_dado_do_documento_recusa(extra):
+    d = _definicao()
+    d["questions"][0].update(extra)
+    with pytest.raises(ValidationError):
+        IntakeDefinition.model_validate(d)
+
+
+def test_documento_sem_dado_continua_valido():
+    """Definições antigas com `id_document` sem dado escolhido continuam a
+    validar (o documento não propõe nada nessa pergunta; o editor avisa)."""
+    d = _definicao()
+    d["questions"][0]["prefill_from"] = ["id_document"]
+    assert IntakeDefinition.model_validate(d).questions[0].prefill_document_field is None
+
+
+def test_ficheiros_carregados_apagam_por_omissao():
+    d = _definicao()
+    assert IntakeDefinition.model_validate(d).uploads.retention == "delete_after_submit"
+    d["uploads"] = {"retention": "keep_with_process"}
+    assert IntakeDefinition.model_validate(d).uploads.retention == "keep_with_process"
+    for bad in ({"retention": "forever"}, {"retention": "keep_with_process", "days": 30}):
+        d["uploads"] = bad
+        with pytest.raises(ValidationError):
+            IntakeDefinition.model_validate(d)
+
+
+def test_colunas_da_lista_da_equipa():
+    d = _definicao()
+    keys = [q["key"] for q in d["questions"]]
+    d["review"] = {"list_columns": keys[:2]}
+    assert IntakeDefinition.model_validate(d).review.list_columns == keys[:2]
+    for bad in ([keys[0], keys[0]], ["nao.existe"], keys[:1] * 4):
+        d["review"] = {"list_columns": bad}
+        with pytest.raises(ValidationError):
+            IntakeDefinition.model_validate(d)
+
+
+def test_cv_e_documento_nunca_nas_perguntas_do_teste():
+    """v0.1.91: o teste de conhecimento responde-o a própria pessoa — nem o CV
+    nem o documento propõem lá respostas (revisão de 6 Out)."""
+    d = _definicao()
+    teste = {it["q"] for sc in d["methodology"]["scores"] for t in sc["terms"]
+             if t.get("kind") == "count_matches" for it in t["items"]}
+    q = next(x for x in d["questions"] if x["key"] in teste)
+    for src in (["cv"], ["id_document"]):
+        q["prefill_from"] = src
+        with pytest.raises(ValidationError, match="conhecimento"):
+            IntakeDefinition.model_validate(d)
