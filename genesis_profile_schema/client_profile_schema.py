@@ -605,6 +605,7 @@ class ProfileToolRunCodeConfig(BaseModel):
 
 
 from genesis_profile_schema.tool_cv_analysis import ProfileToolCvAnalysisConfig  # noqa: E402
+from genesis_profile_schema.queue_fields import QueueFields  # noqa: E402
 from genesis_profile_schema.intake_schema import ProfileIntake  # noqa: E402
 
 # Mapa key de tools.config → model tipado. Tools fora deste mapa passam sem
@@ -1069,7 +1070,10 @@ class ProfileAiDisclosure(BaseModel):
     model_config = ConfigDict(extra="allow")
 
     enabled: bool = True
-    text: str = _DEFAULT_AI_DISCLOSURE
+    # Vazio (v0.1.98) = texto AUTOMÁTICO do frontend, na língua do utilizador e
+    # com o género do assistente. Até v0.1.97 o default era a frase fixa em PT
+    # (`_DEFAULT_AI_DISCLOSURE`), que aparecia igual em todas as línguas.
+    text: str = ""
     textI18n: I18nMap = Field(default_factory=dict)   # mapa {lang:texto}; prevalece sobre `text`
 
 
@@ -1329,6 +1333,12 @@ class ProfileFrontendThemeMode(BaseModel):
     textSidebarSecondary: Optional[str] = Field(default=None, pattern=_HEX_COLOR_REGEX)
     textSidebarTertiary: Optional[str] = Field(default=None, pattern=_HEX_COLOR_REGEX)
 
+    # Cor de destaque POR MODO (v0.1.98). `branding.primaryColor` é uma só para
+    # os dois modos; um preto que fica bem no claro desaparece no escuro. Vazio
+    # = usa `branding.primaryColor` / `primaryTextColor` (frota intacta).
+    accent: Optional[str] = Field(default=None, pattern=_HEX_COLOR_REGEX)
+    textOnAccent: Optional[str] = Field(default=None, pattern=_HEX_COLOR_REGEX)
+
 
 class ProfileFrontendTheme(BaseModel):
     """Tema completo: sidebar (aplica a ambos os modos) + light + dark."""
@@ -1339,6 +1349,11 @@ class ProfileFrontendTheme(BaseModel):
     textSidebarPrimary: Optional[str] = Field(default=None, pattern=_HEX_COLOR_REGEX)
     textSidebarSecondary: Optional[str] = Field(default=None, pattern=_HEX_COLOR_REGEX)
     textSidebarTertiary: Optional[str] = Field(default=None, pattern=_HEX_COLOR_REGEX)
+
+    # Acabamento do cabeçalho e da barra lateral (v0.1.98). Opções FECHADAS —
+    # o fecore traduz cada uma em CSS feito a partir das cores do tema; nunca
+    # CSS livre no perfil (injeção). "flat" = liso, o comportamento de sempre.
+    finish: Literal["flat", "gradient", "metallic", "glass"] = "flat"
 
     light: ProfileFrontendThemeMode = Field(default_factory=ProfileFrontendThemeMode)
     dark: ProfileFrontendThemeMode = Field(default_factory=ProfileFrontendThemeMode)
@@ -1367,6 +1382,9 @@ class ProfileFrontendBranding(BaseModel):
     # o `logoDark`; False = só o nome do cliente (identity.company_name), para
     # quando o logo não fica bem no fundo escuro — decide-se ao personalizar.
     darkHeaderLogo: bool = True
+    # «Powered by Genesis Digital Solutions» no fundo da barra lateral do
+    # histórico (v0.1.98). Visível por omissão; só a Genesis o desliga (_I).
+    showPoweredBy: bool = True
     # Texto ao lado do logo no header (ex.: "Antonius"). Multilingue (data-driven);
     # cor/tamanho opcionais (vazios = default do tema).
     headerText: I18nMap = Field(default_factory=dict)
@@ -2332,7 +2350,9 @@ class ProfileReviewQueue(BaseModel):
     notifications: Optional[List[ProfileReviewQueueNotification]] = None
     gates: Optional[List[ProfileReviewQueueGate]] = None
     triggers: Optional[List[ProfileReviewQueueTrigger]] = None
-    fields: Optional[List[Dict[str, Any]]] = None
+    # Campos do detalhe do pedido (v0.1.98; ver queue_fields.py). Sem eles, o
+    # detalhe mostra as chaves do payload como até aqui.
+    fields: Optional[QueueFields] = None
     onValidate: Optional[Dict[str, Any]] = None
     # Auditoria Jul 2026: campo de observações do operador na /fila (lido pelo
     # _queue_options do backend; vale também para filas legado sem spec).

@@ -377,7 +377,8 @@
       "help": "Shows the notice that the person is talking to an AI. Required by the AI Act (Art. 50)."
     },
     "frontend.aiDisclosure.text": {
-      "label": "Disclosure text"
+      "label": "Disclosure text",
+      "help": "Empty = automatic text in the user's language, with the assistant's gender. Custom text must mention AI."
     },
     "frontend.aiDisclosure.textI18n": {
       "label": "Disclosure text (multilingual)",
@@ -548,6 +549,10 @@
       "label": "Logo on dark headers",
       "help": "Shows the dark-mode logo in the journey header (Intake). Off: only the client name is shown — use it when the logo does not look right on the dark background."
     },
+    "frontend.branding.showPoweredBy": {
+      "label": "Show “Powered by Genesis Digital Solutions”",
+      "help": "Text at the bottom of the history sidebar. On by default; switch off only with a commercial agreement."
+    },
     "frontend.branding.headerLogoHeight": {
       "label": "Header logo height (px)",
       "help": "0 keeps the default height."
@@ -602,10 +607,24 @@
       "label": "Subtle sidebar background",
       "help": "Applies to both modes, light and dark."
     },
+    "frontend.branding.theme.finish": {
+      "label": "Header and sidebar finish",
+      "help": "Flat (default), gradient, metallic or glass. Built from the theme colours; no free CSS.",
+      "options": {
+        "flat": "Flat",
+        "gradient": "Gradient",
+        "metallic": "Metallic",
+        "glass": "Glass"
+      }
+    },
     "frontend.branding.theme.dark": {
       "label": "Dark mode",
       "help": "The dark sub-theme. Colours in hex `#RRGGBB`.",
       "note": "In dark mode you can also override bgSidebar/bgSidebarSubtle for a different sidebar"
+    },
+    "frontend.branding.theme.dark.accent": {
+      "label": "Accent colour",
+      "help": "Active chip, active conversation, links, focus and buttons. Empty → uses the Branding primary colour."
     },
     "frontend.branding.theme.dark.bgPage": {
       "label": "Page background"
@@ -666,6 +685,10 @@
     "frontend.branding.theme.dark.textSecondary": {
       "label": "Secondary text"
     },
+    "frontend.branding.theme.dark.textOnAccent": {
+      "label": "Text on the accent colour",
+      "help": "Text and icons placed on the accent colour. Empty → uses the text colour on the primary colour."
+    },
     "frontend.branding.theme.dark.textSidebarPrimary": {
       "label": "Primary sidebar text"
     },
@@ -692,6 +715,10 @@
     "frontend.branding.theme.light": {
       "label": "Light mode",
       "help": "The light sub-theme. Colours in hex `#RRGGBB`."
+    },
+    "frontend.branding.theme.light.accent": {
+      "label": "Accent colour",
+      "help": "Active chip, active conversation, links, focus and buttons. Empty → uses the Branding primary colour."
     },
     "frontend.branding.theme.light.bgPage": {
       "label": "Page background"
@@ -751,6 +778,10 @@
     },
     "frontend.branding.theme.light.textSecondary": {
       "label": "Secondary text"
+    },
+    "frontend.branding.theme.light.textOnAccent": {
+      "label": "Text on the accent colour",
+      "help": "Text and icons placed on the accent colour. Empty → uses the text colour on the primary colour."
     },
     "frontend.branding.theme.light.textSidebarPrimary": {
       "label": "Primary sidebar text"
@@ -814,7 +845,7 @@
     },
     "frontend.features.enableDarkMode": {
       "label": "Allow dark mode",
-      "help": "Gives the user a switch for the dark theme."
+      "help": "Gives the user a switch for the dark theme. Off, the app always stays light, even when the system is dark."
     },
     "frontend.features.enableDocumentUpload": {
       "label": "Allow document upload",

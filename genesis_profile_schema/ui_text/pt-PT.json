@@ -377,7 +377,8 @@
       "help": "Mostra o aviso de que se está a falar com uma inteligência artificial. Exigido pelo AI Act (Art. 50)."
     },
     "frontend.aiDisclosure.text": {
-      "label": "Texto do aviso"
+      "label": "Texto do aviso",
+      "help": "Vazio = texto automático na língua do utilizador, com o género do assistente. Um texto próprio tem de mencionar IA."
     },
     "frontend.aiDisclosure.textI18n": {
       "label": "Texto do aviso (multilingue)",
@@ -548,6 +549,10 @@
       "label": "Logótipo nos cabeçalhos escuros",
       "help": "Mostra o logótipo para modo escuro no cabeçalho do percurso (Intake). Desligado: aparece só o nome do cliente — use quando o logótipo não fica bem no fundo escuro."
     },
+    "frontend.branding.showPoweredBy": {
+      "label": "Mostrar «Powered by Genesis Digital Solutions»",
+      "help": "Texto no fundo da barra lateral do histórico. Ligado por omissão; desligar só com acordo comercial."
+    },
     "frontend.branding.headerLogoHeight": {
       "label": "Altura do logótipo no cabeçalho (px)",
       "help": "0 mantém a altura predefinida."
@@ -602,10 +607,24 @@
       "label": "Fundo secundário da barra lateral",
       "help": "Aplica-se a ambos os modos, claro e escuro."
     },
+    "frontend.branding.theme.finish": {
+      "label": "Acabamento do cabeçalho e da barra lateral",
+      "help": "Liso (por omissão), degradê, metalizado ou vidro. Usa as cores do tema; não há CSS livre.",
+      "options": {
+        "flat": "Liso",
+        "gradient": "Degradê",
+        "metallic": "Metalizado",
+        "glass": "Vidro"
+      }
+    },
     "frontend.branding.theme.dark": {
       "label": "Modo escuro",
       "help": "Sub-tema escuro. Cores em hexadecimal `#RRGGBB`.",
       "note": "Em dark mode também podes override bgSidebar/bgSidebarSubtle se quiseres sidebar diferente"
+    },
+    "frontend.branding.theme.dark.accent": {
+      "label": "Cor de destaque",
+      "help": "Chip ativo, conversa ativa, links, foco e botões. Vazio → usa a cor principal do Branding."
     },
     "frontend.branding.theme.dark.bgPage": {
       "label": "Fundo da página"
@@ -666,6 +685,10 @@
     "frontend.branding.theme.dark.textSecondary": {
       "label": "Texto secundário"
     },
+    "frontend.branding.theme.dark.textOnAccent": {
+      "label": "Texto sobre a cor de destaque",
+      "help": "Texto e ícones pousados na cor de destaque. Vazio → usa a cor do texto sobre a cor principal."
+    },
     "frontend.branding.theme.dark.textSidebarPrimary": {
       "label": "Texto principal da barra lateral"
     },
@@ -692,6 +715,10 @@
     "frontend.branding.theme.light": {
       "label": "Modo claro",
       "help": "Sub-tema claro. Cores em hexadecimal `#RRGGBB`."
+    },
+    "frontend.branding.theme.light.accent": {
+      "label": "Cor de destaque",
+      "help": "Chip ativo, conversa ativa, links, foco e botões. Vazio → usa a cor principal do Branding."
     },
     "frontend.branding.theme.light.bgPage": {
       "label": "Fundo da página"
@@ -751,6 +778,10 @@
     },
     "frontend.branding.theme.light.textSecondary": {
       "label": "Texto secundário"
+    },
+    "frontend.branding.theme.light.textOnAccent": {
+      "label": "Texto sobre a cor de destaque",
+      "help": "Texto e ícones pousados na cor de destaque. Vazio → usa a cor do texto sobre a cor principal."
     },
     "frontend.branding.theme.light.textSidebarPrimary": {
       "label": "Texto principal da barra lateral"
@@ -814,7 +845,7 @@
     },
     "frontend.features.enableDarkMode": {
       "label": "Permitir modo escuro",
-      "help": "Dá ao utilizador um interruptor para o tema escuro."
+      "help": "Dá ao utilizador um interruptor para o tema escuro. Desligado, a aplicação fica sempre clara, mesmo com o sistema em escuro."
     },
     "frontend.features.enableDocumentUpload": {
       "label": "Permitir envio de documentos",

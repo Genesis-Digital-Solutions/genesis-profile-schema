@@ -411,7 +411,13 @@ um campo removido do modelo continua a viver no blob sem dar erro.
   no `staticwebapp.config.json`; sem novo rollout não há efeito em runtime. Isso
   atrasa a exploração, não a impede — a classificação mantém-se interna.
 - **`reviewQueues`**: uma fila referida por um nome ausente deste mapa passa a
-  existir como fila fantasma no Cosmos. `reviewQueues.{fila}.sla` (v0.1.77) é
+  existir como fila fantasma no Cosmos. **`reviewQueues.{fila}.fields` (v0.1.98,
+  `queue_fields.py`)**: deixou de ser `List[Dict]` livre; é uma lista da definição
+  de campo ÚNICA (`FieldDefinition`), com até 200 campos e chaves sem repetição —
+  rótulos por língua, tipo, ordem/grupo, `editable`/`hidden`/`required`. Sem
+  `fields` a fila fica igual. Consumidores: core `review_queue_spec` (passa-os no
+  `to_public`) + validação do payload editado; fecore detalhe da `/fila`; Studio
+  editor de campos da tab Filas. `reviewQueues.{fila}.sla` (v0.1.77) é
   interno como o resto da fila; o `calendar` (v0.1.77, raiz, `Optional` — um
   perfil sem ele fica com `calendar: null` no blob validado — o `to_blob_dict`
   não omite nulos, e o core e o Studio tratam null como ausente; quem escreve
@@ -466,6 +472,7 @@ um campo removido do modelo continua a viver no blob sem dar erro.
   retenção e vagas-tipo; lote, paralelismo e deployment são internos. **Não há**
   interruptor da máscara nem do texto escondido — são contrato (D2). Consumidor:
   `tools/cv_analysis/jobs/settings.py` do genai-core.
+- **Tema por modo, acabamento e «Powered by» (v0.1.98, 7 Out 2026)**: `frontend.branding.theme.light|dark.accent` e `textOnAccent` (destaque por modo; vazio = `primaryColor`/`primaryTextColor`), `frontend.branding.theme.finish` (`flat`/`gradient`/`metallic`/`glass`, opções fechadas — nunca CSS livre) e `frontend.branding.showPoweredBy` (`True` por omissão; **interno**, decisão comercial — o GAIBO não o mostra). Consumidores: `client-config.service.ts`/`theme-accent.ts`/`theme-finish.ts` do fecore e a tab Tema do Studio. Na mesma versão, `frontend.aiDisclosure.text` passou a `""` por omissão (= texto automático do fecore, na língua do utilizador); o antigo default em PT continua no módulo (`_DEFAULT_AI_DISCLOSURE`) só como referência.
 - **`frontend.widget.resizable` e `frontend.insightsPanel.clearable` (v0.1.97, 7 Out 2026)**: os dois ligados por omissão e editáveis pelo cliente (`_W`). `resizable` deixa o visitante redimensionar o painel do widget (bordas e canto, tetos 60%/90% do ecrã, proporção 0,55–1,3; tamanho no browser); `panel_width_px`/`panel_height_px` passam a ser o tamanho inicial. `clearable` mostra o botão «Limpar painel» (com «Repor») no painel de insights do fecore. Consumidores: `assets/widget.js` e `insights-panel` do fecore (via `/client-config`, que devolve o `frontend` tal como está); o Studio edita-os no separador Widget e no painel de insights.
 - **`voice.web.engine` escolhe o MOTOR da voz no widget** (v0.1.68, 22 Set 2026): `realtime` (default — o de sempre, zero regressão) ou `live` (GPT-Live full-duplex, com `voice.web.live_deployment`, ex. `gpt-live-1`). Ambos internos: são infra nossa (deployment, região, quota de sessões, fallback automático ao Realtime). Só o widget — o telefone fica no Realtime. Consumidor: `core/handlers/live_web.py`; o Studio cria o deployment quando o motor é `live`.
 - **`tool_limits.attached_inline` põe o documento anexado INTEIRO no contexto**
