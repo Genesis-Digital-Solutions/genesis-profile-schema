@@ -527,7 +527,8 @@ class IntakeTexts(BaseModel):
     (finalidade, no início), `privacy` (informação sobre dados pessoais — a
     tomada de conhecimento é OBRIGATÓRIA antes da 1.ª resposta), `declaration`
     (aceite OBRIGATORIAMENTE na submissão) e `incomplete_warning` (no ecrã de
-    revisão quando falta resposta). Texto simples, nunca HTML. Fora do hash da
+    revisão quando falta resposta); `documents_notice` (v0.1.94) — o aviso
+    da leitura automática dos documentos. Texto simples, nunca HTML. Fora do hash da
     metodologia: não é o que se avalia; a fotografia de cada processo guarda-os
     e cada aceitação regista a impressão do texto aceite."""
     model_config = _CLOSED
@@ -535,6 +536,10 @@ class IntakeTexts(BaseModel):
     intro: Optional[IntakeNotice] = None
     privacy: Optional[IntakeNotice] = None
     declaration: Optional[IntakeNotice] = None
+    # Aviso da leitura automática dos documentos carregados (v0.1.94; caderno
+    # C3 — aprovado pela Compliance do cliente): mostrado no passo «Os seus
+    # documentos»; sem ele, o percurso mostra o texto do produto.
+    documents_notice: Optional[IntakeNotice] = None
     incomplete_warning: I18nHelp = Field(default_factory=dict)
     # Resultado final (chave da metodologia) → advertência a emitir (v0.1.85).
     warnings: Dict[Key, IntakeWarning] = Field(default_factory=dict, max_length=20)
@@ -855,7 +860,7 @@ class IntakeDefinition(BaseModel):
                 raise ValueError(f"prefill_from 'previous'/'cv'/'id_document' em perguntas de conhecimento (o teste): {bad[:10]}")
         # Um texto que se ACEITA tem de existir em todas as línguas do percurso
         # (ninguém aceita um texto que não pode ler na língua em que responde).
-        for name in ("intro", "privacy", "declaration"):
+        for name in ("intro", "privacy", "declaration", "documents_notice"):
             notice = getattr(self.texts, name)
             if notice is not None:
                 faltam = [l for l in self.languages if not (notice.text.get(l) or "").strip()]

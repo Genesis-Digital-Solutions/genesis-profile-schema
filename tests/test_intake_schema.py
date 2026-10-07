@@ -1160,3 +1160,15 @@ def test_retencao_limites():
                 {"years": 5, "outro": 1}):
         with pytest.raises(ValidationError):
             IntakeRetention(**bad)
+
+
+# ── v0.1.94: aviso da leitura automática dos documentos (caderno C3) ─────────
+
+def test_aviso_dos_documentos_em_todas_as_linguas():
+    d = _definicao()
+    d["texts"] = {"documents_notice": {"title": {"pt": "Aviso"}, "text": {"pt": "Lemos o documento.", "en": "We read it."}}}
+    assert IntakeDefinition.model_validate(d).texts.documents_notice.text["en"] == "We read it."
+    d["texts"]["documents_notice"]["text"] = {"pt": "Só PT"}
+    with pytest.raises(ValidationError) as e:
+        IntakeDefinition.model_validate(d)
+    assert "documents_notice" in str(e.value)
