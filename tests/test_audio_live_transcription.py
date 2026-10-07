@@ -80,3 +80,8 @@ def test_retencao_das_actas_e_audios_v0174():
     for mau in (0, 181, -1):
         with _pt.raises(Exception):
             ProfileAudio(files_retention_days=mau)
+
+
+def test_duracao_maxima_de_um_ficheiro_por_omissao_e_4h():
+    # v0.1.95: alinhado com o teto fixo do core (4 h por ficheiro).
+    assert ProfileAudio().max_duration_min == 240

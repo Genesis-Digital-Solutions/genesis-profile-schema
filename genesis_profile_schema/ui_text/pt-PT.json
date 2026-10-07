@@ -385,7 +385,7 @@
     },
     "frontend.assistantGender": {
       "label": "Género do assistente",
-      "help": "Género gramatical do assistente — afeta os artigos e as concordâncias nas legendas fixas do frontend.",
+      "help": "Género gramatical do assistente — afeta as concordâncias nas legendas fixas do frontend e a forma como o assistente fala de si no chat e na voz (ex.: «obrigada», «estou pronta»). Neutro evita formas com género.",
       "options": {
         "feminine": "Feminino",
         "masculine": "Masculino",

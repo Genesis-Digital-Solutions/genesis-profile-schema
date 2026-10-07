@@ -1133,7 +1133,11 @@ class ProfileAudio(BaseModel):
     glossary: List[str] = Field(default_factory=list)
     disfluency_removal: bool = True
     max_speakers: int = Field(default=10, ge=1, le=36)
-    max_duration_min: int = Field(default=120, ge=1, le=240)
+    # v0.1.95 (7 Out 2026): default 120 → 240 — o core aplica um teto FIXO de 4 h
+    # por ficheiro (`transcribe_audio.MAX_FILE_DURATION_MIN`) e este campo não
+    # muda nada; o 120 por omissão ficava gravado em todos os perfis e dizia o
+    # contrário do que o core faz.
+    max_duration_min: int = Field(default=240, ge=1, le=240)
     speech_locale: str = Field(default="pt-PT")
     live_transcription_enabled: bool = Field(
         default=False,
@@ -1799,7 +1803,8 @@ class ProfileFrontend(BaseModel):
         max_length=30,
     )
     shareDefaultExpiryDays: int = Field(default=7, ge=1, le=30)
-    # Género gramatical do assistente (afeta artigos nas labels fixas do FE).
+    # Género gramatical do assistente: labels fixas do FE e, desde v0.1.95, a
+    # forma como o core fala de si (prompt do chat e da voz).
     assistantGender: Literal["feminine", "masculine", "neutral"] = "masculine"
 
 

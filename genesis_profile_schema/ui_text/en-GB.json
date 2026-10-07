@@ -385,7 +385,7 @@
     },
     "frontend.assistantGender": {
       "label": "Assistant gender",
-      "help": "The assistant’s grammatical gender — affects articles and agreement in the frontend’s fixed captions.",
+      "help": "The assistant’s grammatical gender — affects agreement in the frontend’s fixed captions and how the assistant refers to itself in chat and voice (e.g. Portuguese «obrigada», «estou pronta»). Neutral avoids gendered forms.",
       "options": {
         "feminine": "Feminine",
         "masculine": "Masculine",
