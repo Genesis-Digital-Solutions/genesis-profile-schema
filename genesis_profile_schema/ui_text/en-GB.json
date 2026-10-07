@@ -600,12 +600,14 @@
       "note": "UI element colours. Sidebar colours apply to both modes (light/dark) by default; light/dark can override."
     },
     "frontend.branding.theme.bgSidebar": {
-      "label": "Sidebar background",
-      "help": "Applies to both modes, light and dark."
+      "label": "User menu background",
+      "help": "Only the menu that opens from the avatar, with the sidebar collapsed. Not the conversation list background. Applies to both modes.",
+      "note": "Also the collapsed strip background when that one is empty. NOT the conversation list background (that is “Open sidebar background”)."
     },
     "frontend.branding.theme.bgSidebarSubtle": {
-      "label": "Subtle sidebar background",
-      "help": "Applies to both modes, light and dark."
+      "label": "Open sidebar background",
+      "help": "The sidebar when it is open: conversation list, search, filters and footer. Applies to both modes.",
+      "note": "The background that fills almost the whole open sidebar (.sidebar__panel). Hover and active states are derived from it."
     },
     "frontend.branding.theme.finish": {
       "label": "Header and sidebar finish",
@@ -624,93 +626,116 @@
     },
     "frontend.branding.theme.dark.accent": {
       "label": "Accent colour",
-      "help": "Active chip, active conversation, links, focus and buttons. Empty → uses the Branding primary colour."
+      "help": "Active chip and chat, focus, links and buttons in this mode. Empty uses the brand primary colour.",
+      "note": "Active “All” chip, active chat bar, pin, input border while typing, focus ring, links (darker in light mode, lighter in dark mode), avatars and charts. In the sidebar and header, if it does not stand out from the background (below 3:1), the zone's text colour is used. Empty → Branding primary colour."
     },
     "frontend.branding.theme.dark.bgPage": {
-      "label": "Page background"
+      "label": "Conversation background",
+      "help": "General background behind the messages, the queue and the shared conversation."
     },
     "frontend.branding.theme.dark.bgSidebar": {
-      "label": "Sidebar background"
+      "label": "User menu background",
+      "help": "Only the menu that opens from the avatar, with the sidebar collapsed. Not the conversation list background.",
+      "note": "Also the collapsed strip background when that one is empty. NOT the conversation list background (that is “Open sidebar background”)."
     },
     "frontend.branding.theme.dark.bgSidebarCollapsed": {
-      "label": "Collapsed sidebar background",
-      "help": "A fine-grained component override — empty inherits from the matching semantic token."
+      "label": "Collapsed strip background",
+      "help": "The narrow strip on the left, always visible. Empty uses the user menu background."
     },
     "frontend.branding.theme.dark.bgSidebarSubtle": {
-      "label": "Subtle sidebar background"
+      "label": "Open sidebar background",
+      "help": "The sidebar when it is open: conversation list, search, filters and footer.",
+      "note": "The background that fills almost the whole open sidebar (.sidebar__panel). Hover and active states are derived from it."
     },
     "frontend.branding.theme.dark.bgSubtle": {
-      "label": "Subtle background"
+      "label": "Soft background",
+      "help": "Discreet backgrounds: attachments, follow-up suggestions and hover areas.",
+      "note": "Also the base of the trace and sources pills."
     },
     "frontend.branding.theme.dark.bgSurface": {
-      "label": "Surface background"
+      "label": "Cards and panels background",
+      "help": "Cards, menus, dialogs and tables. The AI answer has no background of its own."
     },
     "frontend.branding.theme.dark.codeBg": {
-      "label": "Code background"
+      "label": "Code background",
+      "help": "Code blocks in answers, visuals and diagrams."
     },
     "frontend.branding.theme.dark.codeText": {
-      "label": "Code text"
+      "label": "Code text",
+      "help": "Text colour inside code blocks."
     },
     "frontend.branding.theme.dark.headerBg": {
       "label": "Header background",
-      "help": "A fine-grained component override — empty inherits from the matching semantic token."
+      "help": "The top bar, with the logo. Empty uses the conversation background."
     },
     "frontend.branding.theme.dark.iconHeaderColor": {
-      "label": "Header icon colour",
-      "help": "A fine-grained component override — empty inherits from the matching semantic token."
+      "label": "Header icons",
+      "help": "Everything at the top right: light/dark, language picker and account menu.",
+      "note": "Empty → secondary text."
     },
     "frontend.branding.theme.dark.iconInputColor": {
-      "label": "Input icon colour",
-      "help": "A fine-grained component override — empty inherits from the matching semantic token."
+      "label": "Input box icons",
+      "help": "Buttons next to the input box, including the model picker. Empty uses the secondary text."
     },
     "frontend.branding.theme.dark.iconSidebarColor": {
-      "label": "Sidebar icon colour",
-      "help": "A fine-grained component override — empty inherits from the matching semantic token."
+      "label": "Collapsed strip icons",
+      "help": "Only the narrow strip buttons (new chat, open/close). Empty uses the sidebar text.",
+      "note": "The icons at the top of the open sidebar follow the sidebar secondary text, not this field."
     },
     "frontend.branding.theme.dark.inputBg": {
-      "label": "Input background",
-      "help": "A fine-grained component override — empty inherits from the matching semantic token."
+      "label": "Input box background",
+      "help": "The box where the message is typed, and form fields. Empty uses the cards background."
     },
     "frontend.branding.theme.dark.sourceCardBg": {
-      "label": "Source card background",
-      "help": "A fine-grained component override — empty inherits from the matching semantic token."
+      "label": "Source cards",
+      "help": "Each document cited in the sources. Empty uses the cards background."
     },
     "frontend.branding.theme.dark.sourcesBubbleBg": {
-      "label": "Sources bubble background",
-      "help": "A fine-grained component override — empty inherits from the matching semantic token."
+      "label": "Sources pill",
+      "help": "Background of the “Sources (N)” pill. Empty uses the soft background."
     },
     "frontend.branding.theme.dark.textPrimary": {
-      "label": "Primary text"
+      "label": "Main text",
+      "help": "Message and heading text.",
+      "note": "Also the send button background at rest."
     },
     "frontend.branding.theme.dark.textSecondary": {
-      "label": "Secondary text"
+      "label": "Secondary text",
+      "help": "Subtitles, metadata and icons at rest."
     },
     "frontend.branding.theme.dark.textOnAccent": {
-      "label": "Text on the accent colour",
-      "help": "Text and icons placed on the accent colour. Empty → uses the text colour on the primary colour."
+      "label": "Text on the accent",
+      "help": "Letters and icons placed on the accent colour. Empty: white or black, whichever reads better.",
+      "note": "Active chip, avatar initials, primary buttons. Empty → white or black by contrast (when the mode has its own accent) or the Branding text-on-primary colour."
     },
     "frontend.branding.theme.dark.textSidebarPrimary": {
-      "label": "Primary sidebar text"
+      "label": "Sidebar text",
+      "help": "Conversation titles, the active chat and what is typed in search.",
+      "note": "Also the starting colour of the collapsed strip icons and of the active chip when the accent does not stand out."
     },
     "frontend.branding.theme.dark.textSidebarSecondary": {
-      "label": "Secondary sidebar text"
+      "label": "Sidebar secondary text",
+      "help": "Icons at the top of the open sidebar (export and collapse), inactive filters and the active chat time."
     },
     "frontend.branding.theme.dark.textSidebarTertiary": {
-      "label": "Tertiary sidebar text"
+      "label": "Sidebar discreet text",
+      "help": "Empty search, group labels, dates (“1 hour ago”), “My shares” and “Powered by”."
     },
     "frontend.branding.theme.dark.textTertiary": {
-      "label": "Tertiary text"
+      "label": "Discreet text",
+      "help": "Hint text inside fields, captions and times."
     },
     "frontend.branding.theme.dark.traceBubbleBg": {
-      "label": "Trace bubble background",
-      "help": "A fine-grained component override — empty inherits from the matching semantic token."
+      "label": "“How the AI generated this” pill",
+      "help": "Background of the pill above the answer. Empty uses the soft background."
     },
     "frontend.branding.theme.dark.userBubble": {
-      "label": "User bubble"
+      "label": "User bubble",
+      "help": "Background of the messages sent by the user."
     },
     "frontend.branding.theme.dark.welcomeCardBg": {
-      "label": "Welcome card background",
-      "help": "A fine-grained component override — empty inherits from the matching semantic token."
+      "label": "Welcome cards",
+      "help": "The home screen suggestions. Empty uses the cards background."
     },
     "frontend.branding.theme.light": {
       "label": "Light mode",
@@ -718,105 +743,129 @@
     },
     "frontend.branding.theme.light.accent": {
       "label": "Accent colour",
-      "help": "Active chip, active conversation, links, focus and buttons. Empty → uses the Branding primary colour."
+      "help": "Active chip and chat, focus, links and buttons in this mode. Empty uses the brand primary colour.",
+      "note": "Active “All” chip, active chat bar, pin, input border while typing, focus ring, links (darker in light mode, lighter in dark mode), avatars and charts. In the sidebar and header, if it does not stand out from the background (below 3:1), the zone's text colour is used. Empty → Branding primary colour."
     },
     "frontend.branding.theme.light.bgPage": {
-      "label": "Page background"
+      "label": "Conversation background",
+      "help": "General background behind the messages, the queue and the shared conversation."
     },
     "frontend.branding.theme.light.bgSidebar": {
-      "label": "Sidebar background"
+      "label": "User menu background",
+      "help": "Only the menu that opens from the avatar, with the sidebar collapsed. Not the conversation list background.",
+      "note": "Also the collapsed strip background when that one is empty. NOT the conversation list background (that is “Open sidebar background”)."
     },
     "frontend.branding.theme.light.bgSidebarCollapsed": {
-      "label": "Collapsed sidebar background",
-      "help": "A fine-grained component override — empty inherits from the matching semantic token."
+      "label": "Collapsed strip background",
+      "help": "The narrow strip on the left, always visible. Empty uses the user menu background."
     },
     "frontend.branding.theme.light.bgSidebarSubtle": {
-      "label": "Subtle sidebar background"
+      "label": "Open sidebar background",
+      "help": "The sidebar when it is open: conversation list, search, filters and footer.",
+      "note": "The background that fills almost the whole open sidebar (.sidebar__panel). Hover and active states are derived from it."
     },
     "frontend.branding.theme.light.bgSubtle": {
-      "label": "Subtle background"
+      "label": "Soft background",
+      "help": "Discreet backgrounds: attachments, follow-up suggestions and hover areas.",
+      "note": "Also the base of the trace and sources pills."
     },
     "frontend.branding.theme.light.bgSurface": {
-      "label": "Surface background"
+      "label": "Cards and panels background",
+      "help": "Cards, menus, dialogs and tables. The AI answer has no background of its own."
     },
     "frontend.branding.theme.light.codeBg": {
-      "label": "Code background"
+      "label": "Code background",
+      "help": "Code blocks in answers, visuals and diagrams."
     },
     "frontend.branding.theme.light.codeText": {
-      "label": "Code text"
+      "label": "Code text",
+      "help": "Text colour inside code blocks."
     },
     "frontend.branding.theme.light.headerBg": {
       "label": "Header background",
-      "help": "A fine-grained component override — empty inherits from the matching semantic token."
+      "help": "The top bar, with the logo. Empty uses the conversation background."
     },
     "frontend.branding.theme.light.iconHeaderColor": {
-      "label": "Header icon colour",
-      "help": "A fine-grained component override — empty inherits from the matching semantic token."
+      "label": "Header icons",
+      "help": "Everything at the top right: light/dark, language picker and account menu.",
+      "note": "Empty → secondary text."
     },
     "frontend.branding.theme.light.iconInputColor": {
-      "label": "Input icon colour",
-      "help": "A fine-grained component override — empty inherits from the matching semantic token."
+      "label": "Input box icons",
+      "help": "Buttons next to the input box, including the model picker. Empty uses the secondary text."
     },
     "frontend.branding.theme.light.iconSidebarColor": {
-      "label": "Sidebar icon colour",
-      "help": "A fine-grained component override — empty inherits from the matching semantic token."
+      "label": "Collapsed strip icons",
+      "help": "Only the narrow strip buttons (new chat, open/close). Empty uses the sidebar text.",
+      "note": "The icons at the top of the open sidebar follow the sidebar secondary text, not this field."
     },
     "frontend.branding.theme.light.inputBg": {
-      "label": "Input background",
-      "help": "A fine-grained component override — empty inherits from the matching semantic token."
+      "label": "Input box background",
+      "help": "The box where the message is typed, and form fields. Empty uses the cards background."
     },
     "frontend.branding.theme.light.sourceCardBg": {
-      "label": "Source card background",
-      "help": "A fine-grained component override — empty inherits from the matching semantic token."
+      "label": "Source cards",
+      "help": "Each document cited in the sources. Empty uses the cards background."
     },
     "frontend.branding.theme.light.sourcesBubbleBg": {
-      "label": "Sources bubble background",
-      "help": "A fine-grained component override — empty inherits from the matching semantic token."
+      "label": "Sources pill",
+      "help": "Background of the “Sources (N)” pill. Empty uses the soft background."
     },
     "frontend.branding.theme.light.textPrimary": {
-      "label": "Primary text"
+      "label": "Main text",
+      "help": "Message and heading text.",
+      "note": "Also the send button background at rest."
     },
     "frontend.branding.theme.light.textSecondary": {
-      "label": "Secondary text"
+      "label": "Secondary text",
+      "help": "Subtitles, metadata and icons at rest."
     },
     "frontend.branding.theme.light.textOnAccent": {
-      "label": "Text on the accent colour",
-      "help": "Text and icons placed on the accent colour. Empty → uses the text colour on the primary colour."
+      "label": "Text on the accent",
+      "help": "Letters and icons placed on the accent colour. Empty: white or black, whichever reads better.",
+      "note": "Active chip, avatar initials, primary buttons. Empty → white or black by contrast (when the mode has its own accent) or the Branding text-on-primary colour."
     },
     "frontend.branding.theme.light.textSidebarPrimary": {
-      "label": "Primary sidebar text"
+      "label": "Sidebar text",
+      "help": "Conversation titles, the active chat and what is typed in search.",
+      "note": "Also the starting colour of the collapsed strip icons and of the active chip when the accent does not stand out."
     },
     "frontend.branding.theme.light.textSidebarSecondary": {
-      "label": "Secondary sidebar text"
+      "label": "Sidebar secondary text",
+      "help": "Icons at the top of the open sidebar (export and collapse), inactive filters and the active chat time."
     },
     "frontend.branding.theme.light.textSidebarTertiary": {
-      "label": "Tertiary sidebar text"
+      "label": "Sidebar discreet text",
+      "help": "Empty search, group labels, dates (“1 hour ago”), “My shares” and “Powered by”."
     },
     "frontend.branding.theme.light.textTertiary": {
-      "label": "Tertiary text"
+      "label": "Discreet text",
+      "help": "Hint text inside fields, captions and times."
     },
     "frontend.branding.theme.light.traceBubbleBg": {
-      "label": "Trace bubble background",
-      "help": "A fine-grained component override — empty inherits from the matching semantic token."
+      "label": "“How the AI generated this” pill",
+      "help": "Background of the pill above the answer. Empty uses the soft background."
     },
     "frontend.branding.theme.light.userBubble": {
-      "label": "User bubble"
+      "label": "User bubble",
+      "help": "Background of the messages sent by the user."
     },
     "frontend.branding.theme.light.welcomeCardBg": {
-      "label": "Welcome card background",
-      "help": "A fine-grained component override — empty inherits from the matching semantic token."
+      "label": "Welcome cards",
+      "help": "The home screen suggestions. Empty uses the cards background."
     },
     "frontend.branding.theme.textSidebarPrimary": {
-      "label": "Primary sidebar text",
-      "help": "Applies to both modes, light and dark."
+      "label": "Sidebar text",
+      "help": "Conversation titles, the active chat and what is typed in search. Applies to both modes.",
+      "note": "Also the starting colour of the collapsed strip icons and of the active chip when the accent does not stand out."
     },
     "frontend.branding.theme.textSidebarSecondary": {
-      "label": "Secondary sidebar text",
-      "help": "Applies to both modes, light and dark."
+      "label": "Sidebar secondary text",
+      "help": "Icons at the top of the open sidebar (export and collapse), inactive filters and the active chat time. Applies to both modes."
     },
     "frontend.branding.theme.textSidebarTertiary": {
-      "label": "Tertiary sidebar text",
-      "help": "Applies to both modes, light and dark."
+      "label": "Sidebar discreet text",
+      "help": "Empty search, group labels, dates (“1 hour ago”), “My shares” and “Powered by”. Applies to both modes."
     },
     "frontend.csp.extraConnectSrc": {
       "label": "Extra connect origins (CSP)",

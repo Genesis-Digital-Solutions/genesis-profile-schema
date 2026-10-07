@@ -36,10 +36,14 @@ def test_destaque_por_modo_so_aceita_hex_completo():
 
 def test_exposicao_e_textos():
     assert exposure.exposure_of("frontend.branding.showPoweredBy") == exposure.INTERNAL
-    for p in ("frontend.branding.theme.finish",
-              "frontend.branding.theme.light.accent", "frontend.branding.theme.dark.accent",
-              "frontend.branding.theme.light.textOnAccent", "frontend.branding.theme.dark.textOnAccent"):
-        assert exposure.is_client_writable(p), p
+    # O cliente edita o acabamento; as cores de pormenor (destaque por modo
+    # incluído) só vê — afina-as a Genesis no Studio.
+    assert exposure.is_client_writable("frontend.branding.theme.finish")
+    assert exposure.is_client_writable("frontend.branding.primaryColor")
+    for p in ("frontend.branding.theme.light.accent", "frontend.branding.theme.dark.accent",
+              "frontend.branding.theme.light.textOnAccent", "frontend.branding.theme.bgSidebarSubtle",
+              "frontend.branding.theme.dark.headerBg"):
+        assert exposure.exposure_of(p) == exposure.CLIENT_READ, p
     base = Path(exposure.__file__).parent / "ui_text"
     for loc in ("pt-PT", "en-GB"):
         campos = json.loads((base / f"{loc}.json").read_text(encoding="utf-8"))["fields"]
@@ -51,3 +55,13 @@ def test_exposicao_e_textos():
 def test_aviso_de_ia_vazio_por_omissao_mas_ligado():
     d = ProfileAiDisclosure()
     assert d.enabled is True and d.text == ""
+
+
+def test_rotulos_do_tema_dizem_o_que_se_ve():
+    """O GAIBO mostrava «Fundo da barra lateral» no menu do avatar e «Fundo
+    secundário» na barra aberta — a troca que já custou uma sessão."""
+    base = Path(exposure.__file__).parent / "ui_text"
+    pt = json.loads((base / "pt-PT.json").read_text(encoding="utf-8"))["fields"]
+    assert pt["frontend.branding.theme.bgSidebarSubtle"]["label"] == "Fundo da barra lateral aberta"
+    assert pt["frontend.branding.theme.bgSidebar"]["label"] == "Fundo do menu do utilizador"
+    assert pt["frontend.branding.theme.light.bgSidebarSubtle"]["label"] == "Fundo da barra lateral aberta"

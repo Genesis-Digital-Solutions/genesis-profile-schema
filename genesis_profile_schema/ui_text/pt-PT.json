@@ -600,12 +600,14 @@
       "note": "Cores dos elementos da UI. As cores da sidebar aplicam-se a ambos os modos (light/dark) por defeito; light/dark podem override."
     },
     "frontend.branding.theme.bgSidebar": {
-      "label": "Fundo da barra lateral",
-      "help": "Aplica-se a ambos os modos, claro e escuro."
+      "label": "Fundo do menu do utilizador",
+      "help": "Só o menu que abre ao clicar no avatar, com a barra recolhida. Não é o fundo da lista de conversas. Vale para os dois modos.",
+      "note": "Serve também de fundo à faixa recolhida quando esta está vazia. NÃO é o fundo da lista de conversas (esse é o «Fundo da barra lateral aberta»)."
     },
     "frontend.branding.theme.bgSidebarSubtle": {
-      "label": "Fundo secundário da barra lateral",
-      "help": "Aplica-se a ambos os modos, claro e escuro."
+      "label": "Fundo da barra lateral aberta",
+      "help": "A barra lateral quando está aberta: lista de conversas, pesquisa, filtros e rodapé. Vale para os dois modos.",
+      "note": "É o fundo que ocupa quase toda a barra aberta (.sidebar__panel). O hover e a conversa ativa calculam-se a partir dele."
     },
     "frontend.branding.theme.finish": {
       "label": "Acabamento do cabeçalho e da barra lateral",
@@ -624,93 +626,116 @@
     },
     "frontend.branding.theme.dark.accent": {
       "label": "Cor de destaque",
-      "help": "Chip ativo, conversa ativa, links, foco e botões. Vazio → usa a cor principal do Branding."
+      "help": "Chip e conversa ativos, foco, links e botões neste modo. Vazio usa a cor principal da marca.",
+      "note": "Chip «Todas» ativo, barra da conversa ativa, pin, borda da caixa de escrita ao escrever, anel de foco, links (mais escuros no claro, mais claros no escuro), avatares e gráficos. Na barra lateral e no cabeçalho, se não se distinguir do fundo (menos de 3:1), usa o texto dessa zona. Vazio → cor principal do Branding."
     },
     "frontend.branding.theme.dark.bgPage": {
-      "label": "Fundo da página"
+      "label": "Fundo da conversa",
+      "help": "Fundo geral atrás das mensagens, da fila e da conversa partilhada."
     },
     "frontend.branding.theme.dark.bgSidebar": {
-      "label": "Fundo da barra lateral"
+      "label": "Fundo do menu do utilizador",
+      "help": "Só o menu que abre ao clicar no avatar, com a barra recolhida. Não é o fundo da lista de conversas.",
+      "note": "Serve também de fundo à faixa recolhida quando esta está vazia. NÃO é o fundo da lista de conversas (esse é o «Fundo da barra lateral aberta»)."
     },
     "frontend.branding.theme.dark.bgSidebarCollapsed": {
-      "label": "Fundo da barra lateral recolhida",
-      "help": "Ajuste fino de componente — vazio herda do token semântico correspondente."
+      "label": "Fundo da faixa recolhida",
+      "help": "A faixa estreita da esquerda, sempre visível. Vazio usa o fundo do menu do utilizador."
     },
     "frontend.branding.theme.dark.bgSidebarSubtle": {
-      "label": "Fundo secundário da barra lateral"
+      "label": "Fundo da barra lateral aberta",
+      "help": "A barra lateral quando está aberta: lista de conversas, pesquisa, filtros e rodapé.",
+      "note": "É o fundo que ocupa quase toda a barra aberta (.sidebar__panel). O hover e a conversa ativa calculam-se a partir dele."
     },
     "frontend.branding.theme.dark.bgSubtle": {
-      "label": "Fundo secundário"
+      "label": "Fundo suave",
+      "help": "Fundos discretos: anexos, sugestões de seguimento e zonas ao passar o rato.",
+      "note": "Também a base das pílulas de trace e de fontes."
     },
     "frontend.branding.theme.dark.bgSurface": {
-      "label": "Fundo das superfícies"
+      "label": "Fundo dos cartões e painéis",
+      "help": "Cartões, menus, janelas e tabelas. A resposta da IA não tem fundo próprio."
     },
     "frontend.branding.theme.dark.codeBg": {
-      "label": "Fundo do código"
+      "label": "Fundo de código",
+      "help": "Blocos de código nas respostas, nos visuais e nos diagramas."
     },
     "frontend.branding.theme.dark.codeText": {
-      "label": "Texto do código"
+      "label": "Texto de código",
+      "help": "Cor do texto dentro dos blocos de código."
     },
     "frontend.branding.theme.dark.headerBg": {
       "label": "Fundo do cabeçalho",
-      "help": "Ajuste fino de componente — vazio herda do token semântico correspondente."
+      "help": "A barra do topo, com o logótipo. Vazio usa o fundo da conversa."
     },
     "frontend.branding.theme.dark.iconHeaderColor": {
-      "label": "Cor dos ícones do cabeçalho",
-      "help": "Ajuste fino de componente — vazio herda do token semântico correspondente."
+      "label": "Ícones do cabeçalho",
+      "help": "Tudo o que está no topo à direita: claro/escuro, seletor de língua e menu de conta.",
+      "note": "Vazio → texto secundário."
     },
     "frontend.branding.theme.dark.iconInputColor": {
-      "label": "Cor dos ícones da caixa de escrita",
-      "help": "Ajuste fino de componente — vazio herda do token semântico correspondente."
+      "label": "Ícones da caixa de escrita",
+      "help": "Botões junto à caixa de escrita, incluindo o seletor de modelo. Vazio usa o texto secundário."
     },
     "frontend.branding.theme.dark.iconSidebarColor": {
-      "label": "Cor dos ícones da barra lateral",
-      "help": "Ajuste fino de componente — vazio herda do token semântico correspondente."
+      "label": "Ícones da faixa recolhida",
+      "help": "Só os botões da faixa estreita (nova conversa, abrir/fechar). Vazio usa o texto da barra lateral.",
+      "note": "Os ícones do topo da barra aberta seguem o texto secundário da barra, não este campo."
     },
     "frontend.branding.theme.dark.inputBg": {
       "label": "Fundo da caixa de escrita",
-      "help": "Ajuste fino de componente — vazio herda do token semântico correspondente."
+      "help": "A caixa onde se escreve a mensagem e as caixas dos formulários. Vazio usa o fundo dos cartões."
     },
     "frontend.branding.theme.dark.sourceCardBg": {
-      "label": "Fundo do cartão de fonte",
-      "help": "Ajuste fino de componente — vazio herda do token semântico correspondente."
+      "label": "Cartões de fonte",
+      "help": "Cada documento citado nas fontes. Vazio usa o fundo dos cartões."
     },
     "frontend.branding.theme.dark.sourcesBubbleBg": {
-      "label": "Fundo do balão de fontes",
-      "help": "Ajuste fino de componente — vazio herda do token semântico correspondente."
+      "label": "Pílula das fontes",
+      "help": "Fundo da pílula «Fontes (N)». Vazio usa o fundo suave."
     },
     "frontend.branding.theme.dark.textPrimary": {
-      "label": "Texto principal"
+      "label": "Texto principal",
+      "help": "Texto das mensagens e dos títulos.",
+      "note": "É também o fundo do botão enviar em repouso."
     },
     "frontend.branding.theme.dark.textSecondary": {
-      "label": "Texto secundário"
+      "label": "Texto secundário",
+      "help": "Subtítulos, metadados e ícones em repouso."
     },
     "frontend.branding.theme.dark.textOnAccent": {
-      "label": "Texto sobre a cor de destaque",
-      "help": "Texto e ícones pousados na cor de destaque. Vazio → usa a cor do texto sobre a cor principal."
+      "label": "Texto sobre o destaque",
+      "help": "Letras e ícones pousados na cor de destaque. Vazio: branco ou preto, o que se ler melhor.",
+      "note": "Chip ativo, iniciais do avatar, botões principais. Vazio → branco ou preto pelo contraste (quando o modo tem destaque próprio) ou o texto sobre a cor principal do Branding."
     },
     "frontend.branding.theme.dark.textSidebarPrimary": {
-      "label": "Texto principal da barra lateral"
+      "label": "Texto da barra lateral",
+      "help": "Títulos das conversas, conversa ativa e o que se escreve na pesquisa.",
+      "note": "Também a cor de partida dos ícones da faixa estreita e do chip ativo quando o destaque não se distingue do fundo."
     },
     "frontend.branding.theme.dark.textSidebarSecondary": {
-      "label": "Texto secundário da barra lateral"
+      "label": "Texto secundário da barra lateral",
+      "help": "Ícones do topo da barra aberta (exportar e recolher), filtros inativos e a hora da conversa ativa."
     },
     "frontend.branding.theme.dark.textSidebarTertiary": {
-      "label": "Texto terciário da barra lateral"
+      "label": "Texto discreto da barra lateral",
+      "help": "Pesquisa vazia, rótulos de grupo, datas («há 1 hora»), «As minhas partilhas» e o «Powered by»."
     },
     "frontend.branding.theme.dark.textTertiary": {
-      "label": "Texto terciário"
+      "label": "Texto discreto",
+      "help": "Textos de ajuda dentro das caixas, legendas e horas."
     },
     "frontend.branding.theme.dark.traceBubbleBg": {
-      "label": "Fundo do balão de diagnóstico",
-      "help": "Ajuste fino de componente — vazio herda do token semântico correspondente."
+      "label": "Pílula «Como a IA gerou esta resposta»",
+      "help": "Fundo da pílula por cima da resposta. Vazio usa o fundo suave."
     },
     "frontend.branding.theme.dark.userBubble": {
-      "label": "Balão do utilizador"
+      "label": "Balão do utilizador",
+      "help": "Fundo das mensagens enviadas pelo utilizador."
     },
     "frontend.branding.theme.dark.welcomeCardBg": {
-      "label": "Fundo do cartão de boas-vindas",
-      "help": "Ajuste fino de componente — vazio herda do token semântico correspondente."
+      "label": "Cartões de boas-vindas",
+      "help": "As sugestões do ecrã inicial. Vazio usa o fundo dos cartões."
     },
     "frontend.branding.theme.light": {
       "label": "Modo claro",
@@ -718,105 +743,129 @@
     },
     "frontend.branding.theme.light.accent": {
       "label": "Cor de destaque",
-      "help": "Chip ativo, conversa ativa, links, foco e botões. Vazio → usa a cor principal do Branding."
+      "help": "Chip e conversa ativos, foco, links e botões neste modo. Vazio usa a cor principal da marca.",
+      "note": "Chip «Todas» ativo, barra da conversa ativa, pin, borda da caixa de escrita ao escrever, anel de foco, links (mais escuros no claro, mais claros no escuro), avatares e gráficos. Na barra lateral e no cabeçalho, se não se distinguir do fundo (menos de 3:1), usa o texto dessa zona. Vazio → cor principal do Branding."
     },
     "frontend.branding.theme.light.bgPage": {
-      "label": "Fundo da página"
+      "label": "Fundo da conversa",
+      "help": "Fundo geral atrás das mensagens, da fila e da conversa partilhada."
     },
     "frontend.branding.theme.light.bgSidebar": {
-      "label": "Fundo da barra lateral"
+      "label": "Fundo do menu do utilizador",
+      "help": "Só o menu que abre ao clicar no avatar, com a barra recolhida. Não é o fundo da lista de conversas.",
+      "note": "Serve também de fundo à faixa recolhida quando esta está vazia. NÃO é o fundo da lista de conversas (esse é o «Fundo da barra lateral aberta»)."
     },
     "frontend.branding.theme.light.bgSidebarCollapsed": {
-      "label": "Fundo da barra lateral recolhida",
-      "help": "Ajuste fino de componente — vazio herda do token semântico correspondente."
+      "label": "Fundo da faixa recolhida",
+      "help": "A faixa estreita da esquerda, sempre visível. Vazio usa o fundo do menu do utilizador."
     },
     "frontend.branding.theme.light.bgSidebarSubtle": {
-      "label": "Fundo secundário da barra lateral"
+      "label": "Fundo da barra lateral aberta",
+      "help": "A barra lateral quando está aberta: lista de conversas, pesquisa, filtros e rodapé.",
+      "note": "É o fundo que ocupa quase toda a barra aberta (.sidebar__panel). O hover e a conversa ativa calculam-se a partir dele."
     },
     "frontend.branding.theme.light.bgSubtle": {
-      "label": "Fundo secundário"
+      "label": "Fundo suave",
+      "help": "Fundos discretos: anexos, sugestões de seguimento e zonas ao passar o rato.",
+      "note": "Também a base das pílulas de trace e de fontes."
     },
     "frontend.branding.theme.light.bgSurface": {
-      "label": "Fundo das superfícies"
+      "label": "Fundo dos cartões e painéis",
+      "help": "Cartões, menus, janelas e tabelas. A resposta da IA não tem fundo próprio."
     },
     "frontend.branding.theme.light.codeBg": {
-      "label": "Fundo do código"
+      "label": "Fundo de código",
+      "help": "Blocos de código nas respostas, nos visuais e nos diagramas."
     },
     "frontend.branding.theme.light.codeText": {
-      "label": "Texto do código"
+      "label": "Texto de código",
+      "help": "Cor do texto dentro dos blocos de código."
     },
     "frontend.branding.theme.light.headerBg": {
       "label": "Fundo do cabeçalho",
-      "help": "Ajuste fino de componente — vazio herda do token semântico correspondente."
+      "help": "A barra do topo, com o logótipo. Vazio usa o fundo da conversa."
     },
     "frontend.branding.theme.light.iconHeaderColor": {
-      "label": "Cor dos ícones do cabeçalho",
-      "help": "Ajuste fino de componente — vazio herda do token semântico correspondente."
+      "label": "Ícones do cabeçalho",
+      "help": "Tudo o que está no topo à direita: claro/escuro, seletor de língua e menu de conta.",
+      "note": "Vazio → texto secundário."
     },
     "frontend.branding.theme.light.iconInputColor": {
-      "label": "Cor dos ícones da caixa de escrita",
-      "help": "Ajuste fino de componente — vazio herda do token semântico correspondente."
+      "label": "Ícones da caixa de escrita",
+      "help": "Botões junto à caixa de escrita, incluindo o seletor de modelo. Vazio usa o texto secundário."
     },
     "frontend.branding.theme.light.iconSidebarColor": {
-      "label": "Cor dos ícones da barra lateral",
-      "help": "Ajuste fino de componente — vazio herda do token semântico correspondente."
+      "label": "Ícones da faixa recolhida",
+      "help": "Só os botões da faixa estreita (nova conversa, abrir/fechar). Vazio usa o texto da barra lateral.",
+      "note": "Os ícones do topo da barra aberta seguem o texto secundário da barra, não este campo."
     },
     "frontend.branding.theme.light.inputBg": {
       "label": "Fundo da caixa de escrita",
-      "help": "Ajuste fino de componente — vazio herda do token semântico correspondente."
+      "help": "A caixa onde se escreve a mensagem e as caixas dos formulários. Vazio usa o fundo dos cartões."
     },
     "frontend.branding.theme.light.sourceCardBg": {
-      "label": "Fundo do cartão de fonte",
-      "help": "Ajuste fino de componente — vazio herda do token semântico correspondente."
+      "label": "Cartões de fonte",
+      "help": "Cada documento citado nas fontes. Vazio usa o fundo dos cartões."
     },
     "frontend.branding.theme.light.sourcesBubbleBg": {
-      "label": "Fundo do balão de fontes",
-      "help": "Ajuste fino de componente — vazio herda do token semântico correspondente."
+      "label": "Pílula das fontes",
+      "help": "Fundo da pílula «Fontes (N)». Vazio usa o fundo suave."
     },
     "frontend.branding.theme.light.textPrimary": {
-      "label": "Texto principal"
+      "label": "Texto principal",
+      "help": "Texto das mensagens e dos títulos.",
+      "note": "É também o fundo do botão enviar em repouso."
     },
     "frontend.branding.theme.light.textSecondary": {
-      "label": "Texto secundário"
+      "label": "Texto secundário",
+      "help": "Subtítulos, metadados e ícones em repouso."
     },
     "frontend.branding.theme.light.textOnAccent": {
-      "label": "Texto sobre a cor de destaque",
-      "help": "Texto e ícones pousados na cor de destaque. Vazio → usa a cor do texto sobre a cor principal."
+      "label": "Texto sobre o destaque",
+      "help": "Letras e ícones pousados na cor de destaque. Vazio: branco ou preto, o que se ler melhor.",
+      "note": "Chip ativo, iniciais do avatar, botões principais. Vazio → branco ou preto pelo contraste (quando o modo tem destaque próprio) ou o texto sobre a cor principal do Branding."
     },
     "frontend.branding.theme.light.textSidebarPrimary": {
-      "label": "Texto principal da barra lateral"
+      "label": "Texto da barra lateral",
+      "help": "Títulos das conversas, conversa ativa e o que se escreve na pesquisa.",
+      "note": "Também a cor de partida dos ícones da faixa estreita e do chip ativo quando o destaque não se distingue do fundo."
     },
     "frontend.branding.theme.light.textSidebarSecondary": {
-      "label": "Texto secundário da barra lateral"
+      "label": "Texto secundário da barra lateral",
+      "help": "Ícones do topo da barra aberta (exportar e recolher), filtros inativos e a hora da conversa ativa."
     },
     "frontend.branding.theme.light.textSidebarTertiary": {
-      "label": "Texto terciário da barra lateral"
+      "label": "Texto discreto da barra lateral",
+      "help": "Pesquisa vazia, rótulos de grupo, datas («há 1 hora»), «As minhas partilhas» e o «Powered by»."
     },
     "frontend.branding.theme.light.textTertiary": {
-      "label": "Texto terciário"
+      "label": "Texto discreto",
+      "help": "Textos de ajuda dentro das caixas, legendas e horas."
     },
     "frontend.branding.theme.light.traceBubbleBg": {
-      "label": "Fundo do balão de diagnóstico",
-      "help": "Ajuste fino de componente — vazio herda do token semântico correspondente."
+      "label": "Pílula «Como a IA gerou esta resposta»",
+      "help": "Fundo da pílula por cima da resposta. Vazio usa o fundo suave."
     },
     "frontend.branding.theme.light.userBubble": {
-      "label": "Balão do utilizador"
+      "label": "Balão do utilizador",
+      "help": "Fundo das mensagens enviadas pelo utilizador."
     },
     "frontend.branding.theme.light.welcomeCardBg": {
-      "label": "Fundo do cartão de boas-vindas",
-      "help": "Ajuste fino de componente — vazio herda do token semântico correspondente."
+      "label": "Cartões de boas-vindas",
+      "help": "As sugestões do ecrã inicial. Vazio usa o fundo dos cartões."
     },
     "frontend.branding.theme.textSidebarPrimary": {
-      "label": "Texto principal da barra lateral",
-      "help": "Aplica-se a ambos os modos, claro e escuro."
+      "label": "Texto da barra lateral",
+      "help": "Títulos das conversas, conversa ativa e o que se escreve na pesquisa. Vale para os dois modos.",
+      "note": "Também a cor de partida dos ícones da faixa estreita e do chip ativo quando o destaque não se distingue do fundo."
     },
     "frontend.branding.theme.textSidebarSecondary": {
       "label": "Texto secundário da barra lateral",
-      "help": "Aplica-se a ambos os modos, claro e escuro."
+      "help": "Ícones do topo da barra aberta (exportar e recolher), filtros inativos e a hora da conversa ativa. Vale para os dois modos."
     },
     "frontend.branding.theme.textSidebarTertiary": {
-      "label": "Texto terciário da barra lateral",
-      "help": "Aplica-se a ambos os modos, claro e escuro."
+      "label": "Texto discreto da barra lateral",
+      "help": "Pesquisa vazia, rótulos de grupo, datas («há 1 hora»), «As minhas partilhas» e o «Powered by». Vale para os dois modos."
     },
     "frontend.csp.extraConnectSrc": {
       "label": "Origens extra para ligações (CSP)",
