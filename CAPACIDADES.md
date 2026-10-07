@@ -466,6 +466,7 @@ um campo removido do modelo continua a viver no blob sem dar erro.
   retenção e vagas-tipo; lote, paralelismo e deployment são internos. **Não há**
   interruptor da máscara nem do texto escondido — são contrato (D2). Consumidor:
   `tools/cv_analysis/jobs/settings.py` do genai-core.
+- **`frontend.widget.resizable` e `frontend.insightsPanel.clearable` (v0.1.97, 7 Out 2026)**: os dois ligados por omissão e editáveis pelo cliente (`_W`). `resizable` deixa o visitante redimensionar o painel do widget (bordas e canto, tetos 60%/90% do ecrã, proporção 0,55–1,3; tamanho no browser); `panel_width_px`/`panel_height_px` passam a ser o tamanho inicial. `clearable` mostra o botão «Limpar painel» (com «Repor») no painel de insights do fecore. Consumidores: `assets/widget.js` e `insights-panel` do fecore (via `/client-config`, que devolve o `frontend` tal como está); o Studio edita-os no separador Widget e no painel de insights.
 - **`voice.web.engine` escolhe o MOTOR da voz no widget** (v0.1.68, 22 Set 2026): `realtime` (default — o de sempre, zero regressão) ou `live` (GPT-Live full-duplex, com `voice.web.live_deployment`, ex. `gpt-live-1`). Ambos internos: são infra nossa (deployment, região, quota de sessões, fallback automático ao Realtime). Só o widget — o telefone fica no Realtime. Consumidor: `core/handlers/live_web.py`; o Studio cria o deployment quando o motor é `live`.
 - **`tool_limits.attached_inline` põe o documento anexado INTEIRO no contexto**
   (v0.1.72, 25 Set 2026, C5 do parecer Astra), em módulo próprio

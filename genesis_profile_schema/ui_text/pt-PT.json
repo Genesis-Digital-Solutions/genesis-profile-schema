@@ -930,6 +930,10 @@
       "label": "Painel de insights",
       "help": "Painel lateral. Os tipos de visual são lidos pelo backend, que projeta esses visuais no painel em vez de os mostrar na conversa; o resto é consumido pelo frontend."
     },
+    "frontend.insightsPanel.clearable": {
+      "label": "Botão Limpar painel",
+      "help": "Mostra no painel um botão para esconder os gráficos e tabelas da conversa (com Repor). Não apaga mensagens."
+    },
     "frontend.insightsPanel.openOnLoad": {
       "label": "Abrir ao carregar",
       "help": "O painel aparece já aberto quando a conversa abre."
@@ -1139,6 +1143,10 @@
     "frontend.widget.greeting_delay_s": {
       "label": "Atraso da saudação (s)",
       "help": "Segundos até o balão de saudação aparecer. Só conta se houver saudação escrita."
+    },
+    "frontend.widget.resizable": {
+      "label": "Permitir redimensionar",
+      "help": "Quem usa o widget pode alargar o painel arrastando as bordas, dentro de limites; o tamanho fica guardado no browser. A largura e a altura passam a ser o tamanho inicial."
     },
     "frontend.widget.mobile_mode": {
       "label": "Comportamento em telemóvel",

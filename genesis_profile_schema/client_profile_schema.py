@@ -1421,6 +1421,9 @@ class ProfileFrontendInsightsPanel(BaseModel):
 
     title: Union[str, I18nMap] = ""
     openOnLoad: bool = False
+    # Botão «Limpar painel» no cabeçalho (v0.1.97): esconde os visuais atuais
+    # da conversa (só em memória, com «Repor»). Ligado por omissão; false tira-o.
+    clearable: bool = True
     panelTypes: List[str] = Field(default_factory=list)
     quickInsights: List[ProfileFrontendQuickInsight] = Field(default_factory=list)
     providerBadge: Optional[ProfileFrontendProviderBadge] = None
@@ -1634,6 +1637,12 @@ class ProfileFrontendWidget(BaseModel):
     # redondos em cima e backdrop translúcido clicável — o site fica visível
     # por trás (responde à queixa "em mobile parece que o site desapareceu").
     mobile_mode: Literal["fullscreen", "sheet"] = "fullscreen"
+    # Redimensionar o painel à mão (v0.1.97): bordas de cima/lateral e canto,
+    # até 60% da largura e 90% da altura do ecrã, proporção largura/altura
+    # entre 0,55 e 1,3; o tamanho fica no browser do visitante. panel_width_px
+    # / panel_height_px passam a ser o tamanho INICIAL. Ligado por omissão;
+    # false desliga (o site também pode desligar com data-resizable="0").
+    resizable: bool = True
     # [] = qualquer site https pode embeber (frame-ancestors https:);
     # não-vazio → o creator escreve frame-ancestors 'self' + estas origens.
     allowed_origins: List[str] = Field(default_factory=list)

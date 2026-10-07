@@ -930,6 +930,10 @@
       "label": "Insights panel",
       "help": "The side panel. Visual types are read by the backend, which projects those visuals into the panel instead of inline in the conversation; the rest is consumed by the frontend."
     },
+    "frontend.insightsPanel.clearable": {
+      "label": "Clear panel button",
+      "help": "Shows a button in the panel to hide the conversation's charts and tables (with Restore). It does not delete messages."
+    },
     "frontend.insightsPanel.openOnLoad": {
       "label": "Open on load",
       "help": "The panel is already open when the conversation loads."
@@ -1139,6 +1143,10 @@
     "frontend.widget.greeting_delay_s": {
       "label": "Greeting delay (s)",
       "help": "Seconds before the greeting bubble appears. Only applies if a greeting is written."
+    },
+    "frontend.widget.resizable": {
+      "label": "Allow resizing",
+      "help": "People using the widget can enlarge the panel by dragging its edges, within limits; the size is kept in the browser. Width and height become the initial size."
     },
     "frontend.widget.mobile_mode": {
       "label": "Behaviour on mobile",
