@@ -527,7 +527,8 @@ um campo removido do modelo continua a viver no blob sem dar erro.
   `chunk_problems()`, e a caixa de saída GAIBO↔Studio (`settings.json`, pedidos de
   publicação por manifesto, resultados, relatórios de custo). Não é um perfil: é a
   costura partilhada pelo GAIBO, pelo Studio e pelo core. Documento legível em
-  `docs/contrato-indexacao-gaibo.md`.
+  `docs/contrato-indexacao-gaibo.md`. **v0.1.96:** `GaiboSettings.dev_core_url`/`prod_core_url` (origem
+  `https://<host>` do core dev e prod do cliente; prod vazio até à promoção).
 
 ---
 

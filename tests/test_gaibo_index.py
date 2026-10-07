@@ -149,6 +149,24 @@ def test_settings_defaults_off_and_extensions_normalised():
     assert gi.TIER_DEFAULTS["enterprise"]["enabled"] is False
 
 
+def test_settings_core_urls_are_https_origins():
+    s = gi.GaiboSettings()
+    assert s.dev_core_url == "" and s.prod_core_url == ""
+    s = gi.GaiboSettings(dev_core_url="https://Core-Dev.example.azurecontainerapps.io/",
+                         prod_core_url="https://core.example.io:8443")
+    assert s.dev_core_url == "https://core-dev.example.azurecontainerapps.io"
+    assert s.prod_core_url == "https://core.example.io:8443"
+    for bad in ("http://core.example.io", "https://core.example.io/api",
+                "https://core.example.io/?x=1", "https://core.example.io#f",
+                "https://user@core.example.io", "https://", "core.example.io",
+                "https://" + "a" * 260 + ".io"):
+        with pytest.raises(ValidationError):
+            gi.GaiboSettings(dev_core_url=bad)
+    # Fechado: um campo desconhecido continua a ser recusado.
+    with pytest.raises(ValidationError):
+        gi.GaiboSettings(core_url="https://core.example.io")
+
+
 def test_run_report():
     rep = gi.RunReport.model_validate({
         "run_id": "run-abcdefgh12", "origin_ref": "run-abcdefgh12",

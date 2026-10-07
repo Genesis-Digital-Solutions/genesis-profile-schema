@@ -66,6 +66,26 @@ def run_blob(run_id: str) -> str:
     return f"{RUNS_PREFIX}{run_id}.json"
 
 
+_HOST_RE = re.compile(r"^[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?(?:\.[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?)*(?::[0-9]{1,5})?$")
+
+
+def _normalize_core_url(value: str) -> str:
+    """Vazio, ou a origem `https://<host>` (sem caminho, query nem fragmento;
+    a barra final é retirada). Qualquer outra coisa é recusada."""
+    value = (value or "").strip()
+    if not value:
+        return ""
+    if not value.lower().startswith("https://"):
+        raise ValueError("URL do core tem de ser https://")
+    rest = value[len("https://"):]
+    if rest.endswith("/"):
+        rest = rest[:-1]
+    host = rest.lower()
+    if not host or not _HOST_RE.match(host):
+        raise ValueError("URL do core tem de ser só a origem https://<host>")
+    return f"https://{host}"
+
+
 # ── Limites e definições (escreve o Studio) ─────────────────────────────────
 
 # Valores por omissão do tier (pricing de Out 2026, PROVISÓRIOS). Os efetivos de
@@ -115,7 +135,17 @@ class GaiboSettings(BaseModel):
     # Muda sempre que o índice dev é recriado (mesmo com o mesmo nome e o mesmo
     # modelo): quando muda, o GAIBO volta a indexar a sua parte.
     dev_index_generation: str = Field(default="", max_length=128)
+    # Origem (https://<host>, sem caminho) do core do cliente: o dev serve o
+    # teste de pesquisa antes de publicar; o prod é o backoffice depois da
+    # promoção — vazio até à promoção (e a publicação fica escondida).
+    dev_core_url: str = Field(default="", max_length=256)
+    prod_core_url: str = Field(default="", max_length=256)
     updated_at: Optional[AwareDatetime] = None
+
+    @field_validator("dev_core_url", "prod_core_url")
+    @classmethod
+    def _core_url(cls, value: str) -> str:
+        return _normalize_core_url(value)
 
     @field_validator("allowed_extensions")
     @classmethod

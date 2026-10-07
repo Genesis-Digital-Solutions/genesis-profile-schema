@@ -135,6 +135,12 @@ Contentor `gaibo-outbox`, privado, na storage do cliente:
 - **Enterprise:** desligado por omissão. A indexação é feita pela Genesis, que a pode ligar (sem limites)
   se o contrato o pedir.
 - Os limites contam só os documentos `origin='gaibo'`.
+- **URLs do core (v0.1.96):** `dev_core_url` (core DEV do cliente — o teste de pesquisa antes de publicar) e
+  `prod_core_url` (core de produção — o backoffice depois da promoção). Só a origem `https://<host>`, sem
+  caminho, query nem fragmento (a barra final é retirada); vazio = desconhecido. O `prod_core_url` fica vazio
+  até à promoção e, enquanto estiver vazio, o GAIBO esconde a publicação.
+- **Chave de administração do core:** é o segredo `BACKEND-API-KEY` do core, lido do Key Vault de CADA ambiente
+  (dev e prod) com o papel Key Vault Secrets User com âmbito nesse único segredo. Nunca vem no `settings.json`.
 
 **Índice dev recriado:** o `dev_index_generation` do `settings.json` muda sempre que o índice dev é recriado,
 mesmo com o mesmo nome e o mesmo modelo. Quando muda, o GAIBO volta a indexar a sua parte a partir dos originais.
