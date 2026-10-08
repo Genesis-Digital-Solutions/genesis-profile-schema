@@ -2088,6 +2088,24 @@
         "min_age": "Idade mínima legal"
       }
     },
+    "tools.config.verify_documents": {
+      "label": "Verificação Documental"
+    },
+    "tools.config.verify_documents.scheme": {
+      "label": "Esquema dos casos novos",
+      "help": "O caso de uso: que peças existem, o que é requisito e que factos se leem do aviso. Cada caso guarda o seu ao nascer — mudar isto não mexe nos casos que já existem. «concursos@2026.10» fixa a versão.",
+      "options": {
+        "concursos": "Concursos públicos (programa, caderno de encargos, esclarecimentos)"
+      }
+    },
+    "tools.config.verify_documents.parallelism": {
+      "label": "Lotes lidos em paralelo",
+      "help": "Entre 1 e 8. Com 4, um caderno de 226 páginas leva cerca de 8 minutos (20 com 1). Limitado pela quota de tokens por minuto do modelo do cliente."
+    },
+    "tools.config.verify_documents.deployment": {
+      "label": "Modelo da verificação",
+      "help": "Vazio usa o modelo do assistente."
+    },
     "tools.config.extract_legal_terms": {
       "label": "Extração de termos legais",
       "help": "Motor de extração documental com esquema próprio por perfil. Cada campo é devolvido com o valor e a referência de página ou cláusula onde foi encontrado."

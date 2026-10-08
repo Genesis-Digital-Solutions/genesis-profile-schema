@@ -605,6 +605,7 @@ class ProfileToolRunCodeConfig(BaseModel):
 
 
 from genesis_profile_schema.tool_cv_analysis import ProfileToolCvAnalysisConfig  # noqa: E402
+from genesis_profile_schema.tool_doc_verification import ProfileToolDocVerificationConfig  # noqa: E402
 from genesis_profile_schema.queue_fields import QueueFields  # noqa: E402
 from genesis_profile_schema.intake_schema import ProfileIntake  # noqa: E402
 
@@ -621,6 +622,7 @@ _KNOWN_TOOL_CONFIG_MODELS: Dict[str, Any] = {
     "read_attached_document": ProfileToolReadAttachedDocumentConfig,
     "recall_past_conversations": ProfileToolRecallPastConversationsConfig,
     "analyse_cv": ProfileToolCvAnalysisConfig,
+    "verify_documents": ProfileToolDocVerificationConfig,
 }
 
 

@@ -127,6 +127,10 @@ CONTROL_OVERRIDES: Dict[str, str] = {
     "tools.config.extract_legal_terms.prompt_preset": COMBOBOX,
     "tools.config.generate_boq.prompt_preset": COMBOBOX,
     "tools.config.analyse_cv.prompt_preset": COMBOBOX,
+    # Esquema da Verificação Documental: a biblioteca é `SCHEMES` em
+    # tools/doc_verification/engine/schemes.py do genai-core (idem: texto com
+    # sugestões; um esquema desconhecido cai no por omissão, registado).
+    "tools.config.verify_documents.scheme": COMBOBOX,
 
     # ── lista fechada que o schema tipa como texto ───────────────────────
     # O espaço de valores é `languages.UI_LANGS` (as línguas que o fecore sabe

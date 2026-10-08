@@ -2088,6 +2088,24 @@
         "min_age": "Legal minimum age"
       }
     },
+    "tools.config.verify_documents": {
+      "label": "Document Verification"
+    },
+    "tools.config.verify_documents.scheme": {
+      "label": "Scheme for new cases",
+      "help": "The use case: which documents exist, what counts as a requirement and which facts are read from the notice. Each case keeps its own from creation — changing this does not touch existing cases. «concursos@2026.10» pins the version.",
+      "options": {
+        "concursos": "Public tenders (programme, specifications, clarifications)"
+      }
+    },
+    "tools.config.verify_documents.parallelism": {
+      "label": "Batches read in parallel",
+      "help": "Between 1 and 8. With 4, a 226-page specification takes about 8 minutes (20 with 1). Bounded by the tokens-per-minute quota of the client's model."
+    },
+    "tools.config.verify_documents.deployment": {
+      "label": "Verification model",
+      "help": "Empty uses the assistant's model."
+    },
     "tools.config.extract_legal_terms": {
       "label": "Legal term extraction",
       "help": "A document extraction engine with a per-profile schema. Each field comes back with its value and the page or clause reference where it was found."
