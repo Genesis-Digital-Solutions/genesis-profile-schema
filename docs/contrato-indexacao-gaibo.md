@@ -82,7 +82,13 @@ Antes de enviar um lote, `chunk_problems(doc)` tem de devolver uma lista vazia.
   um documento do Studio não colide: as identidades são diferentes, e o GAIBO não avisa disso.
 - **Índice dev recriado:** se o Studio recriar o índice (por exemplo, ao mudar o modelo de embeddings), os
   documentos do GAIBO desaparecem. O GAIBO deteta-o pela mudança de `dev_index_generation` no `settings.json` e
-  volta a indexar a partir dos originais.
+  volta a indexar a partir dos originais. Nesse `RunReport`, cada documento leva a ação **`reindexed`** (v0.1.103),
+  que **não conta** no limite mensal: o cliente não a pediu. Usa-se só nesse caso.
+- **Substituir acima da capacidade (v0.1.103):** se o plano baixar e o cliente ficar acima de `max_documents` ou de
+  `max_total_mb`, substituir continua permitido desde que **não aumente** o número de documentos nem o total de MB
+  (ou que o total fique dentro do limite). O `max_file_mb` aplica-se sempre, e a substituição conta no limite mensal.
+  Novos documentos ficam recusados até o cliente voltar a caber.
+- **Apagar** é sempre permitido: acima da capacidade, no limite mensal e com o cliente desligado (§5).
 
 ## 4. Publicação em produção — por manifesto
 
@@ -136,6 +142,15 @@ Contentor `gaibo-outbox`, privado, na storage do cliente:
 
 **`settings.json`:**
 - `enabled` vem a `false` por omissão.
+- **Cliente desligado (`enabled: false`, v0.1.103):** nada entra: sem indexações, substituições nem publicações.
+  O cliente **pode apagar** os seus documentos: no dev, os chunks `origin eq 'gaibo'` e os originais em
+  `gaibo-sources`; em produção, por um pedido em que **todas** as entradas sejam `remove`, que o Studio continua a
+  aceitar e a executar, com a aprovação da Genesis. Um pedido com publicações fica por responder até o cliente
+  voltar a ser ligado.
+- **Chaves sempre presentes (v0.1.103):** o Studio escreve sempre `enabled` e todos os limites
+  (`REQUIRED_SETTINGS_KEYS`), com `null` explícito quando não há limite. Uma chave **ausente** não foi escrita pelo
+  Studio: o ficheiro não vale e o GAIBO não indexa (`settings_missing_keys(json_lido)` tem de devolver lista
+  vazia). O modelo, sozinho, não distingue «sem limite» de «não escrito».
 - Traz também `auto_approve`, os limites efetivos do cliente (`max_documents`, `max_total_mb`, `max_file_mb` e
   `allowed_extensions`), o modelo do Document Intelligence (`di_model`), o serviço de pesquisa, o índice dev, o deployment de embeddings e as dimensões.
 - Os valores por tier (`TIER_DEFAULTS`) são provisórios e só servem de ponto de partida no Studio.
@@ -153,7 +168,7 @@ mesmo com o mesmo nome e o mesmo modelo. Quando muda, o GAIBO volta a indexar a 
 
 **Limite mensal e desbloqueio (v0.1.101).** Além da capacidade (documentos e MB vivos ao mesmo tempo), há um
 limite de **documentos indexados ou substituídos por mês civil** (UTC), `max_documents_per_month`, que o GAIBO
-conta a partir das suas execuções (`runs/`): as entradas `indexed` e `replaced` de cada `RunReport` contam no mês do
+conta a partir das suas execuções (`runs/`): as entradas `indexed` e `replaced` (nunca `reindexed`) de cada `RunReport` contam no mês do
 seu **`started_at` (UTC)**, e o Studio conta da mesma forma (uma execução que atravessa a meia-noite de dia 1 conta
 no mês em que começou):
 - avisa o cliente a 70% e a 90%;
@@ -178,6 +193,9 @@ limites, só em ambientes da Genesis). O plano de cada cliente é definido apena
 
 **`runs/`:** um relatório por execução, com o custo real — páginas Read e Layout em separado, tokens de
 enriquecimento (entrada e saída) e tokens de embeddings.
+
+**Validadores exportados (v0.1.103):** `is_valid_origin_ref`, `is_valid_request_id` e `is_valid_run_id` — não
+repitam os padrões do vosso lado.
 
 Um ficheiro que não valide contra o modelo é tratado como inválido e reportado, nunca saltado em silêncio.
 Todas as datas levam fuso (ISO 8601 com `Z` ou `+hh:mm`); uma data sem fuso é inválida.

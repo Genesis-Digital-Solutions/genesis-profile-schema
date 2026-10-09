@@ -531,7 +531,7 @@ um campo removido do modelo continua a viver no blob sem dar erro.
   forks Salmon e Demos ainda não o declaram (`extra="forbid"`) e serão
   sincronizadas com o base.
 
-- **Contrato da indexação pelo GAIBO (v0.1.92, `gaibo_index/`; v0.1.101: limite mensal com desbloqueio, recursos do cliente para indexar e planos `demo`/`pilot`/`internal`; v0.1.102: `di_model` por plano — Read no Starter/Demo, Layout nos restantes, via `extraction_for()` — e Enterprise ligado sem limites).** O formato de um
+- **Contrato da indexação pelo GAIBO (v0.1.92, `gaibo_index/`; v0.1.101: limite mensal com desbloqueio, recursos do cliente para indexar e planos `demo`/`pilot`/`internal`; v0.1.102: `di_model` por plano — Read no Starter/Demo, Layout nos restantes, via `extraction_for()` — e Enterprise ligado sem limites; v0.1.103: ação `reindexed` fora do limite mensal, `settings_missing_keys`/`REQUIRED_SETTINGS_KEYS`, validadores `is_valid_origin_ref/request_id/run_id` e as regras de apagar com o cliente desligado e de substituir acima da capacidade).** O formato de um
   chunk do GAIBO no índice dev (`origin`/`origin_ref`, `source_file` =
   `gaibo/<chave>/<nome>`, ids `gaibo_`, o JSON `metadata` que o core lê) com
   `chunk_problems()`, e a caixa de saída GAIBO↔Studio (`settings.json`, pedidos de

@@ -25,7 +25,7 @@ As remoções são entradas explícitas.
 from __future__ import annotations
 
 import re
-from typing import List, Literal, Optional
+from typing import Any, List, Literal, Optional
 
 from pydantic import AwareDatetime, BaseModel, ConfigDict, Field, field_validator, model_validator
 
@@ -47,6 +47,21 @@ MAX_ITEMS_PER_REQUEST = 5000
 MAX_CHUNKS_PER_DOCUMENT = 20000
 
 _CLOSED = ConfigDict(extra="forbid")
+
+
+def is_valid_request_id(value: Any) -> bool:
+    """`pr-` + 8 a 40 de [a-z0-9] (v0.1.103: exportado para o GAIBO não repetir o padrão)."""
+    return isinstance(value, str) and bool(_REQUEST_ID_RE.match(value))
+
+
+def is_valid_run_id(value: Any) -> bool:
+    """`run-` + 8 a 40 de [a-z0-9]."""
+    return isinstance(value, str) and bool(_RUN_ID_RE.match(value))
+
+
+def is_valid_origin_ref(value: Any) -> bool:
+    """1 a 64 de [A-Za-z0-9_-] — a execução do GAIBO que produziu os chunks."""
+    return isinstance(value, str) and bool(_ORIGIN_REF_RE.match(value))
 
 
 def request_blob(request_id: str) -> str:
@@ -133,6 +148,22 @@ TIER_DEFAULTS = {
         "allowed_extensions": list(_PROFESSIONAL_EXTS), "di_model": "layout",
     },
 }
+
+#: Chaves que o Studio escreve SEMPRE no `settings.json` (v0.1.103). Nos limites,
+#: `null` explícito = sem limite; uma chave AUSENTE não foi escrita pelo Studio e o
+#: ficheiro não vale (o GAIBO não indexa) — ver `settings_missing_keys`.
+REQUIRED_SETTINGS_KEYS = ("enabled", "max_documents", "max_total_mb", "max_file_mb",
+                          "max_documents_per_month", "allowed_extensions")
+
+
+def settings_missing_keys(raw: Any) -> List[str]:
+    """As `REQUIRED_SETTINGS_KEYS` que faltam no JSON lido do `settings.json` (lista
+    vazia = completo). O modelo, sozinho, não distingue «sem limite» de «não escrito»:
+    os dois chegam como `None`. Não-dicionário → todas em falta."""
+    if not isinstance(raw, dict):
+        return list(REQUIRED_SETTINGS_KEYS)
+    return [k for k in REQUIRED_SETTINGS_KEYS if k not in raw]
+
 
 class GaiboSettings(BaseModel):
     """`settings.json` — o que o GAIBO pode fazer neste cliente.
@@ -323,7 +354,10 @@ class RunDocument(BaseModel):
     model_config = _CLOSED
 
     source_file: str = Field(max_length=300)
-    action: Literal["indexed", "replaced", "deleted", "failed"]
+    # `reindexed` (v0.1.103): o GAIBO voltou a indexar o documento porque o
+    # `dev_index_generation` mudou (o Studio recriou o índice dev). Não conta no
+    # limite mensal — o cliente não o pediu; o custo fica no relatório na mesma.
+    action: Literal["indexed", "replaced", "reindexed", "deleted", "failed"]
     chunks: int = Field(default=0, ge=0)
     bytes: int = Field(default=0, ge=0)
     content_sha256: str = Field(default="", max_length=64)

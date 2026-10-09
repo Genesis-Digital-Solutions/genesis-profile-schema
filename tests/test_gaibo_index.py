@@ -239,3 +239,17 @@ def test_di_model_by_plan_and_extraction():
         layout.extraction_for(".exe")
     with pytest.raises(ValueError):
         gi.extraction_for(".pdf", "ocr")
+
+
+def test_v0_1_103_validators_settings_keys_and_reindexed():
+    assert gi.is_valid_origin_ref("run_1-A") and not gi.is_valid_origin_ref("a b")
+    assert not gi.is_valid_origin_ref("x" * 65) and not gi.is_valid_origin_ref(None)
+    assert gi.is_valid_request_id("pr-abcdefgh01") and not gi.is_valid_request_id("pr-ABCDEFGH01")
+    assert gi.is_valid_run_id("run-abcdefgh01") and not gi.is_valid_run_id("pr-abcdefgh01")
+    full = gi.GaiboSettings().model_dump(mode="json")
+    assert gi.settings_missing_keys(full) == []           # o modelo inteiro (o que o Studio grava)
+    del full["max_documents"]
+    assert gi.settings_missing_keys(full) == ["max_documents"]
+    assert gi.settings_missing_keys(None) == list(gi.REQUIRED_SETTINGS_KEYS)
+    doc = gi.RunDocument(source_file=gi.source_file_for("j-abcdefgh", "a.pdf"), action="reindexed")
+    assert doc.action == "reindexed"
