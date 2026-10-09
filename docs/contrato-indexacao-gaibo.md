@@ -147,7 +147,9 @@ mesmo com o mesmo nome e o mesmo modelo. Quando muda, o GAIBO volta a indexar a 
 
 **Limite mensal e desbloqueio (v0.1.101).** Além da capacidade (documentos e MB vivos ao mesmo tempo), há um
 limite de **documentos indexados ou substituídos por mês civil** (UTC), `max_documents_per_month`, que o GAIBO
-conta a partir das suas execuções (`runs/`):
+conta a partir das suas execuções (`runs/`): as entradas `indexed` e `replaced` de cada `RunReport` contam no mês do
+seu **`started_at` (UTC)**, e o Studio conta da mesma forma (uma execução que atravessa a meia-noite de dia 1 conta
+no mês em que começou):
 - avisa o cliente a 70% e a 90%;
 - a 100% recusa novas indexações até ao dia 1 (apagar continua a funcionar);
 - se o cliente pedir, a Genesis desbloqueia no Studio: `extra_documents` documentos a mais, válidos só no mês
