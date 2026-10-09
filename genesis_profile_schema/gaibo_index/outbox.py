@@ -40,6 +40,7 @@ RUNS_PREFIX = "runs/"
 _REQUEST_ID_RE = re.compile(r"^pr-[a-z0-9]{8,40}$")
 _RUN_ID_RE = re.compile(r"^run-[a-z0-9]{8,40}$")
 _ORIGIN_REF_RE = re.compile(r"^[A-Za-z0-9_-]{1,64}$")
+_MONTH_RE = re.compile(r"^\d{4}-(0[1-9]|1[0-2])$")
 _EXT_RE = re.compile(r"^\.[a-z0-9]{1,8}$")
 
 MAX_ITEMS_PER_REQUEST = 5000
@@ -90,22 +91,43 @@ def _normalize_core_url(value: str) -> str:
 
 # Valores por omissão do tier (pricing de Out 2026, PROVISÓRIOS). Os efetivos de
 # cada cliente estão no settings.json — o GAIBO nunca usa estes diretamente.
+_PROFESSIONAL_EXTS = (".pdf", ".docx", ".txt", ".md", ".xlsx", ".pptx",
+                      ".png", ".jpg", ".jpeg", ".tif", ".tiff")
+
 TIER_DEFAULTS = {
     "starter": {
         "enabled": True, "max_documents": 100, "max_total_mb": 50,
-        "max_file_mb": 5, "allowed_extensions": [".pdf", ".docx", ".txt", ".md"],
+        "max_file_mb": 5, "max_documents_per_month": 100,
+        "allowed_extensions": [".pdf", ".docx", ".txt", ".md"],
     },
     "professional": {
         "enabled": True, "max_documents": 1000, "max_total_mb": 500,
-        "max_file_mb": 25,
-        "allowed_extensions": [".pdf", ".docx", ".txt", ".md", ".xlsx", ".pptx",
-                               ".png", ".jpg", ".jpeg", ".tif", ".tiff"],
+        "max_file_mb": 25, "max_documents_per_month": 1000,
+        "allowed_extensions": list(_PROFESSIONAL_EXTS),
+    },
+    # Planos internos (9 Out 2026): demo = Starter; pilot (comercial, 90 dias) =
+    # Professional, o que o cliente vai comprar; internal = ambientes da Genesis,
+    # sem limites (o Studio só o aceita em subscrições da Genesis).
+    "demo": {
+        "enabled": True, "max_documents": 100, "max_total_mb": 50,
+        "max_file_mb": 5, "max_documents_per_month": 100,
+        "allowed_extensions": [".pdf", ".docx", ".txt", ".md"],
+    },
+    "pilot": {
+        "enabled": True, "max_documents": 1000, "max_total_mb": 500,
+        "max_file_mb": 25, "max_documents_per_month": 1000,
+        "allowed_extensions": list(_PROFESSIONAL_EXTS),
+    },
+    "internal": {
+        "enabled": True, "max_documents": None, "max_total_mb": None,
+        "max_file_mb": None, "max_documents_per_month": None,
+        "allowed_extensions": list(_PROFESSIONAL_EXTS),
     },
     # Enterprise: a indexação é feita pela Genesis no Studio. Desligado por
     # omissão; a Genesis pode ligá-lo (sem limites de tier) se o contrato pedir.
     "enterprise": {
         "enabled": False, "max_documents": None, "max_total_mb": None,
-        "max_file_mb": None, "allowed_extensions": [],
+        "max_file_mb": None, "max_documents_per_month": None, "allowed_extensions": [],
     },
 }
 
@@ -140,9 +162,36 @@ class GaiboSettings(BaseModel):
     # promoção — vazio até à promoção (e a publicação fica escondida).
     dev_core_url: str = Field(default="", max_length=256)
     prod_core_url: str = Field(default="", max_length=256)
+    # Recursos do PRÓPRIO cliente que o GAIBO usa para indexar (v0.1.101): o
+    # Document Intelligence é o AI Services do cliente, nunca um recurso central.
+    aoai_endpoint: str = Field(default="", max_length=256)
+    di_endpoint: str = Field(default="", max_length=256)
+    enrichment_deployment: str = Field(default="", max_length=128)
+    # Limite MENSAL (v0.1.101): documentos indexados ou substituídos no mês civil
+    # (UTC), contados pelo GAIBO a partir das suas execuções. None = sem limite.
+    # Ao chegar a 100% o GAIBO recusa novas indexações até dia 1 (apagar continua);
+    # avisa a 70% e a 90%. A Genesis pode desbloquear: `extra_documents` vale só
+    # no mês `extra_documents_month` (caduca sozinho).
+    max_documents_per_month: Optional[int] = Field(default=None, ge=0, le=1_000_000)
+    extra_documents: int = Field(default=0, ge=0, le=1_000_000)
+    extra_documents_month: str = Field(default="", max_length=7)
     updated_at: Optional[AwareDatetime] = None
 
-    @field_validator("dev_core_url", "prod_core_url")
+    @field_validator("extra_documents_month")
+    @classmethod
+    def _month(cls, value: str) -> str:
+        if value and not _MONTH_RE.match(value):
+            raise ValueError("mês inválido (AAAA-MM)")
+        return value
+
+    def monthly_allowance(self, month: str) -> Optional[int]:
+        """Documentos que se podem indexar no mês `AAAA-MM` (None = sem limite)."""
+        if self.max_documents_per_month is None:
+            return None
+        extra = self.extra_documents if self.extra_documents_month == month else 0
+        return self.max_documents_per_month + extra
+
+    @field_validator("dev_core_url", "prod_core_url", "aoai_endpoint", "di_endpoint")
     @classmethod
     def _core_url(cls, value: str) -> str:
         return _normalize_core_url(value)

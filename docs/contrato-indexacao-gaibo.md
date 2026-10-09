@@ -145,6 +145,23 @@ Contentor `gaibo-outbox`, privado, na storage do cliente:
 **Índice dev recriado:** o `dev_index_generation` do `settings.json` muda sempre que o índice dev é recriado,
 mesmo com o mesmo nome e o mesmo modelo. Quando muda, o GAIBO volta a indexar a sua parte a partir dos originais.
 
+**Limite mensal e desbloqueio (v0.1.101).** Além da capacidade (documentos e MB vivos ao mesmo tempo), há um
+limite de **documentos indexados ou substituídos por mês civil** (UTC), `max_documents_per_month`, que o GAIBO
+conta a partir das suas execuções (`runs/`):
+- avisa o cliente a 70% e a 90%;
+- a 100% recusa novas indexações até ao dia 1 (apagar continua a funcionar);
+- se o cliente pedir, a Genesis desbloqueia no Studio: `extra_documents` documentos a mais, válidos só no mês
+  `extra_documents_month`, a seguir caducam sozinhos. O total do mês é `monthly_allowance(mês)`;
+- `null` = sem limite (por exemplo, o plano `internal`).
+
+**Recursos do cliente para indexar (v0.1.101).** O `settings.json` traz também `aoai_endpoint`, `di_endpoint` e
+`enrichment_deployment`, preenchidos pelo Studio a partir do dev do cliente. O Document Intelligence é **sempre**
+o AI Services do próprio cliente, nunca um recurso central da Genesis.
+
+**Planos.** Os valores por omissão de cada plano estão em `TIER_DEFAULTS`: `starter`, `professional`,
+`enterprise` e, desde a v0.1.101, `demo` (como o Starter), `pilot` (como o Professional) e `internal` (sem
+limites, só em ambientes da Genesis). O plano de cada cliente é definido apenas no Studio.
+
 **`runs/`:** um relatório por execução, com o custo real — páginas Read e Layout em separado, tokens de
 enriquecimento (entrada e saída) e tokens de embeddings.
 

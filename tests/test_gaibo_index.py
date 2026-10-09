@@ -182,3 +182,33 @@ def test_package_data_and_subpackage_declared():
     from pathlib import Path
     text = (Path(__file__).resolve().parents[1] / "pyproject.toml").read_text(encoding="utf-8")
     assert "genesis_profile_schema.gaibo_index" in text
+
+
+def test_monthly_limit_and_unlock_v0_1_101():
+    s = gi.GaiboSettings(max_documents_per_month=100, extra_documents=40,
+                         extra_documents_month="2026-10")
+    assert s.monthly_allowance("2026-10") == 140      # desbloqueio vale só nesse mês
+    assert s.monthly_allowance("2026-11") == 100      # caduca sozinho
+    assert gi.GaiboSettings().monthly_allowance("2026-10") is None   # sem limite
+    with pytest.raises(ValidationError):
+        gi.GaiboSettings(extra_documents_month="2026-13")
+    with pytest.raises(ValidationError):
+        gi.GaiboSettings(extra_documents=-1)
+
+
+def test_client_resource_endpoints_are_https_origins():
+    s = gi.GaiboSettings(aoai_endpoint="https://oai-x.cognitiveservices.azure.com/",
+                         di_endpoint="https://oai-x.cognitiveservices.azure.com",
+                         enrichment_deployment="gpt-4.1-mini")
+    assert s.aoai_endpoint == s.di_endpoint == "https://oai-x.cognitiveservices.azure.com"
+    with pytest.raises(ValidationError):
+        gi.GaiboSettings(di_endpoint="http://x.cognitiveservices.azure.com")
+
+
+def test_internal_plans_defaults():
+    td = gi.TIER_DEFAULTS
+    assert td["demo"]["max_documents"] == td["starter"]["max_documents"] == 100
+    assert td["pilot"]["max_documents"] == td["professional"]["max_documents"] == 1000
+    assert td["internal"]["max_documents"] is None and td["internal"]["max_documents_per_month"] is None
+    for name, d in td.items():
+        assert "max_documents_per_month" in d, name
