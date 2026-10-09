@@ -61,6 +61,13 @@ Antes de enviar um lote, `chunk_problems(doc)` tem de devolver uma lista vazia.
 | DOCX | `prebuilt-read` |
 | TXT e MD | texto direto |
 
+**Modelo por plano (v0.1.102).** O `settings.json` traz `di_model`:
+- **`layout`** (Professional, Pilot, Internal, Enterprise): a tabela acima.
+- **`read`** (Starter, Demo): o que a tabela manda para o Layout vai para o `prebuilt-read`. O Read lê o texto,
+  também de PDF digitalizados, mas não devolve tabelas nem secções, por isso a regra das tabelas não se aplica.
+- Campo ausente (um `settings.json` antigo) = `layout`.
+- Usem sempre `settings.extraction_for(extensão)`, que junta a tabela e o modelo do plano.
+
 - **Diferença face ao Studio (intencional):** o Studio extrai com `prebuilt-read` e acrescenta Vision. O GAIBO
   não tem Vision, e o Layout compensa nas tabelas. O custo por página é maior.
 - **Texto:** blocos de 512 tokens, com sobreposição de 100.
@@ -130,10 +137,9 @@ Contentor `gaibo-outbox`, privado, na storage do cliente:
 **`settings.json`:**
 - `enabled` vem a `false` por omissão.
 - Traz também `auto_approve`, os limites efetivos do cliente (`max_documents`, `max_total_mb`, `max_file_mb` e
-  `allowed_extensions`), o serviço de pesquisa, o índice dev, o deployment de embeddings e as dimensões.
+  `allowed_extensions`), o modelo do Document Intelligence (`di_model`), o serviço de pesquisa, o índice dev, o deployment de embeddings e as dimensões.
 - Os valores por tier (`TIER_DEFAULTS`) são provisórios e só servem de ponto de partida no Studio.
-- **Enterprise:** desligado por omissão. A indexação é feita pela Genesis, que a pode ligar (sem limites)
-  se o contrato o pedir.
+- **Enterprise (v0.1.102):** ligado, sem limites, com todos os tipos de ficheiro e o Layout.
 - Os limites contam só os documentos `origin='gaibo'`.
 - **URLs do core (v0.1.96):** `dev_core_url` (core DEV do cliente — o teste de pesquisa antes de publicar) e
   `prod_core_url` (core de produção — o backoffice depois da promoção). Só a origem `https://<host>`, sem
@@ -163,6 +169,12 @@ o AI Services do próprio cliente, nunca um recurso central da Genesis.
 **Planos.** Os valores por omissão de cada plano estão em `TIER_DEFAULTS`: `starter`, `professional`,
 `enterprise` e, desde a v0.1.101, `demo` (como o Starter), `pilot` (como o Professional) e `internal` (sem
 limites, só em ambientes da Genesis). O plano de cada cliente é definido apenas no Studio.
+
+| Plano | Limites | Document Intelligence |
+|---|---|---|
+| `starter`, `demo` | 100 docs / 50 MB / 5 MB; 100 por mês; PDF, Word, texto | Read |
+| `professional`, `pilot` | 1.000 docs / 500 MB / 25 MB; 1.000 por mês; mais Excel, PowerPoint, imagens | Layout |
+| `internal`, `enterprise` | sem limites; todos os tipos | Layout |
 
 **`runs/`:** um relatório por execução, com o custo real — páginas Read e Layout em separado, tokens de
 enriquecimento (entrada e saída) e tokens de embeddings.

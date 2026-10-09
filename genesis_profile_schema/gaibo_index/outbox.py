@@ -29,7 +29,7 @@ from typing import List, Literal, Optional
 
 from pydantic import AwareDatetime, BaseModel, ConfigDict, Field, field_validator, model_validator
 
-from .index_fields import CONTRACT_VERSION, is_gaibo_source
+from .index_fields import CONTRACT_VERSION, extraction_for, is_gaibo_source
 
 OUTBOX_CONTAINER = "gaibo-outbox"
 SETTINGS_BLOB = "settings.json"
@@ -95,15 +95,17 @@ _PROFESSIONAL_EXTS = (".pdf", ".docx", ".txt", ".md", ".xlsx", ".pptx",
                       ".png", ".jpg", ".jpeg", ".tif", ".tiff")
 
 TIER_DEFAULTS = {
+    # `di_model` (v0.1.102): Starter e Demo extraem com o Read (barato, sem
+    # tabelas); os restantes com o Layout (ver EXTRACTION_BY_EXTENSION).
     "starter": {
         "enabled": True, "max_documents": 100, "max_total_mb": 50,
         "max_file_mb": 5, "max_documents_per_month": 100,
-        "allowed_extensions": [".pdf", ".docx", ".txt", ".md"],
+        "allowed_extensions": [".pdf", ".docx", ".txt", ".md"], "di_model": "read",
     },
     "professional": {
         "enabled": True, "max_documents": 1000, "max_total_mb": 500,
         "max_file_mb": 25, "max_documents_per_month": 1000,
-        "allowed_extensions": list(_PROFESSIONAL_EXTS),
+        "allowed_extensions": list(_PROFESSIONAL_EXTS), "di_model": "layout",
     },
     # Planos internos (9 Out 2026): demo = Starter; pilot (comercial, 90 dias) =
     # Professional, o que o cliente vai comprar; internal = ambientes da Genesis,
@@ -111,26 +113,26 @@ TIER_DEFAULTS = {
     "demo": {
         "enabled": True, "max_documents": 100, "max_total_mb": 50,
         "max_file_mb": 5, "max_documents_per_month": 100,
-        "allowed_extensions": [".pdf", ".docx", ".txt", ".md"],
+        "allowed_extensions": [".pdf", ".docx", ".txt", ".md"], "di_model": "read",
     },
     "pilot": {
         "enabled": True, "max_documents": 1000, "max_total_mb": 500,
         "max_file_mb": 25, "max_documents_per_month": 1000,
-        "allowed_extensions": list(_PROFESSIONAL_EXTS),
+        "allowed_extensions": list(_PROFESSIONAL_EXTS), "di_model": "layout",
     },
     "internal": {
         "enabled": True, "max_documents": None, "max_total_mb": None,
         "max_file_mb": None, "max_documents_per_month": None,
-        "allowed_extensions": list(_PROFESSIONAL_EXTS),
+        "allowed_extensions": list(_PROFESSIONAL_EXTS), "di_model": "layout",
     },
-    # Enterprise: a indexação é feita pela Genesis no Studio. Desligado por
-    # omissão; a Genesis pode ligá-lo (sem limites de tier) se o contrato pedir.
+    # Enterprise (v0.1.102): ligado e sem limites, com todos os tipos e o Layout.
+    # Antes nascia desligado e sem tipos, o que parecia um erro a quem o abria.
     "enterprise": {
-        "enabled": False, "max_documents": None, "max_total_mb": None,
-        "max_file_mb": None, "max_documents_per_month": None, "allowed_extensions": [],
+        "enabled": True, "max_documents": None, "max_total_mb": None,
+        "max_file_mb": None, "max_documents_per_month": None,
+        "allowed_extensions": list(_PROFESSIONAL_EXTS), "di_model": "layout",
     },
 }
-
 
 class GaiboSettings(BaseModel):
     """`settings.json` — o que o GAIBO pode fazer neste cliente.
@@ -167,6 +169,10 @@ class GaiboSettings(BaseModel):
     aoai_endpoint: str = Field(default="", max_length=256)
     di_endpoint: str = Field(default="", max_length=256)
     enrichment_deployment: str = Field(default="", max_length=128)
+    # Modelo do Document Intelligence (v0.1.102): `read` (Starter, Demo) ou
+    # `layout`. Ausente num settings.json antigo → `layout`, o comportamento de
+    # antes. Usar sempre `extraction_for(extensão)`.
+    di_model: Literal["read", "layout"] = "layout"
     # Limite MENSAL (v0.1.101): documentos indexados ou substituídos no mês civil
     # (UTC), contados pelo GAIBO a partir das suas execuções. None = sem limite.
     # Ao chegar a 100% o GAIBO recusa novas indexações até dia 1 (apagar continua);
@@ -190,6 +196,10 @@ class GaiboSettings(BaseModel):
             return None
         extra = self.extra_documents if self.extra_documents_month == month else 0
         return self.max_documents_per_month + extra
+
+    def extraction_for(self, extension: str) -> str:
+        """Extração de um ficheiro neste cliente (extensão + `di_model`)."""
+        return extraction_for(extension, self.di_model)
 
     @field_validator("dev_core_url", "prod_core_url", "aoai_endpoint", "di_endpoint")
     @classmethod

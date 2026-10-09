@@ -146,7 +146,9 @@ def test_settings_defaults_off_and_extensions_normalised():
     assert s.allowed_extensions == [".pdf", ".docx"]
     with pytest.raises(ValidationError):
         gi.GaiboSettings(allowed_extensions=["pdf"])
-    assert gi.TIER_DEFAULTS["enterprise"]["enabled"] is False
+    ent = gi.TIER_DEFAULTS["enterprise"]
+    assert ent["enabled"] is True and ent["max_documents"] is None
+    assert ent["max_documents_per_month"] is None and ".pdf" in ent["allowed_extensions"]
 
 
 def test_settings_core_urls_are_https_origins():
@@ -212,3 +214,28 @@ def test_internal_plans_defaults():
     assert td["internal"]["max_documents"] is None and td["internal"]["max_documents_per_month"] is None
     for name, d in td.items():
         assert "max_documents_per_month" in d, name
+
+
+def test_di_model_by_plan_and_extraction():
+    td = gi.TIER_DEFAULTS
+    assert td["starter"]["di_model"] == td["demo"]["di_model"] == "read"
+    for name in ("professional", "pilot", "internal", "enterprise"):
+        assert td[name]["di_model"] == "layout", name
+    for name, d in td.items():
+        gi.GaiboSettings(**d)  # todos os defaults validam no modelo
+    # settings.json antigo, sem o campo → Layout (o comportamento de antes)
+    assert gi.GaiboSettings().di_model == "layout"
+    with pytest.raises(ValidationError):
+        gi.GaiboSettings(di_model="ocr")
+    read = gi.GaiboSettings(di_model="read")
+    assert read.extraction_for(".PDF") == "prebuilt-read"
+    assert read.extraction_for(".png") == "prebuilt-read"
+    assert read.extraction_for(".docx") == "prebuilt-read"
+    assert read.extraction_for(".md") == "text"
+    layout = gi.GaiboSettings()
+    assert layout.extraction_for(".pdf") == "prebuilt-layout"
+    assert layout.extraction_for(".docx") == "prebuilt-read"
+    with pytest.raises(ValueError):
+        layout.extraction_for(".exe")
+    with pytest.raises(ValueError):
+        gi.extraction_for(".pdf", "ocr")

@@ -100,6 +100,27 @@ EXTRACTION_BY_EXTENSION = {
     ".txt": "text", ".md": "text",
 }
 
+# Modelo do Document Intelligence por plano (v0.1.102, 9 Out 2026): `layout`
+# segue a tabela acima; `read` (Starter e Demo) troca o Layout pelo Read, mais
+# barato: lê o texto (também de digitalizados), mas não devolve tabelas nem
+# secções. O plano diz qual, no `settings.json` (`di_model`).
+DI_MODELS = ("read", "layout")
+
+
+def extraction_for(extension: str, di_model: str = "layout") -> str:
+    """Extração de um ficheiro com a extensão dada e o modelo do plano.
+
+    Extensão fora da tabela ou modelo desconhecido → ValueError (nunca um
+    palpite: o ficheiro não se indexa)."""
+    if di_model not in DI_MODELS:
+        raise ValueError(f"modelo do Document Intelligence inválido: {di_model!r}")
+    model = EXTRACTION_BY_EXTENSION.get((extension or "").strip().lower())
+    if model is None:
+        raise ValueError(f"extensão sem extração definida: {extension!r}")
+    if di_model == "read" and model == "prebuilt-layout":
+        return "prebuilt-read"
+    return model
+
 _PAGE_FRAGMENT_RE = re.compile(r"^page=\d{1,6}$")
 
 

@@ -23,6 +23,7 @@ from .index_fields import (
     CHUNK_ID_PREFIX,
     CHUNKING,
     CONTRACT_VERSION,
+    DI_MODELS,
     EXTRACTION_BY_EXTENSION,
     FORBIDDEN_CONTENT_TYPES,
     FORBIDDEN_IDS,
@@ -36,6 +37,7 @@ from .index_fields import (
     chunk_id,
     chunk_problems,
     display_name,
+    extraction_for,
     file_name_problems,
     is_gaibo_source,
     is_valid_doc_key,
@@ -63,11 +65,11 @@ from .outbox import (
 )
 
 __all__ = [
-    "CHUNK_ID_PREFIX", "CHUNKING", "CONTRACT_VERSION", "EXTRACTION_BY_EXTENSION",
+    "CHUNK_ID_PREFIX", "CHUNKING", "CONTRACT_VERSION", "DI_MODELS", "EXTRACTION_BY_EXTENSION",
     "FORBIDDEN_CONTENT_TYPES", "FORBIDDEN_IDS", "GAIBO_WRITABLE_FIELDS",
     "ORIGIN_FIELD", "ORIGIN_GAIBO", "ORIGIN_REF_FIELD", "REQUIRED_METADATA_KEYS",
     "SOURCE_PREFIX", "SOURCES_CONTAINER", "chunk_id", "chunk_problems",
-    "display_name", "file_name_problems", "is_gaibo_source", "is_valid_doc_key",
+    "display_name", "extraction_for", "file_name_problems", "is_gaibo_source", "is_valid_doc_key",
     "parent_doc_id", "parse_source_file", "source_file_for",
     "SETTINGS_BLOB", "OUTBOX_CONTAINER", "REQUESTS_PREFIX", "RESULTS_PREFIX",
     "RUNS_PREFIX", "TIER_DEFAULTS", "GaiboSettings", "PublishItem",
