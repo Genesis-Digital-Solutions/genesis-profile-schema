@@ -215,6 +215,17 @@ class ProfileGuardrails(BaseModel):
     # medição sem o custo. Kill-switch total continua no env
     # (CITATION_SUPPORT_CHECK=0), fora do perfil, como manda a regra.
     citation_support_warning: bool = False
+    # v0.1.104 — interruptor GERAL dos avisos do guard de alucinação ao
+    # utilizador (core/agent/guard_visibility.py): figuras sem suporte,
+    # afirmações sem suporte, resposta sem consulta, nota genérica e o aviso
+    # das citações. False = modo sombra para todos: a deteção corre igual
+    # (traces, `_guard_warning_reason`, telemetria) e o utilizador não vê o
+    # «⚠️». As CORREÇÕES em prosa (dígito trocado, soma errada, parâmetro
+    # assumido, tabela ambígua) continuam visíveis: corrigem a resposta, não
+    # a põem em dúvida. Default True = comportamento de sempre. O
+    # `citation_support_warning` continua a valer só para o aviso das
+    # citações e só tem efeito com este a True.
+    guard_warnings_visible: bool = True
 
 
 class ProfileProductIdentification(BaseModel):

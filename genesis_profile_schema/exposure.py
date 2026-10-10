@@ -121,6 +121,7 @@ EXPOSURE: Dict[str, str] = {
     "guardrails.allow_general_knowledge": _R,  # desliga o grounded-only; e a origem de metade do trabalho anti-invencao
     "guardrails.blocked_words": _W,
     "guardrails.citation_support_warning": _R,  # decide se o aviso de alucinacao chega ao utilizador final
+    "guardrails.guard_warnings_visible": _R,  # decide se os avisos do guard chegam ao utilizador final
     "guardrails.competitor_brands": _W,
 
     # ──────────────────────────────────────────────────────────────────────

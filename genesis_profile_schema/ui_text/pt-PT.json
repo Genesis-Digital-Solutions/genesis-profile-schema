@@ -1284,6 +1284,11 @@
       "help": "A verificação corre sempre; isto decide apenas se a nota aparece ao utilizador final.",
       "note": "False = modo sombra: a deteção continua em traces, spans e dumps. Kill-switch total é a env CITATION_SUPPORT_CHECK=0."
     },
+    "guardrails.guard_warnings_visible": {
+      "label": "Mostrar avisos de verificação ao utilizador",
+      "help": "Interruptor geral dos avisos «⚠️» do verificador (valores ou afirmações sem suporte, resposta sem consulta e citações). A verificação corre sempre; isto decide apenas se o utilizador final vê o aviso.",
+      "note": "False = modo sombra: a deteção continua nos traces e na telemetria. As correções em prosa (ex.: valor trocado, soma errada) continuam visíveis. O aviso das citações exige também «Avisar quando a fonte não sustenta a frase»."
+    },
     "guardrails.competitor_brands": {
       "label": "Marcas concorrentes",
       "note": "(legacy — preferir Brand Safety)"

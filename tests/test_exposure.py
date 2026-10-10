@@ -110,6 +110,7 @@ def test_caminhos_que_nunca_podem_ficar_visiveis(path, motivo):
 NUNCA_ESCRITO_PELO_CLIENTE = [
     ("guardrails.allow_general_knowledge", "desliga o grounded-only; é a origem do trabalho anti-invenção"),
     ("guardrails.citation_support_warning", "decide se o aviso de alucinação chega ao utilizador final"),
+    ("guardrails.guard_warnings_visible", "decide se os avisos do guard chegam ao utilizador final"),
     ("frontend.aiDisclosure.enabled", "divulgação obrigatória (AI Act Art. 50)"),
     ("voice.aiDisclosure", "divulgação obrigatória no canal de voz (AI Act Art. 50)"),
     ("compliance.classification.risk_level", "a classificação de risco é do provider, não do deployer"),

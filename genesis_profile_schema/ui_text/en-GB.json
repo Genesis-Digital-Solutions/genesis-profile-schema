@@ -1284,6 +1284,11 @@
       "help": "The check always runs; this only decides whether the note is shown to the end user.",
       "note": "False = shadow mode: detection still reaches traces, spans and dumps. The full kill-switch is the CITATION_SUPPORT_CHECK=0 env var."
     },
+    "guardrails.guard_warnings_visible": {
+      "label": "Show verification warnings to the user",
+      "help": "Master switch for the verifier's «⚠️» warnings (unsupported figures or claims, answer without lookup, and citations). The check always runs; this only decides whether the end user sees the warning.",
+      "note": "False = shadow mode: detection still reaches traces and telemetry. Prose corrections (e.g. swapped value, wrong sum) stay visible. The citations warning also needs «Warn when a source doesn't support the claim»."
+    },
     "guardrails.competitor_brands": {
       "label": "Competitor brands",
       "note": "(legacy — prefer Brand Safety)"
