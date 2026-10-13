@@ -184,7 +184,7 @@
     },
     "compliance.retention.conversations_anonymous_days": {
       "label": "Anonymous conversations (days)",
-      "help": "Retention for visitors who are not signed in. Default 90 days; 0 keeps them forever."
+      "help": "Retention for visitors who are not signed in. Default 180 days; 0 keeps them forever."
     },
     "compliance.retention.conversations_authenticated_days": {
       "label": "Signed-in conversations (days)",
@@ -2355,7 +2355,7 @@
     },
     "voice.queue": {
       "label": "Ticket queue",
-      "help": "Must match one of the queues defined under review queues."
+      "help": "Queue where voice records requests; must match one of the review queues. Empty = voice only answers, without recording requests."
     },
     "voice.transcription": {
       "label": "Transcript of voice conversations",

@@ -1903,7 +1903,10 @@ class ProfileComplianceRetention(BaseModel):
     """
     model_config = ConfigDict(extra="allow")
 
-    conversations_anonymous_days: int = Field(default=90, ge=0)
+    # v0.1.105 (decisão de 12 Out 2026): 90 → 180 dias em toda a frota, para
+    # monitorização e melhoria do serviço. Os perfis já gravados têm o valor
+    # explícito (o save grava os defaults) — mudam perfil a perfil.
+    conversations_anonymous_days: int = Field(default=180, ge=0)
     conversations_authenticated_days: int = Field(default=0, ge=0)
     # v0.1.68 (22 Set 2026): no fim do prazo, apagar só as PALAVRAS e guardar
     # os NÚMEROS (custo, tokens, flags de qualidade), em vez de o Cosmos apagar
@@ -2182,7 +2185,11 @@ class ProfileVoice(BaseModel):
     # língua da sessão diz só a divulgação de IA, nessa língua.
     greeting: Union[str, I18nMap] = ""
     instructions: str = ""
-    queue: str = "tickets"        # fila de tickets (reviewQueues.<queue>)
+    # Fila onde a voz regista pedidos (reviewQueues.<queue>). v0.1.105: vazio
+    # por omissão = voz SEM fila (só atende e responde); antes era "tickets", e
+    # o save gravava-o em todos os perfis, com ou sem voz (15 de 15 na frota a
+    # 13 Out 2026). Os perfis gravados têm o valor explícito e não mudam.
+    queue: str = ""
     # Categorias sugeridas ao modelo ao registar um pedido. Mesmo conceito e
     # mesmo nome da tool de fila do chat
     # (`tools.config.create_ticket.category_hints`). Só entram no prompt de voz

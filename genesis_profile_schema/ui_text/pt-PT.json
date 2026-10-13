@@ -184,7 +184,7 @@
     },
     "compliance.retention.conversations_anonymous_days": {
       "label": "Conversas anónimas (dias)",
-      "help": "Retenção para visitantes sem sessão iniciada. Por omissão 90 dias; 0 guarda para sempre."
+      "help": "Retenção para visitantes sem sessão iniciada. Por omissão 180 dias; 0 guarda para sempre."
     },
     "compliance.retention.conversations_authenticated_days": {
       "label": "Conversas com sessão iniciada (dias)",
@@ -2355,7 +2355,7 @@
     },
     "voice.queue": {
       "label": "Fila de tickets",
-      "help": "Tem de corresponder a uma das filas definidas em filas de revisão."
+      "help": "Fila onde a voz regista os pedidos; tem de corresponder a uma das filas de revisão. Vazio = a voz só atende e responde, sem registar pedidos."
     },
     "voice.transcription": {
       "label": "Transcrição das conversas por voz",
