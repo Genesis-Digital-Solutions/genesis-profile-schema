@@ -2197,7 +2197,13 @@ class ProfileVoice(BaseModel):
     # texto livre de `instructions` — e o modelo deixa de as inventar.
     # Formalizado v0.1.49 (Ago 2026).
     category_hints: List[str] = Field(default_factory=list)
+    # Transferência para humano (SIP REFER). v0.1.106 (13 Out 2026): o número
+    # do cliente aceita só telefone (E.164 ou extensão); destinos SIP vivem em
+    # `transfer_sip_uri`, interno (só o Studio o escreve) e, quando válido,
+    # ganha ao número. As regras são as de `transfer_target.py` — nunca
+    # validadas aqui (um valor mau não pode impedir o perfil de carregar).
     transfer_number: str = ""
+    transfer_sip_uri: str = ""
     kb_top_n: int = 4
     # Aviso de IA no início da chamada (EU AI Act Art. 50). Formalizado
     # v0.1.43 (era fantasma; default do core é ligado).

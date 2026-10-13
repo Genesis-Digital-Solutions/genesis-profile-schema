@@ -145,6 +145,15 @@ carregar. Quem escreve é que descarta; quem lê continua a ler tudo.
   existem** é a camada 7 (`languages.py`), não esta — e há um espaço que É
   fechado: o `UI_LANGS` do `frontend.language.*`.
 
+- `transfer_target.py` (v0.1.106, 13 Out 2026) — o destino da transferência de
+  chamada (SIP REFER). `voice.transfer_number` é do cliente e aceita só telefone
+  (`phone_target`: E.164 ou extensão, separadores tirados, `sip:` recusado);
+  destinos SIP vivem em `voice.transfer_sip_uri` (interno, `sip_target`:
+  gramática de allowlist, sem headers) e ganham ao número quando válidos
+  (`voice_transfer_target`). O core aplica isto ao servir a chamada; o Studio e
+  o backoffice avisam antes de gravar. Um número válido pode ainda ser caro
+  (premium/internacional): isso fecha-se no SBC, não aqui.
+
 ### 7. Que valores existem — `languages.py`
 
 O espaço de valores de um campo, quando é enumerável mas não é um `Literal`.

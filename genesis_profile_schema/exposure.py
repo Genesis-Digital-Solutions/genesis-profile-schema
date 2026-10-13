@@ -433,7 +433,9 @@ EXPOSURE: Dict[str, str] = {
     "voice.transcription.phone": _R,
     "voice.transcription.model": _I,
     "voice.transcription.retention_days": _R,
-    "voice.transfer_number": _W,
+    "voice.transfer_number": _W,  # só telefone (transfer_target.phone_target)
+    # destino SIP: encaminhamento nosso; um host SIP escrito pelo cliente desviava chamadas
+    "voice.transfer_sip_uri": _I,
     "voice.voice": _W,
     "voice.web.enabled": _R,
     # voice.web.engine / live_deployment — motor do widget (v0.1.68): infra

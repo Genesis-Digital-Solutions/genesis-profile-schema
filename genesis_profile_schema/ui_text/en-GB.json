@@ -2379,7 +2379,12 @@
       "help": "Empty, 0 or an invalid value = the profile's conversation retention. Counted from each stored sentence."
     },
     "voice.transfer_number": {
-      "label": "Call transfer phone number"
+      "label": "Call transfer phone number",
+      "help": "Number in international format (+351…) or a short extension (e.g. 500). Empty = no transfer. Phone channel only."
+    },
+    "voice.transfer_sip_uri": {
+      "label": "Transfer SIP destination",
+      "note": "Genesis only. sip: URI of the PBX/SBC (e.g. sip:500@pbx.client.com;transport=tls). When valid, it replaces the client's number."
     },
     "voice.voice": {
       "label": "Assistant voice"
