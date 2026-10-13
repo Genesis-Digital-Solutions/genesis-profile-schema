@@ -73,3 +73,106 @@ def test_fields_and_exposure():
     assert bad.voice.transfer_sip_uri == "lixo"
     assert EXPOSURE["voice.transfer_number"] == "client_write"
     assert EXPOSURE["voice.transfer_sip_uri"] == "internal"
+
+
+# ── v0.1.107: vários destinos ─────────────────────────────────────────────
+
+def _t(**kw):
+    base = {"id": "faturacao", "label": "Faturação", "description": "faturas e pagamentos",
+            "number": "+351210000001"}
+    base.update(kw)
+    return base
+
+
+def test_targets_resolve_and_one_default():
+    v = {"transfer_targets": [_t(), _t(id="tecnico", label="Técnico", number="500", default=True)]}
+    targets, problems = tt.voice_transfer_targets(v)
+    assert [(t["id"], t["uri"], t["default"]) for t in targets] == [
+        ("faturacao", "tel:+351210000001", False), ("tecnico", "tel:500", True)]
+    assert problems == []
+    # sem nenhum marcado: o primeiro; com dois marcados: só o primeiro marcado
+    targets, _ = tt.voice_transfer_targets({"transfer_targets": [_t(), _t(id="b", number="501")]})
+    assert [t["default"] for t in targets] == [True, False]
+    targets, _ = tt.voice_transfer_targets({"transfer_targets": [_t(default=True), _t(id="b", number="501", default=True)]})
+    assert [t["default"] for t in targets] == [True, False]
+
+
+def test_sip_per_target_is_internal_and_wins():
+    v = {"transfer_targets": [_t()], "transfer_sip_uris": {"faturacao": "sip:500@pbx.cliente.pt",
+                                                           "fantasma": "sip:1@pbx.cliente.pt"}}
+    targets, problems = tt.voice_transfer_targets(v)
+    assert targets[0]["uri"] == "sip:500@pbx.cliente.pt"
+    assert ("voice.transfer_sip_uris.fantasma", tt.ORPHAN_SIP) in problems
+    # SIP inválido cai para o número
+    v = {"transfer_targets": [_t()], "transfer_sip_uris": {"faturacao": "sip:500@pbx"}}
+    targets, problems = tt.voice_transfer_targets(v)
+    assert targets[0]["uri"] == "tel:+351210000001"
+    assert ("voice.transfer_sip_uris.faturacao", tt.INVALID_SIP) in problems
+
+
+def test_bad_entries_are_dropped_with_a_reason():
+    v = {"transfer_targets": [_t(id="Fatura ção"), _t(id="a"), _t(id="a", number="502"),
+                              _t(id="b", number="sip:1@evil.example"), _t(id="c", number="")]}
+    targets, problems = tt.voice_transfer_targets(v)
+    assert [t["id"] for t in targets] == ["a"]
+    codes = [c for _w, c in problems]
+    assert codes.count(tt.INVALID_ID) == 1 and codes.count(tt.DUPLICATE_ID) == 1
+    assert tt.SIP_STUDIO_ONLY in codes and codes.count(tt.NO_TARGET) == 2
+
+
+def test_limits_are_reported_never_silent():
+    many = {"transfer_targets": [_t(id=f"d{i}", number=f"5{i:02d}") for i in range(12)]}
+    targets, problems = tt.voice_transfer_targets(many)
+    assert len(targets) == tt.MAX_TARGETS and ("voice.transfer_targets", tt.TOO_MANY) in problems
+    long_ = {"transfer_targets": [_t(description="x " * 300, label="y\n" * 80)]}
+    targets, problems = tt.voice_transfer_targets(long_)
+    assert len(targets[0]["description"]) <= tt.DESCRIPTION_MAX and "\n" not in targets[0]["label"]
+    assert ("voice.transfer_targets[0]", tt.TEXT_TOO_LONG) in problems
+
+
+def test_legacy_single_number_is_the_implicit_target():
+    assert tt.voice_transfer_targets({"transfer_number": "+351210000000"}) == (
+        [{"id": "geral", "label": "", "description": "", "uri": "tel:+351210000000", "default": True}], [])
+    assert tt.voice_transfer_targets({}) == ([], [])
+    # lista válida ganha ao número único, e diz-se
+    targets, problems = tt.voice_transfer_targets({"transfer_number": "+351210000000",
+                                                   "transfer_targets": [_t()]})
+    assert [t["id"] for t in targets] == ["faturacao"]
+    assert ("voice.transfer_number", tt.IGNORED_BY_TARGETS) in problems
+    # lista toda inválida: vale o número único
+    targets, _ = tt.voice_transfer_targets({"transfer_number": "500", "transfer_targets": [_t(id="X X")]})
+    assert targets[0]["id"] == "geral"
+
+
+def test_targets_on_the_model_and_exposure():
+    v = ClientProfileSchema.model_validate({"voice": {"transfer_targets": [_t()]}}).voice
+    assert tt.voice_transfer_targets(v)[0][0]["id"] == "faturacao"
+    assert EXPOSURE["voice.transfer_targets.number"] == "client_write"
+    assert EXPOSURE["voice.transfer_sip_uris"] == "internal"
+
+
+def test_legacy_problems_are_reported_field_by_field():
+    _t, problems = tt.voice_transfer_targets({"transfer_number": "210000000", "transfer_sip_uri": "sip:500@pbx"})
+    assert problems == [("voice.transfer_sip_uri", tt.INVALID_SIP), ("voice.transfer_number", tt.NO_PLUS)]
+    _t, problems = tt.voice_transfer_targets({"transfer_number": "sip:x@y.z",
+                                              "transfer_sip_uri": "sip:500@pbx.cliente.pt"})
+    assert problems == []                         # SIP válido: o número nem é usado
+
+
+def test_invisible_characters_never_reach_the_model():
+    v = {"transfer_targets": [_t(label="Fatu​ra‮ção", description="a\u0000b⁦c")]}
+    t = tt.voice_transfer_targets(v)[0][0]
+    assert t["label"] == "Faturação" and t["description"] == "abc"
+
+
+def test_ignored_points_at_the_field_that_is_set():
+    _x, problems = tt.voice_transfer_targets({"transfer_sip_uri": "sip:5@pbx.cliente.pt",
+                                              "transfer_targets": [_t()]})
+    assert ("voice.transfer_sip_uri", tt.IGNORED_BY_TARGETS) in problems
+
+
+def test_default_is_chosen_among_the_valid_ones():
+    v = {"transfer_targets": [_t(id="a", number="", default=True), _t(id="b", number="501"),
+                              _t(id="c", number="502")]}
+    targets, _ = tt.voice_transfer_targets(v)
+    assert [(t["id"], t["default"]) for t in targets] == [("b", True), ("c", False)]

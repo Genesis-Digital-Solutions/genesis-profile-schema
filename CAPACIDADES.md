@@ -153,6 +153,13 @@ carregar. Quem escreve é que descarta; quem lê continua a ler tudo.
   (`voice_transfer_target`). O core aplica isto ao servir a chamada; o Studio e
   o backoffice avisam antes de gravar. Um número válido pode ainda ser caro
   (premium/internacional): isso fecha-se no SBC, não aqui.
+  Desde a v0.1.107, **vários destinos** (`voice.transfer_targets`, `client_write` — o backoffice ainda nega a área `voice` inteira:
+  `id`, `label`, `description`, `number`, `default`) com o SIP de cada um num
+  mapa interno à parte (`voice.transfer_sip_uris`, `{id: "sip:…"}`) —
+  `voice_transfer_targets()` devolve os destinos efetivos e os problemas
+  (`[(onde, código)]`, nunca corta em silêncio: até 10 destinos, nome 60 e
+  descrição 200). Uma lista com pelo menos um destino válido ganha ao número
+  único; sem nenhum, o número único é o destino implícito `geral`.
 
 ### 7. Que valores existem — `languages.py`
 

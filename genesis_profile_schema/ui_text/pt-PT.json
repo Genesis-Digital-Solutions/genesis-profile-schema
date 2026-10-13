@@ -2382,6 +2382,33 @@
       "label": "Número para transferência de chamada",
       "help": "Número em formato internacional (+351…) ou extensão curta (ex.: 500). Vazio = sem transferência. Só no canal telefónico."
     },
+    "voice.transfer_targets": {
+      "label": "Destinos de transferência por assunto",
+      "help": "Com dois ou mais destinos, o assistente escolhe pelo assunto da chamada e, na dúvida, pergunta. Substituem o número único acima. Até 10."
+    },
+    "voice.transfer_targets.id": {
+      "label": "Identificador",
+      "help": "Curto, sem espaços (ex.: faturacao). É o que o assistente escolhe."
+    },
+    "voice.transfer_targets.label": {
+      "label": "Nome"
+    },
+    "voice.transfer_targets.description": {
+      "label": "Quando transferir para aqui",
+      "help": "O assunto ou serviço, numa frase (ex.: dúvidas sobre faturas e pagamentos)."
+    },
+    "voice.transfer_targets.number": {
+      "label": "Número",
+      "help": "Formato internacional (+351…) ou extensão curta (ex.: 500)."
+    },
+    "voice.transfer_targets.default": {
+      "label": "Destino por omissão",
+      "help": "Usado quando não há escolha. Sem nenhum marcado (ou com o marcado inválido), vale o primeiro destino válido."
+    },
+    "voice.transfer_sip_uris": {
+      "label": "Destinos SIP por destino de transferência",
+      "note": "Só Genesis. Mapa identificador → URI sip:. Quando válido, substitui o número desse destino."
+    },
     "voice.transfer_sip_uri": {
       "label": "Destino SIP da transferência",
       "note": "Só Genesis. URI sip: do PBX/SBC (ex.: sip:500@pbx.cliente.pt;transport=tls). Quando válido, substitui o número do cliente."

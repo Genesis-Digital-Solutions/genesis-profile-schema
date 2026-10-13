@@ -2143,6 +2143,22 @@ class ProfileVoiceWeb(BaseModel):
     live_deployment: str = ""       # ex.: gpt-live-1 (GlobalStandard; só Sweden/France Central, East US 2)
 
 
+class ProfileVoiceTransferTarget(BaseModel):
+    """Um destino de transferência por assunto ou serviço (v0.1.107, 13 Out
+    2026). Com 2+ destinos válidos a tool `transferir_atendimento` ganha o
+    parâmetro `destino` (um `id` desta lista, nunca o número) e o modelo escolhe
+    pelo assunto. As regras (forma do `id`, número, limites) vivem em
+    `transfer_target.voice_transfer_targets` — nunca validadas aqui (um valor
+    mau não pode impedir o perfil de carregar; só tira esse destino)."""
+    model_config = ConfigDict(extra="allow")
+
+    id: str = ""            # slug: a-z, 0-9, _ e -; até 32 — o que o modelo escolhe
+    label: str = ""         # nome curto (ex.: «Faturação»)
+    description: str = ""   # o assunto: quando transferir para aqui (vai ao modelo)
+    number: str = ""        # telefone, as mesmas regras de `transfer_number`
+    default: bool = False   # o destino quando não há escolha (abertura falhada)
+
+
 class ProfileVoiceAgent(BaseModel):
     """Ponte voz → agente completo (v0.1.64, Set 2026 — Bloco D do parecer
     Astra). Quando ligada, a sessão realtime (telefone e widget) ganha a tool
@@ -2204,6 +2220,12 @@ class ProfileVoice(BaseModel):
     # validadas aqui (um valor mau não pode impedir o perfil de carregar).
     transfer_number: str = ""
     transfer_sip_uri: str = ""
+    # Vários destinos (v0.1.107). Com pelo menos um válido, substituem
+    # `transfer_number`/`transfer_sip_uri`. O SIP de cada destino vive à parte,
+    # em `transfer_sip_uris` (`{id: "sip:…"}`, interno — só o Studio o
+    # escreve), pela mesma razão do `transfer_sip_uri`.
+    transfer_targets: List[ProfileVoiceTransferTarget] = Field(default_factory=list)
+    transfer_sip_uris: Dict[str, str] = Field(default_factory=dict)
     kb_top_n: int = 4
     # Aviso de IA no início da chamada (EU AI Act Art. 50). Formalizado
     # v0.1.43 (era fantasma; default do core é ligado).

@@ -436,6 +436,14 @@ EXPOSURE: Dict[str, str] = {
     "voice.transfer_number": _W,  # só telefone (transfer_target.phone_target)
     # destino SIP: encaminhamento nosso; um host SIP escrito pelo cliente desviava chamadas
     "voice.transfer_sip_uri": _I,
+    # destinos por assunto (v0.1.107): o cliente gere-os como gere o número;
+    # o SIP de cada um é nosso (mapa à parte, pela mesma razão)
+    "voice.transfer_targets.id": _W,
+    "voice.transfer_targets.label": _W,
+    "voice.transfer_targets.description": _W,
+    "voice.transfer_targets.number": _W,
+    "voice.transfer_targets.default": _W,
+    "voice.transfer_sip_uris": _I,
     "voice.voice": _W,
     "voice.web.enabled": _R,
     # voice.web.engine / live_deployment — motor do widget (v0.1.68): infra

@@ -2382,6 +2382,33 @@
       "label": "Call transfer phone number",
       "help": "Number in international format (+351…) or a short extension (e.g. 500). Empty = no transfer. Phone channel only."
     },
+    "voice.transfer_targets": {
+      "label": "Transfer destinations by subject",
+      "help": "With two or more destinations, the assistant picks by the subject of the call and asks when in doubt. They replace the single number above. Up to 10."
+    },
+    "voice.transfer_targets.id": {
+      "label": "Identifier",
+      "help": "Short, no spaces (e.g. billing). It is what the assistant picks."
+    },
+    "voice.transfer_targets.label": {
+      "label": "Name"
+    },
+    "voice.transfer_targets.description": {
+      "label": "When to transfer here",
+      "help": "The subject or service, in one sentence (e.g. questions about invoices and payments)."
+    },
+    "voice.transfer_targets.number": {
+      "label": "Number",
+      "help": "International format (+351…) or a short extension (e.g. 500)."
+    },
+    "voice.transfer_targets.default": {
+      "label": "Default destination",
+      "help": "Used when there is no choice. With none marked (or the marked one invalid), the first valid destination applies."
+    },
+    "voice.transfer_sip_uris": {
+      "label": "SIP destinations per transfer destination",
+      "note": "Genesis only. Map identifier → sip: URI. When valid, it replaces that destination's number."
+    },
     "voice.transfer_sip_uri": {
       "label": "Transfer SIP destination",
       "note": "Genesis only. sip: URI of the PBX/SBC (e.g. sip:500@pbx.client.com;transport=tls). When valid, it replaces the client's number."
