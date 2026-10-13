@@ -204,15 +204,17 @@ Todas as datas levam fuso (ISO 8601 com `Z` ou `+hh:mm`); uma data sem fuso é i
 
 | Identidade | Papel | Âmbito |
 |---|---|---|
-| API do GAIBO | Search Index Data Reader | índice dev |
 | API do GAIBO | Storage Blob Data Reader | contentor `gaibo-outbox` |
 | API do GAIBO | Storage Blob Data Contributor, **com condição** (ABAC) que só permite escrever em `requests/` e `runs/` | contentor `gaibo-outbox` |
+| API do GAIBO | Key Vault Secrets User | só o segredo `BACKEND-API-KEY` do Key Vault de cada core (dev e, depois da promoção, produção) |
 | Indexador do GAIBO | Search Index Data Contributor | **só** o índice dev |
 | Indexador do GAIBO | Reader | serviço de pesquisa (lê a definição do índice) |
 | Indexador do GAIBO | Storage Blob Data Contributor | contentor `gaibo-sources` |
 | Indexador do GAIBO | Cognitive Services User | Document Intelligence do cliente |
 | Indexador do GAIBO | Cognitive Services OpenAI User | Azure OpenAI do cliente |
 
+- **A API não lê o índice** (12 Out 2026): só o indexador lhe toca. O «teste no dev» pesquisa pelo core dev
+  (`GET /admin/kb/search`).
 - **Nenhum acesso** ao índice de produção.
 - **Nenhuma chave:** em particular, nunca a chave de administração do AI Search que está no Key Vault do
   cliente, que dá escrita em todos os índices.
