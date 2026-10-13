@@ -139,6 +139,8 @@ Contentor `gaibo-outbox`, privado, na storage do cliente:
 | `requests/<pr-…>.json` | GAIBO | `PublishRequest` | `If-None-Match: *` |
 | `results/<pr-…>.json` | Studio | `PublishResult` | criado com `If-None-Match: *`, depois `If-Match` |
 | `runs/<run-…>.json` | GAIBO | `RunReport` | `If-None-Match: *` |
+| `invites/<inv-…>.json` | GAIBO | `InviteRequest` | `If-None-Match: *` (v0.1.108) |
+| `invite-results/<inv-…>.json` | Studio | `InviteResult` | criado com `If-None-Match: *`, depois `If-Match` (v0.1.108) |
 
 **`settings.json`:**
 - `enabled` vem a `false` por omissão.
@@ -200,12 +202,34 @@ repitam os padrões do vosso lado.
 Um ficheiro que não valide contra o modelo é tratado como inválido e reportado, nunca saltado em silêncio.
 Todas as datas levam fuso (ISO 8601 com `Z` ou `+hh:mm`); uma data sem fuso é inválida.
 
+### 5.1 Convites da Equipa (v0.1.108)
+
+Quem é adicionado na página **Equipa** do GAIBO tem de existir como convidado no tenant do cliente para conseguir
+entrar. O GAIBO **não convida** (a identidade de uma app exposta à internet nunca administra o diretório): escreve
+um pedido e o Studio convida.
+
+- **Pedido (`InviteRequest`, GAIBO):** `invite_id` (`inv-` + 8 a 40 de `[a-z0-9]`, `is_valid_invite_id`),
+  `client_id`, `requested_at`, `requested_by_ref` (opaco, nunca o email de quem pede), `email` e `display_name`
+  (até 120, sem `<>` nem controlo). O email vem normalizado em minúsculas; use `normalize_email()` antes de
+  escrever — o modelo recusa o que não serve para convite.
+- **Resultado (`InviteResult`, Studio):** `status` = `pending` (recebido, à espera — limite por hora), `sent`
+  (convite enviado), `already_member` (já é membro ou convidado aceite), `refused`, `failed` ou `invalid`, com
+  `reason_code` para traduzir no ecrã (`genesis_tenant`, `rate_limited`, `invalid_email`, `client_mismatch`,
+  `not_configured`, `graph_error`) e `reason` em texto.
+- **O Studio:** valida outra vez; **nunca convida para o tenant da Genesis** (clientes alojados lá — demos —
+  recebem `refused`/`genesis_tenant`); envia no máximo `INVITES_PER_HOUR` (20) por cliente e por hora — o resto
+  fica `pending` e anda na hora seguinte; convida com o email da Microsoft e o regresso ao site do GAIBO; regista
+  cada convite no audit.
+- **Ligação à Equipa:** continua a ser no 1.º início de sessão, pelo email (lado do GAIBO).
+- **A caixa de saída tem de existir mesmo com a indexação desligada** (lado do GAIBO: hoje só se monta com o
+  ingest ligado).
+
 ## 6. Acessos
 
 | Identidade | Papel | Âmbito |
 |---|---|---|
 | API do GAIBO | Storage Blob Data Reader | contentor `gaibo-outbox` |
-| API do GAIBO | Storage Blob Data Contributor, **com condição** (ABAC) que só permite escrever em `requests/` e `runs/` | contentor `gaibo-outbox` |
+| API do GAIBO | Storage Blob Data Contributor, **com condição** (ABAC) que só permite escrever em `requests/`, `runs/` e `invites/` (v0.1.108) | contentor `gaibo-outbox` |
 | API do GAIBO | Key Vault Secrets User | só o segredo `BACKEND-API-KEY` do Key Vault de cada core (dev e, depois da promoção, produção) |
 | Indexador do GAIBO | Search Index Data Contributor | **só** o índice dev |
 | Indexador do GAIBO | Reader | serviço de pesquisa (lê a definição do índice) |

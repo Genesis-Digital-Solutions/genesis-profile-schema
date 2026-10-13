@@ -15,6 +15,8 @@ o core para mostrar as fontes. Uma regra que só exista de um lado não protege.
   nomes, o JSON `metadata` que o core lê) e `chunk_problems()`.
 - `outbox` — a caixa de saída: contentores, caminhos e os modelos dos pedidos
   de publicação, resultados, limites e relatórios de indexação.
+- `invites` (v0.1.108) — os convites da Equipa: o GAIBO pede, o Studio convida
+  para o tenant do cliente e escreve o resultado.
 
 Documento legível: `docs/contrato-indexacao-gaibo.md`.
 """
@@ -44,6 +46,17 @@ from .index_fields import (
     parent_doc_id,
     parse_source_file,
     source_file_for,
+)
+from .invites import (
+    INVITE_RESULTS_PREFIX,
+    INVITES_PER_HOUR,
+    INVITES_PREFIX,
+    InviteRequest,
+    InviteResult,
+    invite_blob,
+    invite_result_blob,
+    is_valid_invite_id,
+    normalize_email,
 )
 from .outbox import (
     SETTINGS_BLOB,
@@ -82,4 +95,6 @@ __all__ = [
     "RunReport", "request_blob", "result_blob", "run_blob",
     "REQUIRED_SETTINGS_KEYS", "is_valid_origin_ref", "is_valid_request_id", "is_valid_run_id",
     "settings_missing_keys",
+    "INVITES_PREFIX", "INVITE_RESULTS_PREFIX", "INVITES_PER_HOUR", "InviteRequest", "InviteResult",
+    "invite_blob", "invite_result_blob", "is_valid_invite_id", "normalize_email",
 ]
