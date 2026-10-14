@@ -45,6 +45,9 @@ STRENGTH: Dict[str, int] = {"allow": 0, "confirm": 1, "approve": 2, "block": 3}
 
 MAX_RULES = 100
 MAX_LIMITS = 10
+MAX_PERIOD_LIMITS = 5
+PERIODS: Tuple[str, ...] = ("day", "week", "month")
+PER: Tuple[str, ...] = ("user", "client")
 MAX_IN_VALUES = 50
 NOTE_MAX = 300
 
@@ -96,6 +99,8 @@ APPROVE_WITHOUT_APPROVERS = "approve_without_approvers"  # nem papel nem grupo (
 INVALID_APPROVER = "invalid_approver"               # papel/grupo com formato inválido
 INVALID_NOTIFY_EMAIL = "invalid_notify_email"
 APPROVAL_QUEUE_SHAPE = "approval_queue_shape"       # a fila não tem os estados/ações da aprovação
+INVALID_PERIOD_LIMIT = "invalid_period_limit"       # F4: período, quem, máximo ou campo inválidos
+TOO_MANY_PERIOD_LIMITS = "too_many_period_limits"
 
 
 # ── Modelos ──────────────────────────────────────────────────────────────────
@@ -112,6 +117,25 @@ class ActionRuleLimit(BaseModel):
     currency: Optional[str] = None
     # O que acontece quando o limite é ultrapassado (ou não se consegue ler).
     over: Literal["confirm", "approve", "block"] = "approve"
+
+
+class ActionRulePeriodLimit(BaseModel):
+    """F4 (v0.1.116): «no máximo N por dia/semana/mês», por pessoa ou para o
+    cliente todo — a contar as ações FEITAS, ou a somar um campo
+    («encomendas até 5 000 € por dia»). Os períodos são de calendário no fuso
+    do cliente (`identity.timezone`; semana = segunda a domingo). Quando a ação
+    passaria o máximo vale o `over`. Contagem ilegível (contentor do registo em
+    falta, pessoa anónima com `per=user`, valor do campo ilegível ou noutra
+    moeda) → falha FECHADA: vale o `over`."""
+    model_config = ConfigDict(extra="allow")
+
+    period: Literal["day", "week", "month"] = "day"
+    per: Literal["user", "client"] = "user"
+    max: float = Field(default=1, ge=0)
+    # Vazio = contar ações; senão o campo (do inputSchema da tool) a somar.
+    sum_param: str = ""
+    currency: Optional[str] = None
+    over: Literal["confirm", "approve", "block"] = "block"
 
 
 class ActionRuleApproval(BaseModel):
@@ -140,6 +164,8 @@ class ActionRule(BaseModel):
     action: str = ""
     mode: Literal["allow", "confirm", "approve", "block"] = "confirm"
     limits: List[ActionRuleLimit] = Field(default_factory=list)
+    # F4 (v0.1.116): limites por período (contagem ou soma).
+    period_limits: List[ActionRulePeriodLimit] = Field(default_factory=list)
     approval: Optional[ActionRuleApproval] = None   # só com approve (F2)
     variants: List[str] = Field(default_factory=list)  # vazio = todas
     # Só registar: avalia e regista o que TERIA feito, sem mudar nada.
@@ -190,6 +216,22 @@ def _limit_problems(limit: Any) -> List[Tuple[str, str]]:
         # como não avaliável (falha fechada), não rebenta.
         out.append((NUMERIC_OP_ON_TEXT, WARNING))
     cur = limit.get("currency")
+    if cur not in (None, "") and not _CURRENCY.match(str(cur)):
+        out.append((INVALID_CURRENCY, ERROR))
+    return out
+
+
+def _period_limit_problems(pl: Any) -> List[Tuple[str, str]]:
+    if not isinstance(pl, Mapping):
+        return [(INVALID_PERIOD_LIMIT, ERROR)]
+    out: List[Tuple[str, str]] = []
+    mx = pl.get("max")
+    if (str(pl.get("period") or "day") not in PERIODS or str(pl.get("per") or "user") not in PER
+            or not _is_number(mx) or mx < 0):
+        out.append((INVALID_PERIOD_LIMIT, ERROR))
+    if str(pl.get("over") or "block") not in OVER_MODES:
+        out.append((INVALID_MODE, ERROR))
+    cur = pl.get("currency")
     if cur not in (None, "") and not _CURRENCY.match(str(cur)):
         out.append((INVALID_CURRENCY, ERROR))
     return out
@@ -298,6 +340,15 @@ def action_rules_problems(profile: Mapping[str, Any]) -> List[Dict[str, str]]:
                     # Assinalado, nunca apagado: o servidor pode voltar.
                     add(rid, UNKNOWN_SERVER, WARNING)
 
+            plimits = raw.get("period_limits") or []
+            if not isinstance(plimits, list):
+                add(rid, INVALID_PERIOD_LIMIT, ERROR)
+                plimits = []
+            if len(plimits) > MAX_PERIOD_LIMITS:
+                add(rid, TOO_MANY_PERIOD_LIMITS, ERROR)
+            for pl in plimits:
+                for code, sev in _period_limit_problems(pl):
+                    add(rid, code, sev)
             limits = raw.get("limits") or []
             if not isinstance(limits, list):
                 add(rid, INVALID_LIMIT, ERROR)

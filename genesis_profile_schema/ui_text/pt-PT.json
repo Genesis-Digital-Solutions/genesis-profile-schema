@@ -2004,7 +2004,45 @@
     },
     "actionRules.rules.limits.over": {
       "label": "Se passar o limite",
-      "help": "O que acontece quando o valor não respeita o limite, ou quando falta e não se consegue verificar. Enquanto a aprovação por outra pessoa não estiver disponível, «Aprovar» bloqueia a ação.",
+      "help": "O que acontece quando o valor não respeita o limite, ou quando falta e não se consegue verificar.",
+      "options": {
+        "confirm": "Pedir confirmação a quem pede",
+        "approve": "Enviar para aprovação de outra pessoa",
+        "block": "Bloquear"
+      }
+    },
+    "actionRules.rules.period_limits.period": {
+      "label": "Período",
+      "help": "Dia, semana (segunda a domingo) ou mês do calendário, no fuso do cliente.",
+      "options": {
+        "day": "Por dia",
+        "week": "Por semana",
+        "month": "Por mês"
+      }
+    },
+    "actionRules.rules.period_limits.per": {
+      "label": "Conta por",
+      "help": "Cada pessoa tem o seu limite, ou o limite é do cliente todo. Por pessoa exige login: sem ele vale o que acontece ao passar o limite.",
+      "options": {
+        "user": "Cada pessoa",
+        "client": "O cliente todo"
+      }
+    },
+    "actionRules.rules.period_limits.max": {
+      "label": "Máximo",
+      "help": "Quantas ações (ou, com um campo a somar, o total desse campo) no período. Conta só o que foi feito."
+    },
+    "actionRules.rules.period_limits.sum_param": {
+      "label": "Campo a somar (opcional)",
+      "help": "Vazio = contar as ações. Com um campo (ex.: o total da encomenda), soma-o no período: «até 5 000 € por dia»."
+    },
+    "actionRules.rules.period_limits.currency": {
+      "label": "Moeda do máximo",
+      "help": "Só com um campo a somar que seja dinheiro. Valores noutra moeda nunca se convertem: passam ao que acontece ao passar o limite."
+    },
+    "actionRules.rules.period_limits.over": {
+      "label": "Se passar o máximo",
+      "help": "O que acontece quando esta ação passaria o máximo do período, ou quando não se consegue contar.",
       "options": {
         "confirm": "Pedir confirmação a quem pede",
         "approve": "Enviar para aprovação de outra pessoa",

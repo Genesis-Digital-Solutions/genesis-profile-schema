@@ -2004,7 +2004,45 @@
     },
     "actionRules.rules.limits.over": {
       "label": "If over the limit",
-      "help": "What happens when the value does not respect the limit, or is missing and cannot be checked. Until approval by another person is available, \"Approve\" blocks the action.",
+      "help": "What happens when the value does not respect the limit, or is missing and cannot be checked.",
+      "options": {
+        "confirm": "Ask the requester to confirm",
+        "approve": "Send for approval by another person",
+        "block": "Block"
+      }
+    },
+    "actionRules.rules.period_limits.period": {
+      "label": "Period",
+      "help": "Calendar day, week (Monday to Sunday) or month, in the client's time zone.",
+      "options": {
+        "day": "Per day",
+        "week": "Per week",
+        "month": "Per month"
+      }
+    },
+    "actionRules.rules.period_limits.per": {
+      "label": "Counts per",
+      "help": "Each person has their own limit, or the limit is the whole client's. Per person requires sign-in: without it, what happens over the limit applies.",
+      "options": {
+        "user": "Each person",
+        "client": "The whole client"
+      }
+    },
+    "actionRules.rules.period_limits.max": {
+      "label": "Maximum",
+      "help": "How many actions (or, with a field to add up, that field's total) in the period. Only what was done counts."
+    },
+    "actionRules.rules.period_limits.sum_param": {
+      "label": "Field to add up (optional)",
+      "help": "Empty = count actions. With a field (e.g. the order total), it is added up over the period: \"up to €5,000 per day\"."
+    },
+    "actionRules.rules.period_limits.currency": {
+      "label": "Currency of the maximum",
+      "help": "Only with a money field to add up. Values in another currency are never converted: they fall to what happens over the limit."
+    },
+    "actionRules.rules.period_limits.over": {
+      "label": "If over the maximum",
+      "help": "What happens when this action would go over the period maximum, or when it cannot be counted.",
       "options": {
         "confirm": "Ask the requester to confirm",
         "approve": "Send for approval by another person",

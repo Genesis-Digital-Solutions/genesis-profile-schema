@@ -157,3 +157,22 @@ def test_f2_exposicao_e_textos():
         for loc in ("pt-PT", "en-GB"):
             t = text_for(path, loc)
             assert t and t.get("label") and len(t.get("help") or "") <= 240
+
+
+# ── F4 (v0.1.116): limites por período ─────────────────────────────────────
+
+def test_limites_por_periodo_validam():
+    from genesis_profile_schema.action_rules import (
+        INVALID_PERIOD_LIMIT, TOO_MANY_PERIOD_LIMITS, ActionRule, action_rules_problems)
+    r = ActionRule(id="r1", action="erp.criar", period_limits=[{"period": "week", "per": "client", "max": 5000,
+                                                              "sum_param": "total", "currency": "EUR"}])
+    assert r.period_limits[0].over == "block" and r.period_limits[0].per == "client"
+
+    def codes(pls):
+        prof = {"actionRules": {"enabled": True, "rules": [{"id": "r1", "action": "create_ticket", "mode": "allow",
+                                                            "period_limits": pls}]}}
+        return {p["code"] for p in action_rules_problems(prof)}
+    assert codes([{"period": "day", "per": "user", "max": 3}]) == set()
+    assert INVALID_PERIOD_LIMIT in codes([{"period": "ano", "max": 3}])
+    assert INVALID_PERIOD_LIMIT in codes([{"period": "day", "max": -1}])
+    assert TOO_MANY_PERIOD_LIMITS in codes([{"period": "day", "max": 1}] * 6)
