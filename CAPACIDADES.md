@@ -548,10 +548,18 @@ um campo removido do modelo continua a viver no blob sem dar erro.
   forks Salmon e Demos ainda não o declaram (`extra="forbid"`) e serão
   sincronizadas com o base.
 
+- **Regras por ação do agente (v0.1.109, `action_rules.py`)** — bloco `actionRules` (`enabled` + `rules[]`: `id`
+  estável, `action` = `<servidor>.<tool>` ou tool nativa, `mode` allow/confirm/approve/block, `limits[]` com
+  `param`/`op`/`value`/`currency`/`over`, `approval.queue`, `variants`, `log_only`, `note`). Editável pelo cliente
+  (fora de `mcp.*`); desligado = comportamento de hoje. `action_rules_problems(profile)` cruza com o resto do perfil
+  (fila que existe, servidor `per_user` recusado para aprovar, servidor desaparecido assinalado) e nunca levanta.
+  Os mínimos de segurança vivem no core, não aqui.
 - **Convites da Equipa do GAIBO (v0.1.108, `gaibo_index/invites.py`)** — `InviteRequest` (GAIBO, em
   `invites/`) e `InviteResult` (Studio, em `invite-results/`) na caixa de saída; `normalize_email`,
   `is_valid_invite_id`, `INVITES_PER_HOUR`. O Studio convida para o tenant do cliente (nunca o da Genesis); a
-  condição ABAC da API do GAIBO passa a incluir `invites/`. Contrato §5.1.
+  condição ABAC da API do GAIBO passa a incluir `invites/`. Contrato §5.1. **v0.1.109:** `reason_code` ganha
+  `sending`/`duplicate`/`expired`/`uncertain` (o executor do Studio usa-os — a v0.1.108 recusava-os) e o `display_name`
+  recusa invisíveis Cf/Co (U+202E, largura zero).
 - **Contrato da indexação pelo GAIBO (v0.1.92, `gaibo_index/`; v0.1.101: limite mensal com desbloqueio, recursos do cliente para indexar e planos `demo`/`pilot`/`internal`; v0.1.102: `di_model` por plano — Read no Starter/Demo, Layout nos restantes, via `extraction_for()` — e Enterprise ligado sem limites; v0.1.103: ação `reindexed` fora do limite mensal, `settings_missing_keys`/`REQUIRED_SETTINGS_KEYS`, validadores `is_valid_origin_ref/request_id/run_id` e as regras de apagar com o cliente desligado e de substituir acima da capacidade).** O formato de um
   chunk do GAIBO no índice dev (`origin`/`origin_ref`, `source_file` =
   `gaibo/<chave>/<nome>`, ids `gaibo_`, o JSON `metadata` que o core lê) com

@@ -1905,6 +1905,76 @@
       "label": "Filas de revisão",
       "note": "Mapa de filas por chave. Uma fila referida por um nome que não exista aqui passa a existir como fila fantasma no Cosmos."
     },
+    "actionRules.enabled": {
+      "label": "Regras das ações ligadas",
+      "help": "Liga as regras abaixo. Desligado, o assistente pede confirmação como até aqui (definição de confirmação de ações do Studio). As regras nunca baixam os mínimos de segurança: uma ação que apaga dados pede sempre confirmação."
+    },
+    "actionRules.rules.id": {
+      "label": "Identificador da regra",
+      "help": "Nome curto e único (letras minúsculas, números, - e _). Fica no registo de cada decisão tomada por esta regra."
+    },
+    "actionRules.rules.action": {
+      "label": "Ação",
+      "help": "A ação do assistente a que a regra se aplica, escolhida da lista (ex.: criar encomenda no ERP, abrir pedido)."
+    },
+    "actionRules.rules.mode": {
+      "label": "O que acontece",
+      "help": "Permitir: faz sem perguntar. Confirmar: pede «sim» a quem conversa. Aprovar: outra pessoa decide, na fila escolhida (até existir, bloqueia). Bloquear: o assistente explica que não pode.",
+      "options": {
+        "allow": "Permitir",
+        "confirm": "Pedir confirmação a quem pede",
+        "approve": "Enviar para aprovação de outra pessoa",
+        "block": "Bloquear"
+      }
+    },
+    "actionRules.rules.limits.param": {
+      "label": "Campo do limite",
+      "help": "O dado da ação que se compara (ex.: montante, quantidade), escolhido da lista dos campos da ação."
+    },
+    "actionRules.rules.limits.op": {
+      "label": "Comparação",
+      "options": {
+        "lte": "até (≤)",
+        "lt": "menos de (<)",
+        "gte": "a partir de (≥)",
+        "gt": "mais de (>)",
+        "eq": "igual a",
+        "in": "um destes"
+      }
+    },
+    "actionRules.rules.limits.value": {
+      "label": "Valor do limite",
+      "help": "O número (ou a lista de valores, em «um destes») que a ação tem de respeitar. Ex.: montante até 500."
+    },
+    "actionRules.rules.limits.currency": {
+      "label": "Moeda",
+      "help": "Para limites em dinheiro (ex.: EUR). Um valor noutra moeda não é convertido: conta como limite ultrapassado."
+    },
+    "actionRules.rules.limits.over": {
+      "label": "Se passar o limite",
+      "help": "O que acontece quando o valor não respeita o limite, ou quando falta e não se consegue verificar. Enquanto a aprovação por outra pessoa não estiver disponível, «Aprovar» bloqueia a ação.",
+      "options": {
+        "confirm": "Pedir confirmação a quem pede",
+        "approve": "Enviar para aprovação de outra pessoa",
+        "block": "Bloquear"
+      }
+    },
+    "actionRules.rules.approval.queue": {
+      "label": "Fila de aprovação",
+      "help": "A fila onde ficam os pedidos à espera de aprovação. Quem pediu nunca pode aprovar o próprio pedido."
+    },
+    "actionRules.rules.variants": {
+      "label": "Só nestes assistentes",
+      "help": "Vazio = a regra vale para todos os assistentes deste cliente."
+    },
+    "actionRules.rules.log_only": {
+      "label": "Só registar",
+      "help": "A regra é avaliada e fica registado o que teria feito, mas não muda nada. Útil para ver o efeito antes de a ligar a sério."
+    },
+    "actionRules.rules.note": {
+      "label": "Porquê",
+      "help": "Nota interna sobre o motivo da regra (não é mostrada a quem conversa)."
+    },
     "runtime.agent_mode": {
       "label": "Esforço de raciocínio por defeito",
       "help": "Aplicado quando o pedido não traz um modo escolhido pelo utilizador. Não abrange o modelo interno, que corre sempre no modo rápido."

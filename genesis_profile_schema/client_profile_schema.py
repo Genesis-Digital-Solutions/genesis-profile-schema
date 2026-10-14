@@ -619,6 +619,7 @@ from genesis_profile_schema.tool_cv_analysis import ProfileToolCvAnalysisConfig 
 from genesis_profile_schema.tool_doc_verification import ProfileToolDocVerificationConfig  # noqa: E402
 from genesis_profile_schema.queue_fields import QueueFields  # noqa: E402
 from genesis_profile_schema.intake_schema import ProfileIntake  # noqa: E402
+from genesis_profile_schema.action_rules import ProfileActionRules  # noqa: E402
 
 # Mapa key de tools.config → model tipado. Tools fora deste mapa passam sem
 # validação estrutural (estrutura aberta, como sempre).
@@ -2635,6 +2636,12 @@ class ClientProfileSchema(BaseModel):
     contacts: ProfileContacts = Field(default_factory=ProfileContacts)
     ingest: ProfileIngest = Field(default_factory=ProfileIngest)
     reviewQueues: Dict[str, ProfileReviewQueue] = Field(default_factory=dict)
+    # Regras por ação do agente (v0.1.109): permitir / confirmar / aprovar por
+    # outra pessoa / bloquear, com limites de valor. Desligado = como antes.
+    # Modelo e regras em `action_rules.py`.
+    # Optional: um `null` gravado no blob (GAIBO, cópias antigas) vale «desligado»
+    # e não pode recusar o perfil (lição do campo opcional novo → null).
+    actionRules: Optional[ProfileActionRules] = None
     # Calendário de negócio (v0.1.77) — dias úteis dos prazos das filas.
     calendar: Optional[ProfileCalendar] = None
     # Questionários regulados com metodologia determinística (v0.1.79, épico

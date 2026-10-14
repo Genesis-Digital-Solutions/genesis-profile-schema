@@ -31,7 +31,7 @@ def test_email_que_nao_serve_para_convite(email):
 
 
 def test_nome_com_html_ou_controlo_recusa():
-    for bad in ("<script>", "Ana\x00", "a\nb>"):
+    for bad in ("<script>", "Ana\x00", "a\nb>", "Ana‮avlis", "An​a"):
         with pytest.raises(ValidationError):
             gi.InviteRequest.model_validate(_req(display_name=bad))
 

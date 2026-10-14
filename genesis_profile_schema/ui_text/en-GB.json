@@ -1905,6 +1905,76 @@
       "label": "Review queues",
       "note": "Map of queues by key. A queue referenced by a name absent here becomes a phantom queue in Cosmos."
     },
+    "actionRules.enabled": {
+      "label": "Action rules on",
+      "help": "Turns the rules below on. When off, the assistant asks for confirmation as before (the Studio's action confirmation setting). Rules never lower the security minimums: an action that deletes data always asks for confirmation."
+    },
+    "actionRules.rules.id": {
+      "label": "Rule identifier",
+      "help": "Short unique name (lowercase letters, numbers, - and _). It is recorded with every decision this rule makes."
+    },
+    "actionRules.rules.action": {
+      "label": "Action",
+      "help": "The assistant action the rule applies to, chosen from the list (e.g. create an order in the ERP, open a request)."
+    },
+    "actionRules.rules.mode": {
+      "label": "What happens",
+      "help": "Allow: does it without asking. Confirm: asks the person chatting for a \"yes\". Approve: another person decides, in the chosen queue (blocks until available). Block: the assistant explains it cannot.",
+      "options": {
+        "allow": "Allow",
+        "confirm": "Ask the requester to confirm",
+        "approve": "Send for approval by another person",
+        "block": "Block"
+      }
+    },
+    "actionRules.rules.limits.param": {
+      "label": "Limit field",
+      "help": "The action data being compared (e.g. amount, quantity), chosen from the action's fields."
+    },
+    "actionRules.rules.limits.op": {
+      "label": "Comparison",
+      "options": {
+        "lte": "up to (≤)",
+        "lt": "less than (<)",
+        "gte": "from (≥)",
+        "gt": "more than (>)",
+        "eq": "equal to",
+        "in": "one of"
+      }
+    },
+    "actionRules.rules.limits.value": {
+      "label": "Limit value",
+      "help": "The number (or the list of values, for \"one of\") the action must respect. E.g. amount up to 500."
+    },
+    "actionRules.rules.limits.currency": {
+      "label": "Currency",
+      "help": "For money limits (e.g. EUR). A value in another currency is not converted: it counts as over the limit."
+    },
+    "actionRules.rules.limits.over": {
+      "label": "If over the limit",
+      "help": "What happens when the value does not respect the limit, or is missing and cannot be checked. Until approval by another person is available, \"Approve\" blocks the action.",
+      "options": {
+        "confirm": "Ask the requester to confirm",
+        "approve": "Send for approval by another person",
+        "block": "Block"
+      }
+    },
+    "actionRules.rules.approval.queue": {
+      "label": "Approval queue",
+      "help": "The queue where requests wait for approval. The requester can never approve their own request."
+    },
+    "actionRules.rules.variants": {
+      "label": "Only in these assistants",
+      "help": "Empty = the rule applies to every assistant of this client."
+    },
+    "actionRules.rules.log_only": {
+      "label": "Log only",
+      "help": "The rule is evaluated and what it would have done is recorded, but nothing changes. Useful to see the effect before switching it on for real."
+    },
+    "actionRules.rules.note": {
+      "label": "Why",
+      "help": "Internal note on the reason for the rule (not shown to the person chatting)."
+    },
     "runtime.agent_mode": {
       "label": "Default reasoning effort",
       "help": "Applied when the request carries no mode chosen by the user. It does not cover the internal model, which always runs in the fast mode."

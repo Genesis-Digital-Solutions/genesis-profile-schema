@@ -31,6 +31,7 @@ sessão, pelo email — este contrato não a muda.
 from __future__ import annotations
 
 import re
+import unicodedata
 from typing import Any, Literal, Optional
 
 from pydantic import AwareDatetime, BaseModel, ConfigDict, Field, field_validator
@@ -119,7 +120,10 @@ class InviteRequest(BaseModel):
     @classmethod
     def _name(cls, value: str) -> str:
         name = " ".join((value or "").split())
-        if _CONTROL_RE.search(name):
+        # controlo, `<>` e os invisíveis de formatação/uso privado (Cf/Co: inversão
+        # bidirecional U+202E, espaço de largura zero…) — um nome que se faz passar
+        # por outro no diretório do cliente
+        if _CONTROL_RE.search(name) or any(unicodedata.category(c) in ("Cf", "Co") for c in name):
             raise ValueError("nome com caracteres não aceites")
         return name
 
@@ -127,7 +131,7 @@ class InviteRequest(BaseModel):
 # ── Resultado (escreve o Studio) ────────────────────────────────────────────
 
 InviteStatus = Literal[
-    "pending",          # recebido; ainda não enviado (fila, limite por hora)
+    "pending",          # recebido; ainda não enviado (fila, limite, ou a ser enviado agora)
     "sent",             # convite enviado; a pessoa ainda não o aceitou
     "already_member",   # a pessoa já é membro ou convidado aceite do tenant
     "refused",          # o Studio não convida (ver reason_code)
@@ -138,7 +142,11 @@ InviteStatus = Literal[
 InviteReasonCode = Literal[
     "",
     "genesis_tenant",   # cliente no tenant da Genesis: convites só pela Genesis
-    "rate_limited",     # limite por hora atingido (fica pending)
+    "rate_limited",     # limite por hora/dia atingido (fica pending)
+    "sending",          # o Studio está a enviar este convite (reserva antes do envio)
+    "duplicate",        # o mesmo email já foi convidado há pouco (não se reenvia)
+    "expired",          # ficou por enviar demasiado tempo (falta de permissão, Graph em baixo)
+    "uncertain",        # o envio foi tentado e o resultado perdeu-se: pode ter sido enviado
     "invalid_email",
     "client_mismatch",  # o client_id do pedido não é o desta caixa
     "not_configured",   # falta a permissão de convite no tenant do cliente

@@ -215,11 +215,15 @@ um pedido e o Studio convida.
 - **Resultado (`InviteResult`, Studio):** `status` = `pending` (recebido, à espera — limite por hora), `sent`
   (convite enviado), `already_member` (já é membro ou convidado aceite), `refused`, `failed` ou `invalid`, com
   `reason_code` para traduzir no ecrã (`genesis_tenant`, `rate_limited`, `invalid_email`, `client_mismatch`,
-  `not_configured`, `graph_error`) e `reason` em texto.
+  `not_configured`, `graph_error`, `sending` — o Studio está a enviar —, `duplicate` — o mesmo email foi
+  convidado há pouco e não se reenvia —, `expired` — ficou por enviar demasiado tempo — e `uncertain` — o
+  envio foi tentado e o resultado perdeu-se: pode ter chegado) e `reason` em texto.
 - **O Studio:** valida outra vez; **nunca convida para o tenant da Genesis** (clientes alojados lá — demos —
-  recebem `refused`/`genesis_tenant`); envia no máximo `INVITES_PER_HOUR` (20) por cliente e por hora — o resto
-  fica `pending` e anda na hora seguinte; convida com o email da Microsoft e o regresso ao site do GAIBO; regista
-  cada convite no audit.
+  recebem `refused`/`genesis_tenant`); envia no máximo `INVITES_PER_HOUR` (20) por cliente e por hora (e um
+  teto diário) — o resto fica `pending` e anda depois; reserva cada convite (`pending`/`sending`) ANTES de o
+  enviar, para nunca o mandar duas vezes; não reenvia a um email convidado há pouco (`duplicate`); um pedido
+  que não sai em 7 dias passa a `failed`/`expired`; convida com o email da Microsoft e o regresso ao site do
+  GAIBO; regista cada convite no audit.
 - **Ligação à Equipa:** continua a ser no 1.º início de sessão, pelo email (lado do GAIBO).
 - **A caixa de saída tem de existir mesmo com a indexação desligada** (lado do GAIBO: hoje só se monta com o
   ingest ligado).

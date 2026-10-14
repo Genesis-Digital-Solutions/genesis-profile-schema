@@ -710,6 +710,25 @@ EXPOSURE: Dict[str, str] = {
     # Filas de revisao
     # ──────────────────────────────────────────────────────────────────────
     "reviewQueues": _I,  # nome de fila invalido cria filas fantasma em Cosmos
+
+    # ──────────────────────────────────────────────────────────────────────
+    # Regras por ação (v0.1.109, D1 do pack das Ações): o cliente decide o
+    # que o SEU bot pode fazer. Fora de `mcp.*` (interno: credenciais,
+    # `trusted`); os mínimos de segurança vivem no código do core.
+    # ──────────────────────────────────────────────────────────────────────
+    "actionRules.enabled": _W,
+    "actionRules.rules.id": _W,
+    "actionRules.rules.action": _W,
+    "actionRules.rules.mode": _W,
+    "actionRules.rules.limits.param": _W,
+    "actionRules.rules.limits.op": _W,
+    "actionRules.rules.limits.value": _W,
+    "actionRules.rules.limits.currency": _W,
+    "actionRules.rules.limits.over": _W,
+    "actionRules.rules.approval.queue": _W,
+    "actionRules.rules.variants": _W,
+    "actionRules.rules.log_only": _W,
+    "actionRules.rules.note": _W,
     # Calendário de negócio (v0.1.77): os feriados municipais e as tolerâncias
     # são DO CLIENTE (quem os conhece é ele); o país e o fim de semana vê-os,
     # decidimo-los nós no arranque.
