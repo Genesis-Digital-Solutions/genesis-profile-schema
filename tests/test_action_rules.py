@@ -176,3 +176,11 @@ def test_limites_por_periodo_validam():
     assert INVALID_PERIOD_LIMIT in codes([{"period": "ano", "max": 3}])
     assert INVALID_PERIOD_LIMIT in codes([{"period": "day", "max": -1}])
     assert TOO_MANY_PERIOD_LIMITS in codes([{"period": "day", "max": 1}] * 6)
+
+
+def test_aprovar_num_limite_por_periodo_pede_fila():
+    from genesis_profile_schema.action_rules import APPROVE_WITHOUT_QUEUE, action_rules_problems
+    prof = {"actionRules": {"enabled": True, "rules": [{"id": "r1", "action": "create_ticket", "mode": "allow",
+                                                        "period_limits": [{"period": "day", "max": 3,
+                                                                           "over": "approve"}]}]}}
+    assert APPROVE_WITHOUT_QUEUE in {p["code"] for p in action_rules_problems(prof)}

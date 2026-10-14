@@ -361,7 +361,9 @@ def action_rules_problems(profile: Mapping[str, Any]) -> List[Dict[str, str]]:
 
             uses_approve = mode == "approve" or any(
                 isinstance(l, Mapping) and str(l.get("over") or "approve") == "approve"
-                for l in limits)
+                for l in limits) or any(
+                isinstance(pl, Mapping) and str(pl.get("over") or "block") == "approve"
+                for pl in plimits)
             if uses_approve:
                 queue = str(((raw.get("approval") or {}) if isinstance(raw.get("approval"), Mapping)
                              else {}).get("queue") or "")
