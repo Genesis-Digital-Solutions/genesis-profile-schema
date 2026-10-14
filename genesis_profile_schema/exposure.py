@@ -573,6 +573,19 @@ EXPOSURE: Dict[str, str] = {
     # decide com o cliente e configura no Studio; expor ao cliente no GAIBO é
     # decisão futura (é uma fronteira de segurança).
     "access.allowedRoles": _I,
+    # team.* (v0.1.114): equipa e papéis do produto — o cliente configura no
+    # GAIBO (e a Genesis no Studio). As PESSOAS não vivem no perfil (core).
+    "team.enabled": _W,
+    "team.modules.approvals": _W,
+    "team.modules.queues": _W,
+    "team.modules.intake": _W,
+    "team.modules.docver": _W,
+    "team.modules.variant_access": _W,
+    "team.roles.id": _W,
+    "team.roles.label": _W,
+    "team.roles.capabilities": _W,
+    "team.roles.entra.roles": _W,
+    "team.roles.entra.groups": _W,
     "access.allowedGroups": _I,
     "access.allowedEmailDomains": _I,
     "access.allowedProviders": _I,

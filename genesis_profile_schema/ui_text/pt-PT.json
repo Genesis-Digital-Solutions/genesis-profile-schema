@@ -475,6 +475,50 @@
     "access": {
       "label": "Quem pode entrar"
     },
+    "team.enabled": {
+      "label": "Equipa e papéis do produto",
+      "help": "Ligado = quem pode fazer o quê passa a poder vir dos papéis do produto (pessoas convidadas no GAIBO ou no Studio). Cada módulo liga-se à parte."
+    },
+    "team.modules.approvals": {
+      "label": "Papéis nas aprovações de ações",
+      "help": "Ligado = quem tem um papel com «Aprovar ações» também decide os pedidos de aprovação (além dos papéis/grupos da regra)."
+    },
+    "team.modules.queues": {
+      "label": "Papéis nas filas",
+      "help": "Ligado = só quem tem um papel com «Tratar pedidos da fila» reclama e decide pedidos (por fila, ou em todas)."
+    },
+    "team.modules.intake": {
+      "label": "Papéis no Intake",
+      "help": "Ligado = as capacidades da área da equipa do Intake também podem vir dos papéis do produto."
+    },
+    "team.modules.docver": {
+      "label": "Papéis na Verificação Documental",
+      "help": "Ligado = os papéis dos casos também podem vir dos papéis do produto."
+    },
+    "team.modules.variant_access": {
+      "label": "Papéis no acesso às frentes",
+      "help": "Ligado = entrar numa frente também pode vir de ter um papel com «Entrar na frente» nela."
+    },
+    "team.roles.id": {
+      "label": "Identificador do papel",
+      "help": "Minúsculas, números, - e _. Não muda depois de ter pessoas."
+    },
+    "team.roles.label": {
+      "label": "Nome do papel",
+      "help": "O nome que a equipa vê (ex.: Aprovadores de encomendas)."
+    },
+    "team.roles.capabilities": {
+      "label": "O que este papel pode fazer",
+      "help": "Escolhido da lista de capacidades do produto."
+    },
+    "team.roles.entra.roles": {
+      "label": "Papéis do Entra que também valem (Avançado)",
+      "help": "Quem tiver um destes app roles no login tem este papel, sem estar na lista de pessoas."
+    },
+    "team.roles.entra.groups": {
+      "label": "Grupos do Entra que também valem (Avançado)",
+      "help": "Id do objeto do grupo. Quem estiver no grupo tem este papel."
+    },
     "access.allowedRoles": {
       "label": "Papéis de aplicação (App roles)",
       "help": "Só entra quem tiver um destes papéis no token. Recomendado.",

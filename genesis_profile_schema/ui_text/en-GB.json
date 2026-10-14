@@ -475,6 +475,50 @@
     "access": {
       "label": "Who can enter"
     },
+    "team.enabled": {
+      "label": "Product team and roles",
+      "help": "On = who can do what can also come from the product roles (people invited in the backoffice or the Studio). Each module is switched on separately."
+    },
+    "team.modules.approvals": {
+      "label": "Roles in action approvals",
+      "help": "On = whoever has a role with «Approve assistant actions» can also decide approval requests (besides the rule's roles/groups)."
+    },
+    "team.modules.queues": {
+      "label": "Roles in queues",
+      "help": "On = only whoever has a role with «Handle queue requests» claims and decides requests (per queue, or in all)."
+    },
+    "team.modules.intake": {
+      "label": "Roles in Intake",
+      "help": "On = the Intake team area's capabilities can also come from the product roles."
+    },
+    "team.modules.docver": {
+      "label": "Roles in Document Verification",
+      "help": "On = the case roles can also come from the product roles."
+    },
+    "team.modules.variant_access": {
+      "label": "Roles in front access",
+      "help": "On = entering a front can also come from having a role with «Enter the front» there."
+    },
+    "team.roles.id": {
+      "label": "Role identifier",
+      "help": "Lowercase, numbers, - and _. Does not change once it has people."
+    },
+    "team.roles.label": {
+      "label": "Role name",
+      "help": "The name the team sees (e.g. Order approvers)."
+    },
+    "team.roles.capabilities": {
+      "label": "What this role can do",
+      "help": "Chosen from the product's capability list."
+    },
+    "team.roles.entra.roles": {
+      "label": "Entra roles that also count (Advanced)",
+      "help": "Whoever has one of these app roles at login has this role, without being in the people list."
+    },
+    "team.roles.entra.groups": {
+      "label": "Entra groups that also count (Advanced)",
+      "help": "The group's object id. Whoever is in the group has this role."
+    },
     "access.allowedRoles": {
       "label": "App roles",
       "help": "Only people with one of these roles in the token get in. Recommended.",

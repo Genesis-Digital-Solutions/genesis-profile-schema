@@ -625,6 +625,7 @@ from genesis_profile_schema.tool_doc_verification import ProfileToolDocVerificat
 from genesis_profile_schema.queue_fields import QueueFields  # noqa: E402
 from genesis_profile_schema.intake_schema import ProfileIntake  # noqa: E402
 from genesis_profile_schema.action_rules import ProfileActionRules  # noqa: E402
+from genesis_profile_schema.team import ProfileTeam  # noqa: E402
 
 # Mapa key de tools.config → model tipado. Tools fora deste mapa passam sem
 # validação estrutural (estrutura aberta, como sempre).
@@ -2679,6 +2680,9 @@ class ClientProfileSchema(BaseModel):
     # Optional: um `null` gravado no blob (GAIBO, cópias antigas) vale «desligado»
     # e não pode recusar o perfil (lição do campo opcional novo → null).
     actionRules: Optional[ProfileActionRules] = None
+    # Equipa e papéis do produto (v0.1.114) — só o BASE conta; None = desligado
+    # (nunca um default preenchido: o DEFAULT_PROFILE do core é este dump).
+    team: Optional[ProfileTeam] = None
     # Calendário de negócio (v0.1.77) — dias úteis dos prazos das filas.
     calendar: Optional[ProfileCalendar] = None
     # Questionários regulados com metodologia determinística (v0.1.79, épico
