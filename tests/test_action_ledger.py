@@ -4,7 +4,8 @@ import pytest
 from pydantic import ValidationError
 
 from genesis_profile_schema.action_ledger import (
-    GENESIS_HASH, ProfileActionLedger, entry_hash, ledger_policy, params_digest, verify_chain,
+    ERASED, GENESIS_HASH, ProfileActionLedger, entry_hash, ledger_policy, params_digest, salted_digest,
+    verify_chain,
 )
 from genesis_profile_schema.client_profile_schema import ClientProfileSchema
 
@@ -43,7 +44,7 @@ def _chain(n):
         e = {"seq": i, "ts": 1000 + i, "client_id": "c", "variant_slug": "", "event": "executed",
              "action": "erp.criar", "actor": {"kind": "user", "id": "u"}, "ref": "act_1", "rule_id": "",
              "decision": "", "approver": None, "result": {"ok": True}, "params": {"total": i},
-             "params_digest": params_digest({"total": i}), "prev_hash": prev}
+             "salt": f"s{i}", "params_digest": params_digest({"total": i}, f"s{i}"), "prev_hash": prev}
         e["hash"] = entry_hash(prev, e)
         prev = e["hash"]
         out.append(e)
@@ -53,8 +54,13 @@ def _chain(n):
 def test_cadeia_valida_e_rgpd_nao_a_parte():
     rows = _chain(4)
     assert verify_chain(rows) == {"ok": True, "checked": 4, "broken_at": None, "reason": ""}
-    rows[1]["params"] = "[apagado]"                          # apagamento RGPD: só o digest conta
+    rows[1].update(params=ERASED, salt=ERASED, who=ERASED)   # apagamento RGPD: só o digest conta
     assert verify_chain(rows)["ok"] is True
+
+
+def test_sal_torna_o_digest_impossivel_de_adivinhar():
+    assert params_digest({"total": 500}, "a") != params_digest({"total": 500}, "b")
+    assert salted_digest("x", "ana@x.pt") != salted_digest("", "ana@x.pt")
 
 
 def test_cadeia_partida_diz_onde():

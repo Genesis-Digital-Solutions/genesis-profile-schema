@@ -96,9 +96,19 @@ EVENTS = ("proposed", "confirmed", "cancelled", "blocked_by_rule", "sent_for_app
           "rejected", "expired", "executed", "failed")
 
 #: Os campos que entram no hash (lista FECHADA: um campo novo não muda a conta
-#: das entradas antigas). Os VALORES (`params`) ficam de fora — entra o digest.
+#: das entradas antigas). NADA pessoal entra em claro: os valores (`params`) e
+#: as identidades (quem pediu, quem aprovou) entram só como digest COM SAL
+#: (`salted_digest`). O sal é por entrada e vive na parte apagável, ao lado dos
+#: valores; apagar por RGPD tira os valores, as identidades e o sal — o digest
+#: fica na cadeia mas deixa de se poder ligar à pessoa (um hash sem sal de
+#: «total: 500» ou de um email adivinha-se; orientações do EDPB 02/2025).
+#: `actor` = `{kind: user|agent|system, digest}`; `approver` = digest ou None.
 CHAIN_FIELDS = ("seq", "ts", "client_id", "variant_slug", "event", "action", "actor", "ref",
                 "rule_id", "decision", "approver", "result", "params_digest")
+
+#: A parte apagável de cada entrada (nunca entra no hash).
+ERASABLE_FIELDS = ("params", "salt", "who")
+ERASED = "[apagado]"
 
 GENESIS_HASH = "0" * 64
 
@@ -107,9 +117,16 @@ def _canonical(value: Any) -> str:
     return json.dumps(value, sort_keys=True, ensure_ascii=False, separators=(",", ":"), default=str)
 
 
-def params_digest(params: Any) -> str:
-    """sha256 dos valores da ação (o que fica na cadeia depois do apagamento RGPD)."""
-    return hashlib.sha256(_canonical(params if params is not None else {}).encode("utf-8")).hexdigest()
+def salted_digest(salt: str, value: Any) -> str:
+    """sha256(sal + canónico(valor)) — o que a cadeia guarda em vez de valores e
+    identidades. Sem o sal (apagado), não se volta ao valor."""
+    return hashlib.sha256((str(salt or "") + "|" + _canonical(value if value is not None else {}))
+                          .encode("utf-8")).hexdigest()
+
+
+def params_digest(params: Any, salt: str = "") -> str:
+    """O digest dos valores da ação (com o sal da entrada)."""
+    return salted_digest(salt, params if params is not None else {})
 
 
 def entry_hash(prev_hash: str, entry: Mapping[str, Any]) -> str:
