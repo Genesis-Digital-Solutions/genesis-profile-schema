@@ -1963,6 +1963,22 @@
       "label": "Fila de aprovação",
       "help": "A fila onde ficam os pedidos à espera de aprovação. Quem pediu nunca pode aprovar o próprio pedido."
     },
+    "actionRules.rules.approval.roles": {
+      "label": "Papéis que aprovam",
+      "help": "Papéis do Entra (app roles) de quem pode decidir. É preciso um papel ou um grupo; quem pediu nunca aprova o próprio pedido."
+    },
+    "actionRules.rules.approval.groups": {
+      "label": "Grupos que aprovam",
+      "help": "Grupos do Entra (id do objeto) de quem pode decidir, em alternativa ou além dos papéis."
+    },
+    "actionRules.rules.approval.expires_hours": {
+      "label": "Prazo para decidir (horas)",
+      "help": "Depois deste prazo a ação já não corre e o pedido passa a expirado. 24 h por omissão, até 30 dias."
+    },
+    "actionRules.rules.approval.notify_emails": {
+      "label": "Emails dos aprovadores",
+      "help": "Recebem um email quando chega um pedido para aprovar (até 10). Vazio = sem email; o pedido aparece na fila."
+    },
     "actionRules.rules.variants": {
       "label": "Só nestes assistentes",
       "help": "Vazio = a regra vale para todos os assistentes deste cliente."

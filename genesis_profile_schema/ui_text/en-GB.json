@@ -1963,6 +1963,22 @@
       "label": "Approval queue",
       "help": "The queue where requests wait for approval. The requester can never approve their own request."
     },
+    "actionRules.rules.approval.roles": {
+      "label": "Approver roles",
+      "help": "Entra app roles of who can decide. A role or a group is required; the requester never approves their own request."
+    },
+    "actionRules.rules.approval.groups": {
+      "label": "Approver groups",
+      "help": "Entra groups (object id) of who can decide, instead of or as well as roles."
+    },
+    "actionRules.rules.approval.expires_hours": {
+      "label": "Time to decide (hours)",
+      "help": "After this the action no longer runs and the request becomes expired. 24 h by default, up to 30 days."
+    },
+    "actionRules.rules.approval.notify_emails": {
+      "label": "Approver emails",
+      "help": "Receive an email when a request arrives (up to 10). Empty = no email; the request shows in the queue."
+    },
     "actionRules.rules.variants": {
       "label": "Only in these assistants",
       "help": "Empty = the rule applies to every assistant of this client."

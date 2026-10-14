@@ -10,7 +10,8 @@ from genesis_profile_schema.exposure import EXPOSURE, CLIENT_WRITE
 def _profile(rules, queues=None, servers=None):
     return {
         "actionRules": {"enabled": True, "rules": rules},
-        "reviewQueues": queues if queues is not None else {"aprovacoes": {}},
+        # A fila de aprovação como o Studio a cria (F2 verifica a forma).
+        "reviewQueues": queues if queues is not None else {"aprovacoes": ar.approval_queue_template()},
         "mcp": {"servers": servers if servers is not None else [
             {"name": "sap", "url": "https://x"},
             {"name": "crm", "url": "https://y", "auth": {"per_user": True}}]},
@@ -41,7 +42,7 @@ def test_valid_rule_has_no_problems():
     rule = {"id": "encomendas-500", "action": "sap.erp_create_sales_order", "mode": "confirm",
             "limits": [{"param": "total", "op": "lte", "value": 500, "currency": "EUR",
                         "over": "approve"}],
-            "approval": {"queue": "aprovacoes"}}
+            "approval": {"queue": "aprovacoes", "roles": ["Acoes.Aprovador"]}}
     assert ar.action_rules_problems(_profile([rule])) == []
 
 
@@ -100,3 +101,59 @@ def test_client_writes_the_block():
     paths = [k for k in EXPOSURE if k.startswith("actionRules.")]
     assert paths and all(EXPOSURE[k] == CLIENT_WRITE for k in paths)
     assert "mcp.confirm_actions" not in paths
+
+
+# ── F2 (v0.1.113): aprovadores, prazo, emails e a fila de aprovação ─────────
+
+def _approve_profile(approval, queue=None):
+    from genesis_profile_schema.action_rules import approval_queue_template
+    return {"actionRules": {"enabled": True, "rules": [
+        {"id": "r1", "action": "create_ticket", "mode": "approve", "approval": approval}]},
+        "reviewQueues": {"aprov": queue if queue is not None else approval_queue_template()}}
+
+
+def _f2_codes(profile):
+    from genesis_profile_schema.action_rules import action_rules_problems
+    return {p["code"] for p in action_rules_problems(profile)}
+
+
+def test_f2_defaults_e_modelo():
+    from genesis_profile_schema.action_rules import ActionRuleApproval
+    a = ActionRuleApproval(queue="aprov")
+    assert a.roles == [] and a.groups == [] and a.expires_hours == 24 and a.notify_emails == []
+
+
+def test_f2_template_da_fila_e_valido_e_reconhecido():
+    from genesis_profile_schema.action_rules import approval_queue_shape_ok, approval_queue_template
+    from genesis_profile_schema.client_profile_schema import ProfileReviewQueue
+    from genesis_profile_schema.field_definition import FieldDefinition
+    t = approval_queue_template()
+    ProfileReviewQueue(**t)
+    for f in t["fields"]:
+        FieldDefinition(**f)
+        assert f["editable"] is False                       # nunca se editam
+    assert approval_queue_shape_ok(t)
+    t2 = approval_queue_template()
+    t2["actions"] = [a for a in t2["actions"] if a["id"] != "expire"]
+    assert not approval_queue_shape_ok(t2)
+
+
+def test_f2_problemas():
+    ok = {"queue": "aprov", "roles": ["Acoes.Aprovador"]}
+    assert _f2_codes(_approve_profile(ok)) == set()
+    assert "approve_without_approvers" in _f2_codes(_approve_profile({"queue": "aprov"}))
+    assert _f2_codes(_approve_profile({"queue": "aprov", "groups": ["0b1c2d3e-0000-4000-8000-000000000001"]})) == set()
+    assert "invalid_approver" in _f2_codes(_approve_profile({"queue": "aprov", "groups": ["não-é-guid"]}))
+    assert "invalid_notify_email" in _f2_codes(_approve_profile({**ok, "notify_emails": ["x"]}))
+    assert "approval_queue_shape" in _f2_codes(_approve_profile(ok, queue={"states": [], "actions": []}))
+
+
+def test_f2_exposicao_e_textos():
+    from genesis_profile_schema.exposure import EXPOSURE
+    from genesis_profile_schema.ui_text import text_for
+    for f in ("roles", "groups", "expires_hours", "notify_emails"):
+        path = f"actionRules.rules.approval.{f}"
+        assert EXPOSURE[path] == "client_write"
+        for loc in ("pt-PT", "en-GB"):
+            t = text_for(path, loc)
+            assert t and t.get("label") and len(t.get("help") or "") <= 240

@@ -52,6 +52,28 @@ _RULE_ID = re.compile(r"^[a-z0-9][a-z0-9_-]{0,47}$", re.ASCII)
 # `<servidor>.<tool>` (MCP) ou o nome de uma tool nativa.
 _ACTION = re.compile(r"^[A-Za-z0-9_-]{1,64}(\.[A-Za-z0-9_.-]{1,128})?$", re.ASCII)
 _CURRENCY = re.compile(r"^[A-Z]{3}$", re.ASCII)
+# Valor de uma app role do Entra (o que vem na claim `roles`).
+_ROLE = re.compile(r"^[A-Za-z0-9][A-Za-z0-9._-]{0,119}$", re.ASCII)
+# Object id de um grupo do Entra (o que vem na claim `groups`).
+_GROUP = re.compile(r"^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$", re.ASCII)
+_EMAIL = re.compile(r"^[^@\s]{1,64}@[^@\s]{1,255}\.[^@\s]{2,}$")
+
+MAX_APPROVERS = 20
+MAX_NOTIFY_EMAILS = 10
+APPROVAL_EXPIRES_HOURS = 24          # prazo por omissão de um pedido de aprovação
+APPROVAL_EXPIRES_MAX_HOURS = 720     # 30 dias
+
+# ── Fila de aprovação (F2, 14 Out 2026) ──────────────────────────────────────
+# A máquina de estados que o core reconhece numa fila de aprovação. O Studio
+# cria a fila a partir de `approval_queue_template()`; o core só executa a
+# ação quando um pedido `chat_action` chega a APPROVAL_APPROVED.
+APPROVAL_PENDING = "pending"
+APPROVAL_APPROVED = "approved"
+APPROVAL_REJECTED = "rejected"
+APPROVAL_EXPIRED = "expired"
+APPROVAL_ACTION_APPROVE = "approve"
+APPROVAL_ACTION_REJECT = "reject"
+APPROVAL_ACTION_EXPIRE = "expire"
 
 # Problemas (códigos estáveis — o Studio e o backoffice traduzem-nos).
 ERROR = "error"
@@ -70,6 +92,10 @@ NUMERIC_OP_ON_TEXT = "numeric_op_on_text"           # `≤` com um valor que nã
 INVALID_CURRENCY = "invalid_currency"
 TOO_MANY_RULES = "too_many_rules"
 TOO_MANY_LIMITS = "too_many_limits"
+APPROVE_WITHOUT_APPROVERS = "approve_without_approvers"  # nem papel nem grupo (F2)
+INVALID_APPROVER = "invalid_approver"               # papel/grupo com formato inválido
+INVALID_NOTIFY_EMAIL = "invalid_notify_email"
+APPROVAL_QUEUE_SHAPE = "approval_queue_shape"       # a fila não tem os estados/ações da aprovação
 
 
 # ── Modelos ──────────────────────────────────────────────────────────────────
@@ -92,6 +118,15 @@ class ActionRuleApproval(BaseModel):
     model_config = ConfigDict(extra="allow")
 
     queue: str = ""                              # chave de `reviewQueues`
+    # Quem pode decidir (F2): app roles do Entra (claim `roles`) e/ou object
+    # ids de grupos (claim `groups`). Pelo menos um — sem aprovadores o core
+    # recusa decidir (falha fechada). Quem pediu nunca aprova.
+    roles: List[str] = Field(default_factory=list)
+    groups: List[str] = Field(default_factory=list)
+    # Prazo do pedido; depois disto a ação já não corre (passa a «expirado»).
+    expires_hours: int = Field(default=APPROVAL_EXPIRES_HOURS, ge=1, le=APPROVAL_EXPIRES_MAX_HOURS)
+    # Email aos aprovadores quando chega um pedido (até 10).
+    notify_emails: List[str] = Field(default_factory=list)
 
 
 class ActionRule(BaseModel):
@@ -160,6 +195,64 @@ def _limit_problems(limit: Any) -> List[Tuple[str, str]]:
     return out
 
 
+def approval_queue_template() -> Dict[str, Any]:
+    """A fila de aprovação que o Studio cria (estados e ações que o core
+    reconhece; os campos são só de leitura — os parâmetros de uma ação a
+    aprovar nunca se editam). Rótulos em português; o editor traduz."""
+    def field(key, pt, en, order, ftype="text"):
+        return {"key": key, "label": {"pt": pt, "en": en}, "type": ftype,
+                "editable": False, "order": order}
+    return {
+        "label": "Aprovações",
+        "states": [
+            {"id": APPROVAL_PENDING, "kind": "open", "label": "Pendente"},
+            {"id": APPROVAL_APPROVED, "kind": "final", "label": "Aprovado"},
+            {"id": APPROVAL_REJECTED, "kind": "final", "label": "Recusado"},
+            {"id": APPROVAL_EXPIRED, "kind": "final", "label": "Expirado"},
+        ],
+        "actions": [
+            {"id": APPROVAL_ACTION_APPROVE, "from": [APPROVAL_PENDING], "to": APPROVAL_APPROVED,
+             "label": "Aprovar"},
+            {"id": APPROVAL_ACTION_REJECT, "from": [APPROVAL_PENDING], "to": APPROVAL_REJECTED,
+             "label": "Recusar", "note_required": True},
+            {"id": APPROVAL_ACTION_EXPIRE, "from": [APPROVAL_PENDING], "to": APPROVAL_EXPIRED,
+             "label": "Expirar"},
+        ],
+        "businessKey": {"prefix": "APR"},
+        "fields": [
+            field("pedido", "Pedido", "Request", 1),
+            field("acao", "Ação", "Action", 2),
+            field("parametros", "Parâmetros", "Parameters", 3, "textarea"),
+            field("regra", "Regra", "Rule", 4),
+            field("motivo", "Motivo", "Reason", 5),
+            field("pedido_por", "Pedido por", "Requested by", 6),
+            field("prazo", "Prazo", "Deadline", 7, "datetime"),
+        ],
+    }
+
+
+def approval_queue_shape_ok(queue: Mapping[str, Any]) -> bool:
+    """A fila tem os estados e as ações que o core reconhece?"""
+    try:
+        states = {str(s.get("id")): str(s.get("kind") or "open")
+                  for s in (queue.get("states") or []) if isinstance(s, Mapping)}
+        actions = {str(a.get("id")): a for a in (queue.get("actions") or []) if isinstance(a, Mapping)}
+        if states.get(APPROVAL_PENDING) not in ("open", "parked"):
+            return False
+        for sid in (APPROVAL_APPROVED, APPROVAL_REJECTED, APPROVAL_EXPIRED):
+            if states.get(sid) != "final":
+                return False
+        for aid, to in ((APPROVAL_ACTION_APPROVE, APPROVAL_APPROVED),
+                        (APPROVAL_ACTION_REJECT, APPROVAL_REJECTED),
+                        (APPROVAL_ACTION_EXPIRE, APPROVAL_EXPIRED)):
+            a = actions.get(aid)
+            if not a or str(a.get("to") or "") != to:
+                return False
+        return True
+    except Exception:  # noqa: BLE001
+        return False
+
+
 def action_rules_problems(profile: Mapping[str, Any]) -> List[Dict[str, str]]:
     """Problemas do bloco `actionRules` à luz do RESTO do perfil.
 
@@ -225,6 +318,23 @@ def action_rules_problems(profile: Mapping[str, Any]) -> List[Dict[str, str]]:
                     add(rid, APPROVE_WITHOUT_QUEUE, ERROR)
                 elif queue not in queues:
                     add(rid, UNKNOWN_QUEUE, ERROR)
+                elif not approval_queue_shape_ok(queues.get(queue) or {}):
+                    add(rid, APPROVAL_QUEUE_SHAPE, ERROR)
+                appr = raw.get("approval") if isinstance(raw.get("approval"), Mapping) else {}
+                roles = appr.get("roles") or []
+                groups = appr.get("groups") or []
+                roles = roles if isinstance(roles, list) else []
+                groups = groups if isinstance(groups, list) else []
+                if not roles and not groups:
+                    add(rid, APPROVE_WITHOUT_APPROVERS, ERROR)
+                if (len(roles) + len(groups) > MAX_APPROVERS
+                        or any(not _ROLE.match(str(r)) for r in roles)
+                        or any(not _GROUP.match(str(g)) for g in groups)):
+                    add(rid, INVALID_APPROVER, ERROR)
+                emails = appr.get("notify_emails") or []
+                if (not isinstance(emails, list) or len(emails) > MAX_NOTIFY_EMAILS
+                        or any(not _EMAIL.match(str(e)) for e in emails)):
+                    add(rid, INVALID_NOTIFY_EMAIL, WARNING)
                 # D2: a aprovação corre fora da conversa, sem o login de quem
                 # pediu — um servidor `per_user` ficaria sem token.
                 srv = servers.get(server) if server else None

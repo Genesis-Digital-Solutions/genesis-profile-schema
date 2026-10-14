@@ -733,6 +733,11 @@ EXPOSURE: Dict[str, str] = {
     "actionRules.rules.limits.currency": _W,
     "actionRules.rules.limits.over": _W,
     "actionRules.rules.approval.queue": _W,
+    # F2 (v0.1.113): quem aprova, prazo e emails — do cliente, como a fila.
+    "actionRules.rules.approval.roles": _W,
+    "actionRules.rules.approval.groups": _W,
+    "actionRules.rules.approval.expires_hours": _W,
+    "actionRules.rules.approval.notify_emails": _W,
     "actionRules.rules.variants": _W,
     "actionRules.rules.log_only": _W,
     "actionRules.rules.note": _W,
