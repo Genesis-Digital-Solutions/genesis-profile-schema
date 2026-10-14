@@ -2233,6 +2233,11 @@ class ProfileVoice(BaseModel):
     # do pedido na fila da voz (`queue`), quando a há. Vazio = sem email. Lista
     # vazia por omissão (nunca Optional: um null no blob era «sem resposta»).
     transfer_summary_emails: List[str] = Field(default_factory=list)
+    # Registar cada chamada transferida como pedido na fila da voz (`queue`),
+    # com o resumo. DESLIGADO por omissão (decisão do Bruno, 14 Out 2026): nem
+    # todas as filas querem estes pedidos (uma fila de encomendas do ERP não),
+    # e ligá-lo sozinho mudava o que os clientes com voz e fila já têm.
+    transfer_summary_to_queue: bool = False
     kb_top_n: int = 4
     # Aviso de IA no início da chamada (EU AI Act Art. 50). Formalizado
     # v0.1.43 (era fantasma; default do core é ligado).

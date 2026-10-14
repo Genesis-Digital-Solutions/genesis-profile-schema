@@ -447,6 +447,7 @@ EXPOSURE: Dict[str, str] = {
     # v0.1.110: para onde vai o resumo da chamada transferida — a equipa do
     # cliente, que o cliente gere como gere os destinos.
     "voice.transfer_summary_emails": _W,
+    "voice.transfer_summary_to_queue": _W,
     "voice.voice": _W,
     "voice.web.enabled": _R,
     # voice.web.engine / live_deployment — motor do widget (v0.1.68): infra

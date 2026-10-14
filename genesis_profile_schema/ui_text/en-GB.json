@@ -2479,6 +2479,10 @@
       "label": "Emails for the transferred-call summary",
       "help": "When the assistant hands a call to a person, it sends the summary of what was said here. Empty = no email (the request stays in the queue, if there is one)."
     },
+    "voice.transfer_summary_to_queue": {
+      "label": "Record transferred calls in the queue",
+      "help": "Each call handed to a person becomes a request in the voice queue, with the assistant's summary and the caller's number. Off by default."
+    },
     "voice.transfer_sip_uris": {
       "label": "SIP destinations per transfer destination",
       "note": "Genesis only. Map identifier → sip: URI. When valid, it replaces that destination's number."
