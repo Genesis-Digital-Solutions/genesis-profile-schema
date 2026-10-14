@@ -359,6 +359,10 @@
       "label": "Identity fields",
       "help": "Each entry is a pair: the identifier type (kind) and the path it is read from (path)."
     },
+    "contacts.link_intake": {
+      "label": "Link Intake cases to the contact",
+      "help": "Each Intake case keeps a reference to the person's contact (by the invitation email or mobile) and shows in their timeline. It never merges different people; Intake data and retention do not change."
+    },
     "custom_instructions": {
       "label": "Custom instructions",
       "help": "Free text added to the assistant's instructions: business policies, examples, redirects. It complements the structured sections rather than replacing them.",

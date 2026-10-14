@@ -33,3 +33,10 @@ def test_tenant_ciam_aceite_e_outros_recusados():
     assert ok.frontend.auth.tenantMode == "ciam"
     with pytest.raises(ValidationError):
         ClientProfileSchema.model_validate({"frontend": {"auth": {"tenantMode": "outro"}}})
+
+
+def test_contacts_link_intake_desligado_e_aceita_null():
+    from genesis_profile_schema.client_profile_schema import ClientProfileSchema
+    p = ClientProfileSchema.model_validate({"contacts": {"enabled": True}})
+    assert p.contacts.link_intake is False
+    assert ClientProfileSchema.model_validate({"contacts": {"enabled": True, "link_intake": True}}).contacts.link_intake

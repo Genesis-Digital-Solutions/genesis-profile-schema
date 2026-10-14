@@ -359,6 +359,10 @@
       "label": "Campos de identidade",
       "help": "Cada entrada é um par: o tipo de identificador (kind) e o caminho de onde é lido (path)."
     },
+    "contacts.link_intake": {
+      "label": "Ligar os processos do Intake ao contacto",
+      "help": "Cada processo do Intake guarda a referência ao contacto da pessoa (pelo email ou telemóvel do convite) e aparece na linha temporal dela. Nunca junta pessoas diferentes; os dados e a retenção do Intake não mudam."
+    },
     "custom_instructions": {
       "label": "Instruções personalizadas",
       "help": "Texto livre acrescentado às instruções do assistente: políticas de negócio, exemplos, encaminhamentos. Complementa as secções estruturadas, não as substitui.",

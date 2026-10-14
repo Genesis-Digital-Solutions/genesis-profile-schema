@@ -712,6 +712,7 @@ EXPOSURE: Dict[str, str] = {
     "contacts.display_name_path": _I,
     "contacts.enabled": _I,
     "contacts.identity_fields": _I,
+    "contacts.link_intake": _I,
 
     # ──────────────────────────────────────────────────────────────────────
     # Cache de queries

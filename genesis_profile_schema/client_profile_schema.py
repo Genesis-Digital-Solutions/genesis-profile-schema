@@ -2285,6 +2285,12 @@ class ProfileContacts(BaseModel):
     identity_fields: Optional[List[Dict[str, Any]]] = None   # [{kind, path}]
     display_name_path: Optional[str] = None
     attribute_paths: Optional[Dict[str, str]] = None
+    # v0.1.116 (C6 da análise de coerência, 14 Out 2026): os processos do
+    # Intake guardam a REFERÊNCIA ao contacto da pessoa (pelo email/telemóvel
+    # do convite, como identidade DECLARADA — nunca funde contactos) e entram
+    # na linha temporal. Desligado por omissão; os dados e a retenção do Intake
+    # não mudam. Aqui e não em `intake` (fechado): um core antigo ignora-o.
+    link_intake: bool = False
 
 
 class ProfileIngestAlerts(BaseModel):
