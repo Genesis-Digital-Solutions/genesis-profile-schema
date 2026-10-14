@@ -1,6 +1,6 @@
 """
 action_ledger.py — registo durável das ações do assistente (`actionLedger`,
-v0.1.115, 14 Out 2026; pack «Ações com regras, aprovação e registo», F3).
+v0.1.115–116, 14 Out 2026; pack «Ações com regras, aprovação e registo», F3).
 
 PORQUÊ
 ──────
@@ -31,6 +31,7 @@ from __future__ import annotations
 
 import hashlib
 import json
+import re
 from typing import Any, Dict, Iterable, List, Mapping, Optional
 
 from pydantic import BaseModel, ConfigDict, Field
@@ -91,9 +92,11 @@ def ledger_policy(profile: Mapping[str, Any]) -> Dict[str, Any]:
 
 # ── A cadeia (a MESMA conta no core, que escreve, e em quem verifica) ────────
 
-#: Os eventos da vida de uma ação.
+#: Os eventos da vida de uma ação. `started` (v0.1.116): escrito ANTES de
+#: executar num cliente de alto risco — se não ficar escrito, a ação não corre
+#: (a falha fechada prova-se por uma escrita, não por o contentor existir).
 EVENTS = ("proposed", "confirmed", "cancelled", "blocked_by_rule", "sent_for_approval", "approved",
-          "rejected", "expired", "executed", "failed")
+          "rejected", "expired", "started", "executed", "failed")
 
 #: Os campos que entram no hash (lista FECHADA: um campo novo não muda a conta
 #: das entradas antigas). NADA pessoal entra em claro: os valores (`params`) e
@@ -102,12 +105,23 @@ EVENTS = ("proposed", "confirmed", "cancelled", "blocked_by_rule", "sent_for_app
 #: valores; apagar por RGPD tira os valores, as identidades e o sal — o digest
 #: fica na cadeia mas deixa de se poder ligar à pessoa (um hash sem sal de
 #: «total: 500» ou de um email adivinha-se; orientações do EDPB 02/2025).
-#: `actor` = `{kind: user|agent|system, digest}`; `approver` = digest ou None.
+#: `actor` = `{kind: user|agent|system, digest}`; `approver` = digest ou None;
+#: `result` = `{ok, code}` — só um CÓDIGO curto (`RESULT_CODE`), nunca a
+#: mensagem (um erro do ERP traz nomes e NIFs; a mensagem vai para `detail`,
+#: apagável). v0.1.116: `expires_at` (quando esta entrada expira, monótono:
+#: nunca antes da anterior) e `prev_expires_at` (quando a anterior expira) —
+#: assim a verificação distingue uma entrada que EXPIROU de uma que foi TIRADA.
 CHAIN_FIELDS = ("seq", "ts", "client_id", "variant_slug", "event", "action", "actor", "ref",
-                "rule_id", "decision", "approver", "result", "params_digest")
+                "rule_id", "decision", "approver", "result", "params_digest",
+                "expires_at", "prev_expires_at")
 
-#: A parte apagável de cada entrada (nunca entra no hash).
-ERASABLE_FIELDS = ("params", "salt", "who")
+#: Códigos aceites em `result.code` (o resto vira «error»).
+RESULT_CODE = re.compile(r"^[a-z][a-z0-9_]{0,39}$")
+
+#: A parte apagável de cada entrada (nunca entra no hash). Os sais são POR
+#: PAPEL (`salt.who`, `salt.approver`, `salt.params`): apagar quem só aprovou
+#: não apaga os valores nem a identidade de quem pediu.
+ERASABLE_FIELDS = ("params", "detail", "salt", "who")
 ERASED = "[apagado]"
 
 GENESIS_HASH = "0" * 64
@@ -135,22 +149,50 @@ def entry_hash(prev_hash: str, entry: Mapping[str, Any]) -> str:
     return hashlib.sha256((str(prev_hash or "") + "|" + _canonical(chained)).encode("utf-8")).hexdigest()
 
 
-def verify_chain(entries: Iterable[Mapping[str, Any]], *, start_prev: str = GENESIS_HASH) -> Dict[str, Any]:
-    """Verifica entradas por ordem de `seq`. `{ok, checked, broken_at, reason}`:
+def result_code(value: Any) -> str:
+    """O código que pode entrar na cadeia (`RESULT_CODE`) ou «error»."""
+    v = str(value or "").strip().lower()
+    return v if RESULT_CODE.match(v) else ("error" if v else "")
+
+
+def chain_start(first: Mapping[str, Any], now: float) -> Dict[str, Any]:
+    """Onde começa a verificação de uma cadeia cuja 1.ª entrada existente é
+    `first`: o início (seq 1), ou — se as anteriores já EXPIRARAM pela
+    retenção (`prev_expires_at` ≤ agora, que está DENTRO da cadeia) — o elo
+    que ela guarda. Uma entrada anterior em falta que ainda não devia ter
+    expirado é uma entrada TIRADA. `{ok, start_prev, reason}`."""
+    seq = int(first.get("seq") or 0)
+    if seq <= 1:
+        return {"ok": True, "start_prev": GENESIS_HASH, "reason": ""}
+    pe = first.get("prev_expires_at")
+    if isinstance(pe, (int, float)) and not isinstance(pe, bool) and pe <= now:
+        return {"ok": True, "start_prev": str(first.get("prev_hash") or ""), "reason": ""}
+    return {"ok": False, "start_prev": "", "reason": "missing_entry"}
+
+
+def verify_chain(entries: Iterable[Mapping[str, Any]], *, start_prev: str = GENESIS_HASH,
+                 expect_seq: Optional[int] = None) -> Dict[str, Any]:
+    """Verifica entradas por ordem de `seq`. `{ok, checked, broken_at, reason, last_seq, last_hash}`:
     `broken_at` é o `seq` da 1.ª entrada que não bate (hash, elo ou buraco na
-    sequência). `start_prev` deixa verificar uma janela que não começa no 1.º.
+    sequência). `start_prev` + `expect_seq` deixam verificar por PÁGINAS (a
+    página seguinte começa no `last_hash`/`last_seq + 1` da anterior).
     Os `params` apagados por RGPD não partem nada (só o digest conta)."""
     prev = start_prev
-    expected_seq: Optional[int] = None
+    expected_seq: Optional[int] = expect_seq
     checked = 0
+    last_seq: Optional[int] = None
     rows: List[Mapping[str, Any]] = sorted(entries, key=lambda e: int(e.get("seq") or 0))
     for e in rows:
         seq = int(e.get("seq") or 0)
         if expected_seq is not None and seq != expected_seq:
-            return {"ok": False, "checked": checked, "broken_at": expected_seq, "reason": "missing_entry"}
+            return {"ok": False, "checked": checked, "broken_at": expected_seq, "reason": "missing_entry",
+                    "last_seq": last_seq, "last_hash": prev}
         if str(e.get("prev_hash") or "") != prev:
-            return {"ok": False, "checked": checked, "broken_at": seq, "reason": "link_mismatch"}
+            return {"ok": False, "checked": checked, "broken_at": seq, "reason": "link_mismatch",
+                    "last_seq": last_seq, "last_hash": prev}
         if entry_hash(prev, e) != str(e.get("hash") or ""):
-            return {"ok": False, "checked": checked, "broken_at": seq, "reason": "hash_mismatch"}
-        prev, expected_seq, checked = str(e.get("hash")), seq + 1, checked + 1
-    return {"ok": True, "checked": checked, "broken_at": None, "reason": ""}
+            return {"ok": False, "checked": checked, "broken_at": seq, "reason": "hash_mismatch",
+                    "last_seq": last_seq, "last_hash": prev}
+        prev, expected_seq, checked, last_seq = str(e.get("hash")), seq + 1, checked + 1, seq
+    return {"ok": True, "checked": checked, "broken_at": None, "reason": "", "last_seq": last_seq,
+            "last_hash": prev}

@@ -4,8 +4,8 @@ import pytest
 from pydantic import ValidationError
 
 from genesis_profile_schema.action_ledger import (
-    ERASED, GENESIS_HASH, ProfileActionLedger, entry_hash, ledger_policy, params_digest, salted_digest,
-    verify_chain,
+    ERASED, GENESIS_HASH, ProfileActionLedger, chain_start, entry_hash, ledger_policy, params_digest,
+    result_code, salted_digest, verify_chain,
 )
 from genesis_profile_schema.client_profile_schema import ClientProfileSchema
 
@@ -53,7 +53,8 @@ def _chain(n):
 
 def test_cadeia_valida_e_rgpd_nao_a_parte():
     rows = _chain(4)
-    assert verify_chain(rows) == {"ok": True, "checked": 4, "broken_at": None, "reason": ""}
+    r = verify_chain(rows)
+    assert (r["ok"], r["checked"], r["broken_at"], r["last_seq"]) == (True, 4, None, 4)
     rows[1].update(params=ERASED, salt=ERASED, who=ERASED)   # apagamento RGPD: só o digest conta
     assert verify_chain(rows)["ok"] is True
 
@@ -72,3 +73,28 @@ def test_cadeia_partida_diz_onde():
     assert verify_chain(rows)["broken_at"] == 2 and verify_chain(rows)["reason"] == "missing_entry"
     rows = _chain(3)
     assert verify_chain(rows[1:], start_prev=rows[0]["hash"])["ok"] is True
+
+
+
+def test_verificar_por_paginas():
+    rows = _chain(6)
+    a = verify_chain(rows[:3])
+    b = verify_chain(rows[3:], start_prev=a["last_hash"], expect_seq=a["last_seq"] + 1)
+    assert a["ok"] and b["ok"] and b["checked"] == 3
+    c = verify_chain(rows[4:], start_prev=a["last_hash"], expect_seq=a["last_seq"] + 1)
+    assert c["ok"] is False and c["broken_at"] == 4 and c["reason"] == "missing_entry"
+
+
+def test_inicio_expirado_vs_tirado():
+    rows = _chain(3)
+    first = dict(rows[1], prev_expires_at=100)
+    assert chain_start(first, now=200)["ok"] is True                       # a anterior já expirou
+    assert chain_start(first, now=50) == {"ok": False, "start_prev": "", "reason": "missing_entry"}
+    assert chain_start(dict(rows[1], prev_expires_at=None), now=200)["ok"] is False
+    assert chain_start(rows[0], now=0)["start_prev"] == GENESIS_HASH
+
+
+def test_codigo_do_resultado_nunca_e_a_mensagem():
+    assert result_code("timeout") == "timeout"
+    assert result_code("Cliente 'Ana Silva' NIF 123 não existe") == "error"
+    assert result_code("") == ""
