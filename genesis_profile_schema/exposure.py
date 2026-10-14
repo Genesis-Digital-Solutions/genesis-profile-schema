@@ -586,6 +586,10 @@ EXPOSURE: Dict[str, str] = {
     "team.roles.capabilities": _W,
     "team.roles.entra.roles": _W,
     "team.roles.entra.groups": _W,
+    # actionLedger.* (v0.1.115): registo das ações — o cliente liga no GAIBO
+    # (num cliente de alto risco regista sempre, ligado ou não).
+    "actionLedger.enabled": _W,
+    "actionLedger.retention_days": _W,
     "access.allowedGroups": _I,
     "access.allowedEmailDomains": _I,
     "access.allowedProviders": _I,

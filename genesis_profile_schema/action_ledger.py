@@ -1,0 +1,139 @@
+"""
+action_ledger.py — registo durável das ações do assistente (`actionLedger`,
+v0.1.115, 14 Out 2026; pack «Ações com regras, aprovação e registo», F3).
+
+PORQUÊ
+──────
+Os bots agem (MCP com o ERP, pedidos, aprovações). Hoje a história de uma ação
+está espalhada por quatro registos e ninguém a vê inteira. O F3 junta-a num
+registo por cliente, uma entrada por evento (proposta, confirmação, regra,
+aprovação, execução, resultado), encadeado por sha256 — o cliente pode
+verificar que nada foi mudado nem tirado.
+
+Decisões (Bruno, 13–14 Out 2026):
+  • D3: contentor próprio no genai-core (`action_ledger`);
+  • D4: a cadeia assenta no HASH dos valores — o apagamento RGPD apaga os
+    valores e a cadeia continua válida (alinhado com as orientações do EDPB
+    02/2025; nada de armazenamento imutável para os valores);
+  • liga-se no Studio e no GAIBO, desligado por omissão; num cliente de ALTO
+    RISCO o core regista SEMPRE (ignora o desligado) e, se não conseguir
+    registar, a ação não corre;
+  • retenção: alto risco → `compliance.high_risk.log_retention_days` (mínimo
+    legal de 6 meses, AI Act arts. 19/26); os outros → `retention_days` deste
+    bloco, 365 por omissão (uma auditoria anual).
+
+`ledger_policy(profile)` é a regra ÚNICA (core, Studio e GAIBO usam esta):
+«alto risco» = `compliance.classification.risk_level == "high"` OU
+`compliance.high_risk.enabled` — a mesma do `compliance_context` do core.
+"""
+
+from __future__ import annotations
+
+import hashlib
+import json
+from typing import Any, Dict, Iterable, List, Mapping, Optional
+
+from pydantic import BaseModel, ConfigDict, Field
+
+DEFAULT_RETENTION_DAYS = 365
+MIN_RETENTION_DAYS = 180          # AI Act: registos guardados pelo menos 6 meses
+MAX_RETENTION_DAYS = 3650
+
+
+class ProfileActionLedger(BaseModel):
+    """`actionLedger` do perfil (só o BASE conta). Desligado por omissão."""
+    model_config = ConfigDict(extra="allow")
+
+    enabled: bool = False
+    retention_days: int = Field(default=DEFAULT_RETENTION_DAYS, ge=MIN_RETENTION_DAYS, le=MAX_RETENTION_DAYS)
+
+
+def is_high_risk(profile: Mapping[str, Any]) -> bool:
+    """A mesma regra do `core/agent/compliance_context.py`. Nunca levanta."""
+    try:
+        comp = (profile or {}).get("compliance") or {}
+        risk = str(((comp.get("classification") or {}).get("risk_level")) or "")
+        return risk == "high" or bool((comp.get("high_risk") or {}).get("enabled"))
+    except Exception:  # noqa: BLE001
+        return False
+
+
+def _int_in_range(value: Any, default: int) -> int:
+    try:
+        n = int(value)
+    except (TypeError, ValueError):
+        return default
+    if isinstance(value, bool):
+        return default
+    return min(max(n, MIN_RETENTION_DAYS), MAX_RETENTION_DAYS)
+
+
+def ledger_policy(profile: Mapping[str, Any]) -> Dict[str, Any]:
+    """`{on, required, retention_days}`:
+      on        — regista-se (ligado no perfil, ou cliente de alto risco);
+      required  — alto risco: sem registo, a ação NÃO corre (falha fechada);
+      retention_days — dias até o documento expirar (TTL).
+    Nunca levanta; perfil estranho → desligado, 365 dias."""
+    try:
+        block = (profile or {}).get("actionLedger") or {}
+        if not isinstance(block, Mapping):
+            block = {}
+        high = is_high_risk(profile)
+        if high:
+            hr = ((profile or {}).get("compliance") or {}).get("high_risk") or {}
+            days = _int_in_range(hr.get("log_retention_days"), DEFAULT_RETENTION_DAYS)
+        else:
+            days = _int_in_range(block.get("retention_days"), DEFAULT_RETENTION_DAYS)
+        return {"on": high or block.get("enabled") is True, "required": high, "retention_days": days}
+    except Exception:  # noqa: BLE001
+        return {"on": False, "required": False, "retention_days": DEFAULT_RETENTION_DAYS}
+
+
+# ── A cadeia (a MESMA conta no core, que escreve, e em quem verifica) ────────
+
+#: Os eventos da vida de uma ação.
+EVENTS = ("proposed", "confirmed", "cancelled", "blocked_by_rule", "sent_for_approval", "approved",
+          "rejected", "expired", "executed", "failed")
+
+#: Os campos que entram no hash (lista FECHADA: um campo novo não muda a conta
+#: das entradas antigas). Os VALORES (`params`) ficam de fora — entra o digest.
+CHAIN_FIELDS = ("seq", "ts", "client_id", "variant_slug", "event", "action", "actor", "ref",
+                "rule_id", "decision", "approver", "result", "params_digest")
+
+GENESIS_HASH = "0" * 64
+
+
+def _canonical(value: Any) -> str:
+    return json.dumps(value, sort_keys=True, ensure_ascii=False, separators=(",", ":"), default=str)
+
+
+def params_digest(params: Any) -> str:
+    """sha256 dos valores da ação (o que fica na cadeia depois do apagamento RGPD)."""
+    return hashlib.sha256(_canonical(params if params is not None else {}).encode("utf-8")).hexdigest()
+
+
+def entry_hash(prev_hash: str, entry: Mapping[str, Any]) -> str:
+    """sha256(prev_hash + canónico(campos da cadeia))."""
+    chained = {k: entry.get(k) for k in CHAIN_FIELDS}
+    return hashlib.sha256((str(prev_hash or "") + "|" + _canonical(chained)).encode("utf-8")).hexdigest()
+
+
+def verify_chain(entries: Iterable[Mapping[str, Any]], *, start_prev: str = GENESIS_HASH) -> Dict[str, Any]:
+    """Verifica entradas por ordem de `seq`. `{ok, checked, broken_at, reason}`:
+    `broken_at` é o `seq` da 1.ª entrada que não bate (hash, elo ou buraco na
+    sequência). `start_prev` deixa verificar uma janela que não começa no 1.º.
+    Os `params` apagados por RGPD não partem nada (só o digest conta)."""
+    prev = start_prev
+    expected_seq: Optional[int] = None
+    checked = 0
+    rows: List[Mapping[str, Any]] = sorted(entries, key=lambda e: int(e.get("seq") or 0))
+    for e in rows:
+        seq = int(e.get("seq") or 0)
+        if expected_seq is not None and seq != expected_seq:
+            return {"ok": False, "checked": checked, "broken_at": expected_seq, "reason": "missing_entry"}
+        if str(e.get("prev_hash") or "") != prev:
+            return {"ok": False, "checked": checked, "broken_at": seq, "reason": "link_mismatch"}
+        if entry_hash(prev, e) != str(e.get("hash") or ""):
+            return {"ok": False, "checked": checked, "broken_at": seq, "reason": "hash_mismatch"}
+        prev, expected_seq, checked = str(e.get("hash")), seq + 1, checked + 1
+    return {"ok": True, "checked": checked, "broken_at": None, "reason": ""}

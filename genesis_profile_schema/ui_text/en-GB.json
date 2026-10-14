@@ -519,6 +519,14 @@
       "label": "Entra groups that also count (Advanced)",
       "help": "The group's object id. Whoever is in the group has this role."
     },
+    "actionLedger.enabled": {
+      "label": "Action log",
+      "help": "Keeps the story of each assistant action (proposal, decision, approval, execution and result) in a chained log that can be verified. Always on for a high-risk client."
+    },
+    "actionLedger.retention_days": {
+      "label": "Keep the log (days)",
+      "help": "Minimum 180 (6 months, AI Act). For a high-risk client the high-risk log retention applies."
+    },
     "access.allowedRoles": {
       "label": "App roles",
       "help": "Only people with one of these roles in the token get in. Recommended.",

@@ -519,6 +519,14 @@
       "label": "Grupos do Entra que também valem (Avançado)",
       "help": "Id do objeto do grupo. Quem estiver no grupo tem este papel."
     },
+    "actionLedger.enabled": {
+      "label": "Registo das ações",
+      "help": "Guarda a história de cada ação do assistente (proposta, decisão, aprovação, execução e resultado) num registo encadeado que se pode verificar. Num cliente de alto risco fica sempre ligado."
+    },
+    "actionLedger.retention_days": {
+      "label": "Guardar o registo (dias)",
+      "help": "Mínimo 180 (6 meses, AI Act). Num cliente de alto risco vale a retenção dos registos de alto risco."
+    },
     "access.allowedRoles": {
       "label": "Papéis de aplicação (App roles)",
       "help": "Só entra quem tiver um destes papéis no token. Recomendado.",
