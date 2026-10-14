@@ -2435,6 +2435,10 @@
       "label": "Keep the transcript of voice conversations",
       "help": "On = the visitor's and the assistant's sentences are stored in the session conversation, with the conversation retention (or the one set below). Requires a mention in the client's DPA and privacy policy."
     },
+    "voice.capture.enabled": {
+      "label": "Record details with consent by voice too",
+      "help": "Website widget with the GPT-Live engine only. The consent question is read word for word and a yes only counts right after it. Off by default; have legal approve the spoken question."
+    },
     "voice.transcription.model": {
       "label": "Transcription deployment (no effect on the site)",
       "help": "No consumer: with the GPT-Live engine the transcript comes from the session itself. Reserved for a possible phone channel."

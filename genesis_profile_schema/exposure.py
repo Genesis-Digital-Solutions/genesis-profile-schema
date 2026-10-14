@@ -432,6 +432,9 @@ EXPOSURE: Dict[str, str] = {
     # regra do `enabled`: o cliente ve (materia de DPA), quem liga somos nos.
     "voice.transcription.phone": _R,
     "voice.transcription.model": _I,
+    # v0.1.112: captura com consentimento na voz. Mesma regra da transcricao:
+    # o cliente ve (materia de DPA), quem liga somos nos.
+    "voice.capture.enabled": _R,
     "voice.transcription.retention_days": _R,
     "voice.transfer_number": _W,  # só telefone (transfer_target.phone_target)
     # destino SIP: encaminhamento nosso; um host SIP escrito pelo cliente desviava chamadas

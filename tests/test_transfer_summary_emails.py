@@ -29,3 +29,15 @@ def test_captura_com_fila_opcional_v0_1_111():
     assert ProfileToolCaptureConfig().queue == ""
     cfg = ProfileToolCaptureConfig(queue="leads")
     assert cfg.queue == "leads"
+
+
+def test_captura_na_voz_v0_1_112():
+    """v0.1.112: `voice.capture.enabled` desligado por omissão, nunca None no
+    blob; o cliente vê (matéria de DPA), quem liga somos nós."""
+    v = ProfileVoice()
+    assert v.capture.enabled is False and v.model_dump()["capture"] == {"enabled": False}
+    assert ProfileVoice(capture={"enabled": True}).capture.enabled is True
+    assert EXPOSURE["voice.capture.enabled"] == "client_read"
+    for loc in ("pt-PT", "en-GB"):
+        t = text_for("voice.capture.enabled", loc)
+        assert t and t.get("label") and len(t.get("help") or "") <= 240

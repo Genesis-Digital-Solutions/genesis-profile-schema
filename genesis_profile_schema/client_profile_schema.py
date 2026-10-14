@@ -2188,6 +2188,25 @@ class ProfileVoiceAgent(BaseModel):
     max_speech_chars: int = Field(default=900, ge=300)
 
 
+class ProfileVoiceCapture(BaseModel):
+    """Captura de dados COM CONSENTIMENTO na voz (v0.1.112, 14 Out 2026).
+    **OFF por defeito.** Os campos, a base legal e a finalidade são os do chat
+    (`tools.config.record_contact_details`) — não há duas verdades.
+
+    Sem isto, um turno de voz NUNCA dá consentimento: a mensagem que chega ao
+    agente pela ponte é a frase do modelo da voz, não a do visitante (o
+    genai-core recusa-a desde 14 Out 2026). Com isto ligado, só no widget com
+    o motor GPT-Live (o core recebe as palavras do visitante): a pergunta de
+    autorização é dita palavra por palavra, o «sim» só vale se a fala do
+    assistente imediatamente antes a contiver, e a prova fica no registo.
+    Telefone e widget Realtime: por fazer. Bases legais sem consentimento já
+    gravavam pela voz e continuam iguais. Antes de dados reais: validação
+    jurídica da pergunta falada."""
+    model_config = ConfigDict(extra="allow")
+
+    enabled: bool = False
+
+
 class ProfileVoice(BaseModel):
     """Canal de voz telefónico (Realtime). Comportamento por cliente; os
     segredos (VOICE-OPENAI-ENDPOINT/API-KEY/WEBHOOK-SECRET) vivem no Key Vault,
@@ -2251,6 +2270,8 @@ class ProfileVoice(BaseModel):
     # Ponte voz → agente completo (v0.1.64). Vale para os DOIS canais.
     agent: ProfileVoiceAgent = Field(default_factory=ProfileVoiceAgent)
     transcription: ProfileVoiceTranscription = Field(default_factory=ProfileVoiceTranscription)
+    # Captura com consentimento na voz (v0.1.112) — ver ProfileVoiceCapture.
+    capture: ProfileVoiceCapture = Field(default_factory=ProfileVoiceCapture)
 
 
 class ProfileContacts(BaseModel):

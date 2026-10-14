@@ -2435,6 +2435,10 @@
       "label": "Guardar a transcrição das conversas por voz",
       "help": "Ligado = as frases do visitante e do assistente ficam guardadas na conversa da sessão, com a retenção das conversas (ou a definida abaixo). Requer menção no DPA e na política de privacidade do cliente."
     },
+    "voice.capture.enabled": {
+      "label": "Registar dados com autorização também por voz",
+      "help": "Só no widget com o motor GPT-Live. A pergunta de autorização é dita palavra por palavra e o «sim» só conta logo a seguir a ela. Desligado por omissão; validar a pergunta falada com o jurídico."
+    },
     "voice.transcription.model": {
       "label": "Modelo de transcrição (sem efeito no site)",
       "help": "Sem consumidor: no motor GPT-Live a transcrição vem da própria sessão. Reservado para um eventual canal telefónico."
