@@ -1510,6 +1510,10 @@ class ProfileFrontendFeatures(BaseModel):
         json_schema_extra={"requires_tool": "transcribe_audio"},
     )
     enablePdfExport: bool = True
+    # v0.1.117 (I36, 15 Out 2026): «Descarregar os meus dados» — quem tem login
+    # descarrega um ficheiro com as suas conversas, memória e pedidos (RGPD,
+    # acesso/portabilidade). Desligado por omissão. Core: `GET /user/data-export`.
+    enableDataExport: bool = False
     enableSourcePreview: bool = True
     # Ação ao clicar numa fonte (substitui o all-or-nothing do enableSourcePreview):
     #   inline → painel de preview embebido (default; equivale a enableSourcePreview=true)

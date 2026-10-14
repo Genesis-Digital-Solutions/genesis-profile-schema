@@ -967,6 +967,10 @@
       "label": "Export to PDF",
       "help": "Lets people save the conversation as a PDF."
     },
+    "frontend.features.enableDataExport": {
+      "label": "Download my data",
+      "help": "Signed-in people can download a file with their conversations, memory and the requests they made (right of access and portability). Sign-in only; guests and anonymous visitors cannot."
+    },
     "frontend.features.enablePipelineTrace": {
       "label": "Show answer diagnostics",
       "help": "When on, shows process transparency and an explainability summary."

@@ -967,6 +967,10 @@
       "label": "Exportar para PDF",
       "help": "Permite guardar a conversa em PDF."
     },
+    "frontend.features.enableDataExport": {
+      "label": "Descarregar os meus dados",
+      "help": "Quem tem login pode descarregar um ficheiro com as suas conversas, a memória e os pedidos que fez (direito de acesso e portabilidade). Só com login; convidados e anónimos não."
+    },
     "frontend.features.enablePipelineTrace": {
       "label": "Mostrar diagnóstico da resposta",
       "help": "Ativo, mostra a transparência do processo e um resumo de explicabilidade."

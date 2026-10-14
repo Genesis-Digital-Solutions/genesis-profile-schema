@@ -274,6 +274,7 @@ EXPOSURE: Dict[str, str] = {
     "frontend.features.enableInlineCitations": _W,
     "frontend.features.enableLlmSelector": _I,  # expoe a escolha de modelo ao utilizador final
     "frontend.features.enablePdfExport": _W,
+    "frontend.features.enableDataExport": _W,
     "frontend.features.enablePipelineTrace": _R,
     "frontend.features.enableShare": _W,
     "frontend.features.shareAccess": _R,   # só a Genesis muda (decisão 3 Out) — como o auth.mode
