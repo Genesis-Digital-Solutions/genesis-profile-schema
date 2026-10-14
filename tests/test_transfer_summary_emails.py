@@ -20,3 +20,12 @@ def test_exposicao_e_textos():
         for loc in ("pt-PT", "en-GB"):
             t = text_for(field, loc)
             assert t and t.get("label") and len(t.get("help") or "") <= 240
+
+
+def test_captura_com_fila_opcional_v0_1_111():
+    """v0.1.111 (I24): `tools.config.record_contact_details.queue` — vazio por
+    omissão = só o email; a configuração antiga continua válida."""
+    from genesis_profile_schema.client_profile_schema import ProfileToolCaptureConfig
+    assert ProfileToolCaptureConfig().queue == ""
+    cfg = ProfileToolCaptureConfig(queue="leads")
+    assert cfg.queue == "leads"

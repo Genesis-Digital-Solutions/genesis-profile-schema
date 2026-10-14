@@ -493,6 +493,11 @@ class ProfileToolCaptureConfig(BaseModel):
     # perfil. Um visitante árabe num cliente português gera email em português
     # com os dados em árabe.
     notify_language: Literal["", "pt", "en", "es", "ar"] = ""
+    # Lead → pedido numa fila (v0.1.111, I24, 14 Out 2026): com uma fila
+    # (`reviewQueues.<fila>`), cada captura COMPLETA cria um pedido nessa fila
+    # (um por conversa, com dono/estado/prazo da fila). Vazio por omissão = só
+    # o email, como antes.
+    queue: str = ""
 
     @model_validator(mode="after")
     def _validate_capture(self) -> "ProfileToolCaptureConfig":
