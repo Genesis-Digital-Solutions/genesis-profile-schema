@@ -548,6 +548,7 @@ um campo removido do modelo continua a viver no blob sem dar erro.
   forks Salmon e Demos ainda não o declaram (`extra="forbid"`) e serão
   sincronizadas com o base.
 
+- **Resumo da chamada transferida (v0.1.110)** — `voice.transfer_summary_emails` (lista, vazia por omissão, `_W`): para onde o core manda o resumo que o assistente escreve ao passar a chamada a uma pessoa (I21). Validação dos endereços no consumidor (core e a drenagem do Studio), como os `notify_emails`.
 - **Regras por ação do agente (v0.1.109, `action_rules.py`)** — bloco `actionRules` (`enabled` + `rules[]`: `id`
   estável, `action` = `<servidor>.<tool>` ou tool nativa, `mode` allow/confirm/approve/block, `limits[]` com
   `param`/`op`/`value`/`currency`/`over`, `approval.queue`, `variants`, `log_only`, `note`). Editável pelo cliente

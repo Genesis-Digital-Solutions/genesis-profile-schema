@@ -2227,6 +2227,12 @@ class ProfileVoice(BaseModel):
     # escreve), pela mesma razão do `transfer_sip_uri`.
     transfer_targets: List[ProfileVoiceTransferTarget] = Field(default_factory=list)
     transfer_sip_uris: Dict[str, str] = Field(default_factory=dict)
+    # Resumo da chamada transferida (v0.1.110, 14 Out 2026): quando a voz passa
+    # a chamada a uma pessoa, o resumo que o assistente escreveu (quem liga, o
+    # que quer, o que já foi tentado) vai por email para estes endereços — além
+    # do pedido na fila da voz (`queue`), quando a há. Vazio = sem email. Lista
+    # vazia por omissão (nunca Optional: um null no blob era «sem resposta»).
+    transfer_summary_emails: List[str] = Field(default_factory=list)
     kb_top_n: int = 4
     # Aviso de IA no início da chamada (EU AI Act Art. 50). Formalizado
     # v0.1.43 (era fantasma; default do core é ligado).

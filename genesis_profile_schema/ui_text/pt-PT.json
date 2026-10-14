@@ -2475,6 +2475,10 @@
       "label": "Destino por omissão",
       "help": "Usado quando não há escolha. Sem nenhum marcado (ou com o marcado inválido), vale o primeiro destino válido."
     },
+    "voice.transfer_summary_emails": {
+      "label": "Emails para o resumo da chamada transferida",
+      "help": "Quando o assistente passa uma chamada a uma pessoa, envia para aqui o resumo do que foi dito. Vazio = sem email (o pedido fica na fila, se a houver)."
+    },
     "voice.transfer_sip_uris": {
       "label": "Destinos SIP por destino de transferência",
       "note": "Só Genesis. Mapa identificador → URI sip:. Quando válido, substitui o número desse destino."
