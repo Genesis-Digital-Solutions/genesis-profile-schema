@@ -2692,6 +2692,11 @@
     "intake.definitions": {
       "label": "Regulated questionnaires",
       "note": "One definition per process (approved questionnaire + decision methodology + reference cases). Internal until the journey exists in the core; the methodology is never visible to respondents."
+    },
+    "audio.minutes_action_items_queue": {
+      "label": "Queue for requests from the minutes",
+      "help": "With a queue chosen, whoever made the minutes can turn the agreed action items (what, who, deadline) into requests in that queue, choosing which. Empty = off. The owner stays in the request as text.",
+      "note": "Consumer: core `core/managers/minutes_queue.py` (POST /transcripts/minutes/action-items, minutes owner only) and `GET /transcripts/minutes` (`to_queue`). Missing queue = off. Idempotent per minutes and action item."
     }
   }
 }

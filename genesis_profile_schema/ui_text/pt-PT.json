@@ -2692,6 +2692,11 @@
     "intake.definitions": {
       "label": "Questionários regulados",
       "note": "Uma definição por processo (questionário aprovado + metodologia de decisão + casos de referência). Interno até o percurso existir no core; a metodologia nunca é visível a quem responde."
+    },
+    "audio.minutes_action_items_queue": {
+      "label": "Fila para os pedidos das atas",
+      "help": "Com uma fila escolhida, quem fez a ata pode transformar as ações combinadas (o quê, quem, prazo) em pedidos nessa fila, escolhendo quais. Vazio = desligado. O responsável fica no pedido como texto.",
+      "note": "Consumidor: core `core/managers/minutes_queue.py` (POST /transcripts/minutes/action-items, só o dono da ata) e `GET /transcripts/minutes` (`to_queue`). Fila inexistente = desligado. Idempotente por ata e ação."
     }
   }
 }
