@@ -967,6 +967,10 @@
       "label": "Exportar para PDF",
       "help": "Permite guardar a conversa em PDF."
     },
+    "frontend.features.showFeedbackResolution": {
+      "label": "Avisar que a resposta foi corrigida",
+      "help": "Quando alguém assinala uma resposta com 👎 e a equipa a corrige (ligando o relatório a uma correção), ao voltar à conversa essa pessoa vê «Corrigimos esta resposta depois do seu aviso»."
+    },
     "frontend.features.enableDataExport": {
       "label": "Descarregar os meus dados",
       "help": "Quem tem login pode descarregar um ficheiro com as suas conversas, a memória e os pedidos que fez (direito de acesso e portabilidade). Só com login; convidados e anónimos não."

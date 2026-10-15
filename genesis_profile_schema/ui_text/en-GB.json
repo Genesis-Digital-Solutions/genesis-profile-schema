@@ -967,6 +967,10 @@
       "label": "Export to PDF",
       "help": "Lets people save the conversation as a PDF."
     },
+    "frontend.features.showFeedbackResolution": {
+      "label": "Tell people the answer was corrected",
+      "help": "When someone flags an answer with 👎 and the team corrects it (linking the report to a correction), on coming back to the conversation that person sees «We corrected this answer after your report»."
+    },
     "frontend.features.enableDataExport": {
       "label": "Download my data",
       "help": "Signed-in people can download a file with their conversations, memory and the requests they made (right of access and portability). Sign-in only; guests and anonymous visitors cannot."

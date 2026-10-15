@@ -1514,6 +1514,11 @@ class ProfileFrontendFeatures(BaseModel):
     # descarrega um ficheiro com as suas conversas, memória e pedidos (RGPD,
     # acesso/portabilidade). Desligado por omissão. Core: `GET /user/data-export`.
     enableDataExport: bool = False
+    # v0.1.117 (I35, 15 Out 2026): numa resposta que a pessoa assinalou com 👎 e
+    # que a equipa entretanto corrigiu, o fecore diz «Corrigimos esta resposta
+    # depois do seu aviso». Desligado por omissão. Core:
+    # `GET /conversations/<id>/feedback-resolutions` (só o dono).
+    showFeedbackResolution: bool = False
     enableSourcePreview: bool = True
     # Ação ao clicar numa fonte (substitui o all-or-nothing do enableSourcePreview):
     #   inline → painel de preview embebido (default; equivale a enableSourcePreview=true)
