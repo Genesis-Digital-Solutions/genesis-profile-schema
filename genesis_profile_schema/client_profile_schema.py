@@ -2197,6 +2197,14 @@ class ProfileVoiceAgent(BaseModel):
     mode: Literal["fast", "balanced", "thinking", "max", "auto"] = "fast"
     timeout_s: int = Field(default=30, ge=10)
     max_speech_chars: int = Field(default=900, ge=300)
+    # v0.1.117 (15 Out 2026): em clientes com login obrigatório
+    # (`frontend.auth.mode = required`) o telefone não tem login e o
+    # `/completions` recusava-o (401 → «não consigo consultar»). Ligado, a
+    # ponte do TELEFONE entra com a chave interna de serviço e quem liga é
+    # SEMPRE anónimo (nunca a identidade de um utilizador): vê o que um
+    # anónimo veria. Desligado por omissão — é abrir a KB de um bot
+    # fechado a quem liga, decisão consciente por cliente.
+    phone_when_login_required: bool = False
 
 
 class ProfileVoiceCapture(BaseModel):

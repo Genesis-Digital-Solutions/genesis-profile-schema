@@ -2643,6 +2643,10 @@
       "label": "Tamanho máximo da resposta convertida em fala",
       "help": "Respostas mais longas são resumidas para fala; nunca cortadas a meio de uma frase."
     },
+    "voice.agent.phone_when_login_required": {
+      "label": "Atender por telefone mesmo com login obrigatório",
+      "help": "Só para clientes com login obrigatório. Quem liga não tem login: ligado, o assistente responde-lhe como a um visitante anónimo (sem dados de nenhum utilizador). Desligado, o telefone diz que não consegue consultar."
+    },
     "voice.web.enabled": {
       "label": "Voz em tempo real no site",
       "help": "Liga o serviço de voz do lado do servidor. É este que faz o botão de voz do chat funcionar."

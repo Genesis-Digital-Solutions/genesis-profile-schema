@@ -466,6 +466,7 @@ EXPOSURE: Dict[str, str] = {
     "voice.agent.mode": _R,
     "voice.agent.timeout_s": _I,
     "voice.agent.max_speech_chars": _I,
+    "voice.agent.phone_when_login_required": _I,
 
     # ──────────────────────────────────────────────────────────────────────
     # Vozes TTS

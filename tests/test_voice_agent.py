@@ -65,3 +65,16 @@ def test_exposicao():
     assert exp.exposure_of("voice.agent.timeout_s") == "internal"
     assert exp.exposure_of("voice.agent.max_speech_chars") == "internal"
     assert exp.is_client_visible("voice.agent.mode") and not exp.is_client_writable("voice.agent.mode")
+
+
+def test_telefone_com_login_obrigatorio_v0_1_117():
+    """v0.1.117 (15 Out 2026): atender o telefone num cliente com login
+    obrigatório é decisão consciente — desligado, nunca None no blob, interno."""
+    from genesis_profile_schema.ui_text import text_for
+    assert ProfileVoiceAgent().phone_when_login_required is False
+    assert ProfileVoiceAgent().model_dump()["phone_when_login_required"] is False
+    assert ProfileVoiceAgent(phone_when_login_required=True).phone_when_login_required is True
+    assert exp.EXPOSURE["voice.agent.phone_when_login_required"] == exp.INTERNAL
+    for loc in ("pt-PT", "en-GB"):
+        t = text_for("voice.agent.phone_when_login_required", loc)
+        assert t and t.get("label") and len(t.get("help") or "") <= 240

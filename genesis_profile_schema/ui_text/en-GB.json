@@ -2643,6 +2643,10 @@
       "label": "Maximum length of the answer converted to speech",
       "help": "Longer answers are shortened for speech; never cut mid-sentence."
     },
+    "voice.agent.phone_when_login_required": {
+      "label": "Answer by phone even when sign-in is required",
+      "help": "Only for customers with mandatory sign-in. Callers have no sign-in: when on, the assistant answers them as an anonymous visitor (no user's data). When off, the phone says it cannot look it up."
+    },
     "voice.web.enabled": {
       "label": "Real-time voice on the site",
       "help": "Switches on the server-side voice service. This is what makes the chat's voice button work."
