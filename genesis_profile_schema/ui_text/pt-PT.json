@@ -2174,6 +2174,16 @@
       "help": "Estrutura aberta: cada ferramenta define os seus próprios campos, pelo que uma ferramenta nova não obriga a alterar o esquema.",
       "note": "(JSON aberto — chave = nome da tool, valor = dict de parâmetros)"
     },
+    "tools.config.create_ticket.status_lookup": {
+      "label": "Consultar o estado de um pedido pela referência",
+      "help": "Ligado, quem tem a referência de um pedido pergunta no chat (ou na voz web) como está e recebe o estado e a categoria; a descrição só a quem prova ser o titular.",
+      "note": "check_ticket_status (I19). Vazio/null = ligado com o create_ticket (clientes antigos); o Studio grava false nos novos. A env TICKET_STATUS_WITH_CREATE=0 do core desliga sempre."
+    },
+    "tools.config.create_ticket.no_info_offer": {
+      "label": "Propor abrir um pedido quando o assistente não sabe",
+      "help": "Ligado, uma resposta «não sei» leva o botão «Quero abrir um pedido sobre isto», que segue para o registo do pedido no chat.",
+      "note": "I20 (core/agent/no_info_exit.py). Vazio/null = ligado com o create_ticket (clientes antigos); o Studio grava false nos novos."
+    },
     "tools.config.analyse_cv": {
       "label": "Triagem de CVs"
     },

@@ -2174,6 +2174,16 @@
       "help": "An open structure: each tool defines its own fields, so a new tool needs no schema change.",
       "note": "(open JSON — key = tool name, value = dict of parameters)"
     },
+    "tools.config.create_ticket.status_lookup": {
+      "label": "Look up a request's status by its reference",
+      "help": "On, whoever has a request reference can ask in the chat (or web voice) how it is going and gets the status and category; the description only for a proven owner.",
+      "note": "check_ticket_status (I19). Empty/null = on with create_ticket (existing clients); the Studio writes false for new ones. The core env TICKET_STATUS_WITH_CREATE=0 always turns it off."
+    },
+    "tools.config.create_ticket.no_info_offer": {
+      "label": "Offer to open a request when the assistant does not know",
+      "help": "On, an \"I don't know\" answer carries the \"I'd like to open a request about this\" button, which leads into registering the request in the chat.",
+      "note": "I20 (core/agent/no_info_exit.py). Empty/null = on with create_ticket (existing clients); the Studio writes false for new ones."
+    },
     "tools.config.analyse_cv": {
       "label": "CV screening"
     },

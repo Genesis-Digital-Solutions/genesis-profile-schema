@@ -564,6 +564,18 @@ class ProfileToolCreateTicketConfig(BaseModel):
 
     queue: str = ""                     # chave de reviewQueues
     category_hints: List[str] = Field(default_factory=list)
+    # v0.1.119 (15 Out 2026) — interruptores das duas coisas que vêm junto com
+    # o create_ticket. None (chave ausente ou null) = comportamento de antes
+    # (ligado sempre que a tool está disponível) — é o que os clientes que já
+    # a têm continuam a ver; `false`/`true` explícitos mandam. O Studio escreve
+    # `false` nos clientes novos e ao configurar a tool pela primeira vez.
+    #   status_lookup — `check_ticket_status` (I19): «como está o pedido X?» no
+    #     chat/voz web. A env TICKET_STATUS_WITH_CREATE=0 do core continua a
+    #     ser teto (desliga mesmo com `true`).
+    #   no_info_offer — chip «Quero abrir um pedido sobre isto» numa resposta
+    #     «não sei» (I20).
+    status_lookup: Optional[bool] = None
+    no_info_offer: Optional[bool] = None
 
 
 class ProfileToolReadAttachedDocumentConfig(BaseModel):
