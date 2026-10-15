@@ -108,8 +108,9 @@ def test_client_writes_the_block():
 def _approve_profile(approval, queue=None):
     from genesis_profile_schema.action_rules import approval_queue_template
     return {"actionRules": {"enabled": True, "rules": [
-        {"id": "r1", "action": "create_ticket", "mode": "approve", "approval": approval}]},
-        "reviewQueues": {"aprov": queue if queue is not None else approval_queue_template()}}
+        {"id": "r1", "action": "erp.create_order", "mode": "approve", "approval": approval}]},
+        "reviewQueues": {"aprov": queue if queue is not None else approval_queue_template()},
+        "mcp": {"servers": [{"name": "erp"}]}}
 
 
 def _f2_codes(profile):
@@ -180,7 +181,7 @@ def test_limites_por_periodo_validam():
 
 def test_aprovar_num_limite_por_periodo_pede_fila():
     from genesis_profile_schema.action_rules import APPROVE_WITHOUT_QUEUE, action_rules_problems
-    prof = {"actionRules": {"enabled": True, "rules": [{"id": "r1", "action": "create_ticket", "mode": "allow",
+    prof = {"actionRules": {"enabled": True, "rules": [{"id": "r1", "action": "erp.create_order", "mode": "allow",
                                                         "period_limits": [{"period": "day", "max": 3,
                                                                            "over": "approve"}]}]}}
     assert APPROVE_WITHOUT_QUEUE in {p["code"] for p in action_rules_problems(prof)}

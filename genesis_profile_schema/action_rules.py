@@ -96,6 +96,7 @@ INVALID_CURRENCY = "invalid_currency"
 TOO_MANY_RULES = "too_many_rules"
 TOO_MANY_LIMITS = "too_many_limits"
 APPROVE_WITHOUT_APPROVERS = "approve_without_approvers"  # nem papel nem grupo (F2)
+APPROVE_NATIVE = "approve_native"  # aprovar numa ação nativa (sem servidor): o core bloqueia sempre (15 Out 2026)
 INVALID_APPROVER = "invalid_approver"               # papel/grupo com formato inválido
 INVALID_NOTIFY_EMAIL = "invalid_notify_email"
 APPROVAL_QUEUE_SHAPE = "approval_queue_shape"       # a fila não tem os estados/ações da aprovação
@@ -364,7 +365,9 @@ def action_rules_problems(profile: Mapping[str, Any]) -> List[Dict[str, str]]:
                 for l in limits) or any(
                 isinstance(pl, Mapping) and str(pl.get("over") or "block") == "approve"
                 for pl in plimits)
-            if uses_approve:
+            if uses_approve and not server:
+                add(rid, APPROVE_NATIVE, ERROR)
+            elif uses_approve:
                 queue = str(((raw.get("approval") or {}) if isinstance(raw.get("approval"), Mapping)
                              else {}).get("queue") or "")
                 if not queue:
