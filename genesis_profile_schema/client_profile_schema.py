@@ -1187,6 +1187,17 @@ class ProfileAudio(BaseModel):
         default_factory=ProfileMunicipalMinutes,
         json_schema_extra={"requires_tool": "transcribe_audio"},
     )
+    # v0.1.117 (15 Out 2026, I30) — das atas aos pedidos: a fila
+    # (`reviewQueues.<chave>`) onde o DONO da ata pode transformar as ações
+    # combinadas (o quê, quem, prazo) em pedidos, escolhendo quais. Vazio por
+    # omissão = desligado. Uma fila que já não existe também desliga (o core
+    # verifica-a, ciente da variante). Quem a pessoa disse ser responsável
+    # fica no pedido como texto — nunca vira atribuição.
+    minutes_action_items_queue: str = Field(
+        default="",
+        json_schema_extra={"requires_tool": "transcribe_audio",
+                           "requires_field": "reviewQueues"},
+    )
 
 
 # ─────────────────────────────────────────────────────────────────────────────

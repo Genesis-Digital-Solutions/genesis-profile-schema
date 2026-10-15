@@ -500,6 +500,11 @@ EXPOSURE: Dict[str, str] = {
     "audio.municipal_minutes.members.role": _W,
     "audio.municipal_minutes.members.party": _W,
     "audio.municipal_minutes.members.substitute": _W,
+    # Atas -> pedidos (v0.1.117, I30): o NOME de uma fila de reviewQueues.
+    # Interno como a fila da captura (tools.config.record_contact_details.queue,
+    # I24) e como o proprio reviewQueues: o cliente nao ve as chaves das filas,
+    # logo nao pode escolher uma com sentido; quem liga somos nos (Studio).
+    "audio.minutes_action_items_queue": _I,
     "audio.max_duration_min": _I,
     "audio.max_speakers": _I,
     "audio.phrase_bias": _I,
