@@ -67,8 +67,8 @@ def test_exposicao():
     assert exp.is_client_visible("voice.agent.mode") and not exp.is_client_writable("voice.agent.mode")
 
 
-def test_telefone_com_login_obrigatorio_v0_1_117():
-    """v0.1.117 (15 Out 2026): atender o telefone num cliente com login
+def test_telefone_com_login_obrigatorio_v0_1_118():
+    """v0.1.118 (15 Out 2026): atender o telefone num cliente com login
     obrigatório é decisão consciente — desligado, nunca None no blob, interno."""
     from genesis_profile_schema.ui_text import text_for
     assert ProfileVoiceAgent().phone_when_login_required is False

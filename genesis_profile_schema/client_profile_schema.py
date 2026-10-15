@@ -1187,7 +1187,7 @@ class ProfileAudio(BaseModel):
         default_factory=ProfileMunicipalMinutes,
         json_schema_extra={"requires_tool": "transcribe_audio"},
     )
-    # v0.1.117 (15 Out 2026, I30) — das atas aos pedidos: a fila
+    # v0.1.118 (15 Out 2026, I30) — das atas aos pedidos: a fila
     # (`reviewQueues.<chave>`) onde o DONO da ata pode transformar as ações
     # combinadas (o quê, quem, prazo) em pedidos, escolhendo quais. Vazio por
     # omissão = desligado. Uma fila que já não existe também desliga (o core
@@ -2208,7 +2208,7 @@ class ProfileVoiceAgent(BaseModel):
     mode: Literal["fast", "balanced", "thinking", "max", "auto"] = "fast"
     timeout_s: int = Field(default=30, ge=10)
     max_speech_chars: int = Field(default=900, ge=300)
-    # v0.1.117 (15 Out 2026): em clientes com login obrigatório
+    # v0.1.118 (15 Out 2026): em clientes com login obrigatório
     # (`frontend.auth.mode = required`) o telefone não tem login e o
     # `/completions` recusava-o (401 → «não consigo consultar»). Ligado, a
     # ponte do TELEFONE entra com a chave interna de serviço e quem liga é

@@ -1,4 +1,4 @@
-"""v0.1.117 (15 Out 2026, I30) — `audio.minutes_action_items_queue`: das atas
+"""v0.1.118 (15 Out 2026, I30) — `audio.minutes_action_items_queue`: das atas
 de reunião aos pedidos.
 
 O que protege: nenhum perfil muda de comportamento (vazio = desligado, nunca
