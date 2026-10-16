@@ -296,6 +296,19 @@ def approval_queue_shape_ok(queue: Mapping[str, Any]) -> bool:
         return False
 
 
+def rule_uses_approve(rule: Any) -> bool:
+    """A regra pode pedir APROVAÇÃO: pelo modo, por um limite (`over`, por omissão
+    `approve`) ou por um limite por período com `over: approve`. Pública desde a
+    v0.1.120 — as áreas da equipa (`team.team_areas`) usam a mesma regra. Nunca levanta."""
+    if not isinstance(rule, Mapping):
+        return False
+    limits = rule.get("limits") if isinstance(rule.get("limits"), list) else []
+    plimits = rule.get("period_limits") if isinstance(rule.get("period_limits"), list) else []
+    return (str(rule.get("mode") or "") == "approve"
+            or any(isinstance(l, Mapping) and str(l.get("over") or "approve") == "approve" for l in limits)
+            or any(isinstance(pl, Mapping) and str(pl.get("over") or "block") == "approve" for pl in plimits))
+
+
 def action_rules_problems(profile: Mapping[str, Any]) -> List[Dict[str, str]]:
     """Problemas do bloco `actionRules` à luz do RESTO do perfil.
 
@@ -360,11 +373,7 @@ def action_rules_problems(profile: Mapping[str, Any]) -> List[Dict[str, str]]:
                 for code, sev in _limit_problems(lim):
                     add(rid, code, sev)
 
-            uses_approve = mode == "approve" or any(
-                isinstance(l, Mapping) and str(l.get("over") or "approve") == "approve"
-                for l in limits) or any(
-                isinstance(pl, Mapping) and str(pl.get("over") or "block") == "approve"
-                for pl in plimits)
+            uses_approve = rule_uses_approve(raw)
             if uses_approve and not server:
                 add(rid, APPROVE_NATIVE, ERROR)
             elif uses_approve:

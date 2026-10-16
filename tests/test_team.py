@@ -40,3 +40,57 @@ def test_catalogo_com_textos_e_exposicao():
         for loc in ("pt-PT", "en-GB"):
             t = text_for(path, loc)
             assert t and t.get("label") and len(t.get("help") or "") <= 240
+
+
+# ── v0.1.120: áreas disponíveis e «Intake — Auditor» ─────────────────────────
+
+def test_auditor_do_intake_igual_ao_papel_do_entra():
+    from genesis_profile_schema.intake_schema import _default_roles, default_roles
+    assert default_roles() == _default_roles() and default_roles() is not default_roles()
+    caps = {f"intake.{c}" for c, names in default_roles().items() if "Intake.Auditor" in names}
+    aud = next(r for r in T.role_templates(T.MODULE_INTAKE) if r["id"] == "intake-auditor")
+    assert set(aud["capabilities"]) == caps == {"intake.view", "intake.export"}
+
+
+def _areas(base, variants=None):
+    return {a["id"]: (a["available"], a["managed"]) for a in T.team_areas(base, variants)}
+
+
+def test_areas_nada_configurado():
+    assert _areas({}) == {m: (False, False) for m in T.MODULES}
+    assert _areas(None) == {m: (False, False) for m in T.MODULES}             # nunca levanta
+    assert [a["id"] for a in T.team_areas({})] == list(T.MODULES)
+
+
+def test_areas_pelo_base_e_pelas_variantes():
+    base = {"intake": {"definitions": {"adequacao": {}}},
+            "multiProfile": {"enabled": True, "slugs": ["rh"], "disabledSlugs": []},
+            "team": {"enabled": True, "modules": {"intake": True, "queues": True}}}
+    rh = {"frontend": {"features": {"reviewQueue": True}}, "tools": {"enabled": ["verify_documents"]},
+          "actionRules": {"enabled": True, "rules": [{"mode": "confirm"}, {"mode": "approve"}]}}
+    a = _areas(base, {"rh": rh})
+    assert a["intake"] == (True, True) and a["variant_access"] == (True, False)
+    assert a["queues"] == (True, True) and a["docver"] == (True, False) and a["approvals"] == (True, False)
+    # sem as variantes, só o base conta
+    assert _areas(base)["queues"] == (False, True)
+
+
+def test_areas_casos_limite():
+    assert _areas({"actionRules": {"enabled": False, "rules": [{"mode": "approve"}]}})["approvals"][0] is False
+    assert _areas({"actionRules": {"enabled": True, "rules": [{"mode": "confirm"}]}})["approvals"][0] is False
+    assert _areas({"multiProfile": {"enabled": True, "slugs": ["a"], "disabledSlugs": ["a"]}})["variant_access"][0] is False
+    assert _areas({"multiProfile": {"enabled": False, "slugs": ["a"]}})["variant_access"][0] is False
+    assert _areas({"intake": {"definitions": {}}})["intake"][0] is False
+    assert _areas({"frontend": {"features": {"reviewQueue": "true"}}})["queues"][0] is False   # só True
+    # equipa desligada → nada é gerido, mesmo com o interruptor do módulo
+    assert _areas({"team": {"enabled": False, "modules": {"queues": True}}})["queues"][1] is False
+
+
+def test_aprovacoes_tambem_pelos_limites():
+    lim = {"actionRules": {"enabled": True, "rules": [{"mode": "confirm", "limits": [{"field": "x", "max": 1}]}]}}
+    assert _areas(lim)["approvals"][0] is True                      # `over` por omissão = approve
+    per = {"actionRules": {"enabled": True, "rules": [{"mode": "confirm", "period_limits": [{"over": "approve"}]}]}}
+    assert _areas(per)["approvals"][0] is True
+    blk = {"actionRules": {"enabled": True, "rules": [{"mode": "confirm", "limits": [{"over": "block"}],
+                                                      "period_limits": [{}]}]}}
+    assert _areas(blk)["approvals"][0] is False                     # período por omissão = block

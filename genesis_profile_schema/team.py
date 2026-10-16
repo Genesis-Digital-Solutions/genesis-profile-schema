@@ -1,6 +1,7 @@
 """
 genesis_profile_schema/team.py — Equipa e papéis do produto (v0.1.114, pack
-«Equipa e papéis», 14 Out 2026).
+«Equipa e papéis», 14 Out 2026; v0.1.120: `team_areas` e o papel pronto
+«Intake — Auditor», 16 Out 2026).
 
 UM sítio para «quem pode fazer o quê» em todo o produto: o cliente define
 PAPÉIS com nomes do negócio («Aprovadores», «Revisores do Intake»), cada um
@@ -12,7 +13,9 @@ Simples de propósito (decisão do Bruno): os papéis vivem só no perfil BASE
 (um catálogo por cliente); a separação por variante faz-se na atribuição.
 Cada módulo tem um interruptor (`modules`): desligado = exatamente como hoje;
 ligado = as capacidades dos papéis JUNTAM-SE ao que o módulo já tem
-configurado. Um papel pode também aceitar papéis/grupos do Entra
+configurado — exceto o Intake (16 Out 2026): ligado, conta SÓ a equipa e os
+`review.roles` dos questionários deixam de contar (a migração do Studio passa-os
+antes para os papéis). Um papel pode também aceitar papéis/grupos do Entra
 (`entra`, «Avançado») para clientes cuja TI o exija.
 
 O catálogo (`CAPABILITIES`) é a fonte de verdade das capacidades: o core
@@ -156,6 +159,9 @@ _TEMPLATES: Dict[str, List[Dict[str, Any]]] = {
          "capabilities": ["intake.view", "intake.review", "intake.second_review", "intake.export"]},
         {"id": "intake-compliance", "label": "Intake — Compliance",
          "capabilities": ["intake.view", "intake.export", "intake.quality"]},
+        # v0.1.120: o par do `Intake.Auditor` do Entra (ver + documentos), para a
+        # migração do Intake para a equipa não perder ninguém.
+        {"id": "intake-auditor", "label": "Intake — Auditor", "capabilities": ["intake.view", "intake.export"]},
     ],
     MODULE_DOCVER: [
         {"id": "casos-leitor", "label": "Casos — Leitor", "capabilities": ["docver.read"]},
@@ -184,6 +190,78 @@ def capability_module(cid: str) -> str:
         if c["id"] == cid:
             return c["module"]
     return ""
+
+
+# ── Áreas disponíveis (v0.1.120, 16 Out 2026) ────────────────────────────────
+#
+# O Studio e o GAIBO mostram só as áreas que o cliente TEM configuradas — ninguém
+# as escolhe à mão (decisão do Bruno, 16 Out 2026). Uma área está disponível
+# quando a funcionalidade está configurada no perfil BASE ou em alguma variante:
+#   queues          `frontend.features.reviewQueue`
+#   approvals       `actionRules.enabled` com alguma regra que peça aprovação (modo ou
+#                   limite — `action_rules.rule_uses_approve`)
+#   intake          `intake.definitions` não vazio (só o BASE conta para o Intake)
+#   docver          `verify_documents` em `tools.enabled`
+#   variant_access  `multiProfile.enabled` com alguma variante ativa (só o BASE)
+# `managed` = a equipa gere a área (`team.enabled` e `team.modules.<área>`).
+
+def _m(d: Any, *path: str) -> Any:
+    for k in path:
+        if not isinstance(d, Mapping):
+            return None
+        d = d.get(k)
+    return d
+
+
+def _area_available(area: str, base: Mapping[str, Any], variants: List[Mapping[str, Any]]) -> bool:
+    every = [base] + variants
+    if area == MODULE_QUEUES:
+        return any(_m(p, "frontend", "features", "reviewQueue") is True for p in every)
+    if area == MODULE_APPROVALS:
+        from genesis_profile_schema.action_rules import rule_uses_approve
+
+        def approves(p: Any) -> bool:
+            ar = _m(p, "actionRules")
+            rules = _m(ar, "rules")
+            return (_m(ar, "enabled") is True and isinstance(rules, list)
+                    and any(rule_uses_approve(r) for r in rules))
+        return any(approves(p) for p in every)
+    if area == MODULE_INTAKE:
+        defs = _m(base, "intake", "definitions")
+        return isinstance(defs, Mapping) and len(defs) > 0
+    if area == MODULE_DOCVER:
+        def has_tool(p: Any) -> bool:
+            en = _m(p, "tools", "enabled")
+            return isinstance(en, list) and "verify_documents" in en
+        return any(has_tool(p) for p in every)
+    if area == MODULE_VARIANT_ACCESS:
+        mp = _m(base, "multiProfile")
+        slugs = _m(mp, "slugs") if isinstance(_m(mp, "slugs"), list) else []
+        off = _m(mp, "disabledSlugs") if isinstance(_m(mp, "disabledSlugs"), list) else []
+        return _m(mp, "enabled") is True and any(s not in off for s in slugs)
+    return False
+
+
+def team_areas(base: Mapping[str, Any], variants: Optional[Mapping[str, Mapping[str, Any]]] = None
+               ) -> List[Dict[str, Any]]:
+    """`[{"id", "available", "managed"}]` por área, na ordem de `MODULES`.
+
+    `base` é o perfil BASE; `variants` (slug → perfil) as variantes, se se
+    souberem — sem elas conta só o base (pode dizer «não disponível» a uma área
+    configurada só numa variante: quem chama diz se as leu). Nunca levanta."""
+    out: List[Dict[str, Any]] = []
+    try:
+        base = base if isinstance(base, Mapping) else {}
+        vs = [v for v in (variants or {}).values() if isinstance(v, Mapping)] if isinstance(variants, Mapping) else []
+        team = _m(base, "team") if isinstance(_m(base, "team"), Mapping) else {}
+        mods = _m(team, "modules") if isinstance(_m(team, "modules"), Mapping) else {}
+        on = team.get("enabled") is True
+        for a in MODULES:
+            out.append({"id": a, "available": _area_available(a, base, vs),
+                        "managed": on and mods.get(a) is True})
+    except Exception:  # noqa: BLE001 — nunca levanta
+        return [{"id": a, "available": False, "managed": False} for a in MODULES]
+    return out
 
 
 # ── Problemas ────────────────────────────────────────────────────────────────

@@ -603,6 +603,14 @@ def _default_roles() -> Dict[str, List[str]]:
     }
 
 
+def default_roles() -> Dict[str, List[str]]:
+    """Os papéis do Entra por omissão de cada capacidade (cópia nova) — os que
+    valem quando a definição não traz `review.roles`. Público desde a v0.1.120:
+    o Studio usa-os para passar o Intake para a «Equipa e papéis» sem perder
+    ninguém (nunca uma cópia escrita à mão)."""
+    return _default_roles()
+
+
 class IntakeDoubleValidation(BaseModel):
     """Quando a decisão de quem revê precisa de uma 2.ª pessoa (D3). Mudar o
     resultado do motor obriga SEMPRE (decisão de produto, não configurável).
