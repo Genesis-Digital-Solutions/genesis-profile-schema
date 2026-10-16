@@ -584,6 +584,7 @@ EXPOSURE: Dict[str, str] = {
     # team.* (v0.1.114): equipa e papéis do produto — o cliente configura no
     # GAIBO (e a Genesis no Studio). As PESSOAS não vivem no perfil (core).
     "team.enabled": _W,
+    "team.entry": _W,
     "team.modules.approvals": _W,
     "team.modules.queues": _W,
     "team.modules.intake": _W,

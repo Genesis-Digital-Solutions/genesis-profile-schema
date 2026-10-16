@@ -25,7 +25,7 @@ aplica-as, o Studio e o GAIBO mostram-nas em palavras (`label`, `help`).
 from __future__ import annotations
 
 import re
-from typing import Any, Dict, List, Mapping, Optional, Tuple
+from typing import Any, Dict, List, Literal, Mapping, Optional, Tuple
 
 from pydantic import BaseModel, ConfigDict, Field
 
@@ -136,11 +136,23 @@ class TeamModules(BaseModel):
     variant_access: bool = False
 
 
+#: Quem pode usar o assistente (v0.1.121, «saída limpa», 16 Out 2026).
+ENTRY_ANYONE = "anyone"     # qualquer conta com login (como até aqui)
+ENTRY_TEAM = "team"         # só as pessoas da equipa (ficha ou papel do Entra mapeado)
+ENTRIES: Tuple[str, ...] = (ENTRY_ANYONE, ENTRY_TEAM)
+
+
 class ProfileTeam(BaseModel):
     """`team` do perfil (só o BASE conta). Desligado por omissão."""
     model_config = ConfigDict(extra="allow")
 
     enabled: bool = False
+    # Com `team` (e a equipa ligada), o genai-core recusa quem fez login mas não
+    # é da equipa — tirar alguém da equipa tira-lhe o assistente (≤ 30 s). O
+    # widget (o site do cliente garante a identidade) e o Tester passam; sem
+    # login → 401. Vale no base e em todas as variantes (a separação por
+    # variante fica para a sessão das autenticações por variante).
+    entry: Literal["anyone", "team"] = ENTRY_ANYONE
     modules: TeamModules = Field(default_factory=TeamModules)
     roles: List[TeamRole] = Field(default_factory=list)
 

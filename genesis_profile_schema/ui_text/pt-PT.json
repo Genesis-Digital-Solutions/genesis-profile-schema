@@ -479,6 +479,14 @@
     "access": {
       "label": "Quem pode entrar"
     },
+    "team.entry": {
+      "label": "Quem pode usar o assistente",
+      "help": "Qualquer conta com login, ou só as pessoas da equipa. Com «só a equipa», quem sai da equipa deixa de usar o assistente em 30 segundos.",
+      "options": {
+        "anyone": "Qualquer conta com login",
+        "team": "Só as pessoas da equipa"
+      }
+    },
     "team.enabled": {
       "label": "Equipa e papéis do produto",
       "help": "Ligado = quem pode fazer o quê passa a poder vir dos papéis do produto (pessoas convidadas no GAIBO ou no Studio). Cada módulo liga-se à parte."

@@ -94,3 +94,18 @@ def test_aprovacoes_tambem_pelos_limites():
     blk = {"actionRules": {"enabled": True, "rules": [{"mode": "confirm", "limits": [{"over": "block"}],
                                                       "period_limits": [{}]}]}}
     assert _areas(blk)["approvals"][0] is False                     # período por omissão = block
+
+
+# ── v0.1.121: quem pode usar o assistente (saída limpa) ──────────────────────
+
+def test_entrada_por_omissao_qualquer_conta():
+    assert T.ProfileTeam().entry == "anyone"
+    assert T.ProfileTeam(entry="team").entry == "team"
+    import pytest
+    from pydantic import ValidationError
+    with pytest.raises(ValidationError):
+        T.ProfileTeam(entry="todos")
+    assert EXPOSURE["team.entry"] == "client_write"
+    for loc in ("pt-PT", "en-GB"):
+        t = text_for("team.entry", loc)
+        assert t and t.get("label") and len(t.get("help") or "") <= 240

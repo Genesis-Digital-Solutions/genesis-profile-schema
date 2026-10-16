@@ -479,6 +479,14 @@
     "access": {
       "label": "Who can enter"
     },
+    "team.entry": {
+      "label": "Who can use the assistant",
+      "help": "Any signed-in account, or only the team. With «team only», whoever leaves the team can no longer use the assistant within 30 seconds.",
+      "options": {
+        "anyone": "Any signed-in account",
+        "team": "Team only"
+      }
+    },
     "team.enabled": {
       "label": "Product team and roles",
       "help": "On = who can do what can also come from the product roles (people invited in the backoffice or the Studio). Each module is switched on separately."
