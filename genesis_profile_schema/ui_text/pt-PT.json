@@ -497,7 +497,7 @@
     },
     "team.modules.queues": {
       "label": "Papéis nas filas",
-      "help": "Ligado = só quem tem um papel com «Tratar pedidos da fila» reclama e decide pedidos (por fila, ou em todas)."
+      "help": "Ligado = só quem tem «Ver a fila» vê os pedidos e só quem tem «Tratar pedidos da fila» os pega, decide e cria (por fila, ou em todas). Quem não tem nenhum deixa de ver a fila."
     },
     "team.modules.intake": {
       "label": "Papéis no Intake",
@@ -2715,6 +2715,21 @@
       "label": "Fila para os pedidos das atas",
       "help": "Com uma fila escolhida, quem fez a ata pode transformar as ações combinadas (o quê, quem, prazo) em pedidos nessa fila, escolhendo quais. Vazio = desligado. O responsável fica no pedido como texto.",
       "note": "Consumidor: core `core/managers/minutes_queue.py` (POST /transcripts/minutes/action-items, só o dono da ata) e `GET /transcripts/minutes` (`to_queue`). Fila inexistente = desligado. Idempotente por ata e ação."
+    },
+    "team.modules.cv": {
+      "label": "Papéis na triagem de CVs",
+      "help": "Ligado = só quem tem «Triagem de CVs» usa as triagens. Quem hoje as usa sem papel (incluindo visitantes sem login) deixa de as usar até lhe ser dado o papel.",
+      "note": "Protege as rotas /cv-screening e a ferramenta analyse_cv do chat. Tester, widget, convidados e anónimos ficam de fora (regra das áreas geridas)."
+    },
+    "team.modules.minutes": {
+      "label": "Papéis na transcrição e atas",
+      "help": "Ligado = só quem tem «Transcrição e atas» transcreve reuniões e áudios e vê as atas. Quem hoje as usa sem papel deixa de as usar até lhe ser dado o papel.",
+      "note": "Protege a transcrição ao vivo, a lista de atas, a transcrição de ficheiros (transcribe_audio) e «Criar pedidos» (que também pede o papel da fila)."
+    },
+    "team.modules.documents": {
+      "label": "Papéis nas ferramentas de documentos",
+      "help": "Ligado = só quem tem «Ferramentas de documentos» extrai faturas e gera mapas de quantidades. Quem hoje as usa sem papel deixa de as usar até lhe ser dado o papel.",
+      "note": "Protege as ferramentas extract_invoice e generate_boq do chat. Enviar faturas para a fila pede também o papel da fila."
     }
   }
 }

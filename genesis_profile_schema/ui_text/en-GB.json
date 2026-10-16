@@ -497,7 +497,7 @@
     },
     "team.modules.queues": {
       "label": "Roles in queues",
-      "help": "On = only whoever has a role with «Handle queue requests» claims and decides requests (per queue, or in all)."
+      "help": "On = only people with «View the queue» see the requests and only people with «Handle queue requests» claim, decide and create them (per queue, or all). Anyone with neither stops seeing the queue."
     },
     "team.modules.intake": {
       "label": "Roles in Intake",
@@ -2715,6 +2715,21 @@
       "label": "Queue for requests from the minutes",
       "help": "With a queue chosen, whoever made the minutes can turn the agreed action items (what, who, deadline) into requests in that queue, choosing which. Empty = off. The owner stays in the request as text.",
       "note": "Consumer: core `core/managers/minutes_queue.py` (POST /transcripts/minutes/action-items, minutes owner only) and `GET /transcripts/minutes` (`to_queue`). Missing queue = off. Idempotent per minutes and action item."
+    },
+    "team.modules.cv": {
+      "label": "Roles in CV screening",
+      "help": "On = only people with «CV screening» use screenings. Whoever uses them today without a role (including visitors without sign-in) stops until they get the role.",
+      "note": "Protects the /cv-screening routes and the chat tool analyse_cv. Tester, widget, guests and anonymous are left out (managed-area rule)."
+    },
+    "team.modules.minutes": {
+      "label": "Roles in transcription and minutes",
+      "help": "On = only people with «Transcription and minutes» transcribe meetings and audio and see the minutes. Whoever uses them today without a role stops until they get the role.",
+      "note": "Protects live transcription, the minutes list, file transcription (transcribe_audio) and «Create requests» (which also needs the queue role)."
+    },
+    "team.modules.documents": {
+      "label": "Roles in document tools",
+      "help": "On = only people with «Document tools» extract invoices and generate bills of quantities. Whoever uses them today without a role stops until they get the role.",
+      "note": "Protects the chat tools extract_invoice and generate_boq. Sending invoices to the queue also needs the queue role."
     }
   }
 }

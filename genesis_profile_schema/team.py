@@ -36,8 +36,12 @@ MODULE_QUEUES = "queues"
 MODULE_INTAKE = "intake"
 MODULE_DOCVER = "docver"
 MODULE_VARIANT_ACCESS = "variant_access"
+# v0.1.122 (F2 da equipa, 16 Out 2026): três áreas que até aqui não pediam papel.
+MODULE_CV = "cv"                    # triagem de CVs
+MODULE_MINUTES = "minutes"          # transcrição de reuniões/áudios e atas
+MODULE_DOCUMENTS = "documents"      # faturas e mapas de quantidades
 MODULES: Tuple[str, ...] = (MODULE_APPROVALS, MODULE_QUEUES, MODULE_INTAKE, MODULE_DOCVER,
-                            MODULE_VARIANT_ACCESS)
+                            MODULE_VARIANT_ACCESS, MODULE_CV, MODULE_MINUTES, MODULE_DOCUMENTS)
 
 
 def _cap(cid: str, module: str, pt: str, en: str, hpt: str, hen: str, target: str = "") -> Dict[str, Any]:
@@ -56,7 +60,14 @@ CAPABILITIES: Tuple[Dict[str, Any], ...] = (
          "Decidir os pedidos de aprovação (nunca os próprios).", "Decide approval requests (never your own).",
          target="rule"),
     _cap("queue.operate", MODULE_QUEUES, "Tratar pedidos da fila", "Handle queue requests",
-         "Reclamar e decidir os pedidos da fila.", "Claim and decide the queue's requests.", target="queue"),
+         "Pegar, editar, decidir, mover e criar pedidos da fila. Inclui ver a fila.",
+         "Claim, edit, decide, move and create the queue's requests. Includes viewing the queue.",
+         target="queue"),
+    # v0.1.122: ver sem tratar (supervisão, consulta). Quem trata também vê.
+    _cap("queue.view", MODULE_QUEUES, "Ver a fila", "View the queue",
+         "Ver os pedidos da fila e descarregar os anexos, sem os poder tratar.",
+         "See the queue's requests and download their attachments, without handling them.",
+         target="queue"),
     _cap("intake.view", MODULE_INTAKE, "Intake: ver processos", "Intake: view cases",
          "Ver os processos e as respostas.", "See cases and answers."),
     _cap("intake.create", MODULE_INTAKE, "Intake: criar e convidar", "Intake: create and invite",
@@ -79,6 +90,16 @@ CAPABILITIES: Tuple[Dict[str, Any], ...] = (
          "Gerir as fichas de evidência (certidões, alvarás…).", "Manage evidence records (certificates…)."),
     _cap("docver.admin", MODULE_DOCVER, "Casos: administrar", "Cases: administer",
          "Tudo nos casos, incluindo apagar.", "Everything on cases, including delete."),
+    # v0.1.122 (F2): as três áreas novas — um papel por área (decisão do Bruno).
+    _cap("cv.use", MODULE_CV, "Triagem de CVs", "CV screening",
+         "Criar triagens, carregar CVs, ver os resultados e decidir os candidatos (vê dados pessoais dos candidatos).",
+         "Create screenings, upload CVs, see the results and decide on candidates (sees candidates' personal data)."),
+    _cap("minutes.use", MODULE_MINUTES, "Transcrição e atas", "Transcription and minutes",
+         "Transcrever reuniões e áudios e ver as atas. Criar pedidos a partir de uma ata pede também o papel da fila.",
+         "Transcribe meetings and audio and see the minutes. Creating requests from minutes also needs the queue role."),
+    _cap("documents.use", MODULE_DOCUMENTS, "Ferramentas de documentos", "Document tools",
+         "Extrair faturas e gerar mapas de quantidades no assistente. Enviar faturas para a fila pede também o papel da fila.",
+         "Extract invoices and generate bills of quantities in the assistant. Sending invoices to the queue also needs the queue role."),
 )
 CAPABILITY_IDS: Tuple[str, ...] = tuple(c["id"] for c in CAPABILITIES)
 _TARGETED = {c["id"] for c in CAPABILITIES if c["target"]}
@@ -134,6 +155,9 @@ class TeamModules(BaseModel):
     intake: bool = False
     docver: bool = False
     variant_access: bool = False
+    cv: bool = False            # v0.1.122
+    minutes: bool = False       # v0.1.122
+    documents: bool = False     # v0.1.122
 
 
 #: Quem pode usar o assistente (v0.1.121, «saída limpa», 16 Out 2026).
@@ -162,7 +186,15 @@ class ProfileTeam(BaseModel):
 _TEMPLATES: Dict[str, List[Dict[str, Any]]] = {
     MODULE_TEAM: [{"id": "gestor-equipa", "label": "Gestor da equipa", "capabilities": ["team.manage"]}],
     MODULE_APPROVALS: [{"id": "aprovador", "label": "Aprovador", "capabilities": ["actions.approve"]}],
-    MODULE_QUEUES: [{"id": "operador-fila", "label": "Operador da fila", "capabilities": ["queue.operate"]}],
+    MODULE_QUEUES: [
+        {"id": "operador-fila", "label": "Operador da fila", "capabilities": ["queue.operate"]},
+        # v0.1.122: só ver (supervisão/consulta).
+        {"id": "consulta-fila", "label": "Consulta da fila", "capabilities": ["queue.view"]},
+    ],
+    MODULE_CV: [{"id": "recrutador", "label": "Recrutador", "capabilities": ["cv.use"]}],
+    MODULE_MINUTES: [{"id": "utilizador-atas", "label": "Utilizador de atas", "capabilities": ["minutes.use"]}],
+    MODULE_DOCUMENTS: [{"id": "utilizador-documentos", "label": "Utilizador de documentos",
+                        "capabilities": ["documents.use"]}],
     MODULE_VARIANT_ACCESS: [{"id": "utilizador", "label": "Utilizador", "capabilities": ["variant.enter"]}],
     MODULE_INTAKE: [
         {"id": "intake-comercial", "label": "Intake — Comercial", "capabilities": ["intake.view", "intake.create"]},
@@ -215,6 +247,10 @@ def capability_module(cid: str) -> str:
 #   intake          `intake.definitions` não vazio (só o BASE conta para o Intake)
 #   docver          `verify_documents` em `tools.enabled`
 #   variant_access  `multiProfile.enabled` com alguma variante ativa (só o BASE)
+#   cv              `analyse_cv` em `tools.enabled`                       (v0.1.122)
+#   minutes         `transcribe_audio` em `tools.enabled` — a transcrição ao vivo
+#                   também a exige no genai-core (`live_enabled`)        (v0.1.122)
+#   documents       `extract_invoice` ou `generate_boq` em `tools.enabled` (v0.1.122)
 # `managed` = a equipa gere a área (`team.enabled` e `team.modules.<área>`).
 
 def _m(d: Any, *path: str) -> Any:
@@ -241,10 +277,13 @@ def _area_available(area: str, base: Mapping[str, Any], variants: List[Mapping[s
     if area == MODULE_INTAKE:
         defs = _m(base, "intake", "definitions")
         return isinstance(defs, Mapping) and len(defs) > 0
-    if area == MODULE_DOCVER:
+    tools_for = {MODULE_DOCVER: ("verify_documents",), MODULE_CV: ("analyse_cv",),
+                 MODULE_MINUTES: ("transcribe_audio",),
+                 MODULE_DOCUMENTS: ("extract_invoice", "generate_boq")}
+    if area in tools_for:
         def has_tool(p: Any) -> bool:
             en = _m(p, "tools", "enabled")
-            return isinstance(en, list) and "verify_documents" in en
+            return isinstance(en, list) and any(t in en for t in tools_for[area])
         return any(has_tool(p) for p in every)
     if area == MODULE_VARIANT_ACCESS:
         mp = _m(base, "multiProfile")

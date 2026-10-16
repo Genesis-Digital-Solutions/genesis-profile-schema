@@ -109,3 +109,62 @@ def test_entrada_por_omissao_qualquer_conta():
     for loc in ("pt-PT", "en-GB"):
         t = text_for("team.entry", loc)
         assert t and t.get("label") and len(t.get("help") or "") <= 240
+
+
+# ── v0.1.122: F2 — CVs, Atas, Ferramentas de documentos e «Ver a fila» ──────
+
+def test_areas_novas_desligadas_por_omissao():
+    m = T.TeamModules()
+    assert (m.cv, m.minutes, m.documents) == (False, False, False)
+    assert {T.MODULE_CV, T.MODULE_MINUTES, T.MODULE_DOCUMENTS} <= set(T.MODULES)
+
+
+def test_areas_novas_pelas_ferramentas():
+    base = {"team": {"enabled": True, "modules": {"cv": True, "documents": True}}}
+    loja = {"tools": {"enabled": ["analyse_cv", "transcribe_audio", "generate_boq"]}}
+    a = _areas(base, {"loja": loja})
+    assert a["cv"] == (True, True) and a["minutes"] == (True, False) and a["documents"] == (True, True)
+    assert _areas({"tools": {"enabled": ["extract_invoice"]}})["documents"] == (True, False)
+    # Só o interruptor da transcrição ao vivo, sem a ferramenta: o core não a liga.
+    assert _areas({"audio": {"live_transcription_enabled": True}})["minutes"] == (False, False)
+    # Equipa desligada: nunca «gerida».
+    off = {"tools": {"enabled": ["analyse_cv"]}, "team": {"enabled": False, "modules": {"cv": True}}}
+    assert _areas(off)["cv"] == (True, False)
+
+
+def test_papeis_prontos_novos():
+    def caps(module, rid):
+        return next(r["capabilities"] for r in T.role_templates(module) if r["id"] == rid)
+    assert caps(T.MODULE_QUEUES, "consulta-fila") == ["queue.view"]
+    assert caps(T.MODULE_QUEUES, "operador-fila") == ["queue.operate"]
+    assert caps(T.MODULE_CV, "recrutador") == ["cv.use"]
+    assert caps(T.MODULE_MINUTES, "utilizador-atas") == ["minutes.use"]
+    assert caps(T.MODULE_DOCUMENTS, "utilizador-documentos") == ["documents.use"]
+    # «Ver a fila» aceita uma fila como alvo, como «Tratar».
+    assert T.team_problems({"team": {"roles": [{"id": "a", "capabilities": ["queue.view:reclamacoes"]}]}}) == []
+
+
+def test_area_nova_ligada_sem_papel_avisa():
+    p = T.team_problems({"team": {"enabled": True, "modules": {"minutes": True},
+                                  "roles": [{"id": "g", "capabilities": ["team.manage"]}]}})
+    assert {"role_id": "minutes", "code": "module_without_role", "severity": "warning"} in p
+
+
+def test_textos_de_todas_as_capacidades_cabem_no_popover_do_gaibo():
+    """O GAIBO mostra a ajuda num popover de 240 caracteres (ui_text.CLIENT_HELP_MAX_CHARS)."""
+    from genesis_profile_schema.ui_text import CLIENT_HELP_MAX_CHARS
+    for c in T.CAPABILITIES:
+        for lang in ("pt", "en"):
+            assert 0 < len(c["label"][lang]) <= 60, (c["id"], lang)
+            assert 0 < len(c["help"][lang]) <= CLIENT_HELP_MAX_CHARS, (c["id"], lang)
+
+
+def test_textos_das_areas_novas():
+    for m in ("cv", "minutes", "documents", "queues"):
+        path = f"team.modules.{m}"
+        assert EXPOSURE[path] == "client_write"
+        for loc in ("pt-PT", "en-GB"):
+            t = text_for(path, loc)
+            assert t and t.get("label") and 0 < len(t.get("help") or "") <= 240, (path, loc)
+            if m != "queues":
+                assert t.get("note"), (path, loc)          # o detalhe para o operador vai para a nota
