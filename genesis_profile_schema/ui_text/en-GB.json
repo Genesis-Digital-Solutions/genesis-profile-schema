@@ -1701,6 +1701,10 @@
     "multiProfile.slugs": {
       "label": "Active slugs"
     },
+    "variantMode": {
+      "label": "Variant mode",
+      "help": "Shared (default): uses what the main profile has, except what the variant changes. Separate: uses nothing from the main profile — only what the variant has. Only in a variant profile."
+    },
     "orchestration.agent_planner": {
       "label": "Agent pre-planning",
       "help": "A step before the loop classifies multi-step requests and injects a short plan into the prompt. Off by default; costs one internal model call whenever it fires."

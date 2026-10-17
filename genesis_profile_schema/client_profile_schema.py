@@ -2819,6 +2819,17 @@ class ClientProfileSchema(BaseModel):
     # por default (enabled=false), como mcp/audio/voice/etc.
     multiProfile: ProfileMultiProfile = Field(default_factory=ProfileMultiProfile)
 
+    # Modo da VARIANTE (v0.1.124, fase B das autenticações por variante — pack
+    # das variantes §13.4/§13.11). Só tem efeito no blob de uma variante; no
+    # perfil base é ignorado. None ou "shared" = Partilhada: o genai-core funde
+    # DEFAULT + base + variante, como sempre (uma variante sem o campo fica
+    # exatamente como hoje). "separate" = Separada: o genai-core funde só
+    # DEFAULT + variante — nada vem do principal (índice, MCP, login, guiões,
+    # instruções), para uma frente pública de um cliente privado. Optional e
+    # None por omissão: um `null` gravado (GAIBO, cópias) vale Partilhada.
+    # `internal`: só o Studio (Genesis) o escreve.
+    variantMode: Optional[Literal["shared", "separate"]] = None
+
     # Modo Convidado para demos (v0.1.35) — só tem efeito em VARIANTES servidas
     # por backends com env DEMO_ENVIRONMENT (fecho duplo); inerte por default.
     guestAccess: ProfileGuestAccess = Field(default_factory=ProfileGuestAccess)

@@ -1701,6 +1701,10 @@
     "multiProfile.slugs": {
       "label": "Slugs ativos"
     },
+    "variantMode": {
+      "label": "Modo da variante",
+      "help": "Partilhada (por omissão): usa o que o principal tem, salvo o que a variante muda. Separada: não usa nada do principal — só o que a variante tem. Só no perfil de uma variante."
+    },
     "orchestration.agent_planner": {
       "label": "Planeamento prévio do agente",
       "help": "Um passo antes do ciclo classifica pedidos com vários passos e injeta um plano curto no prompt. Desligado por defeito; custa uma chamada interna ao modelo sempre que dispara."

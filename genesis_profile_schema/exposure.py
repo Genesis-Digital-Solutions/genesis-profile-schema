@@ -573,6 +573,8 @@ EXPOSURE: Dict[str, str] = {
     "multiProfile.enabled": _R,
     "multiProfile.invalidSlugBehavior": _I,  # comportamento de fallback do router
     "multiProfile.slugs": _R,
+    # v0.1.124: Partilhada/Separada de uma variante — só a Genesis (Studio).
+    "variantMode": _I,
 
     # ──────────────────────────────────────────────────────────────────────
     # Acesso convidado — limites que a Genesis define
