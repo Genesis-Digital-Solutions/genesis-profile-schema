@@ -168,3 +168,14 @@ def test_textos_das_areas_novas():
             assert t and t.get("label") and 0 < len(t.get("help") or "") <= 240, (path, loc)
             if m != "queues":
                 assert t.get("note"), (path, loc)          # o detalhe para o operador vai para a nota
+
+
+# ── v0.1.123: fase 2 da «Saúde da equipa» — interruptor interno ─────────────
+
+def test_fase2_desligada_e_so_da_genesis():
+    assert T.ProfileTeam().insights_phase2 is False
+    assert T.ProfileTeam(insights_phase2=True).insights_phase2 is True
+    assert EXPOSURE["team.insights_phase2"] == "internal"
+    for loc in ("pt-PT", "en-GB"):
+        t = text_for("team.insights_phase2", loc)
+        assert t and t.get("label") and len(t.get("help") or "") <= 240

@@ -179,6 +179,12 @@ class ProfileTeam(BaseModel):
     entry: Literal["anyone", "team"] = ENTRY_ANYONE
     modules: TeamModules = Field(default_factory=TeamModules)
     roles: List[TeamRole] = Field(default_factory=list)
+    # v0.1.123: sinais da fase 2 da «Saúde da equipa» (ativação dos convites,
+    # aprovações «a carimbo», separação de funções, acessos negados). Só a
+    # Genesis liga, depois de o DPO validar o tamanho mínimo de grupo, as
+    # retenções e o texto de transparência; desligado, o core nem regista os
+    # acessos negados.
+    insights_phase2: bool = False
 
 
 # ── Papéis prontos (simples de usar) ─────────────────────────────────────────

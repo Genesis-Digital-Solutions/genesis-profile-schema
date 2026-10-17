@@ -33,6 +33,7 @@ Convenção de metadata para o editor (json_schema_extra):
   O editor lê estes hints para avisar e impedir combinações incoerentes.
 """
 
+import re
 import warnings
 
 # Suprimir warning Pydantic do campo `register` em ProfileIdentity — o nome
@@ -1719,6 +1720,10 @@ class ProfileFrontendWidget(BaseModel):
     allowed_origins: List[str] = Field(default_factory=list)
 
 
+_EMAIL_DOMAIN_RE = re.compile(r"^(?=.{3,253}$)([a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?\.)+[a-z]{2,63}$")
+_CLIENT_ID_RE = re.compile(r"^[A-Za-z0-9._:/-]{1,200}$")
+
+
 class ProfileAuthProvider(BaseModel):
     """
     Emissor OIDC confiável para o genai-core VALIDAR tokens (L1, multi-IdP).
@@ -1736,6 +1741,61 @@ class ProfileAuthProvider(BaseModel):
     tenant_id: str = ""                                     # tid esperado (MS; vazio → não valida)
     label: str = ""                                         # rótulo amigável para a UI do Console
     primary: bool = False                                   # emissor primário → user_id puro (oid/sub); adicionais ficam namespaced (issuer|sub). Sem nenhum marcado, o 1.º da lista é o primário.
+    # Equipa F4 (v0.1.123, 16 Out 2026): domínios de email cujas pessoas, com o
+    # email VERIFICADO por este emissor (`email_verified`), se ligam às fichas da
+    # equipa pelo login (`iss`+`sub`). Vazio = este emissor não vale para a
+    # equipa (o de sempre; o Entra de empresa vale sem isto, por `tid`+`oid`).
+    # Só a Genesis marca (campo interno). Exige `id`.
+    team_email_domains: List[str] = Field(default_factory=list)
+    # Apps aceites (claim `azp`, ou `appid` nos tokens v1 do Entra). Vazio =
+    # qualquer app do emissor com a audience certa (o de sempre).
+    allowed_client_ids: List[str] = Field(default_factory=list)
+
+    @field_validator("team_email_domains", mode="before")
+    @classmethod
+    def _team_domains(cls, v):
+        if v is None:
+            return []
+        if not isinstance(v, list):
+            raise ValueError("team_email_domains: esperada uma lista de domínios")
+        out: List[str] = []
+        for raw in v:
+            d = str(raw or "").strip().lower().lstrip("@")
+            if not d:
+                continue
+            if not _EMAIL_DOMAIN_RE.match(d):
+                raise ValueError(f"team_email_domains: domínio inválido {str(raw)[:80]!r}")
+            if d not in out:
+                out.append(d)
+        if len(out) > 20:
+            raise ValueError("team_email_domains: no máximo 20 domínios")
+        return out
+
+    @field_validator("allowed_client_ids", mode="before")
+    @classmethod
+    def _client_ids(cls, v):
+        if v is None:
+            return []
+        if not isinstance(v, list):
+            raise ValueError("allowed_client_ids: esperada uma lista")
+        out: List[str] = []
+        for raw in v:
+            c = str(raw or "").strip()
+            if not c:
+                continue
+            if not _CLIENT_ID_RE.match(c):
+                raise ValueError(f"allowed_client_ids: valor inválido {c[:80]!r}")
+            if c not in out:
+                out.append(c)
+        if len(out) > 20:
+            raise ValueError("allowed_client_ids: no máximo 20")
+        return out
+
+    @model_validator(mode="after")
+    def _team_needs_id(self):
+        if self.team_email_domains and not (self.id or "").strip():
+            raise ValueError("um emissor que vale para a equipa (team_email_domains) precisa de um id")
+        return self
 
 
 class ProfileWidgetIdentity(BaseModel):
@@ -1785,6 +1845,21 @@ class ProfileFrontendAuth(BaseModel):
     # Backend — validação de tokens (L1) e identidade de widget (L2)
     providers: List[ProfileAuthProvider] = Field(default_factory=list)
     widget_identity: ProfileWidgetIdentity = Field(default_factory=ProfileWidgetIdentity)
+
+    @model_validator(mode="after")
+    def _provider_ids_unique(self):
+        """Equipa F4 (v0.1.123): os `id` preenchidos não se repetem — a equipa
+        e o `user_id` dos emissores adicionais dependem deles. Vazios continuam
+        aceites (perfis antigos), salvo num emissor da equipa."""
+        seen = set()
+        for p in self.providers:
+            pid = (p.id or "").strip()
+            if not pid:
+                continue
+            if pid in seen:
+                raise ValueError(f"frontend.auth.providers: id repetido {pid[:80]!r}")
+            seen.add(pid)
+        return self
 
 
 class ProfileAccess(BaseModel):

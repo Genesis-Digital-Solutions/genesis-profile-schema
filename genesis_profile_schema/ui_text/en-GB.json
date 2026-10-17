@@ -461,6 +461,14 @@
       "label": "Expected tenant ID",
       "help": "The expected `tid` value (Microsoft). Empty does not validate."
     },
+    "frontend.auth.providers.team_email_domains": {
+      "label": "Valid for the team — email domains",
+      "help": "People from this issuer with a verified email on one of these domains are linked to their team record on first login. Empty = not valid for the team. Requires an id."
+    },
+    "frontend.auth.providers.allowed_client_ids": {
+      "label": "Accepted apps (client id)",
+      "help": "Only tokens requested by these apps (azp/appid). Empty accepts any app from the issuer with the right audience."
+    },
     "frontend.auth.providers.type": {
       "label": "Issuer type"
     },
@@ -486,6 +494,10 @@
         "anyone": "Any signed-in account",
         "team": "Team only"
       }
+    },
+    "team.insights_phase2": {
+      "label": "Team health: phase 2 signals",
+      "help": "Turns on invite activation, «rubber-stamp» approvals per rule, separation of duties and denied access (counts, no people). Only after the DPO has validated it. Off, the assistant does not even record denied access."
     },
     "team.enabled": {
       "label": "Product team and roles",

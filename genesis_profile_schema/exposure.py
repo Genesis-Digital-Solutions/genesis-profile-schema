@@ -172,6 +172,8 @@ EXPOSURE: Dict[str, str] = {
     "frontend.auth.providers.required_scope": _I,
     "frontend.auth.providers.tenant_id": _I,
     "frontend.auth.providers.type": _I,
+    "frontend.auth.providers.team_email_domains": _I,
+    "frontend.auth.providers.allowed_client_ids": _I,
     "frontend.auth.scope": _I,
     "frontend.auth.tenantId": _I,
     "frontend.auth.tenantMode": _I,
@@ -598,6 +600,8 @@ EXPOSURE: Dict[str, str] = {
     "team.roles.capabilities": _W,
     "team.roles.entra.roles": _W,
     "team.roles.entra.groups": _W,
+    # v0.1.123: fase 2 da «Saúde da equipa» — só a Genesis, depois do DPO.
+    "team.insights_phase2": _I,
     # actionLedger.* (v0.1.115): registo das ações — o cliente liga no GAIBO
     # (num cliente de alto risco regista sempre, ligado ou não).
     "actionLedger.enabled": _W,

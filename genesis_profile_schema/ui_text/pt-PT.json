@@ -461,6 +461,14 @@
       "label": "ID do tenant esperado",
       "help": "Valor de `tid` esperado (Microsoft). Vazio não valida."
     },
+    "frontend.auth.providers.team_email_domains": {
+      "label": "Vale para a equipa — domínios de email",
+      "help": "Pessoas deste emissor com email verificado de um destes domínios ligam-se à sua ficha da equipa no 1.º login. Vazio = não vale para a equipa. Exige um id."
+    },
+    "frontend.auth.providers.allowed_client_ids": {
+      "label": "Apps aceites (client id)",
+      "help": "Só tokens pedidos por estas apps (azp/appid). Vazio aceita qualquer app do emissor com a audiência certa."
+    },
     "frontend.auth.providers.type": {
       "label": "Tipo de emissor"
     },
@@ -486,6 +494,10 @@
         "anyone": "Qualquer conta com login",
         "team": "Só as pessoas da equipa"
       }
+    },
+    "team.insights_phase2": {
+      "label": "Saúde da equipa: sinais da fase 2",
+      "help": "Liga a ativação dos convites, as aprovações «a carimbo» por regra, a separação de funções e os acessos negados (contagens, sem pessoas). Só depois de o DPO validar. Desligado, o assistente nem regista os acessos negados."
     },
     "team.enabled": {
       "label": "Equipa e papéis do produto",
