@@ -1735,7 +1735,7 @@ class ProfileAuthProvider(BaseModel):
     id: str = ""                                            # identificador interno do provider
     type: Literal["oidc", "msal"] = "oidc"
     issuer: str = ""                                        # iss esperado (pinning)
-    audience: str = ""                                      # aud esperado (vazio → não valida aud)
+    audience: str = ""                                      # aud esperado — OBRIGATÓRIO: vazio → o genai-core IGNORA este emissor (S2, 13 Out 2026)
     jwks_uri: str = ""                                      # vazio → discovery via .well-known do issuer
     required_scope: str = ""                                # scope obrigatório (vazio → não exige)
     tenant_id: str = ""                                     # tid esperado (MS; vazio → não valida)
@@ -1812,6 +1812,12 @@ class ProfileWidgetIdentity(BaseModel):
     max_age_s: int = Field(default=300, ge=1)               # idade máxima do token (anti-replay)
 
 
+#: Teto de emissores confiáveis por perfil (v0.1.125, regra 6 das variantes): os
+#: 50 tenants do D5 mais os outros emissores (F4), e cabe nos 128 hashes que o
+#: fecore guarda (2 por emissor Entra).
+MAX_AUTH_PROVIDERS = 64
+
+
 class ProfileFrontendAuth(BaseModel):
     """
     Autenticação do frontend + identidade (épico multi-IdP, Jun 2026).
@@ -1842,7 +1848,15 @@ class ProfileFrontendAuth(BaseModel):
     authority: str = ""                                     # URL do IdP (authority/issuer)
     scope: str = ""                                         # vazio → default seguro no FE
 
-    # Backend — validação de tokens (L1) e identidade de widget (L2)
+    # Pedir o login a meio da conversa (fase H, 17 Out 2026; declarado na
+    # v0.1.125): lido SÓ pelo genai-core (`core/agent/step_up/policy.py`) — com
+    # o modo efetivo `optional` e um login que o core valida, o assistente pede
+    # para entrar quando a pergunta precisa da conta da pessoa. False = o de sempre.
+    stepUp: bool = False
+
+    # Backend — validação de tokens (L1) e identidade de widget (L2).
+    # Teto de 64 emissores (v0.1.125, MAX_AUTH_PROVIDERS): o D5 do Studio aceita até
+    # 50 tenants, mais os outros emissores; o fecore guarda 128 hashes (2 por emissor Entra).
     providers: List[ProfileAuthProvider] = Field(default_factory=list)
     widget_identity: ProfileWidgetIdentity = Field(default_factory=ProfileWidgetIdentity)
 
@@ -1851,6 +1865,8 @@ class ProfileFrontendAuth(BaseModel):
         """Equipa F4 (v0.1.123): os `id` preenchidos não se repetem — a equipa
         e o `user_id` dos emissores adicionais dependem deles. Vazios continuam
         aceites (perfis antigos), salvo num emissor da equipa."""
+        if len(self.providers) > MAX_AUTH_PROVIDERS:
+            raise ValueError(f"frontend.auth.providers: no máximo {MAX_AUTH_PROVIDERS} emissores")
         seen = set()
         for p in self.providers:
             pid = (p.id or "").strip()

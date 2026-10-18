@@ -476,6 +476,10 @@
       "label": "OIDC scope",
       "help": "An OIDC field. Empty uses a safe default in the frontend."
     },
+    "frontend.auth.stepUp": {
+      "label": "Ask for sign-in mid-conversation",
+      "help": "People chatting without signing in keep chatting; when a question needs the person's account, the assistant asks them to sign in. Only with optional sign-in and a sign-in the assistant can validate."
+    },
     "frontend.auth.tenantId": {
       "label": "Tenant ID",
       "help": "An MSAL (Microsoft) field, written into the app configuration."
