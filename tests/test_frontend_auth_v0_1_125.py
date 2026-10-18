@@ -1,7 +1,7 @@
 """
 v0.1.125 (18 Out 2026, ponto 0 das variantes): `frontend.auth.stepUp` declarado
-(lido só pelo genai-core; False = o de sempre), teto de 50 emissores confiáveis
-(o D5 aceita 50 tenants; o fecore guarda até 128 hashes) e o comentário da
+(lido só pelo genai-core; False = o de sempre), teto de 64 emissores confiáveis
+(o D5 aceita 50 tenants mais outros emissores; o fecore guarda até 128 hashes) e o comentário da
 `audience` corrigido (vazia → o core ignora o emissor).
 """
 import pytest

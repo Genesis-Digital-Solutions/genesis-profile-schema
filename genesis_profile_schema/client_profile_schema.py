@@ -1812,8 +1812,10 @@ class ProfileWidgetIdentity(BaseModel):
     max_age_s: int = Field(default=300, ge=1)               # idade máxima do token (anti-replay)
 
 
-#: Teto de emissores confiáveis por perfil (v0.1.125, regra 6 das variantes).
-MAX_AUTH_PROVIDERS = 50
+#: Teto de emissores confiáveis por perfil (v0.1.125, regra 6 das variantes): os
+#: 50 tenants do D5 mais os outros emissores (F4), e cabe nos 128 hashes que o
+#: fecore guarda (2 por emissor Entra).
+MAX_AUTH_PROVIDERS = 64
 
 
 class ProfileFrontendAuth(BaseModel):
@@ -1853,8 +1855,8 @@ class ProfileFrontendAuth(BaseModel):
     stepUp: bool = False
 
     # Backend — validação de tokens (L1) e identidade de widget (L2).
-    # Teto de 50 emissores (v0.1.125): o D5 do Studio aceita até 50 tenants e o
-    # fecore só guarda a impressão de 128 hashes (2 por tenant Entra).
+    # Teto de 64 emissores (v0.1.125, MAX_AUTH_PROVIDERS): o D5 do Studio aceita até
+    # 50 tenants, mais os outros emissores; o fecore guarda 128 hashes (2 por emissor Entra).
     providers: List[ProfileAuthProvider] = Field(default_factory=list)
     widget_identity: ProfileWidgetIdentity = Field(default_factory=ProfileWidgetIdentity)
 
