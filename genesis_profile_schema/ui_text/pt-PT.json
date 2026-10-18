@@ -476,6 +476,10 @@
       "label": "Âmbito OIDC",
       "help": "Campo OIDC. Vazio usa um valor por defeito seguro no frontend."
     },
+    "frontend.auth.stepUp": {
+      "label": "Pedir o login a meio da conversa",
+      "help": "Quem conversa sem login continua a conversar; quando uma pergunta precisa da conta da pessoa, o assistente pede para entrar. Só com o login opcional e um login que o assistente consegue validar."
+    },
     "frontend.auth.tenantId": {
       "label": "ID do tenant",
       "help": "Campo MSAL (Microsoft), escrito na configuração da aplicação."

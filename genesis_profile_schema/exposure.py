@@ -175,6 +175,7 @@ EXPOSURE: Dict[str, str] = {
     "frontend.auth.providers.team_email_domains": _I,
     "frontend.auth.providers.allowed_client_ids": _I,
     "frontend.auth.scope": _I,
+    "frontend.auth.stepUp": _I,                  # v0.1.125 (fase H): só a Genesis
     "frontend.auth.tenantId": _I,
     "frontend.auth.tenantMode": _I,
     "frontend.auth.widget_identity.algo": _I,
