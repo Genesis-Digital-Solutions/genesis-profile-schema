@@ -12,12 +12,20 @@ para desligar a prova que o art. 10.º do AI Act vai pedir.
 
 Os tectos das listas e dos textos são os do motor do genai-core
 (`tools/cv_analysis/engine/criteria.py`: 40 critérios, 500 chars por
-descrição, 30 000 chars de anúncio): um modelo de vaga maior do que isso seria
-cortado em silêncio ao criar o job.
+descrição, 60 000 chars de anúncio desde 18 Out 2026 — eram 30 000; e
+`engine/ad_reading.py`: 40 itens «a confirmar» de 300 chars): um modelo de
+vaga maior do que isso seria cortado em silêncio ao criar o job.
+
+v0.1.126 (19 Out 2026, plano da triagem F1): «a confirmar fora do CV» nas
+vagas-tipo, o aviso ao candidato com os dados do cliente (empresa,
+assinatura, contacto e modelos por decisão — a nota sobre a IA NÃO é campo:
+o ecrã junta-a sempre, AI Act art. 26.º n.º 11) e o texto do aviso ANTES da
+triagem.
 """
 
 from __future__ import annotations
 
+import re
 from typing import List, Literal, Optional
 
 from pydantic import BaseModel, ConfigDict, Field, field_validator
@@ -33,7 +41,27 @@ __all__ = [
     "ProfileToolCvTemplateCriterion",
     "ProfileToolCvJobTemplate",
     "ProfileToolCvAnalysisConfig",
+    "ProfileToolCvNoticeTemplate",
+    "ProfileToolCvCandidateNotice",
+    "ProfileToolCvPreScreeningNotice",
+    "CV_NOTICE_MERGE_FIELDS",
 ]
+
+# Campos de fusão do aviso ao candidato (o fecore troca-os de uma só passagem,
+# `cv-candidate-notice.ts`). Allowlist: um `{campo}` desconhecido ficava no
+# email tal e qual — recusa-se ao gravar.
+CV_NOTICE_MERGE_FIELDS = ("nome", "vaga", "temas", "empresa", "assinatura", "contacto", "data")
+_MERGE_RE = re.compile(r"\{([^{}]*)\}")
+_EMAIL_RE = re.compile(r"^[^@\s]{1,64}@[^@\s]{1,253}\.[A-Za-z]{2,24}$")
+_URL_RE = re.compile(r"^https://[^\s]{3,300}$")
+
+
+def _only_known_merge_fields(text: str) -> str:
+    bad = sorted({m for m in _MERGE_RE.findall(text or "") if m not in CV_NOTICE_MERGE_FIELDS})
+    if bad:
+        raise ValueError("campos de fusão desconhecidos: " + ", ".join("{" + b + "}" for b in bad)
+                         + " (permitidos: " + ", ".join("{" + f + "}" for f in CV_NOTICE_MERGE_FIELDS) + ")")
+    return text
 
 
 class ProfileToolCvCriterionScale(BaseModel):
@@ -74,8 +102,84 @@ class ProfileToolCvJobTemplate(BaseModel):
 
     id: str = Field(min_length=1, max_length=64, pattern=r"^[a-z0-9][a-z0-9_-]*$")
     title: str = Field(min_length=1, max_length=200, pattern=r"\S")
-    requirements: str = Field(default="", max_length=30000)
+    # 60 000 = `engine/criteria.MAX_REQUIREMENTS_CHARS` desde 18 Out 2026 (era 30 000).
+    requirements: str = Field(default="", max_length=60000)
     criteria: List[ProfileToolCvTemplateCriterion] = Field(min_length=1, max_length=40)
+    # «A confirmar fora do CV» (v0.1.126): o que o anúncio pede mas um CV não
+    # mostra; nunca avaliado. O core normaliza-o (`ad_reading.normalize_checks`)
+    # e passa a critério sinalizado o que tiver risco de discriminação (D9).
+    interview_checks: List[str] = Field(default_factory=list, max_length=40)
+
+    @field_validator("interview_checks")
+    @classmethod
+    def _checks(cls, v: List[str]) -> List[str]:
+        for item in v:
+            if not isinstance(item, str) or not item.strip() or len(item) > 300:
+                raise ValueError("cada item «a confirmar» é texto não vazio até 300 caracteres")
+        return v
+
+
+class ProfileToolCvNoticeTemplate(BaseModel):
+    """Modelo do aviso ao candidato para UMA decisão humana e UMA língua. O
+    texto é do cliente; a nota sobre a IA não está aqui (o ecrã junta-a sempre
+    no fim). Campos de fusão só os de `CV_NOTICE_MERGE_FIELDS`."""
+    model_config = _CLOSED
+
+    decision: Literal["advance", "hold", "reject", "none"]
+    lang: Literal["pt", "en"]
+    subject: str = Field(default="", max_length=200)
+    body: str = Field(min_length=1, max_length=4000, pattern=r"\S")
+
+    @field_validator("subject", "body")
+    @classmethod
+    def _merge(cls, v: str) -> str:
+        return _only_known_merge_fields(v)
+
+
+class ProfileToolCvCandidateNotice(BaseModel):
+    """Dados do cliente para o «Aviso ao candidato» (passo 5 da triagem).
+    Sem bloco (ou `null` no blob gravado) = os modelos do produto com os
+    marcadores [contacto]/[assinatura] por preencher, como até aqui."""
+    model_config = _CLOSED
+
+    company: str = Field(default="", max_length=200)
+    signature: str = Field(default="", max_length=500)
+    # Canal para pedir explicação, revisão humana e exercer direitos RGPD:
+    # email ou URL https (vai para um email a terceiros — nada de javascript:).
+    contact: str = Field(default="", max_length=320)
+    templates: List[ProfileToolCvNoticeTemplate] = Field(default_factory=list, max_length=8)
+
+    @field_validator("contact")
+    @classmethod
+    def _contact(cls, v: str) -> str:
+        v = (v or "").strip()
+        if v and not (_EMAIL_RE.match(v) or _URL_RE.match(v)):
+            raise ValueError("o contacto é um email ou um endereço https://")
+        return v
+
+    @field_validator("templates")
+    @classmethod
+    def _unicos(cls, v: List[ProfileToolCvNoticeTemplate]) -> List[ProfileToolCvNoticeTemplate]:
+        keys = [(t.decision, t.lang) for t in v]
+        dup = sorted({f"{d}/{l}" for d, l in keys if keys.count((d, l)) > 1})
+        if dup:
+            raise ValueError("modelos repetidos para a mesma decisão e língua: " + ", ".join(dup))
+        return v
+
+
+class ProfileToolCvPreScreeningNotice(BaseModel):
+    """Texto do aviso ANTES da triagem (para o anúncio ou a política de
+    privacidade): a candidatura é analisada com apoio de IA, com revisão
+    humana. Vazio numa língua = o texto do produto nessa língua."""
+    model_config = _CLOSED
+
+    pt: str = Field(default="", max_length=2000)
+    en: str = Field(default="", max_length=2000)
+
+    @field_validator("pt", "en")
+    @classmethod
+    def _merge(cls, v: str) -> str:
+        return _only_known_merge_fields(v)
 
 
 class ProfileToolCvAnalysisConfig(BaseModel):
@@ -104,6 +208,9 @@ class ProfileToolCvAnalysisConfig(BaseModel):
         max_length=200,
         json_schema_extra={"requires_tool": "analyse_cv"},
     )
+    # v0.1.126 — `null` no blob gravado = ausente (consumidores tratam os dois igual).
+    candidate_notice: Optional[ProfileToolCvCandidateNotice] = None
+    pre_screening_notice: Optional[ProfileToolCvPreScreeningNotice] = None
 
     @field_validator("job_templates")
     @classmethod

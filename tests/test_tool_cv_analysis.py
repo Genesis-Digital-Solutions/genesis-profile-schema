@@ -26,8 +26,11 @@ from genesis_profile_schema.client_profile_schema import (
     _KNOWN_TOOL_CONFIG_MODELS,
 )
 from genesis_profile_schema.tool_cv_analysis import (
+    CV_NOTICE_MERGE_FIELDS,
     ProfileToolCvAnalysisConfig,
+    ProfileToolCvCandidateNotice,
     ProfileToolCvJobTemplate,
+    ProfileToolCvPreScreeningNotice,
     ProfileToolCvTemplateCriterion,
 )
 
@@ -100,7 +103,9 @@ def test_vaga_tipo_tectos_do_motor():
     with pytest.raises(ValidationError):
         ProfileToolCvJobTemplate.model_validate({**base, "criteria": [{"description": f"c{i}"} for i in range(41)]})
     with pytest.raises(ValidationError):
-        ProfileToolCvJobTemplate.model_validate({**base, "requirements": "x" * 30001})
+        ProfileToolCvJobTemplate.model_validate({**base, "requirements": "x" * 60001})
+    # 60 000 cabe (= o core desde 18 Out 2026): uma oferta pública do BEP passa os 30 000.
+    ProfileToolCvJobTemplate.model_validate({**base, "requirements": "x" * 60000})
     with pytest.raises(ValidationError):
         ProfileToolCvJobTemplate.model_validate({**base, "id": "Com Espaços"})
     with pytest.raises(ValidationError):
@@ -184,3 +189,76 @@ def test_texto_nas_duas_linguas_e_opcoes_alinhadas(locale):
             nomeados = ui.options_of(path, locale)
             assert set(membros) == set(nomeados), (path, membros, nomeados)
     assert set(ui.options_of(f"{P}.prompt_preset", locale)) == {"", "general", "technology", "regulated_health"}
+
+
+# ── v0.1.126 (19 Out 2026): «a confirmar», aviso ao candidato, aviso antes da triagem ──
+
+def test_vaga_tipo_com_a_confirmar():
+    base = {"id": "a", "title": "A", "criteria": [{"description": "Python"}]}
+    t = ProfileToolCvJobTemplate.model_validate({**base, "interview_checks": ["Disponibilidade para turnos"]})
+    assert t.interview_checks == ["Disponibilidade para turnos"]
+    assert ProfileToolCvJobTemplate.model_validate(base).interview_checks == []   # perfis antigos
+    for mau in (["x" * 301], ["   "], [f"i{i}" for i in range(41)]):
+        with pytest.raises(ValidationError):
+            ProfileToolCvJobTemplate.model_validate({**base, "interview_checks": mau})
+
+
+def test_aviso_ao_candidato_valido_e_campos_de_fusao_por_allowlist():
+    n = ProfileToolCvCandidateNotice.model_validate({
+        "company": "Acme", "signature": "Equipa de RH", "contact": "rh@acme.pt",
+        "templates": [{"decision": "advance", "lang": "pt", "subject": "Candidatura a {vaga}",
+                       "body": "Olá, {nome}. Temas: {temas}. {assinatura}"}]})
+    assert n.templates[0].decision == "advance"
+    assert set(CV_NOTICE_MERGE_FIELDS) == {"nome", "vaga", "temas", "empresa", "assinatura", "contacto", "data"}
+    with pytest.raises(ValidationError):   # campo de fusão inventado ficava no email tal e qual
+        ProfileToolCvCandidateNotice.model_validate(
+            {"templates": [{"decision": "reject", "lang": "pt", "body": "Olá {idade}"}]})
+
+
+@pytest.mark.parametrize("contacto,ok", [
+    ("rh@acme.pt", True), ("https://acme.pt/privacidade", True), ("", True),
+    ("javascript:alert(1)", False), ("http://acme.pt", False), ("rh @acme.pt", False)])
+def test_contacto_so_email_ou_https(contacto, ok):
+    if ok:
+        ProfileToolCvCandidateNotice.model_validate({"contact": contacto})
+    else:
+        with pytest.raises(ValidationError):
+            ProfileToolCvCandidateNotice.model_validate({"contact": contacto})
+
+
+def test_aviso_modelos_unicos_e_fechados():
+    t = {"decision": "hold", "lang": "en", "body": "Hello {nome}"}
+    with pytest.raises(ValidationError):
+        ProfileToolCvCandidateNotice.model_validate({"templates": [t, dict(t)]})
+    for mau in ({**t, "decision": "maybe"}, {**t, "lang": "fr"}, {**t, "evil": 1}, {**t, "body": "  "}):
+        with pytest.raises(ValidationError):
+            ProfileToolCvCandidateNotice.model_validate({"templates": [mau]})
+    with pytest.raises(ValidationError):
+        ProfileToolCvCandidateNotice.model_validate({"ai_note": "sem nota"})   # a nota da IA não é campo
+
+
+def test_aviso_antes_da_triagem():
+    ProfileToolCvPreScreeningNotice.model_validate({"pt": "Analisamos com apoio de IA. Contacto: {contacto}"})
+    with pytest.raises(ValidationError):
+        ProfileToolCvPreScreeningNotice.model_validate({"pt": "x" * 2001})
+    with pytest.raises(ValidationError):
+        ProfileToolCvPreScreeningNotice.model_validate({"en": "{unknown}"})
+
+
+def test_blocos_novos_a_null_no_blob_gravado_valem_como_ausentes():
+    """O core grava com to_blob_dict (não omite nulos): os blocos opcionais
+    novos aparecem como `null` em todos os perfis gravados depois do bump."""
+    raw = {"client_id": "x", "tools": {"enabled": ["analyse_cv"], "config": {"analyse_cv": {
+        "candidate_notice": None, "pre_screening_notice": None,
+        "job_templates": [{"id": "a", "title": "A", "criteria": [{"description": "Python"}]}]}}}}
+    prof = ClientProfileSchema.model_validate(raw)
+    cfg = ProfileToolCvAnalysisConfig.model_validate(prof.tools.config["analyse_cv"])
+    assert cfg.candidate_notice is None and cfg.pre_screening_notice is None
+
+
+def test_exposicao_dos_campos_novos_e_cliente():
+    for campo in ("job_templates.interview_checks", "candidate_notice", "candidate_notice.contact",
+                  "candidate_notice.templates.body", "pre_screening_notice.pt"):
+        assert exp.exposure_of(f"{P}.{campo}") == exp.CLIENT_WRITE, campo
+    assert pr.control_for(f"{P}.candidate_notice.templates.body") == pr.MULTILINE
+

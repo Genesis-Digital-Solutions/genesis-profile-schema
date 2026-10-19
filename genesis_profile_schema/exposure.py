@@ -837,6 +837,21 @@ EXPOSURE: Dict[str, str] = {
     "tools.config.analyse_cv.job_templates.criteria.scale.min_level": _W,
     "tools.config.analyse_cv.job_templates.criteria.scale.subject": _W,
     "tools.config.analyse_cv.job_templates.criteria.needs_protected_attr": _W,
+    # v0.1.126 (19 Out 2026): «a confirmar» nas vagas-tipo, o aviso ao candidato
+    # (dados e modelos do cliente; a nota da IA não é campo) e o aviso antes da triagem.
+    "tools.config.analyse_cv.job_templates.interview_checks": _W,
+    "tools.config.analyse_cv.candidate_notice": _W,
+    "tools.config.analyse_cv.candidate_notice.company": _W,
+    "tools.config.analyse_cv.candidate_notice.signature": _W,
+    "tools.config.analyse_cv.candidate_notice.contact": _W,
+    "tools.config.analyse_cv.candidate_notice.templates": _W,
+    "tools.config.analyse_cv.candidate_notice.templates.decision": _W,
+    "tools.config.analyse_cv.candidate_notice.templates.lang": _W,
+    "tools.config.analyse_cv.candidate_notice.templates.subject": _W,
+    "tools.config.analyse_cv.candidate_notice.templates.body": _W,
+    "tools.config.analyse_cv.pre_screening_notice": _W,
+    "tools.config.analyse_cv.pre_screening_notice.pt": _W,
+    "tools.config.analyse_cv.pre_screening_notice.en": _W,
 }
 
 

@@ -2750,6 +2750,63 @@
       "label": "Papéis nas ferramentas de documentos",
       "help": "Ligado = só quem tem «Ferramentas de documentos» extrai faturas e gera mapas de quantidades. Quem hoje as usa sem papel deixa de as usar até lhe ser dado o papel.",
       "note": "Protege as ferramentas extract_invoice e generate_boq do chat. Enviar faturas para a fila pede também o papel da fila."
+    },
+    "tools.config.analyse_cv.job_templates.interview_checks": {
+      "label": "A confirmar fora do CV",
+      "help": "O que a vaga pede mas um CV normalmente não mostra (atitudes, disponibilidade, condições legais). Nunca é avaliado pela IA: aparece ao recrutador e no relatório."
+    },
+    "tools.config.analyse_cv.candidate_notice": {
+      "label": "Aviso ao candidato",
+      "help": "Dados e modelos do email ao candidato no fim da triagem. A nota sobre o uso de IA é sempre acrescentada no fim e não se edita."
+    },
+    "tools.config.analyse_cv.candidate_notice.company": {
+      "label": "Nome da empresa"
+    },
+    "tools.config.analyse_cv.candidate_notice.signature": {
+      "label": "Assinatura",
+      "help": "Nome e/ou equipa que assina o email."
+    },
+    "tools.config.analyse_cv.candidate_notice.contact": {
+      "label": "Contacto para pedidos",
+      "help": "Email ou endereço https:// para o candidato pedir explicação, revisão humana ou exercer direitos de proteção de dados."
+    },
+    "tools.config.analyse_cv.candidate_notice.templates": {
+      "label": "Modelos por decisão",
+      "help": "Um modelo por decisão e língua. Sem modelo, usa-se o texto do produto."
+    },
+    "tools.config.analyse_cv.candidate_notice.templates.decision": {
+      "label": "Decisão",
+      "options": {
+        "advance": "Avança",
+        "hold": "Em espera",
+        "reject": "Não avança",
+        "none": "Sem decisão"
+      }
+    },
+    "tools.config.analyse_cv.candidate_notice.templates.lang": {
+      "label": "Língua",
+      "options": {
+        "pt": "Português",
+        "en": "Inglês"
+      }
+    },
+    "tools.config.analyse_cv.candidate_notice.templates.subject": {
+      "label": "Assunto",
+      "help": "Campos de fusão: {nome}, {vaga}, {temas}, {empresa}, {assinatura}, {contacto}, {data}."
+    },
+    "tools.config.analyse_cv.candidate_notice.templates.body": {
+      "label": "Texto",
+      "help": "Campos de fusão: {nome}, {vaga}, {temas}, {empresa}, {assinatura}, {contacto}, {data}. A nota sobre a IA é acrescentada no fim automaticamente."
+    },
+    "tools.config.analyse_cv.pre_screening_notice": {
+      "label": "Aviso antes da triagem",
+      "help": "Texto para o anúncio ou a política de privacidade: a candidatura é analisada com apoio de IA e revista por uma pessoa. Vazio = o texto do produto."
+    },
+    "tools.config.analyse_cv.pre_screening_notice.pt": {
+      "label": "Texto em português"
+    },
+    "tools.config.analyse_cv.pre_screening_notice.en": {
+      "label": "Texto em inglês"
     }
   }
 }

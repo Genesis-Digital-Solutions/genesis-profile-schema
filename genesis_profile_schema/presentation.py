@@ -117,6 +117,10 @@ CONTROL_OVERRIDES: Dict[str, str] = {
     "tools.config.generate_boq.prompt_custom": MULTILINE,
     "tools.config.analyse_cv.prompt_custom": MULTILINE,
     "tools.config.analyse_cv.job_templates.requirements": MULTILINE,
+    "tools.config.analyse_cv.candidate_notice.signature": MULTILINE,
+    "tools.config.analyse_cv.candidate_notice.templates.body": MULTILINE,
+    "tools.config.analyse_cv.pre_screening_notice.pt": MULTILINE,
+    "tools.config.analyse_cv.pre_screening_notice.en": MULTILINE,
 
     # ── nome de um preset (texto livre com sugestões) ─────────────────────
     # O catálogo é `PRESETS` em core/agent/tool_playbooks.py do genai-core:

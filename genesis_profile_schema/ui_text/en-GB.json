@@ -2750,6 +2750,63 @@
       "label": "Roles in document tools",
       "help": "On = only people with «Document tools» extract invoices and generate bills of quantities. Whoever uses them today without a role stops until they get the role.",
       "note": "Protects the chat tools extract_invoice and generate_boq. Sending invoices to the queue also needs the queue role."
+    },
+    "tools.config.analyse_cv.job_templates.interview_checks": {
+      "label": "To confirm outside the CV",
+      "help": "What the job asks for but a CV does not usually show (attitudes, availability, legal conditions). Never assessed by the AI: shown to the recruiter and in the report."
+    },
+    "tools.config.analyse_cv.candidate_notice": {
+      "label": "Notice to candidates",
+      "help": "Details and templates for the email to candidates at the end of the screening. The note on the use of AI is always added at the end and cannot be edited."
+    },
+    "tools.config.analyse_cv.candidate_notice.company": {
+      "label": "Company name"
+    },
+    "tools.config.analyse_cv.candidate_notice.signature": {
+      "label": "Signature",
+      "help": "Name and/or team signing the email."
+    },
+    "tools.config.analyse_cv.candidate_notice.contact": {
+      "label": "Contact for requests",
+      "help": "Email or https:// address for candidates to request an explanation, human review or to exercise data protection rights."
+    },
+    "tools.config.analyse_cv.candidate_notice.templates": {
+      "label": "Templates per decision",
+      "help": "One template per decision and language. Without a template, the product text is used."
+    },
+    "tools.config.analyse_cv.candidate_notice.templates.decision": {
+      "label": "Decision",
+      "options": {
+        "advance": "Advance",
+        "hold": "On hold",
+        "reject": "Do not advance",
+        "none": "No decision"
+      }
+    },
+    "tools.config.analyse_cv.candidate_notice.templates.lang": {
+      "label": "Language",
+      "options": {
+        "pt": "Portuguese",
+        "en": "English"
+      }
+    },
+    "tools.config.analyse_cv.candidate_notice.templates.subject": {
+      "label": "Subject",
+      "help": "Merge fields: {nome}, {vaga}, {temas}, {empresa}, {assinatura}, {contacto}, {data}."
+    },
+    "tools.config.analyse_cv.candidate_notice.templates.body": {
+      "label": "Text",
+      "help": "Merge fields: {nome}, {vaga}, {temas}, {empresa}, {assinatura}, {contacto}, {data}. The note on the use of AI is added at the end automatically."
+    },
+    "tools.config.analyse_cv.pre_screening_notice": {
+      "label": "Notice before screening",
+      "help": "Text for the job ad or privacy policy: the application is assessed with AI support and reviewed by a person. Empty = the product text."
+    },
+    "tools.config.analyse_cv.pre_screening_notice.pt": {
+      "label": "Text in Portuguese"
+    },
+    "tools.config.analyse_cv.pre_screening_notice.en": {
+      "label": "Text in English"
     }
   }
 }
