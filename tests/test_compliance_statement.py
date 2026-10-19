@@ -21,7 +21,7 @@ from genesis_profile_schema.client_profile_schema import (
 def test_perfil_sem_o_bloco_valida_com_defaults_vazios():
     p = ClientProfileSchema.model_validate({"compliance": {"sector": "saúde"}})
     st = p.compliance.statement
-    assert st.intended_purpose == "" and st.out_of_scope_uses == []
+    assert st.intended_purpose == {} and st.out_of_scope_uses == [] and st.territory == []
     assert st.art50_4_relevance == "" and st.art5_screening.areas == {}
 
 
@@ -49,3 +49,21 @@ def test_area_do_art5_so_aceita_os_dois_resultados():
 def test_relevancia_50_4_fechada():
     with pytest.raises(ValidationError):
         ProfileComplianceStatement(art50_4_relevance="sim")
+
+
+def test_textos_sao_multilingues_e_entram_na_lista_de_traducao():
+    # `i18n_fields` nasce no mesmo bump (sessão das sugestões); sem ele, salta.
+    i18n_fields = pytest.importorskip("genesis_profile_schema.i18n_fields")
+    i18n_field_paths = i18n_fields.i18n_field_paths
+    paths = i18n_field_paths()
+    for f in ("intended_purpose", "intended_users", "affected_persons",
+              "oversight_notes", "deployment_limitations"):
+        assert f"compliance.statement.{f}" in paths, f
+    st = ProfileComplianceStatement(intended_purpose={"pt": "FAQ", "en": "FAQ"})
+    assert st.intended_purpose["en"] == "FAQ"
+
+
+def test_territorio_so_aceita_paises_da_lista():
+    assert ProfileComplianceStatement(territory=["PT", "ES", "other"]).territory == ["PT", "ES", "other"]
+    with pytest.raises(ValidationError):
+        ProfileComplianceStatement(territory=["Portugal"])

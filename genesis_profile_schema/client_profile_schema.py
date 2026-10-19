@@ -2111,6 +2111,14 @@ class ProfileComplianceDataSubjectRights(BaseModel):
 Art5AreaResult = Literal["not_identified", "identified"]
 
 
+#: Países de utilização do Statement: UE/EEE (ISO 3166-1 alfa-2) + "other".
+StatementTerritory = Literal[
+    "AT", "BE", "BG", "HR", "CY", "CZ", "DK", "EE", "FI", "FR", "DE", "GR", "HU", "IE",
+    "IT", "LV", "LT", "LU", "MT", "NL", "PL", "PT", "RO", "SK", "SI", "ES", "SE",
+    "IS", "LI", "NO", "other",
+]
+
+
 class ProfileComplianceArt5Screening(BaseModel):
     """Triagem das práticas proibidas do art. 5.º do AI Act (19 Out 2026 —
     modelo do «AI Act Alignment and Transparency Statement» do jurídico, §6).
@@ -2133,21 +2141,25 @@ class ProfileComplianceStatement(BaseModel):
     Statement» (19 Out 2026). Metadata pura — nada no data plane o lê; o
     Studio gera o documento (`compliance_statement/` do Studio). INTERNO: não
     aparece no backoffice do cliente. Todos com default vazio (nunca
-    Optional: um `null` gravado no blob não pode recusar o perfil)."""
+    Optional: um `null` gravado no blob não pode recusar o perfil).
+
+    Os textos são `I18nMap` ({"pt": …, "en": …}): o documento sai em PT e em
+    EN e cada um usa a sua língua (decisão do Bruno, 19 Out 2026)."""
     model_config = ConfigDict(extra="allow")
 
-    intended_purpose: str = ""          # §3.1 — para que serve, a quem, com que fontes
-    intended_users: str = ""            # §3.2
-    affected_persons: str = ""          # §3.3
-    territory: str = ""                 # §2.1 — território de utilização
-    out_of_scope_uses: List[str] = Field(default_factory=list)   # §3.4 — além dos três de fábrica
+    intended_purpose: I18nMap = Field(default_factory=dict)        # §3.1
+    intended_users: I18nMap = Field(default_factory=dict)          # §3.2
+    affected_persons: I18nMap = Field(default_factory=dict)        # §3.3
+    # §2.1 — países de utilização (ISO 3166-1 alfa-2 da UE/EEE, ou "other").
+    territory: List[StatementTerritory] = Field(default_factory=list)
+    out_of_scope_uses: List[I18nMap] = Field(default_factory=list)  # §3.4 — além dos três de fábrica
     # §8.5 — relevância do art. 50.º, n.º 4 (deepfakes / texto de interesse
     # público). "" = derivado pelo Studio (geração de imagem → depende do uso).
     art50_4_relevance: Literal["", "no", "yes", "depends_on_use"] = ""
-    oversight_notes: str = ""           # §9
-    deployment_limitations: str = ""    # §10
-    deployer_instructions_ref: str = "" # §10
-    dpa_ref: str = ""                   # §11 — referência do DPA deste cliente
+    oversight_notes: I18nMap = Field(default_factory=dict)         # §9
+    deployment_limitations: I18nMap = Field(default_factory=dict)  # §10
+    deployer_instructions_ref: str = ""  # §10 — referência de documento (não se traduz)
+    dpa_ref: str = ""                    # §11 — referência do DPA deste cliente
     art5_screening: ProfileComplianceArt5Screening = Field(
         default_factory=ProfileComplianceArt5Screening)
 
