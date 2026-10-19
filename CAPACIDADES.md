@@ -225,7 +225,7 @@ Nenhuma função deste módulo recusa nada: `is_known_language_code()` responde 
 a língua está no mapa, e um `False` é motivo para AVISAR, nunca para bloquear —
 `allowed` aceita línguas de fora de propósito.
 
-### 7b. Que campos são multilíngues — `i18n_fields.py` (19 Out 2026, sem tag)
+### 7b. Que campos são multilíngues — `i18n_fields.py` (19 Out 2026, v0.1.128)
 
 `i18n_field_paths()` dá os campos `{língua: texto}` (dialecto do `exposure`, `*` na chave de um mapa de
 modelos, `tools.config.<tool>` à frente dos blocos das tools). A marca é o NOME do alias no fonte
