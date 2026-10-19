@@ -85,6 +85,14 @@ from .ui_text import (
     options_of,
     text_for,
 )
+from .i18n_fields import (
+    I18N_ALIASES,
+    NOT_I18N_STR_MAPS,
+    UNMARKED_I18N_FIELDS,
+    i18n_field_paths,
+    str_map_field_paths,
+)
+from .tool_configs import tool_config_models
 
 __all__ = [
     "ClientProfileSchema",
@@ -160,4 +168,10 @@ __all__ = [
     "severity_for",
     "text_of",
     "texts",
+    "I18N_ALIASES",
+    "NOT_I18N_STR_MAPS",
+    "UNMARKED_I18N_FIELDS",
+    "i18n_field_paths",
+    "str_map_field_paths",
+    "tool_config_models",
 ]

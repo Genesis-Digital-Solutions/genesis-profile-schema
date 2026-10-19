@@ -225,6 +225,19 @@ Nenhuma função deste módulo recusa nada: `is_known_language_code()` responde 
 a língua está no mapa, e um `False` é motivo para AVISAR, nunca para bloquear —
 `allowed` aceita línguas de fora de propósito.
 
+### 7b. Que campos são multilíngues — `i18n_fields.py` (19 Out 2026, sem tag)
+
+`i18n_field_paths()` dá os campos `{língua: texto}` (dialecto do `exposure`, `*` na chave de um mapa de
+modelos, `tools.config.<tool>` à frente dos blocos das tools). A marca é o NOME do alias no fonte
+(`I18nMap`/`I18nText`/`I18nHelp`/`I18nNotice`, procurado na MRO), a mesma regra do `i18n_maps.py` do
+gaibo. Não muda nenhum tipo nem o JSON Schema (hash igual antes e depois). Regra do produto: todo o
+campo multilíngue tem a opção de o agente traduzir. Um `Dict[str, str]` novo sem alias chumba o teste
+até entrar em `NOT_I18N_STR_MAPS` (com a razão) ou usar o alias. ⚠️ Os três multilíngues de facto em
+`Union[str, Dict[str, str]]` (rótulos da extração legal e da captura, finalidade da captura) ficam em
+`UNMARKED_I18N_FIELDS`. Pôr-lhes o alias muda o gaibo (editor por língua + portão de gravação), por
+isso combina-se primeiro com a equipa do gaibo. `tool_config_models()` (`tool_configs.py`) é a cópia
+pública do `_KNOWN_TOOL_CONFIG_MODELS`. O nome privado fica: o gaibo importa-o.
+
 ---
 
 ## Camada 8 — o que o prompt base impõe: `house_rules.py` + `house_rules/<locale>.json`
