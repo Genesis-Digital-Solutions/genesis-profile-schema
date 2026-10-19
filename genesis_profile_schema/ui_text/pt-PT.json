@@ -262,6 +262,68 @@
       "label": "Encarregado de proteção de dados",
       "help": "Email ou endereço https do encarregado de proteção de dados, se existir. Opcional."
     },
+    "compliance.statement.intended_purpose": {
+      "label": "Finalidade prevista",
+      "help": "Para que serve o assistente, a quem e com que fontes. Entra na §3.1 do Statement do AI Act."
+    },
+    "compliance.statement.intended_users": {
+      "label": "Utilizadores previstos",
+      "help": "Quem usa o assistente (ex.: visitantes do site, colaboradores autenticados)."
+    },
+    "compliance.statement.affected_persons": {
+      "label": "Pessoas potencialmente afetadas",
+      "help": "Quem pode ser afetado pelo que o assistente faz, além de quem o usa."
+    },
+    "compliance.statement.territory": {
+      "label": "Território de utilização",
+      "help": "Países ou regiões onde o assistente é usado."
+    },
+    "compliance.statement.out_of_scope_uses": {
+      "label": "Usos excluídos (além dos de fábrica)",
+      "help": "Usos que o Statement declara não avaliados. Os três de fábrica (decisões sobre pessoas, triagem de candidatos, aconselhamento vinculativo) entram sempre."
+    },
+    "compliance.statement.art50_4_relevance": {
+      "label": "Art. 50.º, n.º 4 (deepfakes / texto de interesse público)",
+      "help": "Se a obrigação de divulgação do responsável pela implantação é relevante. Vazio: o Studio deriva (geração de imagem → depende do uso).",
+      "options": {
+        "": "Derivado pelo Studio",
+        "no": "Não relevante",
+        "yes": "Relevante",
+        "depends_on_use": "Depende do uso"
+      }
+    },
+    "compliance.statement.oversight_notes": {
+      "label": "Supervisão humana deste deployment",
+      "help": "Controlos humanos próprios deste cliente, além dos da plataforma."
+    },
+    "compliance.statement.deployment_limitations": {
+      "label": "Limitações específicas",
+      "help": "Limitações dos resultados próprias deste deployment."
+    },
+    "compliance.statement.deployer_instructions_ref": {
+      "label": "Instruções ao responsável pela implantação",
+      "help": "Referência das instruções de uso entregues ao cliente."
+    },
+    "compliance.statement.dpa_ref": {
+      "label": "Referência do DPA",
+      "help": "Referência do acordo de tratamento de dados (DPA) assinado com este cliente."
+    },
+    "compliance.statement.art5_screening.screened_at": {
+      "label": "Data da triagem do art. 5.º",
+      "help": "Carimbada pelo Studio quando a triagem é aceite."
+    },
+    "compliance.statement.art5_screening.reviewer": {
+      "label": "Quem fez a triagem do art. 5.º",
+      "help": "Carimbado pelo Studio com o utilizador que aceita a triagem."
+    },
+    "compliance.statement.art5_screening.areas": {
+      "label": "Áreas do art. 5.º",
+      "help": "Resultado por área das práticas proibidas: não identificada ou identificada."
+    },
+    "compliance.statement.art5_screening.notes": {
+      "label": "Notas da triagem do art. 5.º",
+      "help": "Contexto da triagem para o dossier."
+    },
     "compliance.config_variations.config_version_assessed": {
       "label": "Versão avaliada",
       "help": "Versão da configuração sobre a qual recaiu a avaliação. O Studio preenche-a ao registar."

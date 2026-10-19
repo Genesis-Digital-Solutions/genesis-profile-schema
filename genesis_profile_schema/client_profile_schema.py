@@ -2107,6 +2107,51 @@ class ProfileComplianceDataSubjectRights(BaseModel):
     dpo_contact: str = ""         # email ou URL https do encarregado de proteção de dados (opcional)
 
 
+#: Resultado da triagem de UMA área do art. 5.º (práticas proibidas).
+Art5AreaResult = Literal["not_identified", "identified"]
+
+
+class ProfileComplianceArt5Screening(BaseModel):
+    """Triagem das práticas proibidas do art. 5.º do AI Act (19 Out 2026 —
+    modelo do «AI Act Alignment and Transparency Statement» do jurídico, §6).
+
+    Sem `screened_at` e as seis áreas respondidas, o Statement trata a triagem
+    como por fazer. `screened_at`/`reviewer` são de quem aceita a triagem (o
+    Studio carimba com o MSAL) — nunca preenchidos pela IA."""
+    model_config = ConfigDict(extra="allow")
+
+    screened_at: str = Field(default="", json_schema_extra={"format": "date"})
+    reviewer: str = ""
+    # manipulation, vulnerabilities, social_scoring, biometric,
+    # emotion_recognition, other → not_identified | identified
+    areas: Dict[str, Art5AreaResult] = Field(default_factory=dict)
+    notes: str = ""
+
+
+class ProfileComplianceStatement(BaseModel):
+    """Factos do deployment para o «AI Act Alignment and Transparency
+    Statement» (19 Out 2026). Metadata pura — nada no data plane o lê; o
+    Studio gera o documento (`compliance_statement/` do Studio). INTERNO: não
+    aparece no backoffice do cliente. Todos com default vazio (nunca
+    Optional: um `null` gravado no blob não pode recusar o perfil)."""
+    model_config = ConfigDict(extra="allow")
+
+    intended_purpose: str = ""          # §3.1 — para que serve, a quem, com que fontes
+    intended_users: str = ""            # §3.2
+    affected_persons: str = ""          # §3.3
+    territory: str = ""                 # §2.1 — território de utilização
+    out_of_scope_uses: List[str] = Field(default_factory=list)   # §3.4 — além dos três de fábrica
+    # §8.5 — relevância do art. 50.º, n.º 4 (deepfakes / texto de interesse
+    # público). "" = derivado pelo Studio (geração de imagem → depende do uso).
+    art50_4_relevance: Literal["", "no", "yes", "depends_on_use"] = ""
+    oversight_notes: str = ""           # §9
+    deployment_limitations: str = ""    # §10
+    deployer_instructions_ref: str = "" # §10
+    dpa_ref: str = ""                   # §11 — referência do DPA deste cliente
+    art5_screening: ProfileComplianceArt5Screening = Field(
+        default_factory=ProfileComplianceArt5Screening)
+
+
 class ProfileComplianceConfigVariation(BaseModel):
     """
     Registo de UMA variação material de configuração do deployment
@@ -2186,6 +2231,8 @@ class ProfileCompliance(BaseModel):
     # v0.1.68: responsável pelo tratamento e canal para pedidos de titulares.
     data_subject_rights: ProfileComplianceDataSubjectRights = Field(
         default_factory=ProfileComplianceDataSubjectRights)
+    # 19 Out 2026 (próximo bump): factos do AI Act Statement por deployment.
+    statement: ProfileComplianceStatement = Field(default_factory=ProfileComplianceStatement)
 
 
 # ═════════════════════════════════════════════════════════════════════════════

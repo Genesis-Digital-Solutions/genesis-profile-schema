@@ -411,6 +411,23 @@ EXPOSURE: Dict[str, str] = {
     "compliance.data_subject_rights.controller_name": _W,
     "compliance.data_subject_rights.request_channel": _W,
     "compliance.data_subject_rights.dpo_contact": _W,
+    # 19 Out 2026 — factos do AI Act Statement por deployment. INTERNO, como
+    # as variações: é a avaliação da Genesis enquanto fornecedor (finalidade,
+    # triagem do art. 5.º, DPA); ao cliente chega o documento gerado e aprovado.
+    "compliance.statement.intended_purpose": _I,
+    "compliance.statement.intended_users": _I,
+    "compliance.statement.affected_persons": _I,
+    "compliance.statement.territory": _I,
+    "compliance.statement.out_of_scope_uses": _I,
+    "compliance.statement.art50_4_relevance": _I,
+    "compliance.statement.oversight_notes": _I,
+    "compliance.statement.deployment_limitations": _I,
+    "compliance.statement.deployer_instructions_ref": _I,
+    "compliance.statement.dpa_ref": _I,
+    "compliance.statement.art5_screening.screened_at": _I,
+    "compliance.statement.art5_screening.reviewer": _I,
+    "compliance.statement.art5_screening.areas": _I,
+    "compliance.statement.art5_screening.notes": _I,
 
     # ──────────────────────────────────────────────────────────────────────
     # Canal de voz

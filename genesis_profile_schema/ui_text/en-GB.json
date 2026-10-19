@@ -262,6 +262,68 @@
       "label": "Data protection officer",
       "help": "Email or https address of the data protection officer, if there is one. Optional."
     },
+    "compliance.statement.intended_purpose": {
+      "label": "Intended purpose",
+      "help": "What the assistant is for, for whom and with which sources. Goes into §3.1 of the AI Act Statement."
+    },
+    "compliance.statement.intended_users": {
+      "label": "Intended users",
+      "help": "Who uses the assistant (e.g. website visitors, signed-in staff)."
+    },
+    "compliance.statement.affected_persons": {
+      "label": "Persons potentially affected",
+      "help": "Who may be affected by what the assistant does, besides its users."
+    },
+    "compliance.statement.territory": {
+      "label": "Territory of use",
+      "help": "Countries or regions where the assistant is used."
+    },
+    "compliance.statement.out_of_scope_uses": {
+      "label": "Excluded uses (beyond the built-in ones)",
+      "help": "Uses the Statement declares not assessed. The three built-in ones (decisions about people, candidate screening, binding advice) are always included."
+    },
+    "compliance.statement.art50_4_relevance": {
+      "label": "Art. 50(4) (deepfakes / public-interest text)",
+      "help": "Whether the deployer's disclosure duty is relevant. Empty: the Studio derives it (image generation → depends on use).",
+      "options": {
+        "": "Derived by the Studio",
+        "no": "Not relevant",
+        "yes": "Relevant",
+        "depends_on_use": "Depends on use"
+      }
+    },
+    "compliance.statement.oversight_notes": {
+      "label": "Human oversight for this deployment",
+      "help": "This customer's own human controls, beyond the platform's."
+    },
+    "compliance.statement.deployment_limitations": {
+      "label": "Specific limitations",
+      "help": "Output limitations specific to this deployment."
+    },
+    "compliance.statement.deployer_instructions_ref": {
+      "label": "Instructions to the deployer",
+      "help": "Reference of the instructions for use given to the customer."
+    },
+    "compliance.statement.dpa_ref": {
+      "label": "DPA reference",
+      "help": "Reference of the data processing agreement (DPA) signed with this customer."
+    },
+    "compliance.statement.art5_screening.screened_at": {
+      "label": "Art. 5 screening date",
+      "help": "Stamped by the Studio when the screening is accepted."
+    },
+    "compliance.statement.art5_screening.reviewer": {
+      "label": "Art. 5 screening by",
+      "help": "Stamped by the Studio with the user who accepts the screening."
+    },
+    "compliance.statement.art5_screening.areas": {
+      "label": "Art. 5 areas",
+      "help": "Result per prohibited-practice area: not identified or identified."
+    },
+    "compliance.statement.art5_screening.notes": {
+      "label": "Art. 5 screening notes",
+      "help": "Context of the screening for the dossier."
+    },
     "compliance.config_variations.config_version_assessed": {
       "label": "Version assessed",
       "help": "Configuration version the assessment was made on. The Studio fills it in when recording."
