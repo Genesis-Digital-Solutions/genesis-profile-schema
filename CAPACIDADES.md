@@ -238,6 +238,12 @@ até entrar em `NOT_I18N_STR_MAPS` (com a razão) ou usar o alias. ⚠️ Os tr�
 isso combina-se primeiro com a equipa do gaibo. `tool_config_models()` (`tool_configs.py`) é a cópia
 pública do `_KNOWN_TOOL_CONFIG_MODELS`. O nome privado fica: o gaibo importa-o.
 
+### 7c. Tarefas do agente — `agentic.py` (20 Out 2026, v0.1.129)
+
+`ProfileAgentic` (`agentic: {enabled, budget{steps 1–200, writes 1–50, wall_clock_hours ≤ 720}}`),
+opcional na raiz e por frente; ausente ou `null` = desligado. Exposição INTERNAL (só a Genesis liga, no
+Studio). O core lê-o como dicionário em `core/agent/durable/config.py`; os tetos espelham os do core.
+
 ---
 
 ## Camada 8 — o que o prompt base impõe: `house_rules.py` + `house_rules/<locale>.json`
