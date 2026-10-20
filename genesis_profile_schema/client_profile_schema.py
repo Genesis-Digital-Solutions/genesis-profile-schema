@@ -640,6 +640,7 @@ from genesis_profile_schema.intake_schema import ProfileIntake  # noqa: E402
 from genesis_profile_schema.action_rules import ProfileActionRules  # noqa: E402
 from genesis_profile_schema.team import ProfileTeam  # noqa: E402
 from genesis_profile_schema.action_ledger import ProfileActionLedger  # noqa: E402
+from genesis_profile_schema.agentic import ProfileAgentic  # noqa: E402
 
 # Mapa key de tools.config → model tipado. Tools fora deste mapa passam sem
 # validação estrutural (estrutura aberta, como sempre).
@@ -2884,6 +2885,9 @@ class ClientProfileSchema(BaseModel):
     # conta; None = desligado (num cliente de alto risco o core regista sempre).
     # Regra única em `action_ledger.ledger_policy`.
     actionLedger: Optional[ProfileActionLedger] = None
+    # Core agêntico (A1, 20 Out 2026): tarefas duráveis — a automação da fila
+    # continua depois da aprovação. None/null = desligado. Lido por frente.
+    agentic: Optional[ProfileAgentic] = None
     # Calendário de negócio (v0.1.77) — dias úteis dos prazos das filas.
     calendar: Optional[ProfileCalendar] = None
     # Questionários regulados com metodologia determinística (v0.1.79, épico

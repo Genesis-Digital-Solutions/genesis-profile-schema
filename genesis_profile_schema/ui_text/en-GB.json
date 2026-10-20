@@ -650,6 +650,22 @@
       "label": "Keep the log (days)",
       "help": "Minimum 180 (6 months, AI Act). For a high-risk client the high-risk log retention applies."
     },
+    "agentic.enabled": {
+      "label": "Agent tasks (continue after approval)",
+      "help": "When a queue automation waits for an approval, it carries on by itself after the decision: it runs the right step (success or error) and the following steps, once. Rejected or expired, it stops. Off: as before."
+    },
+    "agentic.budget.steps": {
+      "label": "Maximum steps per task",
+      "help": "Ceiling on each task's steps (1 to 200). Empty: 12. A queue automation never goes below the steps it defines itself."
+    },
+    "agentic.budget.writes": {
+      "label": "Maximum actions per task",
+      "help": "Ceiling on calls that change the client's system (1 to 50). Empty: 3, never below the calls the automation defines."
+    },
+    "agentic.budget.wall_clock_hours": {
+      "label": "Task deadline (hours)",
+      "help": "Counted from when the task is created, including time waiting for people (up to 720 h). Empty: 720 h."
+    },
     "access.allowedRoles": {
       "label": "App roles",
       "help": "Only people with one of these roles in the token get in. Recommended.",

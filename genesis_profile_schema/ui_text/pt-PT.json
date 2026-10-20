@@ -650,6 +650,22 @@
       "label": "Guardar o registo (dias)",
       "help": "Mínimo 180 (6 meses, AI Act). Num cliente de alto risco vale a retenção dos registos de alto risco."
     },
+    "agentic.enabled": {
+      "label": "Tarefas do agente (continuar depois da aprovação)",
+      "help": "Quando uma automação da fila fica à espera de uma aprovação, continua sozinha depois da decisão: corre o passo certo (sucesso ou erro) e os passos seguintes, uma vez. Rejeitada ou expirada, para. Desligado: como antes."
+    },
+    "agentic.budget.steps": {
+      "label": "Máximo de passos por tarefa",
+      "help": "Teto de passos de cada tarefa (1 a 200). Vazio: 12. A automação de uma fila nunca fica abaixo dos passos que ela própria define."
+    },
+    "agentic.budget.writes": {
+      "label": "Máximo de ações por tarefa",
+      "help": "Teto de chamadas com efeito no sistema do cliente (1 a 50). Vazio: 3, nunca abaixo das chamadas que a automação define."
+    },
+    "agentic.budget.wall_clock_hours": {
+      "label": "Prazo máximo da tarefa (horas)",
+      "help": "Conta desde que a tarefa nasce, incluindo o tempo à espera de pessoas (até 720 h). Vazio: 720 h."
+    },
     "access.allowedRoles": {
       "label": "Papéis de aplicação (App roles)",
       "help": "Só entra quem tiver um destes papéis no token. Recomendado.",
