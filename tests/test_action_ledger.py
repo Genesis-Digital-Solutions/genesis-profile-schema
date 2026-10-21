@@ -98,3 +98,11 @@ def test_codigo_do_resultado_nunca_e_a_mensagem():
     assert result_code("timeout") == "timeout"
     assert result_code("Cliente 'Ana Silva' NIF 123 não existe") == "error"
     assert result_code("") == ""
+
+
+def test_evento_checked_da_releitura_do_sistema():
+    """v0.1.131 (A2 do core agêntico): a releitura depois de uma escrita."""
+    from genesis_profile_schema.action_ledger import EVENTS, result_code
+    assert "checked" in EVENTS
+    for code in ("verified", "unverified", "contradicted"):
+        assert result_code(code) == code

@@ -95,8 +95,13 @@ def ledger_policy(profile: Mapping[str, Any]) -> Dict[str, Any]:
 #: Os eventos da vida de uma ação. `started` (v0.1.116): escrito ANTES de
 #: executar num cliente de alto risco — se não ficar escrito, a ação não corre
 #: (a falha fechada prova-se por uma escrita, não por o contentor existir).
+#: `checked` (v0.1.131, A2 do core agêntico): depois de uma escrita executada,
+#: o core RELEU o sistema — `result.code` = `verified` | `unverified` |
+#: `contradicted` (`ok` False só numa contradição: o que se escreveu não
+#: aparece; a escrita nunca se repete). O motivo e a referência vão para
+#: `detail` (apagável); a cadeia só leva o código.
 EVENTS = ("proposed", "confirmed", "cancelled", "blocked_by_rule", "sent_for_approval", "approved",
-          "rejected", "expired", "started", "executed", "failed")
+          "rejected", "expired", "started", "executed", "failed", "checked")
 
 #: Os campos que entram no hash (lista FECHADA: um campo novo não muda a conta
 #: das entradas antigas). NADA pessoal entra em claro: os valores (`params`) e
