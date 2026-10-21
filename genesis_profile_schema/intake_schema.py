@@ -70,6 +70,8 @@ __all__ = [
     "IntakeReviewPolicy",
     "IntakeRetention",
     "IntakeDefinition",
+    "IntakeFund",
+    "MAX_FUNDS",
     "ProfileIntake",
 ]
 
@@ -825,6 +827,24 @@ class IntakeDocumentTemplate(BaseModel):
         return self
 
 
+# ─── Fundos a escolher por processo (próximo bump; Quadrantis 21 Out 2026) ──
+# «O campo OIC/Fund deverá ser dinâmico e corresponder à designação legal exata
+# do OIC objeto da subscrição em cada processo»: a definição tem a LISTA e quem
+# cria o processo escolhe um (fica no processo; os documentos usam-no). Sem
+# lista, vale o `fund` único, como antes. Operação: fora da impressão da
+# metodologia (como `fund`).
+MAX_FUNDS = 50
+
+
+class IntakeFund(BaseModel):
+    """Um fundo/OIC que um processo pode ter: a chave (estável, vai no processo)
+    e a designação legal em cada língua do questionário."""
+    model_config = _CLOSED
+
+    key: Key
+    name: I18nText
+
+
 class IntakeDefinition(BaseModel):
     """Uma definição completa (um questionário + a sua metodologia). Uma por
     veículo/processo: a chave no mapa `intake.definitions` é o seu id."""
@@ -844,6 +864,8 @@ class IntakeDefinition(BaseModel):
     communications: IntakeCommunications = Field(default_factory=IntakeCommunications)
     # Fundo / OIC a que o questionário se aplica (v0.1.85; Anexos III/IV «OIC/Fund»).
     fund: I18nHelp = Field(default_factory=dict)
+    # Lista de fundos a escolher em cada processo (próximo bump); vazia = o `fund` acima.
+    funds: List[IntakeFund] = Field(default_factory=list, max_length=MAX_FUNDS)
     review: IntakeReviewPolicy = Field(default_factory=IntakeReviewPolicy)
     # Moldes dos documentos gerados (v0.1.89, B7).
     documents: List[IntakeDocumentTemplate] = Field(default_factory=list, max_length=MAX_DOCUMENTS)
@@ -855,6 +877,15 @@ class IntakeDefinition(BaseModel):
     @model_validator(mode="after")
     def _referencias(self) -> "IntakeDefinition":
         _Checker(self).run()
+        # Fundos: chaves únicas e a designação em todas as línguas do questionário.
+        seen_funds = set()
+        for f in self.funds:
+            if f.key in seen_funds:
+                raise ValueError(f"funds: chave repetida '{f.key}'")
+            seen_funds.add(f.key)
+            missing = [lang for lang in self.languages if not (f.name.get(lang) or "").strip()]
+            if missing:
+                raise ValueError(f"funds['{f.key}']: designação em falta em {missing}")
         # Nova avaliação (v0.1.90): as perguntas que são o TESTE (as que uma
         # pontuação conta como certas/erradas — `count_matches`) nunca levam a
         # resposta anterior proposta — responde-se de novo.
