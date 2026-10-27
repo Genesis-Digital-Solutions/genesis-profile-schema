@@ -106,3 +106,10 @@ def test_evento_checked_da_releitura_do_sistema():
     assert "checked" in EVENTS
     for code in ("verified", "unverified", "contradicted"):
         assert result_code(code) == code
+
+
+def test_evento_withdrawn_do_pedido_retirado():
+    """v0.1.132: o pedido de aprovação retirado por quem pediu (ou pelo operador)."""
+    from genesis_profile_schema.action_ledger import EVENTS
+    assert "withdrawn" in EVENTS
+    assert EVENTS.index("checked") < EVENTS.index("withdrawn")   # acrescentado no fim

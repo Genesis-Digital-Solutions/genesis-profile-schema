@@ -185,3 +185,40 @@ def test_aprovar_num_limite_por_periodo_pede_fila():
                                                         "period_limits": [{"period": "day", "max": 3,
                                                                            "over": "approve"}]}]}}
     assert APPROVE_WITHOUT_QUEUE in {p["code"] for p in action_rules_problems(prof)}
+
+
+def test_retirar_template_e_filas_antigas():
+    """v0.1.132: «retirado» — o template novo tem-no; uma fila criada antes
+    ganha-o numa CÓPIA ao ler; uma fila editada com outra forma não se mexe."""
+    import copy
+    from genesis_profile_schema import action_rules as ar
+    t = ar.approval_queue_template()
+    assert ar.approval_queue_shape_ok(t) and ar.approval_queue_can_withdraw(t)
+    # cópias: mexer num template não muda o seguinte
+    t["actions"][-1]["from"].append("approved")
+    assert ar.approval_queue_template()["actions"][-1]["from"] == ["pending"]
+    # fila antiga (antes da v0.1.132)
+    old = ar.approval_queue_template()
+    old["states"] = [s for s in old["states"] if s["id"] != "withdrawn"]
+    old["actions"] = [a for a in old["actions"] if a["id"] != "withdraw"]
+    snap = copy.deepcopy(old)
+    assert ar.approval_queue_shape_ok(old) and not ar.approval_queue_can_withdraw(old)
+    up = ar.approval_queue_with_withdraw(old)
+    assert ar.approval_queue_can_withdraw(up) and ar.approval_queue_shape_ok(up)
+    assert old == snap                                   # o perfil lido não muda
+    assert ar.approval_queue_with_withdraw(up) == up      # idempotente
+    # uma fila que não é de aprovação volta igual
+    other = {"states": [{"id": "novo", "kind": "open"}], "actions": []}
+    assert ar.approval_queue_with_withdraw(other) == other
+    # «retirar» editado para outro destino: não se acrescenta nem se aceita
+    bad = ar.approval_queue_template()
+    for a in bad["actions"]:
+        if a["id"] == "withdraw":
+            a["to"] = "approved"
+    assert not ar.approval_queue_can_withdraw(ar.approval_queue_with_withdraw(bad))
+    # «retirar» só a partir de pendente
+    bad2 = ar.approval_queue_template()
+    for a in bad2["actions"]:
+        if a["id"] == "withdraw":
+            a["from"] = ["approved"]
+    assert not ar.approval_queue_can_withdraw(bad2)

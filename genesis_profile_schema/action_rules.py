@@ -77,6 +77,14 @@ APPROVAL_EXPIRED = "expired"
 APPROVAL_ACTION_APPROVE = "approve"
 APPROVAL_ACTION_REJECT = "reject"
 APPROVAL_ACTION_EXPIRE = "expire"
+# v0.1.132 (27 Out 2026): quem PEDIU retira o pedido ainda pendente (o «Parar»
+# da lista de passos, ou o botão na conversa), ou o operador ao parar a tarefa
+# no Studio. Só a partir de `pending`: um pedido já aprovado (ou a executar)
+# nunca se retira. Os aprovadores não retiram — recusam. Uma fila criada antes
+# desta versão não tem o estado: `approval_queue_with_withdraw` acrescenta-o
+# (o core fá-lo ao ler a fila; o perfil não precisa de ser regravado).
+APPROVAL_WITHDRAWN = "withdrawn"
+APPROVAL_ACTION_WITHDRAW = "withdraw"
 
 # Problemas (códigos estáveis — o Studio e o backoffice traduzem-nos).
 ERROR = "error"
@@ -238,6 +246,11 @@ def _period_limit_problems(pl: Any) -> List[Tuple[str, str]]:
     return out
 
 
+_WITHDRAWN_STATE: Dict[str, Any] = {"id": APPROVAL_WITHDRAWN, "kind": "final", "label": "Retirado"}
+_WITHDRAW_ACTION: Dict[str, Any] = {"id": APPROVAL_ACTION_WITHDRAW, "from": [APPROVAL_PENDING],
+                                    "to": APPROVAL_WITHDRAWN, "label": "Retirar"}
+
+
 def approval_queue_template() -> Dict[str, Any]:
     """A fila de aprovação que o Studio cria (estados e ações que o core
     reconhece; os campos são só de leitura — os parâmetros de uma ação a
@@ -252,6 +265,7 @@ def approval_queue_template() -> Dict[str, Any]:
             {"id": APPROVAL_APPROVED, "kind": "final", "label": "Aprovado"},
             {"id": APPROVAL_REJECTED, "kind": "final", "label": "Recusado"},
             {"id": APPROVAL_EXPIRED, "kind": "final", "label": "Expirado"},
+            dict(_WITHDRAWN_STATE),
         ],
         "actions": [
             {"id": APPROVAL_ACTION_APPROVE, "from": [APPROVAL_PENDING], "to": APPROVAL_APPROVED,
@@ -260,6 +274,7 @@ def approval_queue_template() -> Dict[str, Any]:
              "label": "Recusar", "note_required": True},
             {"id": APPROVAL_ACTION_EXPIRE, "from": [APPROVAL_PENDING], "to": APPROVAL_EXPIRED,
              "label": "Expirar"},
+            dict(_WITHDRAW_ACTION, **{"from": list(_WITHDRAW_ACTION["from"])}),
         ],
         "businessKey": {"prefix": "APR"},
         "fields": [
@@ -272,6 +287,40 @@ def approval_queue_template() -> Dict[str, Any]:
             field("prazo", "Prazo", "Deadline", 7, "datetime"),
         ],
     }
+
+
+def approval_queue_with_withdraw(queue: Mapping[str, Any]) -> Dict[str, Any]:
+    """A fila com o estado «retirado» e a ação «retirar» (v0.1.132). Uma fila
+    criada antes não os tem: acrescentam-se a uma CÓPIA, sem tocar no resto.
+    Só numa fila de aprovação (`approval_queue_shape_ok`); qualquer outra fila
+    volta igual. Se a fila já tem um estado ou uma ação com estes ids mas com
+    outra forma (editada à mão), não se mexe — o core recusa retirar nela."""
+    out = dict(queue or {})
+    if not approval_queue_shape_ok(out):
+        return out
+    states = [s for s in (out.get("states") or []) if isinstance(s, Mapping)]
+    actions = [a for a in (out.get("actions") or []) if isinstance(a, Mapping)]
+    if not any(str(s.get("id")) == APPROVAL_WITHDRAWN for s in states):
+        out["states"] = list(out.get("states") or []) + [dict(_WITHDRAWN_STATE)]
+    if not any(str(a.get("id")) == APPROVAL_ACTION_WITHDRAW for a in actions):
+        out["actions"] = list(out.get("actions") or []) + [
+            dict(_WITHDRAW_ACTION, **{"from": list(_WITHDRAW_ACTION["from"])})]
+    return out
+
+
+def approval_queue_can_withdraw(queue: Mapping[str, Any]) -> bool:
+    """A fila (já com `approval_queue_with_withdraw`) leva um pedido pendente
+    a «retirado» pela ação «retirar»?"""
+    try:
+        states = {str(s.get("id")): str(s.get("kind") or "open")
+                  for s in (queue.get("states") or []) if isinstance(s, Mapping)}
+        a = next((a for a in (queue.get("actions") or [])
+                  if isinstance(a, Mapping) and str(a.get("id")) == APPROVAL_ACTION_WITHDRAW), None)
+        return (states.get(APPROVAL_WITHDRAWN) == "final" and a is not None
+                and str(a.get("to") or "") == APPROVAL_WITHDRAWN
+                and APPROVAL_PENDING in [str(f) for f in (a.get("from") or [])])
+    except Exception:  # noqa: BLE001
+        return False
 
 
 def approval_queue_shape_ok(queue: Mapping[str, Any]) -> bool:

@@ -100,8 +100,12 @@ def ledger_policy(profile: Mapping[str, Any]) -> Dict[str, Any]:
 #: `contradicted` (`ok` False só numa contradição: o que se escreveu não
 #: aparece; a escrita nunca se repete). O motivo e a referência vão para
 #: `detail` (apagável); a cadeia só leva o código.
+#: `withdrawn` (v0.1.132): o pedido de aprovação, ainda pendente, foi RETIRADO
+#: — por quem o pediu (`approver` vazio) ou por um operador ao parar a tarefa
+#: no Studio (`approver` = «studio», nunca o email do operador); `actor` continua a ser
+#: quem pediu, como nos outros eventos da aprovação. Nada corre depois dele.
 EVENTS = ("proposed", "confirmed", "cancelled", "blocked_by_rule", "sent_for_approval", "approved",
-          "rejected", "expired", "started", "executed", "failed", "checked")
+          "rejected", "expired", "started", "executed", "failed", "checked", "withdrawn")
 
 #: Os campos que entram no hash (lista FECHADA: um campo novo não muda a conta
 #: das entradas antigas). NADA pessoal entra em claro: os valores (`params`) e
