@@ -633,6 +633,11 @@ EXPOSURE: Dict[str, str] = {
     "agentic.budget.steps": _I,
     "agentic.budget.writes": _I,
     "agentic.budget.wall_clock_hours": _I,
+    # v0.1.132 (A3): teto de custo, lista de passos visível no chat e (A2) a
+    # releitura depois das escritas — também só a Genesis.
+    "agentic.budget.cost_eur": _I,
+    "agentic.plan_visible": _I,
+    "agentic.verify": _I,
     "access.allowedGroups": _I,
     "access.allowedEmailDomains": _I,
     "access.allowedProviders": _I,

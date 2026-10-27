@@ -652,11 +652,11 @@
     },
     "agentic.enabled": {
       "label": "Agent tasks (continue after approval)",
-      "help": "When a queue automation waits for an approval, it carries on by itself after the decision: it runs the right step (success or error) and the following steps, once. Rejected or expired, it stops. Off: as before."
+      "help": "When a queue automation waits for an approval, it carries on by itself after the decision: it runs the right step (success or error) and the following steps, once. Rejected or expired, it stops. In the chat, a request with several steps gets a step list and ceilings on calls, actions, cost and time. Off: as before."
     },
     "agentic.budget.steps": {
       "label": "Maximum steps per task",
-      "help": "Ceiling on each task's steps (1 to 200). Empty: 12. A queue automation never goes below the steps it defines itself."
+      "help": "Ceiling on each task's steps (1 to 200; in the chat, the tool calls). Empty: 20. A queue automation never goes below the steps it defines itself."
     },
     "agentic.budget.writes": {
       "label": "Maximum actions per task",
@@ -665,6 +665,18 @@
     "agentic.budget.wall_clock_hours": {
       "label": "Task deadline (hours)",
       "help": "Counted from when the task is created, including time waiting for people (up to 720 h). Empty: 720 h."
+    },
+    "agentic.budget.cost_eur": {
+      "label": "Maximum cost per task (€)",
+      "help": "Ceiling on each task's model cost (up to €50). Empty: €0.50. On reaching it, the task stops and the assistant says what was done."
+    },
+    "agentic.plan_visible": {
+      "label": "Show the step list in the chat",
+      "help": "On a request with several steps, the assistant shows the list of what it will do and ticks each step as it goes; whoever asked can stop it. Off: the assistant still uses the list and the ceilings, but the person only sees the notice when the task stops."
+    },
+    "agentic.verify": {
+      "label": "Confirm in the system after each action",
+      "help": "After each action in a client system, the assistant reads the system again to confirm it was done; what does not confirm is flagged and never repeated. Off: no re-read."
     },
     "access.allowedRoles": {
       "label": "App roles",

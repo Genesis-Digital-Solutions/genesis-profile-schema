@@ -652,11 +652,11 @@
     },
     "agentic.enabled": {
       "label": "Tarefas do agente (continuar depois da aprovação)",
-      "help": "Quando uma automação da fila fica à espera de uma aprovação, continua sozinha depois da decisão: corre o passo certo (sucesso ou erro) e os passos seguintes, uma vez. Rejeitada ou expirada, para. Desligado: como antes."
+      "help": "Quando uma automação da fila fica à espera de uma aprovação, continua sozinha depois da decisão: corre o passo certo (sucesso ou erro) e os passos seguintes, uma vez. Rejeitada ou expirada, para. No chat, um pedido com vários passos ganha uma lista de passos e tetos de chamadas, ações, custo e tempo. Desligado: como antes."
     },
     "agentic.budget.steps": {
       "label": "Máximo de passos por tarefa",
-      "help": "Teto de passos de cada tarefa (1 a 200). Vazio: 12. A automação de uma fila nunca fica abaixo dos passos que ela própria define."
+      "help": "Teto de passos de cada tarefa (1 a 200; no chat, as chamadas a ferramentas). Vazio: 20. A automação de uma fila nunca fica abaixo dos passos que ela própria define."
     },
     "agentic.budget.writes": {
       "label": "Máximo de ações por tarefa",
@@ -665,6 +665,18 @@
     "agentic.budget.wall_clock_hours": {
       "label": "Prazo máximo da tarefa (horas)",
       "help": "Conta desde que a tarefa nasce, incluindo o tempo à espera de pessoas (até 720 h). Vazio: 720 h."
+    },
+    "agentic.budget.cost_eur": {
+      "label": "Custo máximo por tarefa (€)",
+      "help": "Teto do custo de modelo de cada tarefa (até 50 €). Vazio: 0,50 €. Ao chegar ao teto, a tarefa para e o assistente diz o que ficou feito."
+    },
+    "agentic.plan_visible": {
+      "label": "Mostrar a lista de passos no chat",
+      "help": "Num pedido com vários passos, o assistente mostra a lista do que vai fazer e marca cada passo à medida que o cumpre; quem pediu pode parar. Desligado: o assistente usa a lista e os tetos na mesma, mas a pessoa só vê o aviso quando a tarefa para."
+    },
+    "agentic.verify": {
+      "label": "Confirmar no sistema depois de cada ação",
+      "help": "Depois de cada ação num sistema do cliente, o assistente volta a ler o sistema para confirmar que ficou feita; o que não se confirma fica marcado e nunca se repete. Desligado: não relê."
     },
     "access.allowedRoles": {
       "label": "Papéis de aplicação (App roles)",

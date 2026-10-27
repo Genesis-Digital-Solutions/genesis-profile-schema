@@ -243,6 +243,9 @@ pública do `_KNOWN_TOOL_CONFIG_MODELS`. O nome privado fica: o gaibo importa-o.
 `ProfileAgentic` (`agentic: {enabled, budget{steps 1–200, writes 1–50, wall_clock_hours ≤ 720}}`),
 opcional na raiz e por frente; ausente ou `null` = desligado. Exposição INTERNAL (só a Genesis liga, no
 Studio). O core lê-o como dicionário em `core/agent/durable/config.py`; os tetos espelham os do core.
+**v0.1.132 (A3, 27 Out 2026):** `budget.cost_eur` (0–50 €], `plan_visible` (lista de passos no chat;
+ausente = sim) e `verify` (A2: reler depois de cada escrita; ausente = sim) — todos INTERNAL, com label
+e ajuda em pt-PT/en-GB. Omissões do core: 20 passos, 3 escritas, 720 h, 0,50 €.
 
 ---
 

@@ -29,3 +29,17 @@ def test_profile_roundtrip_keeps_block():
     p = ClientProfileSchema.model_validate({"agentic": {"enabled": True, "budget": {"steps": 12}}})
     dumped = p.model_dump()
     assert dumped["agentic"]["enabled"] is True and dumped["agentic"]["budget"]["steps"] == 12
+
+
+def test_v0_1_132_cost_plan_visible_and_verify():
+    """A3 (27 Out 2026): teto de custo, lista de passos no chat e (A2) a releitura."""
+    import pytest
+    from pydantic import ValidationError
+    p = ClientProfileSchema.model_validate({"agentic": {"enabled": True, "plan_visible": False, "verify": False,
+                                                        "budget": {"cost_eur": 0.5}}})
+    assert p.agentic.plan_visible is False and p.agentic.verify is False
+    assert p.agentic.budget.cost_eur == 0.5
+    assert ClientProfileSchema.model_validate({"agentic": {"enabled": True}}).agentic.plan_visible is None
+    for bad in (0, -1, 51):
+        with pytest.raises(ValidationError):
+            ClientProfileSchema.model_validate({"agentic": {"budget": {"cost_eur": bad}}})
