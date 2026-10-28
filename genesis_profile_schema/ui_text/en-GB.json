@@ -2453,7 +2453,8 @@
       "label": "Scheme for new cases",
       "help": "The use case: which documents exist, what counts as a requirement and which facts are read from the notice. Each case keeps its own from creation — changing this does not touch existing cases. «concursos@2026.10» pins the version.",
       "options": {
-        "concursos": "Public tenders (programme, specifications, clarifications)"
+        "concursos": "Public tenders (programme, specifications, clarifications)",
+        "fem": "Applications for support (Excel form + documents)"
       }
     },
     "tools.config.verify_documents.parallelism": {
@@ -2463,6 +2464,30 @@
     "tools.config.verify_documents.deployment": {
       "label": "Verification model",
       "help": "Empty uses the assistant's model."
+    },
+    "tools.config.verify_documents.labels": {
+      "label": "On-screen names",
+      "help": "What the module is called for the people using this variant. Empty = the scheme's neutral names."
+    },
+    "tools.config.verify_documents.labels.title": {
+      "label": "Module title",
+      "help": "E.g. «Application review». Empty = the scheme's."
+    },
+    "tools.config.verify_documents.labels.subtitle": {
+      "label": "Line under the title",
+      "help": "One sentence on what the module does. Empty = the scheme's."
+    },
+    "tools.config.verify_documents.labels.case_singular": {
+      "label": "Case name (singular)",
+      "help": "Lower case, e.g. «application», «file», «request». The screen capitalises it where needed."
+    },
+    "tools.config.verify_documents.labels.case_plural": {
+      "label": "Case name (plural)",
+      "help": "Lower case, e.g. «applications»."
+    },
+    "tools.config.verify_documents.labels.name_example": {
+      "label": "Example case name",
+      "help": "The example in the name field when creating a case, without «e.g.». Never a real person's data."
     },
     "tools.config.extract_legal_terms": {
       "label": "Legal term extraction",

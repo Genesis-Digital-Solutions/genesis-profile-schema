@@ -91,3 +91,33 @@ def test_texto_nas_duas_linguas_e_sugestoes(locale):
         if path.startswith(P + "."):
             assert ui.label_of(path, locale), f"{path} sem label em {locale}"
     assert "concursos" in ui.options_of(f"{P}.scheme", locale)
+
+# ── nomes no ecrã (28 Out 2026) ──────────────────────────────────────────────
+
+L = f"{P}.labels"
+
+
+def test_nomes_opcionais_e_null_do_blob_valem_ausente():
+    assert ProfileToolDocVerificationConfig().labels is None
+    assert ProfileToolDocVerificationConfig.model_validate({"labels": None}).labels is None
+    c = ProfileToolDocVerificationConfig.model_validate({"labels": {"case_singular": {"pt": "candidatura", "en": "application"}}})
+    assert c.labels.case_singular == {"pt": "candidatura", "en": "application"} and c.labels.title == {}
+
+
+def test_nomes_curtos_linguas_validas_e_sem_campos_a_mais():
+    for mau in ({"title": {"pt": "x" * 201}}, {"title": {"PT!": "x"}}, {"titulo": {"pt": "x"}},
+                {"case_plural": "candidaturas"}):
+        with pytest.raises(ValidationError):
+            ProfileToolDocVerificationConfig.model_validate({"labels": mau})
+
+
+def test_nomes_sao_multilingues_internos_e_com_texto():
+    from genesis_profile_schema.i18n_fields import i18n_field_paths
+    campos = ("title", "subtitle", "case_singular", "case_plural", "name_example")
+    assert {f"{L}.{c}" for c in campos} <= i18n_field_paths()
+    for c in campos:
+        assert exp.exposure_of(f"{L}.{c}") == exp.INTERNAL, c
+        for locale in ui.LOCALES:
+            assert ui.label_of(f"{L}.{c}", locale), (c, locale)
+    for locale in ui.LOCALES:
+        assert "fem" in ui.options_of(f"{P}.scheme", locale)

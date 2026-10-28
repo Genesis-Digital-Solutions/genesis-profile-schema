@@ -21,9 +21,42 @@ exposição não os abre ao cliente.
 
 from __future__ import annotations
 
-from pydantic import BaseModel, ConfigDict, Field
+from typing import Annotated, Dict, Optional
 
-__all__ = ["ProfileToolDocVerificationConfig"]
+from pydantic import AfterValidator, BaseModel, ConfigDict, Field
+
+from .field_definition import I18nHelp
+
+__all__ = ["DocVerificationLabels", "ProfileToolDocVerificationConfig", "MAX_LABEL_TEXT"]
+
+#: Um nome de ecrã (título, nome do caso, exemplo): curto. A frase do subtítulo cabe nisto também.
+MAX_LABEL_TEXT = 200
+
+
+def _short(value: Dict[str, str]) -> Dict[str, str]:
+    for lang, text in value.items():
+        if len(text) > MAX_LABEL_TEXT:
+            raise ValueError(f"texto em {lang!r} com mais de {MAX_LABEL_TEXT} caracteres")
+    return value
+
+
+class DocVerificationLabels(BaseModel):
+    """Os nomes do módulo no ecrã desta variante (28 Out 2026) — {língua: texto}, todos opcionais.
+
+    Vazio (ou a língua em falta) = o texto neutro do ESQUEMA (`engine/schemes.py` do core, `display`), que
+    nunca nomeia um cliente. Serve para um cliente chamar ao caso «candidatura», «processo», «pedido»…
+    - title: o título do módulo («Análise de candidaturas»);
+    - subtitle: a frase por baixo do título;
+    - case_singular / case_plural: o nome do caso («candidatura» / «candidaturas»), em minúsculas — o
+      ecrã põe a maiúscula onde precisa («Nova candidatura», «Candidaturas»);
+    - name_example: o exemplo do campo do nome ao criar um caso (sem o «ex.:»)."""
+    model_config = ConfigDict(extra="forbid")
+
+    title: Annotated[I18nHelp, AfterValidator(_short)] = Field(default_factory=dict)
+    subtitle: Annotated[I18nHelp, AfterValidator(_short)] = Field(default_factory=dict)
+    case_singular: Annotated[I18nHelp, AfterValidator(_short)] = Field(default_factory=dict)
+    case_plural: Annotated[I18nHelp, AfterValidator(_short)] = Field(default_factory=dict)
+    name_example: Annotated[I18nHelp, AfterValidator(_short)] = Field(default_factory=dict)
 
 
 class ProfileToolDocVerificationConfig(BaseModel):
@@ -38,7 +71,8 @@ class ProfileToolDocVerificationConfig(BaseModel):
     - parallelism: lotes de cada peça lidos em paralelo pelo modelo. Medido a 8 Out
       2026: 226 páginas em 20 min com 1, 7,8 min com 4. Limitado pela quota de
       tokens por minuto do modelo do cliente.
-    - deployment: vazio = o modelo do agente do container (não segue a variante)."""
+    - deployment: vazio = o modelo do agente do container (não segue a variante).
+    - labels: os nomes do módulo no ecrã desta variante (vazio = os do esquema)."""
     model_config = ConfigDict(extra="allow")
 
     # A mesma gramática que o core aceita ao criar um caso (`create_case`). Texto
@@ -50,3 +84,6 @@ class ProfileToolDocVerificationConfig(BaseModel):
     scheme: str = Field(default="concursos", pattern=r"^[a-z0-9][a-z0-9_.@-]{0,63}$")
     parallelism: int = Field(default=4, ge=1, le=8)
     deployment: str = Field(default="", max_length=128)
+    # Os nomes do módulo no ecrã (28 Out 2026). `None` (o que o blob gravado traz quando nunca se mexeu) =
+    # os textos neutros do esquema.
+    labels: Optional[DocVerificationLabels] = None
