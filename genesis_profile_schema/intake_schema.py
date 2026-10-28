@@ -423,17 +423,28 @@ class IntakeFxPolicy(BaseModel):
     (ex.: AED 3.6725), um parâmetro que a Compliance aprova e que, por ser da
     metodologia, obriga a subir a versão quando muda. Sem taxa, o montante
     fica POR DETERMINAR e o processo vai a uma pessoa — nunca se adivinha.
-    Sem este bloco não há câmbio (o comportamento até à v0.1.82)."""
+    Sem este bloco não há câmbio (o comportamento até à v0.1.82).
+    `via_usd_sources` (v0.1.133; Quadrantis 27 Out 2026: «devendo ficar sempre
+    registadas a taxa aplicada, a respetiva fonte oficial e a data de
+    referência»): a fonte oficial de cada paridade (ex.: «Banco Central do
+    Qatar — paridade fixa desde 2001»), que vai para a fotografia do processo
+    com a taxa. Só moedas de `via_usd`."""
     model_config = _CLOSED
 
     source: Literal["ecb"] = "ecb"
     via_usd: Dict[Annotated[str, Field(pattern=_CURRENCY_RE)], FxRate] = Field(
+        default_factory=dict, max_length=20)
+    via_usd_sources: Dict[Annotated[str, Field(pattern=_CURRENCY_RE)],
+                          Annotated[str, Field(min_length=1, max_length=200)]] = Field(
         default_factory=dict, max_length=20)
 
     @model_validator(mode="after")
     def _via_usd_sem_usd(self) -> "IntakeFxPolicy":
         if "USD" in self.via_usd:
             raise ValueError("via_usd: o USD não se converte através de si próprio")
+        extra = sorted(set(self.via_usd_sources) - set(self.via_usd))
+        if extra:
+            raise ValueError(f"via_usd_sources: moedas sem paridade em via_usd {extra}")
         return self
 
 
@@ -705,11 +716,16 @@ class IntakeRetention(BaseModel):
     durante o prazo os documentos guardados ficam imutáveis (WORM).
     Processos nunca avaliados (cancelados, ou expirados sem submissão)
     apagam-se `unevaluated_days` depois. `years` vazio = nada se apaga
-    sozinho (como até aqui). Só operação: fora do hash da metodologia."""
+    sozinho (como até aqui). Só operação: fora do hash da metodologia.
+    `unsubmitted_from` (v0.1.133; Quadrantis 27 Out 2026: «30 dias a partir
+    da data de envio do convite»): de onde contam os dias de um processo
+    nunca submetido e não cancelado — `link_end` (o fim do link, como até
+    aqui) ou `invite` (o envio do convite; nunca antes de o link expirar)."""
     model_config = _CLOSED
 
     years: Optional[int] = Field(default=None, ge=1, le=30)
     unevaluated_days: int = Field(default=90, ge=7, le=3650)
+    unsubmitted_from: Literal["link_end", "invite"] = "link_end"
 
 
 # ─────────────────────────────────────────────────────────────────────────────
@@ -838,11 +854,14 @@ MAX_FUNDS = 50
 
 class IntakeFund(BaseModel):
     """Um fundo/OIC que um processo pode ter: a chave (estável, vai no processo)
-    e a designação legal em cada língua do questionário."""
+    e a designação legal em cada língua do questionário. `active` (v0.1.133):
+    em período de subscrição — só os ativos se escolhem ao criar um processo;
+    um inativo fica na lista (e nos processos que já o têm) até voltar a abrir."""
     model_config = _CLOSED
 
     key: Key
     name: I18nText
+    active: bool = True
 
 
 class IntakeDefinition(BaseModel):
