@@ -81,7 +81,7 @@ def _i18n_checker(max_len: int, required: bool):
         if len(value) > MAX_LANGS:
             raise ValueError(f"no máximo {MAX_LANGS} línguas")
         for lang, text in value.items():
-            if not _LANG_RE.match(lang):
+            if not _LANG_RE.fullmatch(lang):
                 raise ValueError(f"código de língua inválido: {lang!r}")
             if len(text) > max_len:
                 raise ValueError(f"texto em {lang!r} com mais de {max_len} caracteres")
