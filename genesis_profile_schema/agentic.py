@@ -20,7 +20,7 @@ agente mantém num pedido com vários passos aparece no chat (ausente = sim;
 o sistema depois de cada escrita (ausente = sim; `false` desliga). O core já
 lia os dois do dicionário; ficam tipados.
 
-v0.1.133 (A4 do core agêntico, 28 Out 2026): `events.sources` — as fontes
+v0.1.134 (A4 do core agêntico, 28 Out 2026): `events.sources` — as fontes
 do webhook de entrada que acorda tarefas do agente (`POST /agent-events/<id>`
 no core). Cada fonte: `id` (minúsculas, dígitos, hífen; dá o nome do segredo
 `AGENT-EVENTS-<ID>-SECRET` no Key Vault do cliente, gravado pelo Studio),
