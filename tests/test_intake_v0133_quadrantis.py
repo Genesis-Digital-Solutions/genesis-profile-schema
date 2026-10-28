@@ -40,3 +40,16 @@ def test_prazo_dos_nunca_submetidos():
                                            "unsubmitted_from": "invite"}).unsubmitted_from == "invite"
     with pytest.raises(ValidationError):
         IntakeRetention.model_validate({"unsubmitted_from": "creation"})
+
+
+def test_metas_das_metricas():
+    from genesis_profile_schema.intake_schema import IntakeMetricTargets
+    d = _base()
+    d["metric_targets"] = {"completion_rate": 0.9, "fill_minutes_mean": 25, "prefill_unchanged_rate": 0.9,
+                           "agreement_rate": 1}
+    assert IntakeDefinition.model_validate(d).metric_targets.fill_minutes_mean == 25
+    d["metric_targets"] = None                                   # forma do blob gravado sem metas
+    assert IntakeDefinition.model_validate(d).metric_targets is None
+    for bad in ({"completion_rate": 1.5}, {"fill_minutes_mean": 0}, {"agreement_rate": -0.1}, {"outra": 1}):
+        with pytest.raises(ValidationError):
+            IntakeMetricTargets.model_validate(bad)

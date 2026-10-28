@@ -72,6 +72,7 @@ __all__ = [
     "IntakeDefinition",
     "IntakeFund",
     "MAX_FUNDS",
+    "IntakeMetricTargets",
     "ProfileIntake",
 ]
 
@@ -864,6 +865,26 @@ class IntakeFund(BaseModel):
     active: bool = True
 
 
+class IntakeMetricTargets(BaseModel):
+    """Metas das métricas de sucesso (v0.1.133; Quadrantis 27 Out 2026: «sugerimos
+    as seguintes metas»): o ecrã das métricas mostra cada uma ao lado do valor
+    medido, cumprida ou não. Vazio = sem meta. Só operação: fora do hash da
+    metodologia.
+
+    - `completion_rate`: taxa de conclusão (0–1; ex.: 0,90).
+    - `fill_minutes_mean`: tempo MÉDIO de preenchimento ativo, em minutos (máximo).
+    - `prefill_unchanged_rate`: pré-preenchidos confirmados sem alteração (0–1).
+    - `agreement_rate`: concordância do resultado do motor com a decisão humana
+      e com a matriz anterior, quando há execução em paralelo (0–1; ex.: 1).
+    """
+    model_config = _CLOSED
+
+    completion_rate: Optional[float] = Field(default=None, ge=0, le=1)
+    fill_minutes_mean: Optional[int] = Field(default=None, ge=1, le=600)
+    prefill_unchanged_rate: Optional[float] = Field(default=None, ge=0, le=1)
+    agreement_rate: Optional[float] = Field(default=None, ge=0, le=1)
+
+
 class IntakeDefinition(BaseModel):
     """Uma definição completa (um questionário + a sua metodologia). Uma por
     veículo/processo: a chave no mapa `intake.definitions` é o seu id."""
@@ -885,6 +906,7 @@ class IntakeDefinition(BaseModel):
     fund: I18nHelp = Field(default_factory=dict)
     # Lista de fundos a escolher em cada processo (próximo bump); vazia = o `fund` acima.
     funds: List[IntakeFund] = Field(default_factory=list, max_length=MAX_FUNDS)
+    metric_targets: Optional[IntakeMetricTargets] = None
     review: IntakeReviewPolicy = Field(default_factory=IntakeReviewPolicy)
     # Moldes dos documentos gerados (v0.1.89, B7).
     documents: List[IntakeDocumentTemplate] = Field(default_factory=list, max_length=MAX_DOCUMENTS)
