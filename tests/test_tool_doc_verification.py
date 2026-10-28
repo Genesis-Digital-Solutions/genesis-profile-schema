@@ -106,8 +106,7 @@ def test_nomes_opcionais_e_null_do_blob_valem_ausente():
 
 def test_nomes_curtos_linguas_validas_e_sem_campos_a_mais():
     for mau in ({"title": {"pt": "x" * 201}}, {"title": {"PT!": "x"}}, {"titulo": {"pt": "x"}},
-                {"case_plural": "candidaturas"}, {"title": {"pt
-": "x"}}):
+                {"case_plural": "candidaturas"}, {"title": {"pt\n": "x"}}):
         with pytest.raises(ValidationError):
             ProfileToolDocVerificationConfig.model_validate({"labels": mau})
 
