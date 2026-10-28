@@ -678,6 +678,10 @@
       "label": "Confirmar no sistema depois de cada ação",
       "help": "Depois de cada ação num sistema do cliente, o assistente volta a ler o sistema para confirmar que ficou feita; o que não se confirma fica marcado e nunca se repete. Desligado: não relê."
     },
+    "agentic.events.sources.id": {"label": "Fonte de eventos (id)", "help": "Nome do sistema externo que pode acordar tarefas do agente (minúsculas, dígitos e hífen). O segredo dela fica no Key Vault do cliente como AGENT-EVENTS-<ID>-SECRET."},
+    "agentic.events.sources.enabled": {"label": "Fonte ligada", "help": "Desligada: os eventos desta fonte são recusados."},
+    "agentic.events.sources.events": {"label": "Eventos que a fonte pode mandar", "help": "Só estes nomes acordam tarefas; qualquer outro é recusado."},
+    "agentic.events.sources.ips": {"label": "Redes de onde a fonte chama", "help": "Opcional (ex.: 10.0.0.0/8). Vazio: qualquer rede — a assinatura continua obrigatória."},
     "access.allowedRoles": {
       "label": "Papéis de aplicação (App roles)",
       "help": "Só entra quem tiver um destes papéis no token. Recomendado.",

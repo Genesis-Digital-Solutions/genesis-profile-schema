@@ -43,3 +43,27 @@ def test_v0_1_132_cost_plan_visible_and_verify():
     for bad in (0, -1, 51):
         with pytest.raises(ValidationError):
             ClientProfileSchema.model_validate({"agentic": {"budget": {"cost_eur": bad}}})
+
+
+# ── A4 (28 Out 2026): fontes do webhook de entrada ───────────────────────────
+
+def test_event_sources_validate_ids_events_networks_and_duplicates():
+    import pytest
+    from pydantic import ValidationError
+    from genesis_profile_schema.agentic import ProfileAgentic
+    ok = ProfileAgentic(enabled=True, events={"sources": [
+        {"id": "transportes", "events": ["entregue", "devolvido"], "ips": ["10.0.0.0/8", "2001:db8::/32"]}]})
+    assert ok.events.sources[0].id == "transportes" and ok.events.sources[0].enabled is True
+    for bad in ({"id": "Transportes"}, {"id": "a b"}, {"id": "a-"}, {"id": "a--b"}, {"events": ["x"]},
+                {"id": "x", "events": ["com espaço"]},
+                {"id": "x", "ips": ["não-é-rede"]}):
+        with pytest.raises(ValidationError):
+            ProfileAgentic(events={"sources": [bad]})
+    with pytest.raises(ValidationError):
+        ProfileAgentic(events={"sources": [{"id": "x"}, {"id": "x"}]})
+
+
+def test_event_sources_are_internal():
+    from genesis_profile_schema.exposure import EXPOSURE, INTERNAL
+    for leaf in ("id", "enabled", "events", "ips"):
+        assert EXPOSURE[f"agentic.events.sources.{leaf}"] == INTERNAL

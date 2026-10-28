@@ -638,6 +638,11 @@ EXPOSURE: Dict[str, str] = {
     "agentic.budget.cost_eur": _I,
     "agentic.plan_visible": _I,
     "agentic.verify": _I,
+    # A4 (28 Out 2026): fontes do webhook de entrada — só Genesis (segredos e redes).
+    "agentic.events.sources.id": _I,
+    "agentic.events.sources.enabled": _I,
+    "agentic.events.sources.events": _I,
+    "agentic.events.sources.ips": _I,
     "access.allowedGroups": _I,
     "access.allowedEmailDomains": _I,
     "access.allowedProviders": _I,

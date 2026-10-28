@@ -678,6 +678,10 @@
       "label": "Confirm in the system after each action",
       "help": "After each action in a client system, the assistant reads the system again to confirm it was done; what does not confirm is flagged and never repeated. Off: no re-read."
     },
+    "agentic.events.sources.id": {"label": "Event source (id)", "help": "Name of the external system that may wake agent tasks (lowercase, digits and hyphen). Its secret lives in the client's Key Vault as AGENT-EVENTS-<ID>-SECRET."},
+    "agentic.events.sources.enabled": {"label": "Source on", "help": "Off: this source's events are refused."},
+    "agentic.events.sources.events": {"label": "Events the source may send", "help": "Only these names wake tasks; anything else is refused."},
+    "agentic.events.sources.ips": {"label": "Networks the source calls from", "help": "Optional (e.g. 10.0.0.0/8). Empty: any network — the signature is still required."},
     "access.allowedRoles": {
       "label": "App roles",
       "help": "Only people with one of these roles in the token get in. Recommended.",
