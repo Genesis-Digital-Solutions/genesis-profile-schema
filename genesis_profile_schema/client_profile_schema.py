@@ -1358,9 +1358,18 @@ class ProfileMCP(BaseModel):
     disabledServers: List[str] = Field(default_factory=list)
     # Gate de confirmação de ações MCP (write/destructive). Lido pelo runtime
     # do genai-core (_confirm_actions_policy). "all_writes" = pede confirmação em
-    # qualquer tool não-readonly; "destructive_only" = só nas marcadas destrutivas;
-    # "never" = sem gate. Default no lado seguro.
-    confirm_actions: Literal["all_writes", "destructive_only", "never"] = "all_writes"
+    # qualquer tool não-readonly; "destructive_only" = só nas marcadas destrutivas.
+    # Default no lado seguro. O valor "never" (sem gate) foi RETIRADO na v0.1.137
+    # (relatório STEP, risco 4, decisão do Bruno a 29 Out 2026 — nenhum cliente o
+    # usava): um perfil antigo com "never" lê-se como "all_writes", nunca falha.
+    confirm_actions: Literal["all_writes", "destructive_only"] = "all_writes"
+
+    @field_validator("confirm_actions", mode="before")
+    @classmethod
+    def _never_retirado(cls, v):
+        if v is None or (isinstance(v, str) and v.strip().lower() == "never"):
+            return "all_writes"
+        return v
 
 
 class ProfileLanguage(BaseModel):

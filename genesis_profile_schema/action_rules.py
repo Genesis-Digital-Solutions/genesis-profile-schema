@@ -15,7 +15,7 @@ Pack `CONTEXT_PACK_acoes_regras_aprovacao_registo.md` (decisões D1–D8 e §10.
     este bloco no GAIBO e a Genesis no Studio;
   • `enabled=False` (o default) = comportamento de hoje, byte a byte (D6);
   • os mínimos de segurança vivem no CÓDIGO do core e nenhuma regra os baixa
-    (destrutiva nativa sempre confirmada, alto risco nunca `never`, fail-safe
+    (destrutiva nativa sempre confirmada, `never` retirado na v0.1.137, fail-safe
     por nome nas MCP);
   • ganha o mais restritivo: block > approve > confirm > allow;
   • limite que não se consegue avaliar (parâmetro em falta, moeda diferente)
