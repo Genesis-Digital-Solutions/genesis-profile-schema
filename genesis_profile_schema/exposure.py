@@ -752,6 +752,7 @@ EXPOSURE: Dict[str, str] = {
     "mcp.servers.erp": _I,
     "mcp.servers.name": _I,
     "mcp.servers.protocol_era": _I,
+    "mcp.servers.read_tools": _I,
     "mcp.servers.timeout_seconds": _I,
     "mcp.servers.tool_prefix": _I,
     "mcp.servers.trusted": _I,

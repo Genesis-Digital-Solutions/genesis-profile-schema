@@ -1737,6 +1737,10 @@
       "label": "Era do protocolo MCP",
       "help": "Que versão do protocolo MCP este servidor fala. «Automático» começa pelo protocolo antigo (com handshake), que é o que a frota usa, e passa ao novo (2026-07-28, sem sessão) apenas se o servidor provar que só fala o novo. «Antigo» nunca muda; «Novo» vai direto ao novo, para um servidor que já se sabe que não suporta o antigo."
     },
+    "mcp.servers.read_tools": {
+      "label": "Ferramentas declaradas de leitura",
+      "help": "Ferramentas deste servidor que a Genesis confirma serem só de consulta (nome tal como o servidor o dá, sem o prefixo). O assistente pede confirmação antes de usar uma ferramenta cujo nome sugere escrita (criar, enviar, executar, encomenda…), mesmo num servidor de confiança; as que estão aqui deixam de pedir. Nunca dispensa a confirmação de uma ferramenta que o servidor declara de escrita."
+    },
     "mcp.servers.timeout_seconds": {
       "label": "Tempo limite (segundos)"
     },

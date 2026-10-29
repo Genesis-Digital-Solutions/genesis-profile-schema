@@ -1316,6 +1316,33 @@ class ProfileMCPServer(BaseModel):
     # silêncio. Escrever este campo (Studio/GAIBO) SÓ depois de a frota ter o
     # core que o aceita.
     protocol_era: Literal["auto", "legacy", "modern"] = "auto"
+    # read_tools — leituras DECLARADAS PELA ORGANIZAÇÃO (v0.1.136, relatório
+    # STEP, risco 3, 29 Out 2026): nomes brutos das tools deste server (sem o
+    # prefixo) que a Genesis confirma serem só-leitura. No genai-core o
+    # fail-safe de nome passou a valer também em servers `trusted`; uma tool
+    # desta lista fica isenta dele (ex.: `db_run_sql`, `erp_get_sales_order`).
+    # Nunca baixa uma escrita declarada pelo servidor. Interno.
+    # ⚠️ ORDEM DE ROLLOUT (a do `protocol_era`): o `MCPServerConfig` do core é
+    # `extra="forbid"` — escrever este campo SÓ depois de a frota ter o core
+    # que o aceita, e nunca vazio (lista vazia = omitir a chave). As forks
+    # (Salmon, Demos) não o conhecem: não escrever nos perfis delas.
+    read_tools: List[str] = Field(default_factory=list, max_length=500)
+
+    @field_validator("read_tools", mode="before")
+    @classmethod
+    def _read_tools_limpos(cls, v):
+        if v is None:
+            return []
+        if not isinstance(v, list):
+            raise ValueError("read_tools tem de ser uma lista de nomes de tools")
+        out: List[str] = []
+        for item in v:
+            name = str(item or "").strip()
+            if not name or len(name) > 128:
+                raise ValueError("read_tools: nome de tool vazio ou com mais de 128 caracteres")
+            if name not in out:
+                out.append(name)
+        return out
 
 
 class ProfileMCP(BaseModel):

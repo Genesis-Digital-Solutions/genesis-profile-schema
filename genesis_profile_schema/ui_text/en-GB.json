@@ -1737,6 +1737,10 @@
       "label": "MCP protocol era",
       "help": "Which MCP protocol version this server speaks. “Automatic” starts with the older, handshake-based protocol — what the fleet uses — and moves to the new one (2026-07-28, sessionless) only if the server proves it speaks nothing else. “Legacy” never switches; “Modern” goes straight to the new one, for a server already known not to support the old."
     },
+    "mcp.servers.read_tools": {
+      "label": "Tools declared read-only",
+      "help": "Tools on this server that Genesis confirms only read data (the name as the server gives it, without the prefix). The assistant asks for confirmation before using a tool whose name suggests a write (create, send, run, order…), even on a trusted server; the tools listed here no longer ask. It never removes the confirmation for a tool the server declares as a write."
+    },
     "mcp.servers.timeout_seconds": {
       "label": "Timeout (seconds)"
     },
