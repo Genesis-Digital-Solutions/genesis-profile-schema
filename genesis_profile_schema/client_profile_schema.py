@@ -267,6 +267,31 @@ class ProfileToolSearchWebConfig(BaseModel):
     native_deployment: str = ""
     temperature: Union[float, str] = ""            # "" = default do agente
     allowed_domains: List[str] = Field(default_factory=list)
+    # v0.1.136 (29 Out 2026) — tecto de chamadas `search_web` por resposta
+    # (core `tools/web_search/turn_limit.py`). Antes só o orçamento global de
+    # tools (20) travava: medido na DGAEP v2, 7 chamadas / 26 pesquisas / 86 s
+    # num turno. Ao atingir o tecto a tool sai do schema e o modelo é mandado
+    # responder com o que tem (nunca corte em silêncio).
+    max_calls_per_turn: int = Field(default=2, ge=1)
+    # Leitura das páginas e PDFs encontrados (core `tools/web_page_reader`,
+    # tool companheira `read_web_page`): só nos `allowed_domains` — sem eles
+    # não nasce. OFF por omissão: cada leitura acrescenta tempo e tokens.
+    read_pages: bool = False
+    # Páginas lidas da rede por resposta (reler da cache não conta).
+    max_page_reads_per_turn: int = Field(default=3, ge=1)
+
+    @field_validator("read_pages", mode="before")
+    @classmethod
+    def _read_pages_null_is_off(cls, v):
+        # Um `null` (campo opcional gravado vazio) vale o mesmo que ausente.
+        return False if v is None else v
+
+    @field_validator("max_calls_per_turn", "max_page_reads_per_turn", mode="before")
+    @classmethod
+    def _caps_null_is_default(cls, v, info):
+        if v is None or v == "":
+            return 2 if info.field_name == "max_calls_per_turn" else 3
+        return v
 
 
 class ProfileToolGenerateImageConfig(BaseModel):

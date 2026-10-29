@@ -2679,6 +2679,14 @@
     "tools.config.search_web.allowed_domains": {
       "label": "Domínios permitidos"
     },
+    "tools.config.search_web.max_calls_per_turn": {
+      "label": "Pesquisas por resposta",
+      "help": "Quantas vezes o assistente pode pesquisar na web numa só resposta. Ao chegar ao limite responde com o que encontrou e dá a ligação. Cada pesquisa tem custo e demora vários segundos."
+    },
+    "tools.config.search_web.max_page_reads_per_turn": {
+      "label": "Páginas lidas por resposta",
+      "help": "Quantas páginas ou PDFs diferentes o assistente pode abrir numa só resposta. Voltar a ler a mesma página não conta."
+    },
     "tools.config.search_web.mode": {
       "label": "Modo de pesquisa",
       "options": {
@@ -2687,6 +2695,10 @@
     },
     "tools.config.search_web.project_endpoint": {
       "label": "Endpoint do projeto Foundry"
+    },
+    "tools.config.search_web.read_pages": {
+      "label": "Ler as páginas encontradas",
+      "help": "O assistente pode abrir e ler a página ou o PDF que a pesquisa encontrou (relatórios, tabelas publicadas, diplomas), só nos domínios permitidos. Sem domínios permitidos fica desligado. Cada leitura acrescenta tempo e custo à resposta."
     },
     "tools.config.search_web.temperature": {
       "label": "Temperatura do agente",

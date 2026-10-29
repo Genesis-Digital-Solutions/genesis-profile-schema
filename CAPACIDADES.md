@@ -502,6 +502,12 @@ um campo removido do modelo continua a viver no blob sem dar erro.
   `tools.enabled`) e a config é interna: os anexos saem para a sandbox do
   fornecedor e cada execução é uma sessão facturada. Consumidor:
   `tools/run_code/` do genai-core.
+- **`tools.config.search_web` tem tecto por resposta e leitura de páginas**
+  (v0.1.136, 29 Out 2026): `max_calls_per_turn` (2, piso 1),
+  `read_pages` (False; liga a tool companheira `read_web_page`, só com
+  `allowed_domains`) e `max_page_reads_per_turn` (3, piso 1); `null` vale o
+  mesmo que ausente. Consumidores: `tools/web_search/turn_limit.py` e
+  `tools/web_page_reader/` do genai-core.
 - **`tools.config.analyse_cv` é o bloco tipado da Triagem de CVs** (v0.1.71,
   23 Set 2026, épico Análise de CVs, Fase 4), em módulo próprio
   (`tool_cv_analysis.py`): `prompt_preset`/`prompt_custom` (overlay de domínio),

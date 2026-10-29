@@ -2679,6 +2679,14 @@
     "tools.config.search_web.allowed_domains": {
       "label": "Allowed domains"
     },
+    "tools.config.search_web.max_calls_per_turn": {
+      "label": "Searches per answer",
+      "help": "How many times the assistant may search the web in a single answer. At the limit it answers with what it found and gives the link. Each search has a cost and takes several seconds."
+    },
+    "tools.config.search_web.max_page_reads_per_turn": {
+      "label": "Pages read per answer",
+      "help": "How many different pages or PDFs the assistant may open in a single answer. Reading the same page again does not count."
+    },
     "tools.config.search_web.mode": {
       "label": "Search mode",
       "options": {
@@ -2687,6 +2695,10 @@
     },
     "tools.config.search_web.project_endpoint": {
       "label": "Foundry project endpoint"
+    },
+    "tools.config.search_web.read_pages": {
+      "label": "Read the pages found",
+      "help": "The assistant may open and read the page or PDF the search found (reports, published tables, legislation), only on the allowed domains. Without allowed domains it stays off. Each read adds time and cost to the answer."
     },
     "tools.config.search_web.temperature": {
       "label": "Agent temperature",
