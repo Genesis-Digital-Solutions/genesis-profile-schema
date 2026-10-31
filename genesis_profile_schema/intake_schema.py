@@ -652,6 +652,18 @@ class IntakeQualityPolicy(BaseModel):
 
 
 MAX_LIST_COLUMNS = 3
+MAX_SIMPLE_OUTCOMES = 6
+
+
+class IntakeSimpleOutcome(BaseModel):
+    """Um desfecho de um questionário SEM regras (modo simples, 31 Out 2026): a equipa
+    escolhe-o ao validar (ex.: Aceite / Recusado / Falta informação). Sem `review` —
+    não há motor que peça uma pessoa. Sem nenhum, o produto oferece «Concluído»."""
+    model_config = _CLOSED
+
+    key: Key
+    label: I18nText
+    kind: Literal["positive", "negative", "insufficient"]
 
 
 class IntakeReviewPolicy(BaseModel):
@@ -677,6 +689,9 @@ class IntakeReviewPolicy(BaseModel):
     # Colunas a mais na lista da área da equipa (v0.1.91): até 3 perguntas
     # (ex.: País). Mostra a resposta; o resto da lista é fixo no produto.
     list_columns: List[Key] = Field(default_factory=list, max_length=MAX_LIST_COLUMNS)
+    # Desfechos do modo simples (v0.1.139): até 6, só num questionário sem `methodology` — com
+    # regras os resultados são os da metodologia. Vazio = «Concluído».
+    outcomes: List[IntakeSimpleOutcome] = Field(default_factory=list, max_length=MAX_SIMPLE_OUTCOMES)
 
     @model_validator(mode="after")
     def _capacidades(self) -> "IntakeReviewPolicy":
@@ -998,9 +1013,21 @@ class IntakeDefinition(BaseModel):
             bad = sorted(set(self.review.list_columns) - {q.key for q in self.questions})
             if bad:
                 raise ValueError(f"review.list_columns: perguntas inexistentes {bad}")
+        if self.review.outcomes:
+            if self.methodology is not None:
+                raise ValueError("review.outcomes só num questionário sem regras (com regras, os resultados "
+                                 "são os da metodologia)")
+            _unique([o.key for o in self.review.outcomes], "review.outcomes")
+            for o in self.review.outcomes:
+                faltam = [l for l in self.languages if not (o.label.get(l) or "").strip()]
+                if faltam:
+                    raise ValueError(f"review.outcomes.{o.key}: falta o texto em {faltam}")
         dv = self.review.double_validation.outcomes
         if dv:
-            known = {o.key for o in self.methodology.outcomes} if self.methodology else set()
+            # Com regras, os resultados da metodologia; sem regras, os desfechos simples (ex.:
+            # «Recusado» pede sempre uma 2.ª pessoa) — revisão de 31 Out 2026.
+            known = ({o.key for o in self.methodology.outcomes} if self.methodology
+                     else {o.key for o in self.review.outcomes})
             bad = sorted(set(dv) - known)
             if bad:
                 raise ValueError(f"review.double_validation.outcomes: resultados inexistentes {bad}")
