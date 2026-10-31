@@ -604,11 +604,12 @@ class ProfileToolCreateTicketConfig(BaseModel):
     no_info_offer: Optional[bool] = None
 
 
-class ProfileToolTicketDocumentsConfig(BaseModel):
-    """tools.config.get_email_content / list_email_files_names / get_email_file_content (31 Out
-    2026): o email original e os anexos arquivados de um pedido de UMA fila. O core só lê `queue`
-    (`tools/ticket_documents`: `str(config.get("queue") or "").strip()`); vazio ou ausente = tool
-    inerte. Até aqui sem modelo — só se ligava escrevendo JSON à mão."""
+class ProfileToolQueueConfig(BaseModel):
+    """tools.config das tools que só leem a FILA (31 Out 2026), cada uma com `str(config.get("queue")
+    or "").strip()` no core; vazio ou ausente = tool inerte (ou, no `check_ticket_status`, a fila do
+    `create_ticket`): `get_email_content`, `list_email_files_names`, `get_email_file_content`
+    (`tools/ticket_documents`), `extract_invoice` (`tools/invoice`) e `check_ticket_status`
+    (`tools/ticket_status`). Até aqui sem modelo — só se ligavam escrevendo JSON à mão."""
     model_config = ConfigDict(extra="allow")
 
     queue: Optional[str] = None         # chave de reviewQueues
@@ -687,9 +688,11 @@ _KNOWN_TOOL_CONFIG_MODELS: Dict[str, Any] = {
     "generate_boq": ProfileToolBoqConfig,
     "record_contact_details": ProfileToolCaptureConfig,
     "create_ticket": ProfileToolCreateTicketConfig,
-    "get_email_content": ProfileToolTicketDocumentsConfig,
-    "list_email_files_names": ProfileToolTicketDocumentsConfig,
-    "get_email_file_content": ProfileToolTicketDocumentsConfig,
+    "get_email_content": ProfileToolQueueConfig,
+    "list_email_files_names": ProfileToolQueueConfig,
+    "get_email_file_content": ProfileToolQueueConfig,
+    "extract_invoice": ProfileToolQueueConfig,
+    "check_ticket_status": ProfileToolQueueConfig,
     "read_attached_document": ProfileToolReadAttachedDocumentConfig,
     "recall_past_conversations": ProfileToolRecallPastConversationsConfig,
     "analyse_cv": ProfileToolCvAnalysisConfig,

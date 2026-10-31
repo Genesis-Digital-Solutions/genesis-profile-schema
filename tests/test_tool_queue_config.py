@@ -1,10 +1,11 @@
-"""tools.config das três tools do email original (31 Out 2026): só `queue`, como o core lê."""
+"""tools.config das tools que só leem a fila (31 Out 2026): só `queue`, como o core lê."""
 
 import pytest
 
 from genesis_profile_schema.client_profile_schema import ProfileTools
 
-TOOLS = ("get_email_content", "list_email_files_names", "get_email_file_content")
+TOOLS = ("get_email_content", "list_email_files_names", "get_email_file_content", "extract_invoice",
+         "check_ticket_status")
 
 
 @pytest.mark.parametrize("tool", TOOLS)
