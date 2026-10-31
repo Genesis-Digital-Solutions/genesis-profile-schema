@@ -47,8 +47,6 @@ MAX_TEXT = 600
 #: apontar para um campo lá dentro. Allowlist deliberada: cada entrada é uma decisão.
 _UNTYPED_PREFIXES = {
     "ingest.sources": "fontes de ingestão (List[Dict], ProfileIngest.sources)",
-    # Sem modelo em `tool_configs` (31 Out 2026) — tipar e tirar daqui.
-    "tools.config.get_email_content": "fila cujo email original o agente pode ler",
 }
 
 
