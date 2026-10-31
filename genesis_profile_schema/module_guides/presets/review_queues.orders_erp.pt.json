@@ -1,0 +1,42 @@
+{
+  "module": "review_queues",
+  "case": "orders_erp",
+  "lang": "pt",
+  "key": "encomendas",
+  "item": {
+    "onValidate": {
+      "server": "erp",
+      "tool": "erp_create_sales_order",
+      "mapping": {
+        "customer_id": "payload.customer_id",
+        "items": "payload.artigos",
+        "items_fields": {
+          "description": "descricao",
+          "quantity": "quantidade",
+          "unit": "unidade",
+          "material": "material"
+        }
+      }
+    },
+    "onIngest": {
+      "extractor": "extract_order",
+      "channels": [
+        "email",
+        "manual"
+      ],
+      "confidence": {
+        "default_threshold": 0.8,
+        "auto_approve": false
+      }
+    }
+  },
+  "links": [
+    "ingest_email"
+  ],
+  "features": {
+    "reviewQueue": true
+  },
+  "human": [
+    "onValidate.server"
+  ]
+}

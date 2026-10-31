@@ -1,0 +1,97 @@
+{
+  "module": "review_queues",
+  "case": "citizen_requests",
+  "lang": "pt",
+  "key": "tickets",
+  "item": {
+    "states": [
+      {
+        "id": "new",
+        "kind": "open",
+        "label": "Novo"
+      },
+      {
+        "id": "triaged",
+        "kind": "parked",
+        "label": "Triado"
+      },
+      {
+        "id": "in_progress",
+        "kind": "parked",
+        "label": "Em curso"
+      },
+      {
+        "id": "resolved",
+        "kind": "final",
+        "label": "Resolvido"
+      },
+      {
+        "id": "rejected",
+        "kind": "final",
+        "label": "Rejeitado"
+      }
+    ],
+    "actions": [
+      {
+        "id": "triage",
+        "from": [
+          "new"
+        ],
+        "to": "triaged",
+        "label": "Triar"
+      },
+      {
+        "id": "start",
+        "from": [
+          "triaged"
+        ],
+        "to": "in_progress",
+        "label": "Iniciar"
+      },
+      {
+        "id": "resolve",
+        "from": [
+          "triaged",
+          "in_progress"
+        ],
+        "to": "resolved",
+        "label": "Resolver"
+      },
+      {
+        "id": "reject",
+        "from": [
+          "new",
+          "triaged"
+        ],
+        "to": "rejected",
+        "label": "Rejeitar",
+        "note_required": true
+      }
+    ],
+    "label": "Pedidos dos munícipes",
+    "businessKey": {
+      "prefix": "T"
+    },
+    "notifications": [
+      {
+        "when": "create",
+        "channel": "sms",
+        "to": "payload.citizen.telefone",
+        "text": "O seu pedido {business_key} foi registado ({payload.category}). Guarde esta referência."
+      },
+      {
+        "when": "resolve",
+        "channel": "sms",
+        "to": "payload.citizen.telefone",
+        "text": "O seu pedido {business_key} foi resolvido. Obrigado pelo seu contacto."
+      }
+    ]
+  },
+  "links": [
+    "voice_phone"
+  ],
+  "features": {
+    "reviewQueue": true
+  },
+  "human": []
+}

@@ -30,6 +30,7 @@ from __future__ import annotations
 
 import copy
 import json
+import re
 from functools import lru_cache
 from importlib import resources
 from typing import Any, Dict, List, Literal, Optional, Tuple
@@ -291,3 +292,62 @@ def links_for(module: str) -> List[Dict[str, Any]]:
                 flipped = "out" if link["direction"] == "in" else "in"
                 out.append({**copy.deepcopy(link), "direction": flipped, "module": g["module"]})
     return out
+
+
+# ── predefinições (os casos de uso, prontos a aplicar) ──────────────────────
+#
+# `module_guides/presets/<módulo>.<caso>.<língua>.json` — GERADAS a partir do código do editor
+# do Studio (`frontend/scripts/queue-presets.mjs`), que tem um teste de paridade contra estes
+# ficheiros: nunca se editam à mão. `item` é o item do mapa (ex.: uma fila), validado aqui com o
+# modelo do schema; `links` = ligações do percurso que o caso liga; `human` = campos do item que
+# ficam por preencher por uma pessoa (ex.: o servidor do ERP do cliente).
+
+def _check_preset(doc: Any, name: str, guides: Dict[str, Dict[str, Any]]) -> Dict[str, Any]:
+    if not isinstance(doc, dict):
+        raise ValueError(f"{name}: não é um objeto")
+    module, case, lang = doc.get("module"), doc.get("case"), doc.get("lang")
+    if name != f"{module}.{case}.{lang}.json":
+        raise ValueError(f"{name}: nome diferente de <module>.<case>.<lang>.json")
+    g = guides.get(module)
+    if g is None:
+        raise ValueError(f"{name}: módulo sem percurso {module!r}")
+    if case not in {c["key"] for c in g.get("cases", [])}:
+        raise ValueError(f"{name}: caso inexistente no percurso {case!r}")
+    if lang not in GUIDE_LANGS:
+        raise ValueError(f"{name}: língua fora de {GUIDE_LANGS}")
+    bad = sorted(set(doc.get("links") or []) - {l["key"] for l in g.get("links", [])})
+    if bad:
+        raise ValueError(f"{name}: ligações inexistentes {bad}")
+    if g["scope"] == "map":
+        from . import client_profile_schema as cps
+        getattr(cps, g["item_model"]).model_validate(doc.get("item") or {})
+        # A chave do item no mapa (ex.: «encomendas», «pedidos-agente»).
+        if not re.match(r"^[a-z][a-z0-9_-]{0,39}$", str(doc.get("key") or "")):
+            raise ValueError(f"{name}: `key` inválida")
+    return doc
+
+
+@lru_cache(maxsize=1)
+def _load_presets() -> Tuple[Dict[str, Any], ...]:
+    guides = {g["module"]: g for g in _load()}
+    folder = resources.files(__package__).joinpath("module_guides").joinpath("presets")
+    docs = []
+    if folder.is_dir():
+        for entry in folder.iterdir():
+            if entry.name.endswith(".json"):
+                docs.append(_check_preset(json.loads(entry.read_text(encoding="utf-8")), entry.name, guides))
+    docs.sort(key=lambda d: (d["module"], d["case"], d["lang"]))
+    return tuple(docs)
+
+
+def list_presets(module: Optional[str] = None, lang: Optional[str] = None) -> List[Dict[str, Any]]:
+    """As predefinições (cópias), filtradas por módulo e língua."""
+    return [copy.deepcopy(p) for p in _load_presets()
+            if (module is None or p["module"] == module) and (lang is None or p["lang"] == lang)]
+
+
+def get_preset(module: str, case: str, lang: str) -> Optional[Dict[str, Any]]:
+    for p in _load_presets():
+        if (p["module"], p["case"], p["lang"]) == (module, case, lang):
+            return copy.deepcopy(p)
+    return None

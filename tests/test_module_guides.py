@@ -92,3 +92,49 @@ def test_caso_inexistente_na_condicao():
 def test_nome_do_ficheiro_tem_de_bater():
     with pytest.raises(ValueError, match="nome do ficheiro"):
         mg._check(copy.deepcopy(_raw()), "outro.json")
+
+
+# ── predefinições (geradas pelo editor do Studio; paridade lá) ──────────────
+
+def _preset_raw(name="review_queues.simple.pt.json"):
+    folder = resources.files("genesis_profile_schema").joinpath("module_guides").joinpath("presets")
+    return json.loads(folder.joinpath(name).read_text(encoding="utf-8"))
+
+
+def _guides():
+    return {g["module"]: g for g in mg.list_guides()}
+
+
+def test_predefinicoes_das_filas_carregam_nas_duas_linguas():
+    got = {(p["case"], p["lang"]) for p in mg.list_presets("review_queues")}
+    assert got == {(c, l) for c in ("orders_erp", "citizen_requests", "simple") for l in ("pt", "en")}
+
+
+def test_cada_caso_com_predefinicao_existe_no_percurso():
+    cases = {c["key"] for c in mg.get_guide("review_queues")["cases"]}
+    assert {p["case"] for p in mg.list_presets("review_queues")} <= cases
+
+
+def test_get_preset_e_copia():
+    p = mg.get_preset("review_queues", "citizen_requests", "en")
+    assert p["item"]["states"][0]["label"] == "New"
+    p["item"].clear()
+    assert mg.get_preset("review_queues", "citizen_requests", "en")["item"]
+
+
+def test_encomendas_deixa_o_servidor_do_erp_para_uma_pessoa():
+    assert mg.get_preset("review_queues", "orders_erp", "pt")["human"] == ["onValidate.server"]
+
+
+@pytest.mark.parametrize("mutate,match", [
+    (lambda d: d.update(case="fantasma"), "nome diferente|caso inexistente"),
+    (lambda d: d.update(links=["fantasma"]), "ligações inexistentes"),
+    (lambda d: d["item"].update(states=[{"id": "x", "kind": "inventado"}]), "kind"),
+    (lambda d: d.update(key="Maiúsculas"), "key"),
+])
+def test_predefinicao_invalida(mutate, match):
+    doc = _preset_raw()
+    mutate(doc)
+    name = f"{doc['module']}.{doc['case']}.{doc['lang']}.json"
+    with pytest.raises(ValueError, match=match):
+        mg._check_preset(doc, name, _guides())
