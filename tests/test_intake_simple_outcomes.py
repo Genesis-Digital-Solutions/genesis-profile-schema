@@ -48,3 +48,13 @@ def test_invalidos(bad):
     d.setdefault("review", {})["outcomes"] = bad(d)
     with pytest.raises(ValueError):
         IntakeDefinition.model_validate(d)
+
+
+def test_segunda_validacao_por_desfecho_simples():
+    d = _kyc()
+    d.setdefault("review", {})["outcomes"] = _outcomes(d)
+    d["review"]["double_validation"] = {"outcomes": ["recusado"]}
+    assert IntakeDefinition.model_validate(d).review.double_validation.outcomes == ["recusado"]
+    d["review"]["double_validation"] = {"outcomes": ["inventado"]}
+    with pytest.raises(ValueError, match="inexistentes"):
+        IntakeDefinition.model_validate(d)

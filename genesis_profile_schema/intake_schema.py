@@ -689,7 +689,7 @@ class IntakeReviewPolicy(BaseModel):
     # Colunas a mais na lista da área da equipa (v0.1.91): até 3 perguntas
     # (ex.: País). Mostra a resposta; o resto da lista é fixo no produto.
     list_columns: List[Key] = Field(default_factory=list, max_length=MAX_LIST_COLUMNS)
-    # Desfechos do modo simples (v0.1.139): só num questionário sem `methodology` — com
+    # Desfechos do modo simples (v0.1.139): até 6, só num questionário sem `methodology` — com
     # regras os resultados são os da metodologia. Vazio = «Concluído».
     outcomes: List[IntakeSimpleOutcome] = Field(default_factory=list, max_length=MAX_SIMPLE_OUTCOMES)
 
@@ -1024,7 +1024,10 @@ class IntakeDefinition(BaseModel):
                     raise ValueError(f"review.outcomes.{o.key}: falta o texto em {faltam}")
         dv = self.review.double_validation.outcomes
         if dv:
-            known = {o.key for o in self.methodology.outcomes} if self.methodology else set()
+            # Com regras, os resultados da metodologia; sem regras, os desfechos simples (ex.:
+            # «Recusado» pede sempre uma 2.ª pessoa) — revisão de 31 Out 2026.
+            known = ({o.key for o in self.methodology.outcomes} if self.methodology
+                     else {o.key for o in self.review.outcomes})
             bad = sorted(set(dv) - known)
             if bad:
                 raise ValueError(f"review.double_validation.outcomes: resultados inexistentes {bad}")
