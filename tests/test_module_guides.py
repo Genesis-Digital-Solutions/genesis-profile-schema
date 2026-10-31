@@ -24,7 +24,7 @@ def test_filas_cobrem_todos_os_campos_de_uma_fila():
     from genesis_profile_schema.client_profile_schema import ProfileReviewQueue
     g = mg.get_guide("review_queues")
     placed = {f for s in g["steps"] for f in s.get("essential", []) + s.get("advanced", [])}
-    assert placed == set(ProfileReviewQueue.model_fields)
+    assert placed == set(ProfileReviewQueue.model_fields) | set(g["item_extras"])
 
 
 def test_filas_comecam_pelo_caso_e_acabam_no_rever():
@@ -60,8 +60,9 @@ def test_campo_inexistente():
 def test_campo_sem_passo():
     def drop(d):
         for s in d["steps"]:
-            if "sla" in s.get("advanced", []):
-                s["advanced"].remove("sla")
+            for part in ("essential", "advanced"):
+                if "sla" in s.get(part, []):
+                    s[part].remove("sla")
     _invalid(drop, "sem passo")
 
 
@@ -138,3 +139,25 @@ def test_predefinicao_invalida(mutate, match):
     name = f"{doc['module']}.{doc['case']}.{doc['lang']}.json"
     with pytest.raises(ValueError, match=match):
         mg._check_preset(doc, name, _guides())
+
+
+def test_condicao_ou_feito_com_gralha():
+    _invalid(lambda d: d["steps"][1]["done_if"].append("labell"), "condições ou «feito»")
+
+
+def test_extra_que_o_core_le_entra_num_passo():
+    g = mg.get_guide("review_queues")
+    assert g["item_extras"] == ["numberFields"]
+    placed = [f for s in g["steps"] for f in s.get("essential", []) + s.get("advanced", [])]
+    assert "numberFields" in placed
+
+
+def test_preset_com_feature_ou_human_inexistente():
+    doc = _preset_raw()
+    doc["features"] = {"inventada": True}
+    with pytest.raises(ValueError, match="features inexistentes"):
+        mg._check_preset(doc, "review_queues.simple.pt.json", _guides())
+    doc = _preset_raw()
+    doc["human"] = ["inventado.server"]
+    with pytest.raises(ValueError, match="human"):
+        mg._check_preset(doc, "review_queues.simple.pt.json", _guides())

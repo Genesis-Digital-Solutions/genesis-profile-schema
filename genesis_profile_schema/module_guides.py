@@ -154,6 +154,10 @@ class ModuleGuide(BaseModel):
     scope: Literal["profile", "map"]
     root: str = Field(min_length=1, max_length=120)
     item_model: Optional[str] = None
+    #: Chaves que o genai-core LÊ no item mas que o modelo não declara (`extra="allow"`), ex.
+    #: `numberFields` das filas (`review_queue_spec.py`). Entram nos passos como as outras —
+    #: assim nada do que o core lê fica sem ecrã (revisão de 31 Out 2026).
+    item_extras: List[str] = Field(default_factory=list)
     cases: List[GuideCase] = Field(default_factory=list)
     steps: List[GuideStep] = Field(min_length=1)
     links: List[GuideLink] = Field(default_factory=list)
@@ -224,19 +228,37 @@ def _profile_path_exists(path: str) -> bool:
     return any(path == pre or path.startswith(pre + ".") for pre in _UNTYPED_PREFIXES)
 
 
+def _step_refs(g: ModuleGuide) -> List[str]:
+    """Os campos citados pelas condições e pelo «feito» dos passos."""
+    out: List[str] = []
+    for s in g.steps:
+        out += list(s.done_if)
+        if s.show_if:
+            out += list(s.show_if.any_present)
+    return out
+
+
 def _check_paths(g: ModuleGuide) -> None:
     if g.scope == "map":
-        item = set(_item_fields(g.item_model or ""))
+        model = set(_item_fields(g.item_model or ""))
+        clash = sorted(set(g.item_extras) & model)
+        if clash:
+            raise ValueError(f"{g.module}: item_extras que o modelo já declara: {clash}")
+        item = model | set(g.item_extras)
         bad = sorted(f for f in g.fields() if f not in item)
         if bad:
             raise ValueError(f"{g.module}: campos que não existem em {g.item_model}: {bad}")
+        # Uma gralha numa condição deixava o passo escondido (ou nunca «feito») sem erro.
+        bad = sorted(f for f in _step_refs(g) if f not in item)
+        if bad:
+            raise ValueError(f"{g.module}: condições ou «feito» com campos inexistentes: {bad}")
         missing = sorted(item - set(g.fields()))
         if missing:
             raise ValueError(f"{g.module}: campos de {g.item_model} sem passo (ficavam sem ecrã): {missing}")
         if not _profile_path_exists(g.root):
             raise ValueError(f"{g.module}: raiz inexistente {g.root!r}")
     else:
-        bad = sorted(f for f in g.fields() if not _profile_path_exists(f))
+        bad = sorted(f for f in g.fields() + _step_refs(g) if not _profile_path_exists(f))
         if bad:
             raise ValueError(f"{g.module}: caminhos inexistentes {bad}")
     bad = sorted(l.path for l in g.links if not _profile_path_exists(l.path))
@@ -318,6 +340,22 @@ def _check_preset(doc: Any, name: str, guides: Dict[str, Dict[str, Any]]) -> Dic
     bad = sorted(set(doc.get("links") or []) - {l["key"] for l in g.get("links", [])})
     if bad:
         raise ValueError(f"{name}: ligações inexistentes {bad}")
+    feats = doc.get("features") or {}
+    if not isinstance(feats, dict) or any(not isinstance(v, bool) for v in feats.values()):
+        raise ValueError(f"{name}: `features` tem de ser {{flag: true|false}}")
+    from . import exposure
+    known_flags = {p.split(".", 2)[2] for p in exposure.leaf_paths() if p.startswith("frontend.features.")}
+    bad = sorted(set(feats) - known_flags)
+    if bad:
+        raise ValueError(f"{name}: features inexistentes {bad}")
+    # `human` = caminhos DENTRO do item (ex.: `onValidate.server`): o 1.º nível tem de existir.
+    if g["scope"] == "map":
+        allowed = set(g.get("item_extras") or [])
+        from . import client_profile_schema as cps_mod
+        allowed |= set(getattr(cps_mod, g["item_model"]).model_fields)
+        bad = sorted(h for h in doc.get("human") or [] if str(h).split(".", 1)[0] not in allowed)
+        if bad:
+            raise ValueError(f"{name}: `human` com campos inexistentes {bad}")
     if g["scope"] == "map":
         from . import client_profile_schema as cps
         getattr(cps, g["item_model"]).model_validate(doc.get("item") or {})
