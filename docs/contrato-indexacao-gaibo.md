@@ -89,6 +89,17 @@ Antes de enviar um lote, `chunk_problems(doc)` tem de devolver uma lista vazia.
   (ou que o total fique dentro do limite). O `max_file_mb` aplica-se sempre, e a substituição conta no limite mensal.
   Novos documentos ficam recusados até o cliente voltar a caber.
 - **Apagar** é sempre permitido: acima da capacidade, no limite mensal e com o cliente desligado (§5).
+- **Apagados pela Genesis (v0.1.138):** o GAIBO nunca apaga o que o Studio indexou, mas a Genesis pode apagar no
+  Studio (Gerir Índice) um documento do GAIBO, no dev ou em produção. O Studio apaga os chunks desse `source_file`
+  e o original em `gaibo-sources` desse ambiente e escreve um aviso `genesis-removals/<gr-…>.json`
+  (`GenesisRemovalNotice`) na caixa do **dev**, sempre, também quando apagou em produção. O GAIBO só lê esse prefixo e,
+  por aviso:
+  - `environment: "dev"` → marca o documento como **removido pela Genesis** (mostra o `reason` se vier) e deixa de o
+    contar na capacidade (`max_documents`, `max_total_mb`). O limite **mensal** não devolve nada;
+  - `environment: "prod"` → só a versão publicada saiu (o dev fica igual): o documento volta a «não publicado»;
+  - o aviso vale para o `origin_ref` que lá vem. Se o GAIBO já tiver uma execução mais nova desse documento, ignora o
+    aviso para o registo e regista-o no audit. Com `origin_ref: null` (o Studio não o leu) aplica-se ao documento;
+  - idempotente pelo `notice_id`: o GAIBO guarda os já tratados. O Studio nunca apaga nem reescreve um aviso.
 
 ## 4. Publicação em produção — por manifesto
 
@@ -141,6 +152,7 @@ Contentor `gaibo-outbox`, privado, na storage do cliente:
 | `runs/<run-…>.json` | GAIBO | `RunReport` | `If-None-Match: *` |
 | `invites/<inv-…>.json` | GAIBO | `InviteRequest` | `If-None-Match: *` (v0.1.108) |
 | `invite-results/<inv-…>.json` | Studio | `InviteResult` | criado com `If-None-Match: *`, depois `If-Match` (v0.1.108) |
+| `genesis-removals/<gr-…>.json` | Studio | `GenesisRemovalNotice` | `If-None-Match: *`, nunca reescrito (v0.1.138) |
 
 **`settings.json`:**
 - `enabled` vem a `false` por omissão.

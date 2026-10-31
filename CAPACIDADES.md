@@ -605,6 +605,11 @@ um campo removido do modelo continua a viver no blob sem dar erro.
   (fora de `mcp.*`); desligado = comportamento de hoje. `action_rules_problems(profile)` cruza com o resto do perfil
   (fila que existe, servidor `per_user` recusado para aprovar, servidor desaparecido assinalado) e nunca levanta.
   Os mínimos de segurança vivem no core, não aqui.
+- **Documentos do GAIBO apagados pela Genesis (v0.1.138, `gaibo_index/removals.py`)** — `GenesisRemovalNotice`
+  (Studio, em `genesis-removals/` da caixa do dev, `If-None-Match: *`, nunca reescrito): `environment` dev/prod,
+  `source_file` só do GAIBO, `origin_ref` da execução apagada, chunks, original removido; `is_valid_notice_id`,
+  `removal_blob`. O GAIBO só lê: dev → removido pela Genesis (sai da capacidade, não do limite mensal); prod →
+  «não publicado». Contrato §3.
 - **Convites da Equipa do GAIBO (v0.1.108, `gaibo_index/invites.py`)** — `InviteRequest` (GAIBO, em
   `invites/`) e `InviteResult` (Studio, em `invite-results/`) na caixa de saída; `normalize_email`,
   `is_valid_invite_id`, `INVITES_PER_HOUR`. O Studio convida para o tenant do cliente (nunca o da Genesis); a

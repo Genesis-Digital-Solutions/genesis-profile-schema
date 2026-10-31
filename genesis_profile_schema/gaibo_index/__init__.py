@@ -17,6 +17,8 @@ o core para mostrar as fontes. Uma regra que só exista de um lado não protege.
   de publicação, resultados, limites e relatórios de indexação.
 - `invites` (v0.1.108) — os convites da Equipa: o GAIBO pede, o Studio convida
   para o tenant do cliente e escreve o resultado.
+- `removals` (v0.1.138) — documentos do GAIBO apagados pela Genesis no Studio:
+  o Studio deixa um aviso por documento e o GAIBO acerta o seu registo.
 
 Documento legível: `docs/contrato-indexacao-gaibo.md`.
 """
@@ -58,6 +60,12 @@ from .invites import (
     is_valid_invite_id,
     normalize_email,
 )
+from .removals import (
+    REMOVALS_PREFIX,
+    GenesisRemovalNotice,
+    is_valid_notice_id,
+    removal_blob,
+)
 from .outbox import (
     SETTINGS_BLOB,
     OUTBOX_CONTAINER,
@@ -97,4 +105,5 @@ __all__ = [
     "settings_missing_keys",
     "INVITES_PREFIX", "INVITE_RESULTS_PREFIX", "INVITES_PER_HOUR", "InviteRequest", "InviteResult",
     "invite_blob", "invite_result_blob", "is_valid_invite_id", "normalize_email",
+    "REMOVALS_PREFIX", "GenesisRemovalNotice", "is_valid_notice_id", "removal_blob",
 ]
