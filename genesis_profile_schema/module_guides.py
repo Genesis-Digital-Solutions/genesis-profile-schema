@@ -80,7 +80,9 @@ class GuideCondition(BaseModel):
 
 
 class GuideCase(BaseModel):
-    """Um caso de uso — o «Para que é?». `preset`: a predefinição da biblioteca (por vir)."""
+    """Um caso de uso — o «Para que é?». `preset`: o modelo de partida numa biblioteca do pacote
+    que o módulo já tenha (ex.: no Intake, o id de um modelo de `intake_library`) —
+    validado em `_PRESET_SOURCES`. As filas usam `module_guides/presets/` (abaixo)."""
     model_config = _CLOSED
     key: str = Field(pattern=_KEY_RE)
     title: Text
@@ -205,10 +207,20 @@ class ModuleGuide(BaseModel):
 
 # ── caminhos: existem mesmo no schema? ──────────────────────────────────────
 
-def _item_fields(model_name: str) -> Tuple[str, ...]:
+def _item_model(model_name: str) -> Any:
+    """O modelo do item de um módulo de mapa: no schema do perfil ou no do Intake."""
     from . import client_profile_schema as cps
-    model = getattr(cps, model_name, None)
-    if model is None or not hasattr(model, "model_fields"):
+    from . import intake_schema
+    for mod in (cps, intake_schema):
+        model = getattr(mod, model_name, None)
+        if model is not None and hasattr(model, "model_fields"):
+            return model
+    return None
+
+
+def _item_fields(model_name: str) -> Tuple[str, ...]:
+    model = _item_model(model_name)
+    if model is None:
         raise ValueError(f"item_model desconhecido {model_name!r}")
     return tuple(model.model_fields)
 
@@ -236,6 +248,28 @@ def _step_refs(g: ModuleGuide) -> List[str]:
         if s.show_if:
             out += list(s.show_if.any_present)
     return out
+
+
+def _intake_templates() -> frozenset:
+    from . import intake_library
+    return frozenset(t["id"] for t in intake_library.list_templates())
+
+
+#: Módulos cujos casos de uso partem de uma biblioteca que já existe no pacote: o `preset`
+#: de cada caso tem de ser um id dessa biblioteca (um modelo apagado parte o percurso aqui).
+_PRESET_SOURCES = {"intake": _intake_templates}
+
+
+def _check_case_presets(g: ModuleGuide) -> None:
+    with_preset = [c for c in g.cases if c.preset]
+    if not with_preset:
+        return
+    source = _PRESET_SOURCES.get(g.module)
+    if source is None:
+        raise ValueError(f"{g.module}: casos com `preset` num módulo sem biblioteca de modelos")
+    bad = sorted(c.preset for c in with_preset if c.preset not in source())
+    if bad:
+        raise ValueError(f"{g.module}: `preset` que não existe na biblioteca {bad}")
 
 
 def _check_paths(g: ModuleGuide) -> None:
@@ -273,6 +307,7 @@ def _check(doc: Any, name: str) -> ModuleGuide:
     if name != f"{g.module}.json":
         raise ValueError(f"{name}: `module` diferente do nome do ficheiro")
     _check_paths(g)
+    _check_case_presets(g)
     return g
 
 
@@ -351,14 +386,12 @@ def _check_preset(doc: Any, name: str, guides: Dict[str, Dict[str, Any]]) -> Dic
     # `human` = caminhos DENTRO do item (ex.: `onValidate.server`): o 1.º nível tem de existir.
     if g["scope"] == "map":
         allowed = set(g.get("item_extras") or [])
-        from . import client_profile_schema as cps_mod
-        allowed |= set(getattr(cps_mod, g["item_model"]).model_fields)
+        allowed |= set(_item_model(g["item_model"]).model_fields)
         bad = sorted(h for h in doc.get("human") or [] if str(h).split(".", 1)[0] not in allowed)
         if bad:
             raise ValueError(f"{name}: `human` com campos inexistentes {bad}")
     if g["scope"] == "map":
-        from . import client_profile_schema as cps
-        getattr(cps, g["item_model"]).model_validate(doc.get("item") or {})
+        _item_model(g["item_model"]).model_validate(doc.get("item") or {})
         # A chave do item no mapa (ex.: «encomendas», «pedidos-agente»).
         if not re.match(r"^[a-z][a-z0-9_-]{0,39}$", str(doc.get("key") or "")):
             raise ValueError(f"{name}: `key` inválida")

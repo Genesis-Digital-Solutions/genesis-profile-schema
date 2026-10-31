@@ -17,7 +17,7 @@ def _raw(module="review_queues"):
 
 def test_todos_os_percursos_carregam():
     guides = mg.list_guides()
-    assert [g["module"] for g in guides] == ["review_queues"]
+    assert [g["module"] for g in guides] == ["review_queues", "intake"]
 
 
 def test_filas_cobrem_todos_os_campos_de_uma_fila():
@@ -161,3 +161,48 @@ def test_preset_com_feature_ou_human_inexistente():
     doc["human"] = ["inventado.server"]
     with pytest.raises(ValueError, match="human"):
         mg._check_preset(doc, "review_queues.simple.pt.json", _guides())
+
+
+# ── Intake (31 Out 2026): um questionário de `intake.definitions` por item ──
+
+def test_intake_cobre_todos_os_campos_de_um_questionario():
+    from genesis_profile_schema.intake_schema import IntakeDefinition
+    g = mg.get_guide("intake")
+    placed = {f for s in g["steps"] for f in s.get("essential", []) + s.get("advanced", [])}
+    assert placed == set(IntakeDefinition.model_fields)
+
+
+def test_intake_casos_partem_da_biblioteca():
+    from genesis_profile_schema import intake_library
+    ids = {t["id"] for t in intake_library.list_templates()}
+    cases = mg.get_guide("intake")["cases"]
+    assert cases and all(c["preset"] in ids for c in cases)
+
+
+def test_intake_regras_so_nos_casos_com_regras():
+    from genesis_profile_schema import intake_library
+    rules = mg.get_guide("intake")["steps"]
+    step = next(s for s in rules if s["key"] == "rules")
+    by_id = {t["id"]: t for t in intake_library.list_templates()}
+    with_rules = {c["key"] for c in mg.get_guide("intake")["cases"]
+                  if by_id[c["preset"]]["definition"].get("methodology")}
+    assert set(step["show_if"]["case_in"]) == with_rules
+    assert step["show_if"]["any_present"] == ["methodology"]
+
+
+def test_intake_ligacoes_dos_dois_lados():
+    assert [(l["key"], l["direction"], l["module"]) for l in mg.links_for("contacts")] ==         [("contacts_timeline", "in", "intake")]
+
+
+def test_preset_inexistente_na_biblioteca():
+    doc = _raw("intake")
+    doc["cases"][0]["preset"] = "nao_existe"
+    with pytest.raises(ValueError, match="não existe na biblioteca"):
+        mg._check(doc, "intake.json")
+
+
+def test_preset_num_modulo_sem_biblioteca():
+    doc = _raw()
+    doc["cases"][0]["preset"] = "onboarding_kyc"
+    with pytest.raises(ValueError, match="sem biblioteca"):
+        mg._check(doc, "review_queues.json")
