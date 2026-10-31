@@ -17,7 +17,7 @@ def _raw(module="review_queues"):
 
 def test_todos_os_percursos_carregam():
     guides = mg.list_guides()
-    assert [g["module"] for g in guides] == ["review_queues", "intake"]
+    assert [g["module"] for g in guides] == ["ingest", "review_queues", "intake"]
 
 
 def test_filas_cobrem_todos_os_campos_de_uma_fila():
@@ -36,8 +36,7 @@ def test_ligacoes_vistas_dos_dois_lados():
     into_queue = {l["key"]: l for l in mg.links_for("review_queues")}
     assert into_queue["ingest_email"]["direction"] == "in"
     from_ingest = mg.links_for("ingest")
-    assert [(l["key"], l["direction"], l["module"]) for l in from_ingest] == \
-        [("ingest_email", "out", "review_queues")]
+    assert ("ingest_email", "out", "review_queues") in [(l["key"], l["direction"], l["module"]) for l in from_ingest]
 
 
 def test_copias():
@@ -207,3 +206,29 @@ def test_preset_num_modulo_sem_biblioteca():
     doc["cases"][0]["preset"] = "onboarding_kyc"
     with pytest.raises(ValueError, match="sem biblioteca"):
         mg._check(doc, "review_queues.json")
+
+
+# ── Ingestão (31 Out 2026): uma fonte de `ingest.sources` por item ──
+
+def test_ingestao_cobre_todas_as_chaves_que_o_core_le():
+    from genesis_profile_schema.ingest_source import IngestSource
+    g = mg.get_guide("ingest")
+    placed = {f for s in g["steps"] for f in s.get("essential", []) + s.get("advanced", [])}
+    assert placed == set(IngestSource.model_fields)
+
+
+def test_ingestao_ligacoes_dos_dois_lados():
+    got = {(l["key"], l["direction"], l["module"]) for l in mg.links_for("ingest")}
+    assert got == {("aging_alerts", "out", "review_queues"), ("ingest_email", "out", "review_queues")}
+
+
+def test_forma_da_fonte_ida_e_volta_sem_perder_nada():
+    from genesis_profile_schema.ingest_source import IngestSource
+    src = {"id": "enc", "mailbox": "a@b.pt", "queue": "encomendas", "transport": "imap", "imap": {"folder": "INBOX"},
+           "accept": {"rules": [{"in": ["subject"], "contains": ["Omya"]}], "ocr": False},
+           "extraction": {"schema": {"header": [{"key": "cliente", "hint": "h"}]}, "numbers_rule": "verbatim",
+                          "reconcile": {"qty": "q"}, "attachments": {"ocr": "auto", "vision_dpi": 200}},
+           "reply": {"enabled": True, "channel": "graph", "agent": {"enabled": True, "mode": "draft"}},
+           "resolver": {"learn_from_operator": {"enabled": True, "ttl_days": 365}}, "chave_nova": 1}
+    out = IngestSource.model_validate(src).model_dump(by_alias=True, exclude_none=True)
+    assert out == src

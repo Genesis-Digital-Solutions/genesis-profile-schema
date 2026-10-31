@@ -206,10 +206,11 @@ class ModuleGuide(BaseModel):
 # ── caminhos: existem mesmo no schema? ──────────────────────────────────────
 
 def _item_model(model_name: str) -> Any:
-    """O modelo do item de um módulo de mapa: no schema do perfil ou no do Intake."""
+    """O modelo do item de um módulo de mapa: no schema do perfil, no do Intake ou na forma de uma
+    fonte de ingestão (`ingest_source.py`, só descritiva — não valida o perfil)."""
     from . import client_profile_schema as cps
-    from . import intake_schema
-    for mod in (cps, intake_schema):
+    from . import ingest_source, intake_schema
+    for mod in (cps, intake_schema, ingest_source):
         model = getattr(mod, model_name, None)
         if model is not None and hasattr(model, "model_fields"):
             return model
