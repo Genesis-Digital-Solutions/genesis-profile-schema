@@ -69,8 +69,8 @@
         "en": "Application with criteria (with rules)"
       },
       "description": {
-        "pt": "As regras verificam os critérios e propõem Elegível, Não elegível ou Revisão; a equipa confirma ou muda, com justificação.",
-        "en": "The rules check the criteria and propose Eligible, Not eligible or Review; the team confirms or changes it, with a rationale."
+        "pt": "As regras verificam os critérios e propõem Elegível, Não elegível, Revisão ou Informação insuficiente; a equipa confirma ou muda, com justificação.",
+        "en": "The rules check the criteria and propose Eligible, Not eligible, Review or Insufficient information; the team confirms or changes it, with a rationale."
       },
       "when": {
         "pt": "Apoios, programas, bolsas, candidaturas com uma grelha de critérios.",
@@ -85,8 +85,8 @@
         "en": "Declarations (with rules)"
       },
       "description": {
-        "pt": "Declarações (ex.: conflito de interesses): um «sim» numa das perguntas-chave dá «Conflito potencial — avaliar» e a equipa decide.",
-        "en": "Declarations (e.g. conflict of interest): a «yes» to one of the key questions gives «Potential conflict — assess» and the team decides."
+        "pt": "Declarações (ex.: conflito de interesses): um «sim» numa das perguntas-chave dá «Conflito potencial — avaliar» (respostas em falta, «Informação insuficiente») e a equipa decide.",
+        "en": "Declarations (e.g. conflict of interest): a «yes» to one of the key questions gives «Potential conflict — assess» (missing answers, «Insufficient information») and the team decides."
       },
       "when": {
         "pt": "Quando há respostas que obrigam a uma análise (um sim que tem de ser visto por alguém).",
@@ -101,12 +101,12 @@
         "en": "Suppliers (with rules)"
       },
       "description": {
-        "pt": "Due diligence a fornecedores: as regras propõem Aprovado, Não aprovado (sinais de alerta) ou Revisão; a equipa decide.",
-        "en": "Supplier due diligence: the rules propose Approved, Not approved (red flags) or Review; the team decides."
+        "pt": "Due diligence a fornecedores: as regras propõem Aprovado, Não aprovado (sinal de alerta, ex.: sanções), Revisão ou Informação insuficiente; a equipa decide.",
+        "en": "Supplier due diligence: the rules propose Approved, Not approved (red flag, e.g. sanctions), Review or Insufficient information; the team decides."
       },
       "when": {
-        "pt": "Homologação de fornecedores e parceiros, com uma classificação de risco.",
-        "en": "Supplier and partner vetting, with a risk rating."
+        "pt": "Homologação de fornecedores e parceiros, com sinais de alerta (sanções, processos judiciais, política anticorrupção).",
+        "en": "Supplier and partner vetting, with red flags (sanctions, lawsuits, anti-corruption policy)."
       }
     }
   ],
@@ -137,20 +137,20 @@
       },
       "essential": [
         "title",
+        "use_case",
         "languages",
         "sections",
         "questions"
       ],
       "advanced": [
-        "use_case",
         "glossary"
       ],
       "done_if": [
         "questions"
       ],
       "when": {
-        "pt": "Avançado: o tipo de questionário (usado nos documentos e nos indicadores) e o glossário — termos explicados a quem responde, ao lado da pergunta.",
-        "en": "Advanced: the questionnaire type (used in documents and indicators) and the glossary — terms explained to the respondent, next to the question."
+        "pt": "O tipo de questionário (adesão, consentimento, elegibilidade…) é obrigatório e aparece no Anexo Metodológico. Avançado: o glossário (no editor) — termos explicados a quem responde, ao lado da pergunta — e, nesta tab, carregar um questionário preparado pela Genesis (.json).",
+        "en": "The questionnaire type (onboarding, consent, eligibility…) is required and appears in the Methodology Annex. Advanced: the glossary (in the editor) — terms explained to the respondent, next to the question — and, in this tab, uploading a questionnaire prepared by Genesis (.json)."
       },
       "examples": [
         {
@@ -216,8 +216,8 @@
         "texts"
       ],
       "when": {
-        "pt": "Os modelos trazem textos de exemplo com [entidade], [finalidade]… para trocar — o texto jurídico é sempre revisto por uma pessoa. Avançado: a apresentação (ex.: as duas línguas lado a lado).",
-        "en": "Templates bring sample texts with [entity], [purpose]… to replace — legal text is always reviewed by a person. Advanced: the presentation (e.g. both languages side by side)."
+        "pt": "Os modelos trazem textos de exemplo com [entidade], [finalidade]… para trocar — o texto jurídico é sempre revisto por uma pessoa. Avançado: a apresentação (ex.: mostrar também a outra língua, por baixo).",
+        "en": "Templates bring sample texts with [entity], [purpose]… to replace — legal text is always reviewed by a person. Advanced: the presentation (e.g. also showing the other language, underneath)."
       }
     },
     {
@@ -309,15 +309,15 @@
         "en": "Retention period"
       },
       "purpose": {
-        "pt": "Por quanto tempo se guarda cada processo e o que acontece no fim: o processo, os documentos e os dados da pessoa apagam-se sozinhos.",
-        "en": "How long each process is kept and what happens at the end: the process, the documents and the person's data are deleted automatically."
+        "pt": "Por quanto tempo se guarda cada processo e o que acontece no fim: com o apagamento automático ligado, o processo, os documentos e os dados da pessoa apagam-se sozinhos. Desligado, nada se apaga.",
+        "en": "How long each process is kept and what happens at the end: with automatic deletion on, the process, the documents and the person's data are deleted automatically. Off, nothing is deleted."
       },
       "essential": [
         "retention"
       ],
       "when": {
-        "pt": "Sempre que há dados pessoais — o prazo vem da lei ou da política do cliente (ex.: 5 anos depois da decisão; 90 dias para os processos sem desfecho).",
-        "en": "Whenever there is personal data — the period comes from the law or the client's policy (e.g. 5 years after the decision; 90 days for processes without an outcome)."
+        "pt": "Sempre que há dados pessoais — o prazo vem da lei ou da política do cliente (ex.: 5 anos depois da decisão; 90 dias para os que nunca chegam a ser decididos: cancelados, com o link expirado ou arquivados sem decisão).",
+        "en": "Whenever there is personal data — the period comes from the law or the client's policy (e.g. 5 years after the decision; 90 days for those never decided: cancelled, with the link expired or archived without a decision)."
       }
     },
     {

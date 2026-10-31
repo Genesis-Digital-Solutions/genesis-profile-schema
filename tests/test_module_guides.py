@@ -191,7 +191,8 @@ def test_intake_regras_so_nos_casos_com_regras():
 
 
 def test_intake_ligacoes_dos_dois_lados():
-    assert [(l["key"], l["direction"], l["module"]) for l in mg.links_for("contacts")] ==         [("contacts_timeline", "in", "intake")]
+    assert [(l["key"], l["direction"], l["module"]) for l in mg.links_for("contacts")] == [
+        ("contacts_timeline", "in", "intake")]
 
 
 def test_preset_inexistente_na_biblioteca():
