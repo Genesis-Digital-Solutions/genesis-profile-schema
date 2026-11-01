@@ -1,0 +1,285 @@
+{
+  "module": "retrieval",
+  "order": 40,
+  "title": {
+    "pt": "Pesquisa no conhecimento",
+    "en": "Knowledge search"
+  },
+  "summary": {
+    "pt": "Como o assistente encontra a resposta nos documentos do cliente: de que índices lê, quantos excertos vai buscar e quantos chegam ao modelo, quando prefere não responder, como cita as fontes e que fontes têm mais autoridade.",
+    "en": "How the assistant finds the answer in the client's documents: which indexes it reads, how many excerpts it fetches and how many reach the model, when it prefers not to answer, how it cites sources and which sources carry more authority."
+  },
+  "scope": "profile",
+  "root": "retrieval",
+  "steps": [
+    {
+      "key": "indexes",
+      "level": "essential",
+      "title": {
+        "pt": "De onde vem o conhecimento",
+        "en": "Where knowledge comes from"
+      },
+      "purpose": {
+        "pt": "O índice (ou os índices) de pesquisa com os documentos do cliente, e a ferramenta de pesquisa ligada no assistente.",
+        "en": "The search index (or indexes) with the client's documents, and the search tool turned on in the assistant."
+      },
+      "essential": [
+        "retrieval.search_index_names"
+      ],
+      "links": [
+        "kb_tool"
+      ],
+      "when": {
+        "pt": "O botão «Detetar» lista os índices do cliente. Vazio: os do ambiente do assistente — mas numa variante Separada, vazio quer dizer sem conhecimento.",
+        "en": "The «Detect» button lists the client's indexes. Empty: the assistant environment's — but in a Separate variant, empty means no knowledge."
+      }
+    },
+    {
+      "key": "amount",
+      "level": "essential",
+      "title": {
+        "pt": "Quanto se vai buscar",
+        "en": "How much is fetched"
+      },
+      "purpose": {
+        "pt": "Quantos excertos se procuram em cada pergunta e se são reordenados por relevância. Os valores por omissão servem a maioria dos clientes.",
+        "en": "How many excerpts are searched per question and whether they are reordered by relevance. The defaults suit most clients."
+      },
+      "essential": [
+        "retrieval.top_k",
+        "retrieval.enable_rerank"
+      ],
+      "advanced": [
+        "retrieval.context_top_k",
+        "retrieval.chars_per_chunk"
+      ],
+      "when": {
+        "pt": "Acima de 50 excertos, só os primeiros 50 passam pela reordenação semântica. Mudar estes valores, para cima ou para baixo, só com medição no Agent Tester. Avançado: quantos excertos chegam ao modelo (0 = todos) e o tamanho máximo de cada um.",
+        "en": "Above 50 excerpts, only the first 50 go through semantic reordering. Change these values, up or down, only with a measurement in the Agent Tester. Advanced: how many excerpts reach the model (0 = all) and the maximum size of each."
+      }
+    },
+    {
+      "key": "refusal",
+      "level": "optional",
+      "title": {
+        "pt": "Quando não responder",
+        "en": "When not to answer"
+      },
+      "purpose": {
+        "pt": "O limiar abaixo do qual o assistente diz que não sabe, sem chegar a gerar resposta, e a zona fraca em que responde avisando que a relevância é baixa.",
+        "en": "The threshold below which the assistant says it does not know, without generating an answer, and the weak zone in which it answers while warning that relevance is low."
+      },
+      "essential": [
+        "retrieval.refuse_pregen_min_score",
+        "retrieval.weak_grounding_ceiling"
+      ],
+      "when": {
+        "pt": "Calibra-se no Agent Tester com perguntas dentro e fora do domínio. Omissão: recusa abaixo de 1,6 (entre 1 e 3; 0 desliga) e zona fraca até 2,0 (0 desliga).",
+        "en": "Calibrated in the Agent Tester with in-domain and off-domain questions. Default: refuses below 1.6 (between 1 and 3; 0 turns it off) and weak zone up to 2.0 (0 turns it off)."
+      }
+    },
+    {
+      "key": "citations",
+      "level": "optional",
+      "title": {
+        "pt": "Citações e links",
+        "en": "Citations and links"
+      },
+      "purpose": {
+        "pt": "Mostrar ao modelo o caminho, o endereço e a página de cada fonte (para as instruções poderem pôr links) e quanto tempo valem os links das citações.",
+        "en": "Show the model each source's path, address and page (so instructions can add links) and how long citation links stay valid."
+      },
+      "essential": [
+        "retrieval.context_include_source_fields",
+        "retrieval.source_url_sas_ttl_days"
+      ],
+      "links": [
+        "sources_section"
+      ]
+    },
+    {
+      "key": "multi_index",
+      "level": "optional",
+      "title": {
+        "pt": "Vários índices",
+        "en": "Several indexes"
+      },
+      "purpose": {
+        "pt": "Com mais de um índice, o peso de cada um (um índice com mais autoridade sobe) e se os excertos dele passam pela reordenação por IA.",
+        "en": "With more than one index, the weight of each (an index with more authority ranks higher) and whether its excerpts go through AI reordering."
+      },
+      "essential": [
+        "retrieval.indexes"
+      ]
+    },
+    {
+      "key": "priority",
+      "level": "optional",
+      "title": {
+        "pt": "Fontes com mais autoridade",
+        "en": "More authoritative sources"
+      },
+      "purpose": {
+        "pt": "Ordenar o que se encontra por autoridade — internas, depois legais, depois externas — pelo nível guardado no índice ou pelo caminho do documento.",
+        "en": "Order what is found by authority — internal, then legal, then external — by the level stored in the index or by the document path."
+      },
+      "essential": [
+        "retrieval.source_priority"
+      ],
+      "when": {
+        "pt": "Útil quando há documentos internos e legislação no mesmo índice. Uma fonte com autoridade mas sem relevância para a pergunta não sobe (piso de relevância).",
+        "en": "Useful when internal documents and legislation share the same index. A source with authority but no relevance to the question does not rise (relevance floor)."
+      }
+    },
+    {
+      "key": "latest",
+      "level": "optional",
+      "title": {
+        "pt": "A versão mais recente",
+        "en": "The latest version"
+      },
+      "purpose": {
+        "pt": "Em perguntas como «qual é o último relatório?», usar só a versão mais recente de cada documento, pela data no índice ou pelo ano no caminho.",
+        "en": "In questions like «what is the latest report?», use only the most recent version of each document, by the date in the index or the year in the path."
+      },
+      "essential": [
+        "retrieval.latest_version"
+      ]
+    },
+    {
+      "key": "neighbors",
+      "level": "advanced",
+      "title": {
+        "pt": "Documentos longos e tabelas",
+        "en": "Long documents and tables"
+      },
+      "purpose": {
+        "pt": "Trazer também os excertos vizinhos dos mais relevantes — uma tabela ou uma cláusula partidas em vários excertos chegam inteiras.",
+        "en": "Also bring the excerpts next to the most relevant ones — a table or a clause split across several excerpts arrives whole."
+      },
+      "essential": [
+        "retrieval.neighbor_expansion"
+      ],
+      "when": {
+        "pt": "Ligado por omissão. Os vizinhos por excerto, quantos excertos se expandem e o máximo acrescentado ajustam-se com medição.",
+        "en": "On by default. Neighbours per excerpt, how many excerpts are expanded and the maximum added are adjusted with measurement."
+      }
+    },
+    {
+      "key": "tuning",
+      "level": "advanced",
+      "title": {
+        "pt": "Afinação fina",
+        "en": "Fine tuning"
+      },
+      "purpose": {
+        "pt": "Diversidade de fontes, a reordenação por IA, o filtro de fontes sem sinal da pergunta, a correção de códigos mal escritos e o atalho do juiz de fidelidade.",
+        "en": "Source diversity, AI reordering, the filter for sources with no sign of the question, correction of misspelt codes and the faithfulness judge shortcut."
+      },
+      "essential": [
+        "retrieval.force_diversity",
+        "retrieval.rerank_top_k",
+        "retrieval.rerank_chars_per_source",
+        "retrieval.gpt_rerank_broad",
+        "retrieval.topicality_gate",
+        "retrieval.fuzzy_correction",
+        "retrieval.faithfulness_overlap_skip"
+      ],
+      "links": [
+        "orchestration",
+        "voice_passages",
+        "image_score"
+      ],
+      "when": {
+        "pt": "Só com prova no Agent Tester ou no Autotune: cada um mexe em qualidade, custo e latência. O filtro de fontes só atua com a diversidade ligada.",
+        "en": "Only with proof in the Agent Tester or Autotune: each one affects quality, cost and latency. The source filter only acts with diversity on."
+      }
+    },
+    {
+      "key": "review",
+      "kind": "review",
+      "level": "essential",
+      "title": {
+        "pt": "Rever e testar",
+        "en": "Review and test"
+      },
+      "purpose": {
+        "pt": "O que falta e um teste no Agent Tester: perguntas que o cliente faz de facto, com a resposta esperada, antes e depois de qualquer mudança.",
+        "en": "What is missing and a test in the Agent Tester: questions the client actually asks, with the expected answer, before and after any change."
+      }
+    }
+  ],
+  "links": [
+    {
+      "key": "kb_tool",
+      "direction": "in",
+      "module": "tools",
+      "path": "tools.enabled",
+      "expects": "search_knowledge_base",
+      "title": {
+        "pt": "Ferramenta de pesquisa ligada",
+        "en": "Search tool turned on"
+      },
+      "purpose": {
+        "pt": "Sem a ferramenta de pesquisa no conhecimento ligada, o assistente não lê os índices.",
+        "en": "Without the knowledge search tool turned on, the assistant does not read the indexes."
+      }
+    },
+    {
+      "key": "sources_section",
+      "direction": "out",
+      "module": "frontend",
+      "path": "frontend.features.renderSourcesSection",
+      "title": {
+        "pt": "Secção de fontes no site",
+        "en": "Sources section on the site"
+      },
+      "purpose": {
+        "pt": "O site mostra as fontes da resposta; anda a par com mostrar o caminho das fontes ao modelo.",
+        "en": "The site shows the answer's sources; it goes together with showing source paths to the model."
+      }
+    },
+    {
+      "key": "orchestration",
+      "direction": "in",
+      "module": "orchestration",
+      "path": "orchestration.retrieval_strategy",
+      "title": {
+        "pt": "Conhecimento ou web primeiro",
+        "en": "Knowledge or web first"
+      },
+      "purpose": {
+        "pt": "Se o assistente procura primeiro nos documentos, na web, ou nos dois ao mesmo tempo.",
+        "en": "Whether the assistant searches the documents first, the web, or both at once."
+      }
+    },
+    {
+      "key": "voice_passages",
+      "direction": "out",
+      "module": "voice",
+      "path": "voice.kb_top_n",
+      "title": {
+        "pt": "Excertos na voz",
+        "en": "Excerpts in voice"
+      },
+      "purpose": {
+        "pt": "Na voz, quantos excertos chegam ao modelo; o resto da pesquisa é o mesmo.",
+        "en": "In voice, how many excerpts reach the model; the rest of the search is the same."
+      }
+    },
+    {
+      "key": "image_score",
+      "direction": "out",
+      "module": "response",
+      "path": "response.image_min_score",
+      "title": {
+        "pt": "Imagens na resposta",
+        "en": "Images in the answer"
+      },
+      "purpose": {
+        "pt": "A relevância mínima para uma imagem dos documentos aparecer na resposta.",
+        "en": "The minimum relevance for an image from the documents to show in the answer."
+      }
+    }
+  ]
+}

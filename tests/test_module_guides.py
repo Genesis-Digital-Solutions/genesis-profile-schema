@@ -17,7 +17,7 @@ def _raw(module="review_queues"):
 
 def test_todos_os_percursos_carregam():
     guides = mg.list_guides()
-    assert [g["module"] for g in guides] == ["ingest", "review_queues", "intake", "cv_screening"]
+    assert [g["module"] for g in guides] == ["ingest", "review_queues", "intake", "cv_screening", "retrieval"]
 
 
 def test_filas_cobrem_todos_os_campos_de_uma_fila():
@@ -252,3 +252,18 @@ def test_ligacao_com_valor_esperado():
     links = {l["key"]: l for l in mg.get_guide("cv_screening")["links"]}
     assert links["login"]["expects"] == "required" and links["high_risk"]["expects"] == "high"
     assert "expects" not in links["workspace"]
+
+
+# ── Pesquisa (1 Nov 2026): percurso de perfil sobre `retrieval` ──
+
+def test_pesquisa_cobre_todos_os_campos_lidos_pelo_core():
+    from genesis_profile_schema.client_profile_schema import ProfileRetrieval
+    g = mg.get_guide("retrieval")
+    placed = {f.split(".", 1)[1] for s in g["steps"] for f in s.get("essential", []) + s.get("advanced", [])}
+    # `min_score` fica fora de propósito: o core não o lê (campo morto).
+    assert placed == set(ProfileRetrieval.model_fields) - {"min_score"}
+
+
+def test_pesquisa_ferramenta_ligada_pelo_valor_esperado():
+    link = next(l for l in mg.get_guide("retrieval")["links"] if l["key"] == "kb_tool")
+    assert link["path"] == "tools.enabled" and link["expects"] == "search_knowledge_base"
