@@ -2975,6 +2975,79 @@
     },
     "tools.config.analyse_cv.pre_screening_notice.en": {
       "label": "Text in English"
+    },
+    "tools.config.read_attached_document": {
+      "label": "Reading attached documents"
+    },
+    "tools.config.read_attached_document.top_k": {
+      "label": "Excerpts given to the assistant",
+      "help": "How many excerpts of the attached documents the assistant gets per question, in total."
+    },
+    "tools.config.read_attached_document.k_semantic": {
+      "label": "Meaning-search candidates",
+      "help": "How many excerpts the meaning search proposes before both searches are merged."
+    },
+    "tools.config.read_attached_document.k_bm25": {
+      "label": "Keyword-search candidates",
+      "help": "How many excerpts the exact-word search proposes before both searches are merged."
+    },
+    "tools.config.read_attached_document.head_n": {
+      "label": "Excerpts from the start of the document",
+      "help": "Excerpts from the start of each document that always go in (titles, parties, subject)."
+    },
+    "tools.config.read_attached_document.tail_n": {
+      "label": "Excerpts from the end of the document",
+      "help": "Excerpts from the end of each document that always go in (signatures, dates, conclusions)."
+    },
+    "tools.config.read_attached_document.per_file_cap": {
+      "label": "Maximum per document",
+      "help": "With several attached documents, the maximum excerpts from each — so a large document does not hide the others."
+    },
+    "tools.config.recall_past_conversations": {
+      "label": "Memory of past conversations"
+    },
+    "tools.config.recall_past_conversations.max_results": {
+      "label": "Past conversations recalled",
+      "help": "How many of the same person's past conversations the assistant can bring into the answer."
+    },
+    "tools.config.recall_past_conversations.min_similarity": {
+      "label": "Minimum similarity",
+      "help": "From 0 to 1: only conversations at least this similar to the question are recalled."
+    },
+    "tools.config.get_email_content": {
+      "label": "Read the original email"
+    },
+    "tools.config.get_email_content.queue": {
+      "label": "Request queue",
+      "help": "The assistant reads the body of the email behind a request in this queue (with archiving on in the source). Without a queue the tool is off."
+    },
+    "tools.config.list_email_files_names": {
+      "label": "List the request's attachments"
+    },
+    "tools.config.list_email_files_names.queue": {
+      "label": "Request queue",
+      "help": "The assistant sees the names of the archived attachments of a request in this queue, without opening them. Without a queue the tool is off."
+    },
+    "tools.config.get_email_file_content": {
+      "label": "Read a request attachment"
+    },
+    "tools.config.get_email_file_content.queue": {
+      "label": "Request queue",
+      "help": "The assistant reads an archived attachment of a request in this queue. Without a queue the tool is off."
+    },
+    "tools.config.extract_invoice": {
+      "label": "Read invoices"
+    },
+    "tools.config.extract_invoice.queue": {
+      "label": "Request queue",
+      "help": "Invoices the assistant reads go into this queue as requests, where they are reviewed. Without a queue, review happens in the chat, as always."
+    },
+    "tools.config.check_ticket_status": {
+      "label": "Request status"
+    },
+    "tools.config.check_ticket_status.queue": {
+      "label": "Request queue",
+      "help": "The requests in this queue whose status the assistant can look up by reference. Empty: the queue of the open-a-request tool."
     }
   }
 }

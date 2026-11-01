@@ -604,6 +604,18 @@ class ProfileToolCreateTicketConfig(BaseModel):
     no_info_offer: Optional[bool] = None
 
 
+class ProfileToolQueueConfig(BaseModel):
+    """tools.config das tools que só leem a FILA (31 Out 2026), cada uma com `str(config.get("queue")
+    or "").strip()` no core. Vazio ou ausente: as três do email original (`tools/ticket_documents`:
+    `get_email_content`, `list_email_files_names`, `get_email_file_content`) ficam inertes; o
+    `extract_invoice` (`tools/invoice`) revê a fatura no chat, como sempre; o `check_ticket_status`
+    (`tools/ticket_status`) usa a fila do `create_ticket`. Até aqui sem modelo — só se mudavam
+    escrevendo JSON à mão."""
+    model_config = ConfigDict(extra="allow")
+
+    queue: Optional[str] = None         # chave de reviewQueues
+
+
 class ProfileToolReadAttachedDocumentConfig(BaseModel):
     """tools.config.read_attached_document — knobs do retrieval híbrido sobre
     documentos anexados (defaults = fallbacks do core). Nunca reduzir por
@@ -677,6 +689,11 @@ _KNOWN_TOOL_CONFIG_MODELS: Dict[str, Any] = {
     "generate_boq": ProfileToolBoqConfig,
     "record_contact_details": ProfileToolCaptureConfig,
     "create_ticket": ProfileToolCreateTicketConfig,
+    "get_email_content": ProfileToolQueueConfig,
+    "list_email_files_names": ProfileToolQueueConfig,
+    "get_email_file_content": ProfileToolQueueConfig,
+    "extract_invoice": ProfileToolQueueConfig,
+    "check_ticket_status": ProfileToolQueueConfig,
     "read_attached_document": ProfileToolReadAttachedDocumentConfig,
     "recall_past_conversations": ProfileToolRecallPastConversationsConfig,
     "analyse_cv": ProfileToolCvAnalysisConfig,

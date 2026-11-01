@@ -36,7 +36,7 @@ FORMAS_ANTIGAS = {
     "respectivas", "respectivo", "respectivos", "retroactivas", "retroactivo", "sector", "sectores",
     "selecciona", "seleccionada", "seleccionadas", "seleccionado", "seleccionados", "seleccionar", "seleccione",
     "seleccionou", "selectiva", "selectivo", "selector", "selecção", "tecto", "tectos", "vector", "vectores",
-    "vectorial", "vêem", "óptimo",
+    "vectorial", "vêem", "óptimo", "revêem", "prevêem", "relêem", "descrêem",
 }
 _TICK = re.compile(r"`[^`\n]*`")
 _CAMINHO = re.compile(r"\b[A-Za-z_]\w*(?:\.[A-Za-z_]\w*)+\b")   # compliance.sector: nome de campo

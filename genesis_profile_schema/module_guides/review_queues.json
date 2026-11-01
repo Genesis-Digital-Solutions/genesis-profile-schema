@@ -1,0 +1,417 @@
+{
+  "module": "review_queues",
+  "order": 10,
+  "title": {
+    "pt": "Filas de revisão",
+    "en": "Review queues"
+  },
+  "summary": {
+    "pt": "Uma fila junta pedidos que uma pessoa tem de ver, corrigir e decidir: encomendas que chegam por email, pedidos de cidadãos por telefone, aprovações de ações do assistente. Cada pedido passa por estados até ficar concluído.",
+    "en": "A queue gathers requests a person has to review, correct and decide on: orders arriving by email, citizen requests by phone, approvals of the assistant's actions. Each request moves through states until it is done."
+  },
+  "scope": "map",
+  "root": "reviewQueues",
+  "item_model": "ProfileReviewQueue",
+  "item_extras": [
+    "numberFields"
+  ],
+  "cases": [
+    {
+      "key": "orders_erp",
+      "title": {
+        "pt": "Encomendas → ERP",
+        "en": "Orders → ERP"
+      },
+      "description": {
+        "pt": "Os pedidos chegam por email, o assistente lê-os e preenche os campos, a equipa corrige e valida, e a encomenda é gravada no ERP.",
+        "en": "Requests arrive by email, the assistant reads them and fills in the fields, the team corrects and validates, and the order is posted to the ERP."
+      },
+      "when": {
+        "pt": "Quando há documentos a lançar noutro sistema (encomendas, faturas, pedidos de cotação) e uma pessoa tem de confirmar antes.",
+        "en": "When documents have to be entered in another system (orders, invoices, quote requests) and a person must confirm first."
+      }
+    },
+    {
+      "key": "citizen_requests",
+      "title": {
+        "pt": "Pedidos de cidadãos",
+        "en": "Citizen requests"
+      },
+      "description": {
+        "pt": "Pedidos registados pelo assistente (telefone ou chat), triados pela equipa, tratados e resolvidos, com aviso por SMS a quem pediu.",
+        "en": "Requests logged by the assistant (phone or chat), triaged by the team, handled and resolved, with an SMS to the requester."
+      },
+      "when": {
+        "pt": "Atendimento ao público: ocorrências, pedidos de serviço, reclamações que alguém tem de encaminhar e acompanhar.",
+        "en": "Public service: incidents, service requests, complaints someone has to route and follow up."
+      }
+    },
+    {
+      "key": "approvals",
+      "title": {
+        "pt": "Aprovações de ações",
+        "en": "Action approvals"
+      },
+      "description": {
+        "pt": "Ações do assistente que precisam de autorização (ex.: uma encomenda acima de um valor) esperam aqui até alguém aprovar ou recusar.",
+        "en": "Assistant actions that need authorisation (e.g. an order above an amount) wait here until someone approves or refuses."
+      },
+      "when": {
+        "pt": "Quando uma regra de ação está em «Pedir aprovação». Normalmente nasce sozinha pelo botão «Criar fila de aprovação» das Regras de ações.",
+        "en": "When an action rule is set to «Ask for approval». It is usually created by the «Create approval queue» button in Action rules."
+      }
+    },
+    {
+      "key": "simple",
+      "title": {
+        "pt": "Simples",
+        "en": "Simple"
+      },
+      "description": {
+        "pt": "Novo → Concluído, ou Rejeitado. Sem ERP nem avisos. Acrescenta-se o resto depois, se for preciso.",
+        "en": "New → Done, or Rejected. No ERP and no notices. Add the rest later if needed."
+      },
+      "when": {
+        "pt": "Para começar, ou quando só é preciso ter uma lista de pedidos com dono e estado.",
+        "en": "To get started, or when all you need is a list of requests with an owner and a state."
+      }
+    }
+  ],
+  "steps": [
+    {
+      "key": "purpose",
+      "kind": "cases",
+      "level": "essential",
+      "title": {
+        "pt": "Para que é a fila?",
+        "en": "What is the queue for?"
+      },
+      "purpose": {
+        "pt": "Escolhe o caso mais parecido com o teu. Os estados, os campos e os avisos vêm preenchidos; depois só ajustas.",
+        "en": "Pick the case closest to yours. States, fields and notices come pre-filled; you only adjust afterwards."
+      }
+    },
+    {
+      "key": "identity",
+      "level": "essential",
+      "title": {
+        "pt": "Nome da fila",
+        "en": "Queue name"
+      },
+      "purpose": {
+        "pt": "Como a fila aparece na área de trabalho da equipa (/fila).",
+        "en": "How the queue appears in the team's work area (/fila)."
+      },
+      "essential": [
+        "label"
+      ],
+      "advanced": [
+        "businessKey"
+      ],
+      "done_if": [
+        "label"
+      ],
+      "when": {
+        "pt": "Numeração dos pedidos (Avançado): liga-a quando a equipa ou o cliente precisam de uma referência para falar de um pedido (ex.: T-2026-0001).",
+        "en": "Request numbering (Advanced): turn it on when the team or the customer need a reference to talk about a request (e.g. T-2026-0001)."
+      },
+      "examples": [
+        {
+          "pt": "«Encomendas por email», com numeração E-2026-0001.",
+          "en": "«Orders by email», numbered E-2026-0001."
+        }
+      ]
+    },
+    {
+      "key": "sources",
+      "level": "essential",
+      "title": {
+        "pt": "De onde chegam os pedidos",
+        "en": "Where requests come from"
+      },
+      "purpose": {
+        "pt": "Uma fila sem entrada fica vazia. Liga um ou mais canais: email, chat, telefone, captura de contactos, atas, regras de ação — ou carregar um documento à mão.",
+        "en": "A queue with no input stays empty. Connect one or more channels: email, chat, phone, contact capture, minutes, action rules — or uploading a document by hand."
+      },
+      "advanced": [
+        "onIngest"
+      ],
+      "links": [
+        "ingest_email",
+        "chat_ticket",
+        "voice_phone",
+        "capture_lead",
+        "minutes_items",
+        "action_approval",
+        "email_content"
+      ],
+      "when": {
+        "pt": "Entrada automática (Avançado): o que o assistente extrai de cada email ou documento, e se guarda o original para auditoria.",
+        "en": "Automatic input (Advanced): what the assistant extracts from each email or document, and whether the original is kept for audit."
+      },
+      "examples": [
+        {
+          "pt": "Encomendas: a caixa encomendas@cliente.pt entra nesta fila e o assistente lê cliente, linhas e data de entrega.",
+          "en": "Orders: the orders@customer.com mailbox feeds this queue and the assistant reads customer, lines and delivery date."
+        },
+        {
+          "pt": "Município: o telefone e o chat registam pedidos aqui.",
+          "en": "Municipality: phone and chat log requests here."
+        }
+      ]
+    },
+    {
+      "key": "lifecycle",
+      "level": "essential",
+      "title": {
+        "pt": "Estados do pedido",
+        "en": "Request states"
+      },
+      "purpose": {
+        "pt": "Por onde passa cada pedido, do início ao fim, e que botões a equipa tem em cada estado.",
+        "en": "Where each request goes, from start to finish, and which buttons the team has in each state."
+      },
+      "essential": [
+        "states",
+        "actions"
+      ],
+      "when": {
+        "pt": "Mais estados só quando alguém tem mesmo de passar o pedido a outra pessoa (ex.: «Triado» antes de «Em curso»). Para encomendas, três chegam.",
+        "en": "Add states only when someone really hands the request over (e.g. «Triaged» before «In progress»). For orders, three are enough."
+      },
+      "examples": [
+        {
+          "pt": "Encomendas: Novo → Validado (grava no ERP), ou Rejeitado (com motivo).",
+          "en": "Orders: New → Validated (posts to the ERP), or Rejected (with a reason)."
+        },
+        {
+          "pt": "Pedidos de cidadãos: Novo → Triado → Em curso → Resolvido, ou Rejeitado.",
+          "en": "Citizen requests: New → Triaged → In progress → Resolved, or Rejected."
+        }
+      ]
+    },
+    {
+      "key": "fields",
+      "level": "essential",
+      "title": {
+        "pt": "Campos do pedido",
+        "en": "Request fields"
+      },
+      "purpose": {
+        "pt": "O que a equipa vê e corrige em cada pedido, com nomes em linguagem de pessoa, pela ordem certa e com o que é obrigatório.",
+        "en": "What the team sees and corrects in each request, with human names, in the right order and with what is required."
+      },
+      "essential": [
+        "fields"
+      ],
+      "advanced": [
+        "operatorNotes",
+        "numberFields"
+      ],
+      "when": {
+        "pt": "Sem campos declarados a fila mostra os dados com o nome técnico. Avançado: as observações da equipa (notas internas em cada pedido) e as colunas numéricas (convertidas em número ao gravar).",
+        "en": "Without declared fields the queue shows the data with technical names. Advanced: team notes (internal notes on each request) and numeric columns (converted to numbers on save)."
+      },
+      "examples": [
+        {
+          "pt": "Encomendas: Cliente, NIF, Linhas (artigo, quantidade, preço), Data de entrega (obrigatória).",
+          "en": "Orders: Customer, VAT number, Lines (item, quantity, price), Delivery date (required)."
+        }
+      ]
+    },
+    {
+      "key": "erp",
+      "level": "essential",
+      "title": {
+        "pt": "Gravar noutro sistema",
+        "en": "Post to another system"
+      },
+      "purpose": {
+        "pt": "Ao validar, o pedido é gravado no ERP (ou noutro sistema ligado por MCP): que documento, que campos e se leva os anexos.",
+        "en": "On validation, the request is posted to the ERP (or another system connected through MCP): which document, which fields and whether it carries the attachments."
+      },
+      "essential": [
+        "onValidate"
+      ],
+      "show_if": {
+        "case_in": [
+          "orders_erp"
+        ],
+        "any_present": [
+          "onValidate"
+        ]
+      },
+      "when": {
+        "pt": "Só quando o pedido tem de nascer noutro sistema. Os campos do ERP escolhem-se de uma lista do que o sistema aceita.",
+        "en": "Only when the request has to be created in another system. ERP fields are picked from a list of what the system accepts."
+      },
+      "examples": [
+        {
+          "pt": "SAP: documento «Encomenda», cliente ← Cliente, linhas ← Linhas, anexar o PDF original.",
+          "en": "SAP: «Order» document, customer ← Customer, lines ← Lines, attach the original PDF."
+        }
+      ]
+    },
+    {
+      "key": "notices",
+      "level": "optional",
+      "title": {
+        "pt": "Avisos e prazos",
+        "en": "Notices and deadlines"
+      },
+      "purpose": {
+        "pt": "Avisar quem fez o pedido quando ele muda de estado, e definir o prazo de resposta da equipa.",
+        "en": "Notify the requester when the request changes state, and set the team's response deadline."
+      },
+      "advanced": [],
+      "when": {
+        "pt": "Avisos: quando há um telefone de quem pediu (atendimento ao público). Prazos: quando há um compromisso de resposta (ex.: 2 dias úteis).",
+        "en": "Notices: when there is a requester phone number (public service). Deadlines: when there is a response commitment (e.g. 2 business days)."
+      },
+      "examples": [
+        {
+          "pt": "SMS «O seu pedido foi resolvido» ao passar a Resolvido; prazo de 48 h, 8 h se for urgente.",
+          "en": "SMS «Your request was resolved» when it moves to Resolved; 48 h deadline, 8 h if urgent."
+        }
+      ],
+      "essential": [
+        "notifications",
+        "sla"
+      ]
+    },
+    {
+      "key": "automation",
+      "level": "advanced",
+      "title": {
+        "pt": "Regras e automatismos",
+        "en": "Rules and automations"
+      },
+      "purpose": {
+        "pt": "Verificações antes de avançar (ex.: confirmar stock no ERP antes de validar) e ações automáticas (ex.: lembrar a equipa de pedidos parados).",
+        "en": "Checks before moving on (e.g. confirm stock in the ERP before validating) and automatic actions (e.g. remind the team about stalled requests)."
+      },
+      "advanced": [],
+      "when": {
+        "pt": "Só depois de a fila funcionar no básico. A fila funciona sem nada disto.",
+        "en": "Only once the queue works in the basics. The queue works without any of this."
+      },
+      "essential": [
+        "gates",
+        "triggers"
+      ]
+    },
+    {
+      "key": "review",
+      "kind": "review",
+      "level": "essential",
+      "title": {
+        "pt": "Rever e testar",
+        "en": "Review and test"
+      },
+      "purpose": {
+        "pt": "O que falta antes de pôr a fila a trabalhar, e um pedido de teste para ver o caminho completo.",
+        "en": "What is missing before putting the queue to work, and a test request to see the full path."
+      }
+    }
+  ],
+  "links": [
+    {
+      "key": "ingest_email",
+      "direction": "in",
+      "module": "ingest",
+      "path": "ingest.sources.queue",
+      "title": {
+        "pt": "Email (Ingestão)",
+        "en": "Email (Ingestion)"
+      },
+      "purpose": {
+        "pt": "Uma caixa de correio vigiada cria um pedido por email nesta fila.",
+        "en": "A watched mailbox creates one request per email in this queue."
+      }
+    },
+    {
+      "key": "chat_ticket",
+      "direction": "in",
+      "module": "chat",
+      "path": "tools.config.create_ticket.queue",
+      "title": {
+        "pt": "Chat (abrir pedido)",
+        "en": "Chat (open a request)"
+      },
+      "purpose": {
+        "pt": "O assistente abre aqui um pedido quando a pessoa o pede na conversa.",
+        "en": "The assistant opens a request here when the person asks for it in the conversation."
+      }
+    },
+    {
+      "key": "voice_phone",
+      "direction": "in",
+      "module": "voice",
+      "path": "voice.queue",
+      "title": {
+        "pt": "Telefone (Voz)",
+        "en": "Phone (Voice)"
+      },
+      "purpose": {
+        "pt": "O atendimento telefónico regista aqui os pedidos e o resumo das chamadas transferidas.",
+        "en": "Phone service logs requests and transferred-call summaries here."
+      }
+    },
+    {
+      "key": "capture_lead",
+      "direction": "in",
+      "module": "capture",
+      "path": "tools.config.record_contact_details.queue",
+      "title": {
+        "pt": "Captura de contactos",
+        "en": "Contact capture"
+      },
+      "purpose": {
+        "pt": "Cada contacto completo recolhido na conversa vira um pedido para a equipa seguir.",
+        "en": "Each complete contact collected in the conversation becomes a request for the team to follow up."
+      }
+    },
+    {
+      "key": "minutes_items",
+      "direction": "in",
+      "module": "audio",
+      "path": "audio.minutes_action_items_queue",
+      "title": {
+        "pt": "Atas de reunião",
+        "en": "Meeting minutes"
+      },
+      "purpose": {
+        "pt": "O dono de uma ata transforma as ações combinadas em pedidos aqui.",
+        "en": "The owner of the minutes turns the agreed action items into requests here."
+      }
+    },
+    {
+      "key": "action_approval",
+      "direction": "in",
+      "module": "action_rules",
+      "path": "actionRules.rules.approval.queue",
+      "title": {
+        "pt": "Aprovações (Regras de ações)",
+        "en": "Approvals (Action rules)"
+      },
+      "purpose": {
+        "pt": "Ações do assistente que precisam de autorização esperam aqui por quem aprova.",
+        "en": "Assistant actions that need authorisation wait here for an approver."
+      }
+    },
+    {
+      "key": "email_content",
+      "direction": "out",
+      "module": "chat",
+      "path": "tools.config.get_email_content",
+      "title": {
+        "pt": "Ler o email original (chat)",
+        "en": "Read the original email (chat)"
+      },
+      "purpose": {
+        "pt": "O assistente pode ler o corpo do email que deu origem a um pedido desta fila, quando o original é guardado.",
+        "en": "The assistant can read the body of the email behind a request in this queue, when the original is kept."
+      }
+    }
+  ]
+}

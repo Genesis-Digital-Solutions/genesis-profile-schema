@@ -17,4 +17,4 @@ packages = ["genesis_profile_schema", "genesis_profile_schema.gaibo_index"]
 # silêncio, porque o carregador é deliberadamente tolerante a ficheiro em
 # falta. Verificado com uma instalação real, não só pela presença desta linha.
 [tool.setuptools.package-data]
-genesis_profile_schema = ["ui_text/*.json", "house_rules/*.json", "intake_library/*.json"]
+genesis_profile_schema = ["ui_text/*.json", "house_rules/*.json", "intake_library/*.json", "module_guides/*.json", "module_guides/presets/*.json"]

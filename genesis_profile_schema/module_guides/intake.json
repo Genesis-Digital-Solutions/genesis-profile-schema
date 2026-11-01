@@ -1,0 +1,381 @@
+{
+  "module": "intake",
+  "order": 20,
+  "title": {
+    "pt": "Intake (questionários)",
+    "en": "Intake (questionnaires)"
+  },
+  "summary": {
+    "pt": "Um questionário que a pessoa preenche com um link pessoal e um código, sem conta: adesão de clientes, consentimentos, candidaturas, perfil de investidor. A equipa lê as respostas e decide cada processo; com regras, o motor propõe uma avaliação e a decisão final é sempre de uma pessoa.",
+    "en": "A questionnaire the person fills in with a personal link and a code, no account: client onboarding, consents, applications, investor profile. The team reads the answers and decides each process; with rules, the engine proposes an assessment and the final decision is always a person's."
+  },
+  "scope": "map",
+  "root": "intake.definitions",
+  "item_model": "IntakeDefinition",
+  "cases": [
+    {
+      "key": "data_collection",
+      "preset": "onboarding_kyc",
+      "title": {
+        "pt": "Adesão / recolha de dados",
+        "en": "Onboarding / data collection"
+      },
+      "description": {
+        "pt": "A pessoa responde e envia documentos; a equipa confere e fecha com um desfecho (ex.: Aceite, Recusado, Falta informação). Sem regras de avaliação.",
+        "en": "The person answers and sends documents; the team checks and closes with an outcome (e.g. Accepted, Refused, Information missing). No assessment rules."
+      },
+      "when": {
+        "pt": "Abertura de conta, KYC, inscrição, ficha de cliente — quando quem decide é a equipa, a ler as respostas.",
+        "en": "Account opening, KYC, registration, customer record — when the team decides by reading the answers."
+      }
+    },
+    {
+      "key": "consent",
+      "preset": "informed_consent",
+      "title": {
+        "pt": "Consentimento",
+        "en": "Consent"
+      },
+      "description": {
+        "pt": "A pessoa lê a informação e responde se aceita; a resposta fica no processo, com os textos que leu.",
+        "en": "The person reads the information and answers whether they accept; the answer stays in the process, with the texts they read."
+      },
+      "when": {
+        "pt": "Consentimento informado, autorizações, aceitação de condições.",
+        "en": "Informed consent, authorisations, acceptance of terms."
+      }
+    },
+    {
+      "key": "investor_profile",
+      "preset": "appropriateness_basic",
+      "title": {
+        "pt": "Perfil de investidor (com regras)",
+        "en": "Investor profile (with rules)"
+      },
+      "description": {
+        "pt": "Conhecimento e experiência do investidor: as regras pontuam as respostas e propõem Adequado, Não adequado, Informação insuficiente ou Revisão manual; a equipa confirma ou muda, com justificação.",
+        "en": "The investor's knowledge and experience: the rules score the answers and propose Appropriate, Not appropriate, Insufficient information or Manual review; the team confirms or changes it, with a rationale."
+      },
+      "when": {
+        "pt": "Adequação e caráter apropriado de investimentos, subscrição de fundos — quando a avaliação tem de seguir uma metodologia escrita e aprovada.",
+        "en": "Appropriateness and suitability of investments, fund subscription — when the assessment must follow a written, approved methodology."
+      }
+    },
+    {
+      "key": "eligibility",
+      "preset": "eligibility_grid",
+      "title": {
+        "pt": "Candidatura com critérios (com regras)",
+        "en": "Application with criteria (with rules)"
+      },
+      "description": {
+        "pt": "As regras verificam os critérios e propõem Elegível, Não elegível, Revisão ou Informação insuficiente; a equipa confirma ou muda, com justificação.",
+        "en": "The rules check the criteria and propose Eligible, Not eligible, Review or Insufficient information; the team confirms or changes it, with a rationale."
+      },
+      "when": {
+        "pt": "Apoios, programas, bolsas, candidaturas com uma grelha de critérios.",
+        "en": "Grants, programmes, scholarships, applications with a criteria grid."
+      }
+    },
+    {
+      "key": "declarations",
+      "preset": "conflict_of_interest",
+      "title": {
+        "pt": "Declarações (com regras)",
+        "en": "Declarations (with rules)"
+      },
+      "description": {
+        "pt": "Declarações (ex.: conflito de interesses): um «sim» numa das perguntas-chave dá «Conflito potencial — avaliar» (respostas em falta, «Informação insuficiente») e a equipa decide.",
+        "en": "Declarations (e.g. conflict of interest): a «yes» to one of the key questions gives «Potential conflict — assess» (missing answers, «Insufficient information») and the team decides."
+      },
+      "when": {
+        "pt": "Quando há respostas que obrigam a uma análise (um sim que tem de ser visto por alguém).",
+        "en": "When some answers require an analysis (a yes that someone has to look at)."
+      }
+    },
+    {
+      "key": "supplier",
+      "preset": "supplier_due_diligence",
+      "title": {
+        "pt": "Fornecedores (com regras)",
+        "en": "Suppliers (with rules)"
+      },
+      "description": {
+        "pt": "Due diligence a fornecedores: as regras propõem Aprovado, Não aprovado (sinal de alerta, ex.: sanções), Revisão ou Informação insuficiente; a equipa decide.",
+        "en": "Supplier due diligence: the rules propose Approved, Not approved (red flag, e.g. sanctions), Review or Insufficient information; the team decides."
+      },
+      "when": {
+        "pt": "Homologação de fornecedores e parceiros, com sinais de alerta (sanções, processos judiciais, política anticorrupção).",
+        "en": "Supplier and partner vetting, with red flags (sanctions, lawsuits, anti-corruption policy)."
+      }
+    }
+  ],
+  "steps": [
+    {
+      "key": "purpose",
+      "kind": "cases",
+      "level": "essential",
+      "title": {
+        "pt": "Para que é o questionário?",
+        "en": "What is the questionnaire for?"
+      },
+      "purpose": {
+        "pt": "Escolhe o caso mais parecido com o teu: o «Novo questionário» abre com o modelo desse caso (perguntas, textos e, quando tem, regras com casos de teste). Também podes partir do documento que já usas, duplicar outro questionário ou começar em branco.",
+        "en": "Pick the case closest to yours: «New questionnaire» opens with that case's template (questions, texts and, when it has them, rules with test cases). You can also start from the document you already use, duplicate another questionnaire or start blank."
+      }
+    },
+    {
+      "key": "questions",
+      "level": "essential",
+      "title": {
+        "pt": "Perguntas",
+        "en": "Questions"
+      },
+      "purpose": {
+        "pt": "O nome do questionário, as línguas em que se responde, as secções e as perguntas — com o tipo de resposta, o que é obrigatório e as perguntas que só aparecem consoante outra resposta.",
+        "en": "The questionnaire's name, the languages it is answered in, the sections and the questions — with the answer type, what is required and the questions that only show depending on another answer."
+      },
+      "essential": [
+        "title",
+        "use_case",
+        "languages",
+        "sections",
+        "questions"
+      ],
+      "advanced": [
+        "glossary"
+      ],
+      "done_if": [
+        "questions"
+      ],
+      "when": {
+        "pt": "O tipo de questionário (adesão, consentimento, elegibilidade…) é obrigatório e aparece no Anexo Metodológico. Avançado: o glossário (no editor) — termos explicados a quem responde, ao lado da pergunta — e, nesta tab, carregar um questionário preparado pela Genesis (.json).",
+        "en": "The questionnaire type (onboarding, consent, eligibility…) is required and appears in the Methodology Annex. Advanced: the glossary (in the editor) — terms explained to the respondent, next to the question — and, in this tab, uploading a questionnaire prepared by Genesis (.json)."
+      },
+      "examples": [
+        {
+          "pt": "Adesão: Identificação (nome, data de nascimento, morada) e Atividade (profissão, origem dos fundos; «Outra — qual?» só aparece se escolher «Outra»).",
+          "en": "Onboarding: Identification (name, date of birth, address) and Activity (profession, source of funds; «Other — which?» only shows if «Other» is chosen)."
+        }
+      ]
+    },
+    {
+      "key": "rules",
+      "level": "optional",
+      "title": {
+        "pt": "Regras de avaliação",
+        "en": "Assessment rules"
+      },
+      "purpose": {
+        "pt": "Pontuações, resultados possíveis e quando cada um se aplica. Cada versão é aprovada, entra em vigor numa data e é provada pelos casos de teste antes de se guardar; o Anexo Metodológico sai daqui.",
+        "en": "Scores, possible results and when each one applies. Each version is approved, takes effect on a date and is proved by the test cases before it is saved; the Methodology Annex comes from here."
+      },
+      "essential": [
+        "methodology"
+      ],
+      "show_if": {
+        "case_in": [
+          "investor_profile",
+          "eligibility",
+          "declarations",
+          "supplier"
+        ],
+        "any_present": [
+          "methodology"
+        ]
+      },
+      "when": {
+        "pt": "Só quando a avaliação tem de seguir uma metodologia escrita (regulador, auditoria). Sem regras o questionário funciona na mesma: a equipa lê e escolhe um desfecho. Para acrescentar regras depois: editor do questionário → separador «⚖ Regras».",
+        "en": "Only when the assessment must follow a written methodology (regulator, audit). Without rules the questionnaire still works: the team reads and picks an outcome. To add rules later: questionnaire editor → «⚖ Rules» tab."
+      },
+      "examples": [
+        {
+          "pt": "Perfil de investidor: o conhecimento conta as respostas certas; 3 ou mais, com experiência suficiente, dá Adequado; 1 ou menos dá Não adequado; respostas em falta dão Informação insuficiente.",
+          "en": "Investor profile: knowledge counts the right answers; 3 or more, with enough experience, gives Appropriate; 1 or fewer gives Not appropriate; missing answers give Insufficient information."
+        }
+      ]
+    },
+    {
+      "key": "texts",
+      "level": "essential",
+      "title": {
+        "pt": "Textos para quem responde",
+        "en": "Texts for the respondent"
+      },
+      "purpose": {
+        "pt": "A introdução, a informação sobre dados pessoais, a declaração final e, com regras, as advertências — os textos que a pessoa lê e aceita, em todas as línguas do questionário.",
+        "en": "The introduction, the personal data information, the final declaration and, with rules, the warnings — the texts the person reads and accepts, in every language of the questionnaire."
+      },
+      "essential": [
+        "texts"
+      ],
+      "advanced": [
+        "presentation"
+      ],
+      "done_if": [
+        "texts"
+      ],
+      "when": {
+        "pt": "Os modelos trazem textos de exemplo com [entidade], [finalidade]… para trocar — o texto jurídico é sempre revisto por uma pessoa. Avançado: a apresentação (ex.: mostrar também a outra língua, por baixo).",
+        "en": "Templates bring sample texts with [entity], [purpose]… to replace — legal text is always reviewed by a person. Advanced: the presentation (e.g. also showing the other language, underneath)."
+      }
+    },
+    {
+      "key": "decision",
+      "level": "essential",
+      "title": {
+        "pt": "Quem decide e como",
+        "en": "Who decides and how"
+      },
+      "purpose": {
+        "pt": "A equipa que decide os processos e o que pode escolher: sem regras, os desfechos (até 6); com regras, confirmar ou mudar a proposta do motor. Aqui também a 2.ª validação e o controlo de qualidade.",
+        "en": "The team that decides the processes and what it can choose: without rules, the outcomes (up to 6); with rules, confirm or change the engine's proposal. Second validation and quality control are here too."
+      },
+      "essential": [
+        "review"
+      ],
+      "advanced": [
+        "metric_targets"
+      ],
+      "links": [
+        "team_roles",
+        "team_area"
+      ],
+      "when": {
+        "pt": "Sem desfechos configurados, o único é «Concluído». A 2.ª validação faz sentido quando um desfecho tem consequências (ex.: «Recusado» pede sempre uma segunda pessoa). Avançado: as metas dos indicadores (taxa de conclusão, tempo de preenchimento, …).",
+        "en": "With no outcomes set, the only one is «Completed». Second validation makes sense when an outcome has consequences (e.g. «Refused» always asks for a second person). Advanced: indicator targets (completion rate, filling time, …)."
+      },
+      "examples": [
+        {
+          "pt": "Adesão: Aceite (positivo), Recusado (negativo, com 2.ª validação), Falta informação.",
+          "en": "Onboarding: Accepted (positive), Refused (negative, with second validation), Information missing."
+        }
+      ]
+    },
+    {
+      "key": "invite",
+      "level": "essential",
+      "title": {
+        "pt": "Como chega a quem responde",
+        "en": "How it reaches the respondent"
+      },
+      "purpose": {
+        "pt": "Quanto tempo vale o link pessoal, por onde segue o código de entrada (email, SMS) e quantas tentativas tem, e os emails automáticos: convite, lembretes (cada um com um link novo) e alerta à equipa quando não há resposta.",
+        "en": "How long the personal link is valid, how the sign-in code is sent (email, SMS) and how many attempts it allows, and the automatic emails: invite, reminders (each with a new link) and an alert to the team when there is no answer."
+      },
+      "essential": [
+        "access",
+        "communications"
+      ],
+      "advanced": [
+        "uploads"
+      ],
+      "links": [
+        "contacts_timeline"
+      ],
+      "when": {
+        "pt": "Os valores por omissão servem a maioria dos casos; os emails automáticos começam desligados. Avançado: os ficheiros carregados (documento de identificação, CV) — pedem-se quando uma pergunta é pré-preenchida a partir deles; aqui decide-se se o ficheiro se apaga na submissão ou fica com o processo.",
+        "en": "The defaults suit most cases; automatic emails start off. Advanced: uploaded files (ID document, CV) — requested when a question is pre-filled from them; here you decide whether the file is deleted on submission or kept with the process."
+      }
+    },
+    {
+      "key": "documents",
+      "level": "optional",
+      "title": {
+        "pt": "Documentos oficiais",
+        "en": "Official documents"
+      },
+      "purpose": {
+        "pt": "Os documentos gerados a partir das respostas, nos modelos do próprio cliente — o questionário preenchido, a folha interna, a advertência, folhas de cálculo — e o fundo a que o questionário se aplica, quando há.",
+        "en": "The documents generated from the answers, on the client's own templates — the filled-in questionnaire, the internal sheet, the warning, spreadsheets — and the fund the questionnaire applies to, when there is one."
+      },
+      "essential": [
+        "documents"
+      ],
+      "advanced": [
+        "fund",
+        "funds"
+      ],
+      "when": {
+        "pt": "Quando o cliente precisa do documento no seu próprio formato (Word ou Excel) para arquivo ou para o regulador. Avançado: o fundo (subscrições) — um só, ou uma lista a escolher em cada processo.",
+        "en": "When the client needs the document in its own format (Word or Excel) for filing or for the regulator. Advanced: the fund (subscriptions) — a single one, or a list to pick from in each process."
+      }
+    },
+    {
+      "key": "retention",
+      "level": "essential",
+      "title": {
+        "pt": "Prazo de conservação",
+        "en": "Retention period"
+      },
+      "purpose": {
+        "pt": "Por quanto tempo se guarda cada processo e o que acontece no fim: com o apagamento automático ligado, o processo, os documentos e os dados da pessoa apagam-se sozinhos. Desligado, nada se apaga.",
+        "en": "How long each process is kept and what happens at the end: with automatic deletion on, the process, the documents and the person's data are deleted automatically. Off, nothing is deleted."
+      },
+      "essential": [
+        "retention"
+      ],
+      "when": {
+        "pt": "Sempre que há dados pessoais — o prazo vem da lei ou da política do cliente (ex.: 5 anos depois da decisão; 90 dias para os que nunca chegam a ser decididos: cancelados, com o link expirado ou arquivados sem decisão).",
+        "en": "Whenever there is personal data — the period comes from the law or the client's policy (e.g. 5 years after the decision; 90 days for those never decided: cancelled, with the link expired or archived without a decision)."
+      }
+    },
+    {
+      "key": "review",
+      "kind": "review",
+      "level": "essential",
+      "title": {
+        "pt": "Rever e testar",
+        "en": "Review and test"
+      },
+      "purpose": {
+        "pt": "O que falta antes de enviar o primeiro convite, um processo de teste para ver o caminho completo (responder, decidir, documentos) e, depois, o acompanhamento.",
+        "en": "What is missing before sending the first invite, a test process to see the full path (answer, decide, documents) and, afterwards, the follow-up."
+      }
+    }
+  ],
+  "links": [
+    {
+      "key": "team_roles",
+      "direction": "in",
+      "module": "team",
+      "path": "team.modules.intake",
+      "title": {
+        "pt": "Equipa e papéis",
+        "en": "Team and roles"
+      },
+      "purpose": {
+        "pt": "Os papéis da equipa dizem quem decide, quem faz a 2.ª validação e quem descarrega documentos.",
+        "en": "Team roles say who decides, who does the second validation and who downloads documents."
+      }
+    },
+    {
+      "key": "team_area",
+      "direction": "out",
+      "module": "team_area",
+      "path": "frontend.features.intakeTeam",
+      "title": {
+        "pt": "Área da equipa (site do cliente)",
+        "en": "Team area (client site)"
+      },
+      "purpose": {
+        "pt": "Onde a equipa vê os processos, lê as respostas e decide.",
+        "en": "Where the team sees the processes, reads the answers and decides."
+      }
+    },
+    {
+      "key": "contacts_timeline",
+      "direction": "out",
+      "module": "contacts",
+      "path": "contacts.link_intake",
+      "title": {
+        "pt": "Contactos",
+        "en": "Contacts"
+      },
+      "purpose": {
+        "pt": "Cada processo entra na linha temporal do contacto da pessoa (pelo email ou telemóvel do convite).",
+        "en": "Each process goes into the timeline of the person's contact (by the invite's email or mobile)."
+      }
+    }
+  ]
+}

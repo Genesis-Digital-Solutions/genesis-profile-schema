@@ -1,0 +1,49 @@
+{
+  "module": "review_queues",
+  "case": "simple",
+  "lang": "pt",
+  "key": "pedidos",
+  "item": {
+    "states": [
+      {
+        "id": "new",
+        "kind": "open",
+        "label": "Novo"
+      },
+      {
+        "id": "done",
+        "kind": "final",
+        "label": "Concluído"
+      },
+      {
+        "id": "rejected",
+        "kind": "final",
+        "label": "Rejeitado"
+      }
+    ],
+    "actions": [
+      {
+        "id": "complete",
+        "from": [
+          "new"
+        ],
+        "to": "done",
+        "label": "Concluir"
+      },
+      {
+        "id": "reject",
+        "from": [
+          "new"
+        ],
+        "to": "rejected",
+        "label": "Rejeitar",
+        "note_required": true
+      }
+    ]
+  },
+  "links": [],
+  "features": {
+    "reviewQueue": true
+  },
+  "human": []
+}

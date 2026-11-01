@@ -1,0 +1,319 @@
+{
+  "module": "ingest",
+  "order": 5,
+  "title": {
+    "pt": "Ingestão de email",
+    "en": "Email ingestion"
+  },
+  "summary": {
+    "pt": "Uma caixa de correio vigiada: cada email que passa os filtros é lido pelo assistente (texto e anexos), os dados são extraídos e nasce um pedido numa fila, onde a equipa confere e decide.",
+    "en": "A watched mailbox: each email that passes the filters is read by the assistant (text and attachments), the data is extracted and a request is created in a queue, where the team checks and decides."
+  },
+  "scope": "map",
+  "root": "ingest.sources",
+  "item_model": "IngestSource",
+  "cases": [
+    {
+      "key": "orders",
+      "title": {
+        "pt": "Encomendas por email",
+        "en": "Orders by email"
+      },
+      "description": {
+        "pt": "Os clientes enviam encomendas (no corpo ou em PDF); o assistente lê cliente, linhas e datas, incluindo PDF digitalizados, e cria um pedido na fila das encomendas.",
+        "en": "Customers send orders (in the body or as PDF); the assistant reads customer, lines and dates, including scanned PDFs, and creates a request in the orders queue."
+      },
+      "when": {
+        "pt": "Quando uma caixa recebe documentos com sempre os mesmos dados a lançar noutro sistema (encomendas, faturas, notas de devolução).",
+        "en": "When a mailbox receives documents that always carry the same data to be entered in another system (orders, invoices, return notes)."
+      }
+    },
+    {
+      "key": "service_requests",
+      "title": {
+        "pt": "Pedidos com triagem",
+        "en": "Requests with triage"
+      },
+      "description": {
+        "pt": "Uma caixa geral (ex.: geral@): o assistente classifica cada email por tema, propõe urgência e departamento e encaminha cada tema para a fila certa; o que não reconhece vai para uma fila de triagem.",
+        "en": "A general mailbox (e.g. info@): the assistant classifies each email by topic, proposes urgency and department and routes each topic to the right queue; what it does not recognise goes to a triage queue."
+      },
+      "when": {
+        "pt": "Atendimento por email com assuntos diferentes que equipas diferentes tratam.",
+        "en": "Email service with different subjects handled by different teams."
+      }
+    },
+    {
+      "key": "simple",
+      "title": {
+        "pt": "Uma caixa, uma fila",
+        "en": "One mailbox, one queue"
+      },
+      "description": {
+        "pt": "Cada email que passa os filtros vira um pedido numa fila. Ajusta-se depois o que se extrai.",
+        "en": "Each email that passes the filters becomes a request in a queue. What is extracted is adjusted afterwards."
+      },
+      "when": {
+        "pt": "Para começar, ou quando a equipa só precisa de ver os emails como pedidos com dono e estado.",
+        "en": "To get started, or when the team only needs to see emails as requests with an owner and a state."
+      }
+    }
+  ],
+  "steps": [
+    {
+      "key": "purpose",
+      "kind": "cases",
+      "level": "essential",
+      "title": {
+        "pt": "Para que é a caixa?",
+        "en": "What is the mailbox for?"
+      },
+      "purpose": {
+        "pt": "Escolhe o caso mais parecido com o teu: decide que passos aparecem (ex.: a triagem só nos pedidos com triagem). Não muda nada do que já está configurado.",
+        "en": "Pick the case closest to yours: it decides which steps show (e.g. triage only for requests with triage). It changes nothing already set up."
+      }
+    },
+    {
+      "key": "mailbox",
+      "level": "essential",
+      "title": {
+        "pt": "Caixa e fila",
+        "en": "Mailbox and queue"
+      },
+      "purpose": {
+        "pt": "A caixa vigiada, o identificador da fonte e a fila que recebe os pedidos.",
+        "en": "The watched mailbox, the source identifier and the queue that receives the requests."
+      },
+      "essential": [
+        "id",
+        "mailbox",
+        "queue",
+        "enabled"
+      ],
+      "advanced": [
+        "variant_slug"
+      ],
+      "done_if": [
+        "id",
+        "mailbox"
+      ],
+      "when": {
+        "pt": "O identificador não se muda depois de a fonte correr: guarda onde a leitura parou, e mudá-lo recomeça a leitura da caixa. Sem fila, os pedidos vão para uma fila com o nome do identificador. Avançado: a variante dona da fonte (a fonte corre no âmbito dela).",
+        "en": "The identifier is not changed once the source has run: it keeps where reading stopped, and changing it restarts reading the mailbox. Without a queue, requests go to a queue named after the identifier. Advanced: the variant that owns the source (the source runs in its scope)."
+      },
+      "examples": [
+        {
+          "pt": "encomendas@cliente.pt → fila «encomendas», identificador «encomendas».",
+          "en": "orders@customer.com → «orders» queue, identifier «orders»."
+        }
+      ]
+    },
+    {
+      "key": "connection",
+      "level": "essential",
+      "title": {
+        "pt": "Ligação à caixa",
+        "en": "Mailbox connection"
+      },
+      "purpose": {
+        "pt": "Por onde se lê o correio: Microsoft 365 (por omissão) ou IMAP, só em leitura, com as credenciais guardadas no cofre do cliente — nunca no perfil.",
+        "en": "How mail is read: Microsoft 365 (default) or IMAP, read-only, with the credentials kept in the client's vault — never in the profile."
+      },
+      "essential": [
+        "transport",
+        "imap"
+      ],
+      "advanced": [
+        "lookback_hours"
+      ],
+      "when": {
+        "pt": "IMAP: o identificador da fonte só pode ter letras, números e hífen, e lê-se uma pasta (por omissão a INBOX); mover emails para pastas e as respostas redigidas pelo assistente não funcionam em IMAP. Avançado: quantas horas para trás se lê na primeira vez.",
+        "en": "IMAP: the source identifier may only have letters, numbers and hyphens, and one folder is read (INBOX by default); moving emails to folders and assistant-drafted replies do not work over IMAP. Advanced: how many hours back to read the first time."
+      }
+    },
+    {
+      "key": "filters",
+      "level": "optional",
+      "title": {
+        "pt": "Filtros",
+        "en": "Filters"
+      },
+      "purpose": {
+        "pt": "Que emails se ignoram (remetentes, domínios, assuntos) e, ao contrário, que termos fazem um email entrar (no remetente, assunto, corpo ou anexos).",
+        "en": "Which emails are ignored (senders, domains, subjects) and, conversely, which terms make an email come in (in the sender, subject, body or attachments)."
+      },
+      "essential": [
+        "ignore",
+        "accept"
+      ],
+      "when": {
+        "pt": "Quando a caixa recebe muito mais do que interessa (newsletters, avisos automáticos). Procurar termos no conteúdo dos anexos digitalizados usa OCR, que é pago.",
+        "en": "When the mailbox receives much more than is relevant (newsletters, automatic notices). Searching terms in the content of scanned attachments uses OCR, which is paid."
+      },
+      "examples": [
+        {
+          "pt": "Ignorar o domínio noreply.fornecedor.pt; aceitar só emails com «encomenda» no assunto ou no nome do anexo.",
+          "en": "Ignore the domain noreply.supplier.com; accept only emails with «order» in the subject or the attachment name."
+        }
+      ]
+    },
+    {
+      "key": "classify",
+      "level": "optional",
+      "title": {
+        "pt": "Classificar e encaminhar",
+        "en": "Classify and route"
+      },
+      "purpose": {
+        "pt": "Os temas possíveis e quais viram pedido, a urgência e o departamento propostos, e para que fila vai cada tema.",
+        "en": "The possible topics and which become a request, the proposed urgency and department, and which queue each topic goes to."
+      },
+      "essential": [
+        "classifier",
+        "routes",
+        "triage_queue"
+      ],
+      "advanced": [
+        "triage_min_confidence"
+      ],
+      "show_if": {
+        "case_in": [
+          "service_requests"
+        ],
+        "any_present": [
+          "classifier",
+          "routes",
+          "triage_queue"
+        ]
+      },
+      "when": {
+        "pt": "O que o assistente não reconhece com segurança vai para a fila de triagem, para uma pessoa decidir. Avançado: o limiar de confiança (por omissão 0,6).",
+        "en": "What the assistant does not recognise with confidence goes to the triage queue, for a person to decide. Advanced: the confidence threshold (0.6 by default)."
+      },
+      "examples": [
+        {
+          "pt": "Temas «reclamação», «pedido de informação», «faturação»; faturação → fila «faturacao», o resto → «atendimento».",
+          "en": "Topics «complaint», «information request», «billing»; billing → «billing» queue, the rest → «service»."
+        }
+      ]
+    },
+    {
+      "key": "extraction",
+      "level": "essential",
+      "title": {
+        "pt": "O que se extrai",
+        "en": "What is extracted"
+      },
+      "purpose": {
+        "pt": "Os campos do cabeçalho e as colunas das linhas que o assistente lê de cada email, os anexos que lê (tipos, quantos, OCR para digitalizados) e as regras de números, totais e divisão em vários pedidos.",
+        "en": "The header fields and line columns the assistant reads from each email, the attachments it reads (types, how many, OCR for scanned ones) and the rules for numbers, totals and splitting into several requests."
+      },
+      "essential": [
+        "extraction"
+      ],
+      "advanced": [
+        "max_body_chars"
+      ],
+      "when": {
+        "pt": "Sem campos definidos, extraem-se os de uma encomenda. Campos obrigatórios em falta fazem repetir a leitura uma vez com OCR. Avançado: o tamanho máximo do corpo do email lido (por omissão 20 000 caracteres, nunca menos).",
+        "en": "With no fields defined, those of an order are extracted. Missing required fields make the reading repeat once with OCR. Advanced: the maximum size of the email body read (20,000 characters by default, never less)."
+      },
+      "examples": [
+        {
+          "pt": "Cabeçalho: cliente, NIF, data de entrega; linhas: artigo, quantidade, preço; anexos PDF com OCR automático.",
+          "en": "Header: customer, VAT number, delivery date; lines: item, quantity, price; PDF attachments with automatic OCR."
+        }
+      ]
+    },
+    {
+      "key": "reply",
+      "level": "optional",
+      "title": {
+        "pt": "Resposta a quem escreveu",
+        "en": "Reply to the sender"
+      },
+      "purpose": {
+        "pt": "Uma resposta automática de receção e, à parte, uma resposta redigida pelo assistente a partir da base de conhecimento — como rascunho para rever ou enviada logo.",
+        "en": "An automatic acknowledgement and, separately, a reply drafted by the assistant from the knowledge base — as a draft to review or sent straight away."
+      },
+      "essential": [
+        "reply"
+      ],
+      "when": {
+        "pt": "O canal de envio é Microsoft 365 (sai da própria caixa) ou o serviço de email da Genesis. Numa fonte IMAP nenhuma das duas respostas sai (o job só lê a caixa).",
+        "en": "The sending channel is Microsoft 365 (sent from the mailbox itself) or the Genesis email service. On an IMAP source neither reply is sent (the job only reads the mailbox)."
+      }
+    },
+    {
+      "key": "after",
+      "level": "optional",
+      "title": {
+        "pt": "Arquivo e pastas",
+        "en": "Archive and folders"
+      },
+      "purpose": {
+        "pt": "Guardar o email original e os anexos (a equipa vê-os no pedido e as automações usam-nos) e mover os emails tratados, ignorados ou com erro para pastas da caixa.",
+        "en": "Keep the original email and attachments (the team sees them on the request and automations use them) and move handled, ignored or failed emails to mailbox folders."
+      },
+      "essential": [
+        "archive",
+        "post_process"
+      ],
+      "when": {
+        "pt": "O arquivo vem ligado numa fonte nova; sem ele, o pedido não mostra o email original e o envio dos anexos ao ERP não tem nada. Mover para pastas só funciona com Microsoft 365.",
+        "en": "Archiving comes on in a new source; without it the request does not show the original email and sending attachments to the ERP has nothing. Moving to folders only works with Microsoft 365."
+      }
+    },
+    {
+      "key": "learning",
+      "level": "advanced",
+      "title": {
+        "pt": "Aprender com a equipa",
+        "en": "Learn from the team"
+      },
+      "purpose": {
+        "pt": "Quando a equipa já escolheu o cliente de um remetente, o assistente propõe o mesmo nos emails seguintes desse remetente (ou do domínio).",
+        "en": "When the team has already picked the customer for a sender, the assistant proposes the same on that sender's next emails (or the domain's)."
+      },
+      "essential": [
+        "resolver"
+      ],
+      "when": {
+        "pt": "Útil quando os mesmos clientes escrevem sempre de endereços diferentes do que está no ERP. O que se aprende vale um ano por omissão.",
+        "en": "Useful when the same customers always write from addresses different from those in the ERP. What is learnt is valid for one year by default."
+      }
+    },
+    {
+      "key": "review",
+      "kind": "review",
+      "level": "essential",
+      "title": {
+        "pt": "Rever e testar",
+        "en": "Review and test"
+      },
+      "purpose": {
+        "pt": "O que falta antes de ligar a fonte, a ligação à caixa testada e o primeiro email a chegar à fila.",
+        "en": "What is missing before turning the source on, the mailbox connection tested and the first email reaching the queue."
+      },
+      "links": [
+        "aging_alerts"
+      ]
+    }
+  ],
+  "links": [
+    {
+      "key": "aging_alerts",
+      "direction": "out",
+      "module": "review_queues",
+      "path": "ingest.alerts.aging_hours",
+      "title": {
+        "pt": "Pedidos parados (alertas)",
+        "en": "Stalled requests (alerts)"
+      },
+      "purpose": {
+        "pt": "As horas a partir das quais um pedido conta como parado — usadas também no prazo das filas que não têm o seu — e o email de resumo dos parados.",
+        "en": "The hours after which a request counts as stalled — also used as the deadline of queues that have none of their own — and the summary email of stalled requests."
+      }
+    }
+  ]
+}
