@@ -1,5 +1,5 @@
 """
-genesis_profile_schema/module_guides.py — o PERCURSO de configuração de cada módulo (v0.1.139,
+genesis_profile_schema/module_guides.py — o PERCURSO de configuração de cada módulo (v0.1.140,
 31 Out 2026).
 
 Camada do contrato ao lado da forma (`client_profile_schema.py`), de quem vê (`exposure.py`),

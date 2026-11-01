@@ -1,4 +1,4 @@
-"""Desfechos do modo simples (v0.1.139): `review.outcomes` num questionário SEM regras."""
+"""Desfechos do modo simples (v0.1.140): `review.outcomes` num questionário SEM regras."""
 
 import copy
 

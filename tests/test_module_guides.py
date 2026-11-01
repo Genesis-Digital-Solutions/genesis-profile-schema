@@ -1,4 +1,4 @@
-"""Percursos de configuração por módulo (v0.1.139): a fonte única do ecrã guiado, do manual,
+"""Percursos de configuração por módulo (v0.1.140): a fonte única do ecrã guiado, do manual,
 do agente do Studio e do backoffice do cliente."""
 
 import copy

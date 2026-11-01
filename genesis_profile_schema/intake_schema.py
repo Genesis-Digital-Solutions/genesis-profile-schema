@@ -689,7 +689,7 @@ class IntakeReviewPolicy(BaseModel):
     # Colunas a mais na lista da área da equipa (v0.1.91): até 3 perguntas
     # (ex.: País). Mostra a resposta; o resto da lista é fixo no produto.
     list_columns: List[Key] = Field(default_factory=list, max_length=MAX_LIST_COLUMNS)
-    # Desfechos do modo simples (v0.1.139): até 6, só num questionário sem `methodology` — com
+    # Desfechos do modo simples (v0.1.140): até 6, só num questionário sem `methodology` — com
     # regras os resultados são os da metodologia. Vazio = «Concluído».
     outcomes: List[IntakeSimpleOutcome] = Field(default_factory=list, max_length=MAX_SIMPLE_OUTCOMES)
 
