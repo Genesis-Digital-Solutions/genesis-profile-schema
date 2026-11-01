@@ -17,7 +17,7 @@ def _raw(module="review_queues"):
 
 def test_todos_os_percursos_carregam():
     guides = mg.list_guides()
-    assert [g["module"] for g in guides] == ["ingest", "review_queues", "intake", "cv_screening", "retrieval"]
+    assert [g["module"] for g in guides] == ["ingest", "review_queues", "intake", "cv_screening", "retrieval", "auth"]
 
 
 def test_filas_cobrem_todos_os_campos_de_uma_fila():
@@ -267,3 +267,18 @@ def test_pesquisa_cobre_todos_os_campos_lidos_pelo_core():
 def test_pesquisa_ferramenta_ligada_pelo_valor_esperado():
     link = next(l for l in mg.get_guide("retrieval")["links"] if l["key"] == "kb_tool")
     assert link["path"] == "tools.enabled" and link["expects"] == "search_knowledge_base"
+
+
+# ── Autenticação (1 Nov 2026): percurso de perfil sobre `frontend.auth` + `access` ──
+
+def test_autenticacao_cobre_todos_os_campos_do_login_e_do_acesso():
+    from genesis_profile_schema import exposure
+    g = mg.get_guide("auth")
+    placed = {f for s in g["steps"] for f in s.get("essential", []) + s.get("advanced", [])}
+    wanted = {p for p in exposure.leaf_paths() if p.startswith(("frontend.auth.", "access."))}
+    assert placed == wanted
+
+
+def test_autenticacao_so_a_equipa_pelo_valor_esperado():
+    link = next(l for l in mg.get_guide("auth")["links"] if l["key"] == "team_only")
+    assert link["path"] == "team.entry" and link["expects"] == "team"
