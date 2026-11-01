@@ -166,7 +166,8 @@
       "purpose": {
         "pt": "Cada decisão fica com o nome de quem a tomou (o AI Act pede supervisão por pessoas identificadas) e as triagens ficam visíveis fora do browser onde foram feitas.",
         "en": "Each decision carries the name of who took it (the AI Act asks for oversight by identified people) and screenings are visible outside the browser where they were made."
-      }
+      },
+      "expects": "required"
     },
     {
       "key": "high_risk",
@@ -180,7 +181,8 @@
       "purpose": {
         "pt": "A triagem de candidatos é alto risco (Anexo III, ponto 4) sem a derrogação do art. 6.º, n.º 3: a Conformidade tem de o dizer.",
         "en": "Candidate screening is high risk (Annex III, point 4) with no Article 6(3) derogation: Compliance has to say so."
-      }
+      },
+      "expects": "high"
     },
     {
       "key": "recruiters",

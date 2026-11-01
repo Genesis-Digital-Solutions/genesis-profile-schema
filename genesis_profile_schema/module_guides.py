@@ -33,7 +33,7 @@ import json
 import re
 from functools import lru_cache
 from importlib import resources
-from typing import Any, Dict, List, Literal, Optional, Tuple
+from typing import Any, Dict, List, Literal, Optional, Tuple, Union
 
 from pydantic import BaseModel, ConfigDict, Field, field_validator, model_validator
 
@@ -104,6 +104,9 @@ class GuideLink(BaseModel):
     path: str = Field(min_length=1, max_length=200)
     title: Text
     purpose: Text
+    #: O valor que conta como «ligada» quando não basta haver um valor (1 Nov 2026; ex.: o login
+    #: obrigatório é `required`, não `optional`). Sem ele, qualquer valor conta.
+    expects: Optional[Union[str, bool]] = None
 
     @field_validator("title", "purpose")
     @classmethod

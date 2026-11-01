@@ -246,3 +246,9 @@ def test_cvs_cobrem_todos_os_campos_da_configuracao():
 def test_cvs_ligacoes_aos_modulos_de_que_dependem():
     keys = {l["key"] for l in mg.get_guide("cv_screening")["links"]}
     assert keys == {"workspace", "login", "high_risk", "recruiters"}
+
+
+def test_ligacao_com_valor_esperado():
+    links = {l["key"]: l for l in mg.get_guide("cv_screening")["links"]}
+    assert links["login"]["expects"] == "required" and links["high_risk"]["expects"] == "high"
+    assert "expects" not in links["workspace"]
