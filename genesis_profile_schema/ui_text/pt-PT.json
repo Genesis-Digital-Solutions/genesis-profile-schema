@@ -2975,6 +2975,79 @@
     },
     "tools.config.analyse_cv.pre_screening_notice.en": {
       "label": "Texto em inglês"
+    },
+    "tools.config.read_attached_document": {
+      "label": "Leitura de documentos anexados"
+    },
+    "tools.config.read_attached_document.top_k": {
+      "label": "Excertos entregues ao assistente",
+      "help": "Quantos excertos dos documentos anexados o assistente recebe por pergunta, no total."
+    },
+    "tools.config.read_attached_document.k_semantic": {
+      "label": "Candidatos da pesquisa por significado",
+      "help": "Quantos excertos a pesquisa por significado propõe antes de se juntarem as duas pesquisas."
+    },
+    "tools.config.read_attached_document.k_bm25": {
+      "label": "Candidatos da pesquisa por palavras",
+      "help": "Quantos excertos a pesquisa por palavras exatas propõe antes de se juntarem as duas pesquisas."
+    },
+    "tools.config.read_attached_document.head_n": {
+      "label": "Excertos do início do documento",
+      "help": "Excertos do início de cada documento que entram sempre (títulos, partes, objeto)."
+    },
+    "tools.config.read_attached_document.tail_n": {
+      "label": "Excertos do fim do documento",
+      "help": "Excertos do fim de cada documento que entram sempre (assinaturas, datas, conclusões)."
+    },
+    "tools.config.read_attached_document.per_file_cap": {
+      "label": "Máximo por documento",
+      "help": "Com vários documentos anexados, o máximo de excertos de cada um — para um documento grande não esconder os outros."
+    },
+    "tools.config.recall_past_conversations": {
+      "label": "Memória das conversas anteriores"
+    },
+    "tools.config.recall_past_conversations.max_results": {
+      "label": "Conversas anteriores lembradas",
+      "help": "Quantas conversas anteriores da mesma pessoa o assistente pode trazer para a resposta."
+    },
+    "tools.config.recall_past_conversations.min_similarity": {
+      "label": "Parecença mínima",
+      "help": "De 0 a 1: só se lembra das conversas pelo menos tão parecidas com a pergunta."
+    },
+    "tools.config.get_email_content": {
+      "label": "Ler o email original"
+    },
+    "tools.config.get_email_content.queue": {
+      "label": "Fila dos pedidos",
+      "help": "O assistente lê o corpo do email que deu origem a um pedido desta fila (com o arquivo ligado na fonte). Sem fila, a ferramenta fica desligada."
+    },
+    "tools.config.list_email_files_names": {
+      "label": "Listar os anexos do pedido"
+    },
+    "tools.config.list_email_files_names.queue": {
+      "label": "Fila dos pedidos",
+      "help": "O assistente vê os nomes dos anexos arquivados de um pedido desta fila, sem os abrir. Sem fila, a ferramenta fica desligada."
+    },
+    "tools.config.get_email_file_content": {
+      "label": "Ler um anexo do pedido"
+    },
+    "tools.config.get_email_file_content.queue": {
+      "label": "Fila dos pedidos",
+      "help": "O assistente lê um anexo arquivado de um pedido desta fila. Sem fila, a ferramenta fica desligada."
+    },
+    "tools.config.extract_invoice": {
+      "label": "Ler faturas"
+    },
+    "tools.config.extract_invoice.queue": {
+      "label": "Fila dos pedidos",
+      "help": "As faturas que o assistente lê entram como pedidos nesta fila. Sem fila, a ferramenta fica desligada."
+    },
+    "tools.config.check_ticket_status": {
+      "label": "Estado de um pedido"
+    },
+    "tools.config.check_ticket_status.queue": {
+      "label": "Fila dos pedidos",
+      "help": "Os pedidos desta fila cujo estado o assistente pode consultar pela referência. Vazio: a fila da ferramenta de abrir pedidos."
     }
   }
 }
