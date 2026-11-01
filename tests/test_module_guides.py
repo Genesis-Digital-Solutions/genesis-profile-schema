@@ -17,7 +17,7 @@ def _raw(module="review_queues"):
 
 def test_todos_os_percursos_carregam():
     guides = mg.list_guides()
-    assert [g["module"] for g in guides] == ["ingest", "review_queues", "intake"]
+    assert [g["module"] for g in guides] == ["ingest", "review_queues", "intake", "cv_screening"]
 
 
 def test_filas_cobrem_todos_os_campos_de_uma_fila():
@@ -232,3 +232,17 @@ def test_forma_da_fonte_ida_e_volta_sem_perder_nada():
            "resolver": {"learn_from_operator": {"enabled": True, "ttl_days": 365}}, "chave_nova": 1}
     out = IngestSource.model_validate(src).model_dump(by_alias=True, exclude_none=True)
     assert out == src
+
+
+# ── Triagem de CVs (1 Nov 2026): percurso de perfil sobre `tools.config.analyse_cv` ──
+
+def test_cvs_cobrem_todos_os_campos_da_configuracao():
+    from genesis_profile_schema import tool_config_models
+    g = mg.get_guide("cv_screening")
+    placed = {f.rsplit(".", 1)[1] for s in g["steps"] for f in s.get("essential", []) + s.get("advanced", [])}
+    assert placed == set(tool_config_models()["analyse_cv"].model_fields)
+
+
+def test_cvs_ligacoes_aos_modulos_de_que_dependem():
+    keys = {l["key"] for l in mg.get_guide("cv_screening")["links"]}
+    assert keys == {"workspace", "login", "high_risk", "recruiters"}

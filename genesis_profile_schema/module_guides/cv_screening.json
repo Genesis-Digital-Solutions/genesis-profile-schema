@@ -1,0 +1,200 @@
+{
+  "module": "cv_screening",
+  "order": 30,
+  "title": {
+    "pt": "Triagem de CVs",
+    "en": "CV screening"
+  },
+  "summary": {
+    "pt": "O ecrã «Triagem de CVs» do assistente: o recrutador confirma os critérios da vaga, a IA verifica cada CV requisito a requisito com citações e a decisão é sempre de uma pessoa. Alto risco pelo AI Act (Anexo III, ponto 4 — emprego).",
+    "en": "The assistant's «CV Screening» screen: the recruiter confirms the job criteria, the AI checks each CV requirement by requirement with quotes and the decision always rests with a person. High risk under the AI Act (Annex III, point 4 — employment)."
+  },
+  "scope": "profile",
+  "root": "tools.config.analyse_cv",
+  "steps": [
+    {
+      "key": "prepare",
+      "level": "essential",
+      "title": {
+        "pt": "Preparar o cliente",
+        "en": "Prepare the client"
+      },
+      "purpose": {
+        "pt": "O que a triagem precisa fora da sua configuração: o ecrã ligado no assistente, o login obrigatório (cada decisão fica com o nome de quem a tomou) e a classificação de alto risco na Conformidade.",
+        "en": "What screening needs outside its own configuration: the screen turned on in the assistant, required login (each decision carries the name of who took it) and the high-risk classification in Compliance."
+      },
+      "links": [
+        "workspace",
+        "login",
+        "high_risk",
+        "recruiters"
+      ],
+      "when": {
+        "pt": "O botão «Aplicar configuração de recrutamento» trata dos três de uma vez (o login só se já estiver configurado na tab Autenticação). Não apaga nada.",
+        "en": "The «Apply recruitment setup» button handles all three at once (login only if it is already set up in the Authentication tab). It deletes nothing."
+      }
+    },
+    {
+      "key": "domain",
+      "level": "essential",
+      "title": {
+        "pt": "Área de recrutamento",
+        "en": "Recruitment area"
+      },
+      "purpose": {
+        "pt": "As regras do setor que se juntam à avaliação (com fontes) e o contexto do cliente: vocabulário, funções equivalentes.",
+        "en": "The sector rules added to the evaluation (with sources) and the client's context: vocabulary, equivalent roles."
+      },
+      "essential": [
+        "tools.config.analyse_cv.prompt_preset"
+      ],
+      "advanced": [
+        "tools.config.analyse_cv.prompt_custom"
+      ],
+      "when": {
+        "pt": "As regras do setor nunca relaxam as regras fixas. Avançado: as instruções livres — se tiverem linguagem discriminatória (idade, pausas na carreira, género, nacionalidade, família, saúde…), o texto inteiro fica fora da avaliação e o caso fica registado.",
+        "en": "Sector rules never relax the fixed rules. Advanced: free-text instructions — if they contain discriminatory wording (age, career breaks, gender, nationality, family, health…), the whole text is left out of the evaluation and the case is logged."
+      }
+    },
+    {
+      "key": "jobs",
+      "level": "optional",
+      "title": {
+        "pt": "Vagas-tipo",
+        "en": "Job templates"
+      },
+      "purpose": {
+        "pt": "As vagas que se repetem, com os seus critérios (obrigatórios ou não, peso, escala): o recrutador escolhe uma no passo 1 do ecrã em vez de colar o anúncio.",
+        "en": "Recurring jobs with their criteria (mandatory or not, weight, scale): the recruiter picks one in step 1 of the screen instead of pasting the job ad."
+      },
+      "essential": [
+        "tools.config.analyse_cv.job_templates"
+      ],
+      "when": {
+        "pt": "Os critérios são sempre confirmados pelo recrutador antes de avaliar — uma vaga-tipo só poupa trabalho.",
+        "en": "Criteria are always confirmed by the recruiter before evaluating — a job template only saves work."
+      },
+      "examples": [
+        {
+          "pt": "Técnico de manutenção: curso profissional (obrigatório), 3 anos de experiência, carta de condução.",
+          "en": "Maintenance technician: vocational course (mandatory), 3 years of experience, driving licence."
+        }
+      ]
+    },
+    {
+      "key": "notices",
+      "level": "essential",
+      "title": {
+        "pt": "Avisos ao candidato",
+        "en": "Candidate notices"
+      },
+      "purpose": {
+        "pt": "O texto antes da triagem (para o anúncio ou a política de privacidade: a candidatura é analisada com apoio de IA e revista por uma pessoa) e o aviso depois da decisão — empresa, assinatura, contacto e os modelos por decisão e língua.",
+        "en": "The text before screening (for the job ad or privacy policy: the application is analysed with AI support and reviewed by a person) and the notice after the decision — company, signature, contact and the templates per decision and language."
+      },
+      "essential": [
+        "tools.config.analyse_cv.pre_screening_notice",
+        "tools.config.analyse_cv.candidate_notice"
+      ],
+      "when": {
+        "pt": "Vazio = os textos do produto, com [contacto] e [assinatura] por preencher. A nota sobre a IA não se edita: o ecrã junta-a sempre.",
+        "en": "Empty = the product texts, with [contact] and [signature] to fill in. The note about AI cannot be edited: the screen always adds it."
+      }
+    },
+    {
+      "key": "operation",
+      "level": "advanced",
+      "title": {
+        "pt": "Retenção e capacidade",
+        "en": "Retention and capacity"
+      },
+      "purpose": {
+        "pt": "Quanto tempo fica o registo da triagem, quantos CVs por processo, quantos em paralelo e que modelo avalia.",
+        "en": "How long the screening record is kept, how many CVs per process, how many in parallel and which model evaluates."
+      },
+      "essential": [
+        "tools.config.analyse_cv.retention_days"
+      ],
+      "advanced": [
+        "tools.config.analyse_cv.max_batch",
+        "tools.config.analyse_cv.parallelism",
+        "tools.config.analyse_cv.deployment"
+      ],
+      "when": {
+        "pt": "A retenção conta desde a última alteração do processo; o PDF original apaga-se sempre aos 200 dias. O registo do art. 32.º do Código do Trabalho é automático e fica 5 anos. Avançado: lote, paralelismo (limitado pela quota do modelo) e o modelo (vazio = o do assistente).",
+        "en": "Retention counts from the last change to the process; the original PDF is always deleted after 200 days. The art. 32 Labour Code record is automatic and kept for 5 years. Advanced: batch, parallelism (bounded by the model quota) and the model (empty = the assistant's)."
+      }
+    },
+    {
+      "key": "review",
+      "kind": "review",
+      "level": "essential",
+      "title": {
+        "pt": "Rever e acompanhar",
+        "en": "Review and follow up"
+      },
+      "purpose": {
+        "pt": "O que falta, os documentos de conformidade da triagem e a supervisão dos registos do art. 32.º.",
+        "en": "What is missing, the screening's compliance documents and the supervision of the art. 32 records."
+      }
+    }
+  ],
+  "links": [
+    {
+      "key": "workspace",
+      "direction": "in",
+      "module": "frontend",
+      "path": "frontend.features.toolWorkspace",
+      "title": {
+        "pt": "Ecrã das ferramentas no assistente",
+        "en": "Tools screen in the assistant"
+      },
+      "purpose": {
+        "pt": "Sem ele, a triagem só responde no chat a encaminhar para um ecrã que não abre.",
+        "en": "Without it, screening only answers in the chat pointing to a screen that does not open."
+      }
+    },
+    {
+      "key": "login",
+      "direction": "in",
+      "module": "auth",
+      "path": "frontend.auth.mode",
+      "title": {
+        "pt": "Login obrigatório",
+        "en": "Required login"
+      },
+      "purpose": {
+        "pt": "Cada decisão fica com o nome de quem a tomou (o AI Act pede supervisão por pessoas identificadas) e as triagens ficam visíveis fora do browser onde foram feitas.",
+        "en": "Each decision carries the name of who took it (the AI Act asks for oversight by identified people) and screenings are visible outside the browser where they were made."
+      }
+    },
+    {
+      "key": "high_risk",
+      "direction": "out",
+      "module": "compliance",
+      "path": "compliance.classification.risk_level",
+      "title": {
+        "pt": "Classificação de alto risco",
+        "en": "High-risk classification"
+      },
+      "purpose": {
+        "pt": "A triagem de candidatos é alto risco (Anexo III, ponto 4) sem a derrogação do art. 6.º, n.º 3: a Conformidade tem de o dizer.",
+        "en": "Candidate screening is high risk (Annex III, point 4) with no Article 6(3) derogation: Compliance has to say so."
+      }
+    },
+    {
+      "key": "recruiters",
+      "direction": "in",
+      "module": "team",
+      "path": "team.modules.cv",
+      "title": {
+        "pt": "Equipa e papéis",
+        "en": "Team and roles"
+      },
+      "purpose": {
+        "pt": "Os papéis da equipa dizem quem pode usar a triagem.",
+        "en": "Team roles say who can use screening."
+      }
+    }
+  ]
+}
