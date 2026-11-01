@@ -606,10 +606,11 @@ class ProfileToolCreateTicketConfig(BaseModel):
 
 class ProfileToolQueueConfig(BaseModel):
     """tools.config das tools que só leem a FILA (31 Out 2026), cada uma com `str(config.get("queue")
-    or "").strip()` no core; vazio ou ausente = tool inerte (ou, no `check_ticket_status`, a fila do
-    `create_ticket`): `get_email_content`, `list_email_files_names`, `get_email_file_content`
-    (`tools/ticket_documents`), `extract_invoice` (`tools/invoice`) e `check_ticket_status`
-    (`tools/ticket_status`). Até aqui sem modelo — só se ligavam escrevendo JSON à mão."""
+    or "").strip()` no core. Vazio ou ausente: as três do email original (`tools/ticket_documents`:
+    `get_email_content`, `list_email_files_names`, `get_email_file_content`) ficam inertes; o
+    `extract_invoice` (`tools/invoice`) revê a fatura no chat, como sempre; o `check_ticket_status`
+    (`tools/ticket_status`) usa a fila do `create_ticket`. Até aqui sem modelo — só se mudavam
+    escrevendo JSON à mão."""
     model_config = ConfigDict(extra="allow")
 
     queue: Optional[str] = None         # chave de reviewQueues

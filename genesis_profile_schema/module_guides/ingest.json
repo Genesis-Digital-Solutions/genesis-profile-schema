@@ -240,8 +240,8 @@
         "reply"
       ],
       "when": {
-        "pt": "O canal de envio é Microsoft 365 (sai da própria caixa) ou o serviço de email da Genesis. A resposta do assistente não funciona em IMAP.",
-        "en": "The sending channel is Microsoft 365 (sent from the mailbox itself) or the Genesis email service. The assistant's reply does not work over IMAP."
+        "pt": "O canal de envio é Microsoft 365 (sai da própria caixa) ou o serviço de email da Genesis. Numa fonte IMAP nenhuma das duas respostas sai (o job só lê a caixa).",
+        "en": "The sending channel is Microsoft 365 (sent from the mailbox itself) or the Genesis email service. On an IMAP source neither reply is sent (the job only reads the mailbox)."
       }
     },
     {

@@ -3040,7 +3040,7 @@
     },
     "tools.config.extract_invoice.queue": {
       "label": "Fila dos pedidos",
-      "help": "As faturas que o assistente lê entram como pedidos nesta fila. Sem fila, a ferramenta fica desligada."
+      "help": "As faturas que o assistente lê entram como pedidos nesta fila, onde são revistas. Sem fila, a revisão faz-se no chat, como sempre."
     },
     "tools.config.check_ticket_status": {
       "label": "Estado de um pedido"

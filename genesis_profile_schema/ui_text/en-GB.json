@@ -3040,7 +3040,7 @@
     },
     "tools.config.extract_invoice.queue": {
       "label": "Request queue",
-      "help": "Invoices the assistant reads go into this queue as requests. Without a queue the tool is off."
+      "help": "Invoices the assistant reads go into this queue as requests, where they are reviewed. Without a queue, review happens in the chat, as always."
     },
     "tools.config.check_ticket_status": {
       "label": "Request status"
