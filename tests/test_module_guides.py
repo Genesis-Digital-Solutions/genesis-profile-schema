@@ -293,7 +293,7 @@ def test_reunioes_e_atas():
     assert g["steps"][0]["kind"] == "cases" and g["steps"][-1]["kind"] == "review"
     assert set(steps["legal_model"]["show_if"]["case_in"]) == {"municipal", "public_body"}
     # nada depende de um booleano «com valor» (no Studio um `false` gravado conta como valor)
-    assert "any_present" not in steps["legal_model"]["show_if"] and "done_if" not in steps["live"]
+    assert not steps["legal_model"]["show_if"].get("any_present") and not steps["live"].get("done_if")
     tool = [l for l in g["links"] if l["key"] == "tool"][0]
     assert tool["path"] == "tools.enabled" and tool["expects"] == "transcribe_audio"
     links = {(l["key"], l["direction"], l["module"]) for l in mg.links_for("audio")}
