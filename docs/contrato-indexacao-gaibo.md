@@ -111,7 +111,7 @@ O pedido diz **o quê**, não só **quando**.
    - Cada entrada é `publish` ou `remove`.
    - Uma entrada `publish` leva o `origin_ref` e o `chunk_count` que o cliente aprovou no dev.
 2. **O Studio responde em `results/<pr-…>.json`** (`PublishResult`). O primeiro estado é `pending_approval`.
-   A Genesis aprova ou recusa no Studio, com motivo. Por cliente, a aprovação pode ser automática (`auto_approve`).
+   A Genesis aprova ou recusa no Studio, com motivo. Por cliente, a aprovação pode ser automática (`auto_approve`, ligada por omissão desde a v0.1.141).
 3. **Antes de copiar, o Studio confirma no dev, entrada a entrada:**
    - que existem exatamente `chunk_count` chunks dessa `source_file` com `origin='gaibo'`;
    - que todos têm esse `origin_ref`;
@@ -153,6 +153,8 @@ Contentor `gaibo-outbox`, privado, na storage do cliente:
 | `invites/<inv-…>.json` | GAIBO | `InviteRequest` | `If-None-Match: *` (v0.1.108) |
 | `invite-results/<inv-…>.json` | Studio | `InviteResult` | criado com `If-None-Match: *`, depois `If-Match` (v0.1.108) |
 | `genesis-removals/<gr-…>.json` | Studio | `GenesisRemovalNotice` | `If-None-Match: *`, nunca reescrito (v0.1.138) |
+| `support-messages/<msg-…>.json` | GAIBO | `SupportMessage` | `If-None-Match: *`, nunca reescrito; apagado aos 180 dias (v0.1.141) |
+| `support-message-results/<msg-…>.json` | Studio | `SupportMessageResult` | criado com `If-None-Match: *`, depois `If-Match`; nunca apagado (v0.1.141) |
 
 **`settings.json`:**
 - `enabled` vem a `false` por omissão.
@@ -245,7 +247,7 @@ um pedido e o Studio convida.
 | Identidade | Papel | Âmbito |
 |---|---|---|
 | API do GAIBO | Storage Blob Data Reader | contentor `gaibo-outbox` |
-| API do GAIBO | Storage Blob Data Contributor, **com condição** (ABAC) que só permite escrever em `requests/`, `runs/` e `invites/` (v0.1.108) | contentor `gaibo-outbox` |
+| API do GAIBO | Storage Blob Data Contributor, **com condição** (ABAC) que só permite escrever em `requests/`, `runs/`, `invites/` (v0.1.108) e `support-messages/` (v0.1.141) | contentor `gaibo-outbox` |
 | API do GAIBO | Key Vault Secrets User | só o segredo `BACKEND-API-KEY` do Key Vault de cada core (dev e, depois da promoção, produção) |
 | Indexador do GAIBO | Search Index Data Contributor | **só** o índice dev |
 | Indexador do GAIBO | Reader | serviço de pesquisa (lê a definição do índice) |

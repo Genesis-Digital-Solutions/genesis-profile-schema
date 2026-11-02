@@ -10,7 +10,8 @@ AVISO na caixa de saída do dev, e o GAIBO acerta o seu registo:
       genesis-removals/<aviso>.json   Studio  (escrito UMA vez, If-None-Match: *)
 
 O GAIBO só LÊ este prefixo (a condição ABAC da identidade da API só deixa
-escrever em `requests/`, `runs/` e `invites/`). Por aviso:
+escrever em `requests/`, `runs/`, `invites/` e, desde a v0.1.141,
+`support-messages/`). Por aviso:
 
   * `environment="dev"` — os chunks e o original do documento saíram do índice
     dev e de `gaibo-sources`: o GAIBO marca o documento como removido pela

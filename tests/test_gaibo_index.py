@@ -141,7 +141,7 @@ def test_blob_paths_validate_ids():
 
 def test_settings_defaults_off_and_extensions_normalised():
     s = gi.GaiboSettings()
-    assert s.enabled is False and s.auto_approve is False
+    assert s.enabled is False and s.auto_approve is True      # ligada ao nascer (v0.1.141)
     s = gi.GaiboSettings(allowed_extensions=[".PDF", ".pdf", ".docx"])
     assert s.allowed_extensions == [".pdf", ".docx"]
     with pytest.raises(ValidationError):

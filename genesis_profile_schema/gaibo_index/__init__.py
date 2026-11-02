@@ -19,6 +19,8 @@ o core para mostrar as fontes. Uma regra que só exista de um lado não protege.
   para o tenant do cliente e escreve o resultado.
 - `removals` (v0.1.138) — documentos do GAIBO apagados pela Genesis no Studio:
   o Studio deixa um aviso por documento e o GAIBO acerta o seu registo.
+- `support_messages` — as mensagens da página «Suporte» do GAIBO: o GAIBO pede,
+  o Studio envia o email para a caixa de suporte da Genesis e escreve o estado.
 
 Documento legível: `docs/contrato-indexacao-gaibo.md`.
 """
@@ -66,6 +68,23 @@ from .removals import (
     is_valid_notice_id,
     removal_blob,
 )
+from .support_messages import (
+    MAX_DESCRIPTION_LEN,
+    MAX_SUBJECT_LEN,
+    SUPPORT_MESSAGE_RESULTS_PREFIX,
+    SUPPORT_MESSAGES_PER_HOUR,
+    SUPPORT_MESSAGES_PREFIX,
+    SupportMessage,
+    SupportMessageResult,
+    SupportMessageReasonCode,
+    SupportMessageSender,
+    SupportMessageStatus,
+    clean_description,
+    clean_subject,
+    is_valid_message_id,
+    support_message_blob,
+    support_message_result_blob,
+)
 from .outbox import (
     SETTINGS_BLOB,
     OUTBOX_CONTAINER,
@@ -106,4 +125,8 @@ __all__ = [
     "INVITES_PREFIX", "INVITE_RESULTS_PREFIX", "INVITES_PER_HOUR", "InviteRequest", "InviteResult",
     "invite_blob", "invite_result_blob", "is_valid_invite_id", "normalize_email",
     "REMOVALS_PREFIX", "GenesisRemovalNotice", "is_valid_notice_id", "removal_blob",
+    "SUPPORT_MESSAGES_PREFIX", "SUPPORT_MESSAGE_RESULTS_PREFIX", "SUPPORT_MESSAGES_PER_HOUR",
+    "SupportMessage", "SupportMessageResult", "SupportMessageSender", "is_valid_message_id",
+    "support_message_blob", "support_message_result_blob", "MAX_SUBJECT_LEN", "MAX_DESCRIPTION_LEN",
+    "SupportMessageStatus", "SupportMessageReasonCode", "clean_subject", "clean_description",
 ]

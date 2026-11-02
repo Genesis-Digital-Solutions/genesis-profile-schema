@@ -294,11 +294,11 @@ falam um com o outro — este pacote é o único canal.
 
 ---
 
-## Ata legal — `audio.municipal_minutes` (2 Nov 2026, por sair no próximo bump)
+## Ata legal — `audio.municipal_minutes` (2 Nov 2026, v0.1.141)
 
 `organ_type` aceita também `orgao_colegial` («Órgão da Administração Pública — conselho, júri, comissão
 — regras do CPA, art.º 34.º»), com os textos da UI em pt/en. O core e o fecore já o aceitam; um perfil
-gravado com ele por um core com o pin antigo dá 400 — escolher só depois do bump e dos pins.
+gravado com ele por um core com o pin antigo dá 400 — a v0.1.141 traz-o; escolher só com os pins nela.
 
 ## Checklist: acrescentar um campo
 
@@ -611,6 +611,15 @@ um campo removido do modelo continua a viver no blob sem dar erro.
   (fora de `mcp.*`); desligado = comportamento de hoje. `action_rules_problems(profile)` cruza com o resto do perfil
   (fila que existe, servidor `per_user` recusado para aprovar, servidor desaparecido assinalado) e nunca levanta.
   Os mínimos de segurança vivem no core, não aqui.
+- **Mensagens de suporte do GAIBO (v0.1.141, `gaibo_index/support_messages.py`)** — `SupportMessage` (GAIBO, em
+  `support-messages/`, escrita uma vez: remetente com email = Reply-To e `kind` membro/Suporte Genesis, `locale`,
+  assunto numa linha ≤ 120 sem controlo, separadores de linha Unicode nem Cf/Co, descrição ≤ 2000 só com LF/TAB e
+  sem inversão bidirecional) e `SupportMessageResult` (Studio, em `support-message-results/`, If-Match:
+  `pending|sent|failed|invalid` + `reason_code` + `reason` ≤ 300 + `sent_at`); `SUPPORT_MESSAGES_PER_HOUR` (20).
+  O Studio envia o email para a caixa de suporte da Genesis; a condição ABAC da API passa a incluir
+  `support-messages/`. Os prefixos não se cobrem (`StringStartsWith`). Contrato 201.
+- **`GaiboSettings.auto_approve` ligada por omissão (v0.1.141)** — decisão de 31 Out 2026; as definições já
+  gravadas trazem o valor explícito e não mudam.
 - **Documentos do GAIBO apagados pela Genesis (v0.1.138, `gaibo_index/removals.py`)** — `GenesisRemovalNotice`
   (Studio, em `genesis-removals/` da caixa do dev, `If-None-Match: *`, nunca reescrito): `environment` dev/prod,
   `source_file` só do GAIBO, `origin_ref` da execução apagada, chunks, original removido; `is_valid_notice_id`,

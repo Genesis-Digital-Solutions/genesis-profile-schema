@@ -177,7 +177,9 @@ class GaiboSettings(BaseModel):
 
     schema_version: Literal[1] = CONTRACT_VERSION
     enabled: bool = False
-    auto_approve: bool = False
+    # ligada ao nascer (decisão do Bruno, 31 Out 2026; v0.1.141): o cliente não espera pela Genesis
+    # para ter o pacote em produção — os limites do plano e o manifesto continuam a mandar
+    auto_approve: bool = True
     tier: Optional[str] = Field(default=None, max_length=40)
     max_documents: Optional[int] = Field(default=None, ge=0, le=1_000_000)
     max_total_mb: Optional[int] = Field(default=None, ge=0, le=10_000_000)
