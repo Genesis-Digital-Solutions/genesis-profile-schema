@@ -30,7 +30,7 @@
     },
     "audio.municipal_minutes.enabled": {
       "label": "Ata de órgão autárquico",
-      "help": "Ligado = a transcrição gera a minuta e a ata no formato legal (Lei 75/2013, art. 57.º): presenças, ordem do dia, votações, deliberações e assinaturas em branco. É um rascunho: o valor legal vem da aprovação e da assinatura.",
+      "help": "Ligado = a transcrição gera a minuta e a ata no formato legal (Lei 75/2013 ou, num órgão da Administração Pública, CPA art. 34.º). É um rascunho: o valor legal vem da aprovação e da assinatura.",
       "note": "Consumido pelo core (`tools/transcribe_audio/municipal/`) e pelo ecrã de transcrição do fecore (`transcription.municipal` no /client-config). Inclui também o cabeçalho e o encerramento da ata."
     },
     "audio.municipal_minutes.mandate": {
@@ -63,12 +63,13 @@
     },
     "audio.municipal_minutes.organ_type": {
       "label": "Tipo de órgão",
-      "help": "Dá o nome do órgão nas fórmulas da ata («A Câmara deliberou…», «A Assembleia deliberou…») e diz quem preside: o cargo «Presidente» na câmara e na junta, «Presidente da Mesa» nas assembleias.",
+      "help": "Dá o nome do órgão nas fórmulas da ata e diz quem preside («Presidente»; «Presidente da Mesa» nas assembleias). Um órgão da Administração Pública segue o CPA: assinam o presidente e o secretário e não há edital.",
       "options": {
         "camara_municipal": "Câmara municipal",
         "assembleia_municipal": "Assembleia municipal",
         "junta_freguesia": "Junta de freguesia",
-        "assembleia_freguesia": "Assembleia de freguesia"
+        "assembleia_freguesia": "Assembleia de freguesia",
+        "orgao_colegial": "Órgão da Administração Pública (conselho, júri, comissão) — regras do CPA, art.º 34.º"
       }
     },
     "audio.municipal_minutes.recorder": {

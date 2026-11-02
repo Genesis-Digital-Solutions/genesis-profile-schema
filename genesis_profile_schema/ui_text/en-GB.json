@@ -30,7 +30,7 @@
     },
     "audio.municipal_minutes.enabled": {
       "label": "Local authority minutes",
-      "help": "On = meeting transcription produces the draft and the minutes in the legal format (Law 75/2013, art. 57): attendance, agenda, votes, resolutions and blank signature lines. It is a draft: legal value comes from approval and signature.",
+      "help": "On = transcription produces the draft and the minutes in the legal format (Law 75/2013 or, for a Public Administration body, Administrative Procedure Code art. 34). A draft: legal value comes from approval and signature.",
       "note": "Consumed by the core (`tools/transcribe_audio/municipal/`) and by the fecore transcription screen (`transcription.municipal` in /client-config). Also includes the header and the closing of the minutes."
     },
     "audio.municipal_minutes.mandate": {
@@ -63,12 +63,13 @@
     },
     "audio.municipal_minutes.organ_type": {
       "label": "Type of body",
-      "help": "Names the body in the minutes' formulas («A Câmara deliberou…», «A Assembleia deliberou…») and says who chairs: role «Presidente» in the executive, «Presidente da Mesa» in the assemblies.",
+      "help": "Names the body in the minutes and says who chairs («Presidente»; «Presidente da Mesa» in assemblies). A Public Administration body follows the Administrative Procedure Code: chair and secretary sign, no public notice.",
       "options": {
         "camara_municipal": "Municipal executive (câmara municipal)",
         "assembleia_municipal": "Municipal assembly",
         "junta_freguesia": "Parish executive (junta de freguesia)",
-        "assembleia_freguesia": "Parish assembly"
+        "assembleia_freguesia": "Parish assembly",
+        "orgao_colegial": "Public Administration body (board, jury, committee) — Administrative Procedure Code rules, art. 34"
       }
     },
     "audio.municipal_minutes.recorder": {

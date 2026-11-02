@@ -294,6 +294,12 @@ falam um com o outro — este pacote é o único canal.
 
 ---
 
+## Ata legal — `audio.municipal_minutes` (2 Nov 2026, por sair no próximo bump)
+
+`organ_type` aceita também `orgao_colegial` («Órgão da Administração Pública — conselho, júri, comissão
+— regras do CPA, art.º 34.º»), com os textos da UI em pt/en. O core e o fecore já o aceitam; um perfil
+gravado com ele por um core com o pin antigo dá 400 — escolher só depois do bump e dos pins.
+
 ## Checklist: acrescentar um campo
 
 1. **Modelo** — o campo em `client_profile_schema.py`, com tipo, default seguro

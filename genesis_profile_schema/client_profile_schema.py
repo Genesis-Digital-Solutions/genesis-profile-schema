@@ -1184,8 +1184,10 @@ class ProfileMunicipalMinutes(BaseModel):
     model_config = ConfigDict(extra="allow")
 
     enabled: bool = Field(default=False, json_schema_extra={"requires_tool": "transcribe_audio"})
+    # `orgao_colegial` (2 Nov 2026, épico «Reuniões e atas», R7): «Órgão da Administração
+    # Pública» (conselho, júri, comissão) — ata pelas regras do CPA, art.ºs 34.º e 35.º, sem edital.
     organ_type: Literal["camara_municipal", "assembleia_municipal", "junta_freguesia",
-                        "assembleia_freguesia"] = "camara_municipal"
+                        "assembleia_freguesia", "orgao_colegial"] = "camara_municipal"
     organ_name: str = Field(default="", max_length=200)   # «Câmara Municipal de …»
     mandate: str = Field(default="", max_length=40)       # «2025–2029»
     recorder: str = Field(default="", max_length=120)     # quem lavra por omissão (trabalhador designado)
