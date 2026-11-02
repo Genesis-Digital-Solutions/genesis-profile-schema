@@ -47,5 +47,14 @@ def test_depende_da_tool_e_exposicao_decidida():
     assert props["municipal_minutes"]["requires_tool"] == "transcribe_audio"
     assert exp.exposure_of("audio.municipal_minutes.enabled") == exp.CLIENT_READ
     for campo in ("organ_type", "organ_name", "mandate", "recorder", "members.name", "members.role",
-                  "members.party", "members.substitute"):
+                  "members.party", "members.substitute", "members.email"):
         assert exp.exposure_of(f"audio.municipal_minutes.{campo}") == exp.CLIENT_WRITE, campo
+
+
+def test_email_do_membro_opcional_e_validado():
+    p = _perfil({"members": [{"name": "Ana", "email": " Ana.Costa@Camara.PT "}, {"name": "Rui"}]})
+    m = p.audio.municipal_minutes.members
+    assert m[0].email == "ana.costa@camara.pt" and m[1].email == ""
+    for bad in ("ana", "ana@", "a,b@x.pt", "<ana@x.pt>", "ana@x"):
+        with pytest.raises(ValidationError):
+            _perfil({"members": [{"name": "Ana", "email": bad}]})

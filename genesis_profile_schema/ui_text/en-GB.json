@@ -37,6 +37,10 @@
       "label": "Term of office",
       "help": "For example, 2025–2029. Shown in the minutes header."
     },
+    "audio.municipal_minutes.members.email": {
+      "label": "Email",
+      "help": "Where the meetings space sends the notice of meeting and the approved draft minutes and minutes. The minute-taker always confirms each sending. Optional: without it, the address is typed in at sending time."
+    },
     "audio.municipal_minutes.members.name": {
       "label": "Name",
       "help": "Full name, as it must appear in the minutes."

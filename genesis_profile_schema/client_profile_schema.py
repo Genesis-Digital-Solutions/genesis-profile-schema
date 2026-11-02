@@ -1161,13 +1161,27 @@ class ProfileAiDisclosure(BaseModel):
 class ProfileMunicipalMember(BaseModel):
     """Um membro do órgão autárquico — a lista OFICIAL de onde a ata tira nomes,
     cargos e partidos (regra R4 do pack da transcrição: nunca da fala).
-    `substitute` = entra em substituição de um efetivo."""
+    `substitute` = entra em substituição de um efetivo.
+    `email` (2 Nov 2026, F2.4 do épico «Reuniões e atas»): para onde o espaço das reuniões
+    envia a convocatória, a minuta e a ata aprovadas — sempre com quem lavra a confirmar o
+    envio; vazio = o membro não aparece pré-marcado (escreve-se à mão em cada envio).
+    PII: nunca vai para o prompt nem para a ata."""
     model_config = ConfigDict(extra="allow")
 
     name: str = Field(default="", max_length=120)
     role: str = Field(default="", max_length=80)     # «Presidente», «Vereador», «1.º Secretário»…
     party: str = Field(default="", max_length=60)    # sigla/lista; vazio = sem filiação declarada
     substitute: bool = False
+    email: str = Field(default="", max_length=254)
+
+    @field_validator("email")
+    @classmethod
+    def _email_ok(cls, v: str) -> str:
+        from genesis_profile_schema.intake_schema import _EMAIL_RE
+        v = (v or "").strip().lower()
+        if v and not re.match(_EMAIL_RE, v):
+            raise ValueError("email inválido")
+        return v
 
 
 class ProfileMunicipalMinutes(BaseModel):

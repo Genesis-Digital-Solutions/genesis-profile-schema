@@ -37,6 +37,10 @@
       "label": "Mandato",
       "help": "Por exemplo, 2025–2029. Aparece no cabeçalho da ata."
     },
+    "audio.municipal_minutes.members.email": {
+      "label": "Email",
+      "help": "Para onde se envia a convocatória, a minuta e a ata aprovadas a partir do espaço das reuniões. Quem lavra confirma sempre cada envio. Opcional: sem email, escreve-se o endereço à mão no envio."
+    },
     "audio.municipal_minutes.members.name": {
       "label": "Nome",
       "help": "Nome completo, como deve aparecer na ata."
