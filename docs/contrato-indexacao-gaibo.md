@@ -1,6 +1,6 @@
 # Contrato da indexação pelo GAIBO — v1
 
-**Versão do pacote:** `genesis-profile-schema` v0.1.92 · **Código:** `genesis_profile_schema/gaibo_index/`
+**Versão do pacote:** `genesis-profile-schema` v0.1.92 (atual: v0.1.141) · **Código:** `genesis_profile_schema/gaibo_index/`
 **Responde a:** BACKLOG gaibo 3.1302 (desenho de 3 Out 2026) e às perguntas de 6 Out 2026.
 
 As regras deste documento estão também em código, no pacote. **Em caso de dúvida, manda o código**
@@ -153,8 +153,8 @@ Contentor `gaibo-outbox`, privado, na storage do cliente:
 | `invites/<inv-…>.json` | GAIBO | `InviteRequest` | `If-None-Match: *` (v0.1.108) |
 | `invite-results/<inv-…>.json` | Studio | `InviteResult` | criado com `If-None-Match: *`, depois `If-Match` (v0.1.108) |
 | `genesis-removals/<gr-…>.json` | Studio | `GenesisRemovalNotice` | `If-None-Match: *`, nunca reescrito (v0.1.138) |
-| `support-messages/<msg-…>.json` | GAIBO | `SupportMessage` | `If-None-Match: *`, nunca reescrito; apagado aos 180 dias (v0.1.141) |
-| `support-message-results/<msg-…>.json` | Studio | `SupportMessageResult` | criado com `If-None-Match: *`, depois `If-Match`; nunca apagado (v0.1.141) |
+| `support-messages/<msg-…>.json` | GAIBO | `SupportMessage` | `If-None-Match: *`, nunca reescrito; apagado aos 180 dias (v0.1.141, §5.2) |
+| `support-message-results/<msg-…>.json` | Studio | `SupportMessageResult` | criado com `If-None-Match: *`, depois `If-Match`; nunca apagado (v0.1.141, §5.2) |
 
 **`settings.json`:**
 - `enabled` vem a `false` por omissão.
@@ -241,6 +241,41 @@ um pedido e o Studio convida.
 - **Ligação à Equipa:** continua a ser no 1.º início de sessão, pelo email (lado do GAIBO).
 - **A caixa de saída tem de existir mesmo com a indexação desligada** (lado do GAIBO: hoje só se monta com o
   ingest ligado).
+
+### 5.2 Mensagens de Suporte (v0.1.141)
+
+Na página **Suporte** do GAIBO, um membro do cliente escreve ao suporte da Genesis. O GAIBO **não envia email**
+(nenhuma credencial de envio da Genesis vive na subscrição do cliente, e o GAIBO não escolhe o destinatário):
+escreve um pedido e o Studio envia.
+
+- **Pedido (`SupportMessage`, GAIBO):** `message_id` (`msg-` + 8 a 40 de `[a-z0-9]`, `is_valid_message_id`),
+  `client_id`, `requested_at`, `sender` (`email` — o Reply-To, normalizado por `normalize_email()` —,
+  `display_name` com a regra dos convites e `kind` `member`/`genesis_support`), `locale` (`pt-PT`/`en-GB`),
+  `subject` (uma linha, 1 a 120, sem controlo, sem os separadores U+2028/U+2029 nem invisíveis Cf/Co —
+  `clean_subject`) e `description` (texto
+  simples, 1 a 2000, só LF e TAB de controlo, sem inversão bidirecional U+202A–U+202E e U+2066–U+2069; os
+  outros invisíveis passam, por causa dos emojis compostos — `clean_description`). Os comprimentos contam
+  pontos de código. Na descrição, CR+LF passa a LF ANTES da validação e um CR sozinho é recusado. Um reenvio no
+  GAIBO é um pedido novo, com outro `message_id`.
+- **Resultado (`SupportMessageResult`, Studio):** `status` = `pending`, `sent`, `failed` ou `invalid`, com
+  `reason_code` (`rate_limited`, `sending`, `uncertain`, `not_configured`, `client_mismatch`, `send_error`,
+  `expired`), `reason` em texto (até 300; o GAIBO não o mostra) e `sent_at` (a `null` enquanto não saiu).
+  Mapa completo: `pending` + `sending`/`rate_limited`/`not_configured`/`send_error` (o Studio tenta outra vez);
+  `sent` + `""`; `failed` + `expired`/`uncertain`; `invalid` + `client_mismatch` ou `""` (ficheiro que não valida).
+- **O Studio:** valida outra vez e recusa um `client_id` que não seja o desta caixa (`invalid`/`client_mismatch`);
+  tira o nome do cliente e o URL da instância do seu registo, nunca do ficheiro; envia no máximo
+  `SUPPORT_MESSAGES_PER_HOUR` (20) por cliente e por hora, com um teto de 50 por dia (constante do Studio, fora do
+  contrato) — o resto fica
+  `pending`/`rate_limited` e anda depois; reserva cada mensagem (`pending`/`sending`) ANTES de a enviar; um envio
+  cujo resultado se perdeu fica `failed`/`uncertain` (um reenvio pode dar um email duplicado, aceitável no
+  suporte); uma mensagem que passe 7 dias por enviar, contados desde o `requested_at`, fica `failed`/`expired`;
+  envia por ACS, em texto simples, para a caixa de suporte da Genesis (sem BCC), com Reply-To = `sender.email` e
+  assunto `[<nome do cliente>] <assunto>` (nome do perfil, limpo e até 80 caracteres; sem nome, o `client_id`);
+  regista no audit cada envio, cada recusa e cada incerto (um envio que o serviço de email não aceitou só põe o
+  cliente em pausa).
+- **Retenção:** os resultados nunca se apagam; os pedidos (com o email e o texto) apagam-se aos 180 dias por uma
+  regra de ciclo de vida. O GAIBO nunca volta a ler um pedido depois de o escrever (confirmado pela equipa GAIBO no
+  PR #7).
 
 ## 6. Acessos
 

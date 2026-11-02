@@ -107,3 +107,43 @@ def test_nomes_exportados_que_o_gaibo_usa():
     for name in ("clean_subject", "clean_description", "SupportMessageStatus", "SupportMessageReasonCode",
                  "MAX_SUBJECT_LEN", "MAX_DESCRIPTION_LEN"):
         assert hasattr(gi, name), name
+
+
+# ── do PR #7 da equipa GAIBO (Giovanni, 2 Nov 2026) ─────────────────────────
+
+@pytest.mark.parametrize("cp", [0x202A, 0x202B, 0x202C, 0x202D, 0x202E, 0x2066, 0x2067, 0x2068, 0x2069])
+def test_descricao_recusa_inversao_bidirecional(cp):
+    with pytest.raises(ValidationError):
+        gi.SupportMessage.model_validate(_msg(description=f"abc{chr(cp)}def"))
+
+
+def test_descricao_aceita_emojis_compostos_e_recusa_controlo():
+    family = "👩‍👩‍👧"           # ZWJ
+    heart = "❤️"                     # seletor de variação
+    assert gi.clean_description(f"obrigado {family} {heart}") == f"obrigado {family} {heart}"
+    for bad in ("a\rb", "a\x00b", "a\x1bb", "", "x" * 2001):
+        with pytest.raises(ValueError):
+            gi.clean_description(bad)
+    assert len(gi.clean_description("😀" * 2000)) == 2000   # conta pontos de código
+
+
+def test_exportacoes_e_tipos():
+    from typing import get_args
+    from genesis_profile_schema.gaibo_index import support_messages as sm
+    assert set(get_args(gi.SupportMessageStatus)) == {"pending", "sent", "failed", "invalid"}
+    assert "client_mismatch" in get_args(gi.SupportMessageReasonCode)
+    assert sm.MAX_DISPLAY_NAME_LEN == gi.invites.MAX_DISPLAY_NAME_LEN == 120
+
+
+def test_prefixos_nao_colidem_com_os_outros():
+    mine = (gi.SUPPORT_MESSAGES_PREFIX, gi.SUPPORT_MESSAGE_RESULTS_PREFIX)
+    others = (gi.REQUESTS_PREFIX, gi.RESULTS_PREFIX, gi.RUNS_PREFIX, gi.INVITES_PREFIX,
+              gi.INVITE_RESULTS_PREFIX, gi.REMOVALS_PREFIX)
+    assert all(not p.startswith(o) and not o.startswith(p) for p in mine for o in others)
+    assert not mine[0].startswith(mine[1]) and not mine[1].startswith(mine[0])
+    assert gi.SUPPORT_MESSAGES_PER_HOUR == 20
+
+
+def test_destino_nunca_vem_do_ficheiro():
+    with pytest.raises(ValidationError):
+        gi.SupportMessage.model_validate(_msg(to="outra@x.pt"))          # o destino é do Studio
