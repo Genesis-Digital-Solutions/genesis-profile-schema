@@ -299,6 +299,9 @@ falam um com o outro — este pacote é o único canal.
 `organ_type` aceita também `orgao_colegial` («Órgão da Administração Pública — conselho, júri, comissão
 — regras do CPA, art.º 34.º»), com os textos da UI em pt/en. O core e o fecore já o aceitam; um perfil
 gravado com ele por um core com o pin antigo dá 400 — a v0.1.141 traz-o; escolher só com os pins nela.
+**v0.1.142 (2 Nov 2026, F2.4):** cada membro ganha `email` opcional (validado com a regex do Intake, minúsculas,
+`client_write`) — para onde o espaço «Reuniões» envia a convocatória, a minuta e a ata aprovadas; nunca chega ao
+prompt nem à ata (o `municipal_config` do core descarta-o).
 
 ## Checklist: acrescentar um campo
 
