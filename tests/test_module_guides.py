@@ -17,7 +17,8 @@ def _raw(module="review_queues"):
 
 def test_todos_os_percursos_carregam():
     guides = mg.list_guides()
-    assert [g["module"] for g in guides] == ["ingest", "review_queues", "intake", "cv_screening", "retrieval", "auth"]
+    assert [g["module"] for g in guides] == ["ingest", "review_queues", "intake", "cv_screening", "retrieval", "auth",
+                                             "audio"]
 
 
 def test_filas_cobrem_todos_os_campos_de_uma_fila():
@@ -282,3 +283,15 @@ def test_autenticacao_cobre_todos_os_campos_do_login_e_do_acesso():
 def test_autenticacao_so_a_equipa_pelo_valor_esperado():
     link = next(l for l in mg.get_guide("auth")["links"] if l["key"] == "team_only")
     assert link["path"] == "team.entry" and link["expects"] == "team"
+
+
+def test_reunioes_e_atas():
+    """O percurso «Reuniões e atas» (2 Nov 2026): o órgão só nos casos com formato legal, e a
+    ligação das ações das atas à fila aparece dos dois lados (declarada uma vez, na fila)."""
+    g = mg.get_guide("audio")
+    steps = {s["key"]: s for s in g["steps"]}
+    assert g["steps"][0]["kind"] == "cases" and g["steps"][-1]["kind"] == "review"
+    assert set(steps["legal_model"]["show_if"]["case_in"]) == {"municipal", "public_body"}
+    links = {(l["key"], l["direction"], l["module"]) for l in mg.links_for("audio")}
+    assert ("minutes_items", "out", "review_queues") in links
+    assert ("workspace", "in", "frontend") in links

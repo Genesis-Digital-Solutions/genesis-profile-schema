@@ -1,0 +1,223 @@
+{
+  "module": "audio",
+  "order": 60,
+  "title": {
+    "pt": "Reuniões e atas",
+    "en": "Meetings and minutes"
+  },
+  "summary": {
+    "pt": "O espaço «Reuniões» do assistente: preparar a reunião (ordem do dia, presenças), transcrevê-la ao vivo pelo microfone e gerar a minuta e a ata — no formato legal da autarquia ou do órgão da Administração Pública, ou uma ata simples. A ata é um rascunho para quem a lavra: só produz efeitos depois de aprovada e assinada.",
+    "en": "The assistant's «Meetings» space: prepare the meeting (agenda, attendance), transcribe it live through the microphone and draw up the draft and the minutes — in the legal format of a local authority or a Public Administration body, or as simple minutes. The minutes are a draft for the minute-taker: they only take effect once approved and signed."
+  },
+  "scope": "profile",
+  "root": "audio",
+  "cases": [
+    {
+      "key": "municipal",
+      "title": {
+        "pt": "Câmara, assembleia ou junta",
+        "en": "Local authority body"
+      },
+      "description": {
+        "pt": "Atas de câmara municipal, assembleia municipal, junta ou assembleia de freguesia, com as regras da Lei 75/2013 (minuta para efeitos imediatos e extrato para edital).",
+        "en": "Minutes of a municipal executive or assembly, parish executive or assembly, under Law 75/2013 (draft for immediate effect and public-notice extract)."
+      },
+      "when": {
+        "pt": "Município ou freguesia que quer as atas das reuniões dos seus órgãos.",
+        "en": "A municipality or parish that wants the minutes of its bodies' meetings."
+      }
+    },
+    {
+      "key": "public_body",
+      "title": {
+        "pt": "Órgão da Administração Pública",
+        "en": "Public Administration body"
+      },
+      "description": {
+        "pt": "Conselho, júri ou comissão de um organismo público (escola, instituto, ordem): ata pelas regras do CPA, art.º 34.º, assinada pelo presidente e pelo secretário, sem edital.",
+        "en": "Board, jury or committee of a public body (school, institute, professional order): minutes under the Administrative Procedure Code, art. 34, signed by chair and secretary, no public notice."
+      },
+      "when": {
+        "pt": "Órgão colegial público que não é uma autarquia.",
+        "en": "A public collegial body that is not a local authority."
+      }
+    },
+    {
+      "key": "internal",
+      "title": {
+        "pt": "Reuniões internas",
+        "en": "Internal meetings"
+      },
+      "description": {
+        "pt": "Reuniões de equipa ou com clientes: resumo, decisões, ações e quem interveio, sem formato legal.",
+        "en": "Team or client meetings: summary, decisions, action items and who spoke, with no legal format."
+      },
+      "when": {
+        "pt": "Empresas e equipas que querem a ata e as ações de cada reunião.",
+        "en": "Companies and teams that want the minutes and action items of each meeting."
+      }
+    }
+  ],
+  "steps": [
+    {
+      "key": "purpose",
+      "kind": "cases",
+      "level": "essential",
+      "title": {
+        "pt": "Para que é?",
+        "en": "What is it for?"
+      },
+      "purpose": {
+        "pt": "O tipo de reunião decide o modelo da ata e o que se configura a seguir.",
+        "en": "The type of meeting decides the minutes template and what is set up next."
+      }
+    },
+    {
+      "key": "live",
+      "level": "essential",
+      "title": {
+        "pt": "Transcrição ao vivo e o espaço",
+        "en": "Live transcription and the space"
+      },
+      "purpose": {
+        "pt": "Liga a transcrição de reuniões pelo microfone (a tool «transcribe_audio» tem de estar ligada) e o ecrã das ferramentas, que abre o espaço «Reuniões» em vez do chat. Custa ~1,30–1,60 USD por hora de reunião e entra nos créditos.",
+        "en": "Turns on meeting transcription through the microphone (the «transcribe_audio» tool must be on) and the tools screen, which opens the «Meetings» space instead of the chat. It costs ~1.30–1.60 USD per meeting hour and counts towards credits."
+      },
+      "essential": ["audio.live_transcription_enabled"],
+      "advanced": ["audio.live_max_duration_min", "audio.speech_locale"],
+      "links": ["workspace"],
+      "done_if": ["audio.live_transcription_enabled"],
+      "when": {
+        "pt": "Sem o ecrã das ferramentas, a transcrição continua a abrir pelo botão «Transcrever reunião» do chat, sem lista de reuniões.",
+        "en": "Without the tools screen, transcription still opens through the chat's «Transcribe meeting» button, with no meeting list."
+      }
+    },
+    {
+      "key": "legal_model",
+      "level": "essential",
+      "title": {
+        "pt": "O órgão e os membros",
+        "en": "The body and its members"
+      },
+      "purpose": {
+        "pt": "O tipo e o nome do órgão e a lista oficial de membros do mandato: as presenças, as votações e os nomes da ata saem só desta lista (nunca deduzidos da fala).",
+        "en": "The type and name of the body and the official member list for the term: attendance, votes and names in the minutes come only from this list (never inferred from speech)."
+      },
+      "essential": ["audio.municipal_minutes.enabled", "audio.municipal_minutes.organ_type",
+                    "audio.municipal_minutes.organ_name", "audio.municipal_minutes.members.name",
+                    "audio.municipal_minutes.members.role"],
+      "advanced": ["audio.municipal_minutes.mandate", "audio.municipal_minutes.recorder",
+                   "audio.municipal_minutes.members.party", "audio.municipal_minutes.members.substitute"],
+      "show_if": {"case_in": ["municipal", "public_body"], "any_present": ["audio.municipal_minutes.enabled"]},
+      "done_if": ["audio.municipal_minutes.enabled", "audio.municipal_minutes.organ_name"],
+      "examples": [
+        {
+          "pt": "Câmara Municipal de Évora · mandato 2025–2029 · membros: o presidente e os vereadores, com cargo e partido; os substitutos marcados.",
+          "en": "Câmara Municipal de Évora · term 2025–2029 · members: the mayor and councillors, with role and party; substitutes flagged."
+        },
+        {
+          "pt": "Conselho Geral da Escola X · tipo «Órgão da Administração Pública» · membros com o cargo «Presidente» e «Secretário».",
+          "en": "General Council of School X · type «Public Administration body» · members with the roles «Presidente» and «Secretário»."
+        }
+      ]
+    },
+    {
+      "key": "vocabulary",
+      "level": "optional",
+      "title": {
+        "pt": "Nomes e termos difíceis",
+        "en": "Hard names and terms"
+      },
+      "purpose": {
+        "pt": "Expressões que o reconhecimento de fala erra (siglas, nomes de lugares, termos técnicos). Os nomes dos membros entram sozinhos.",
+        "en": "Expressions speech recognition gets wrong (acronyms, place names, technical terms). Members' names are added automatically."
+      },
+      "essential": ["audio.phrase_list"],
+      "advanced": ["audio.phrase_bias", "audio.glossary", "audio.disfluency_removal", "audio.max_speakers"]
+    },
+    {
+      "key": "retention",
+      "level": "essential",
+      "title": {
+        "pt": "Quanto tempo se guardam",
+        "en": "How long they are kept"
+      },
+      "purpose": {
+        "pt": "Os dias que as reuniões, as transcrições e as atas ficam guardadas (até 180). Vazio = a retenção das conversas, com o mesmo teto.",
+        "en": "The days meetings, transcripts and minutes are kept (up to 180). Empty = the conversations' retention, with the same cap."
+      },
+      "essential": ["audio.files_retention_days"]
+    },
+    {
+      "key": "team",
+      "level": "optional",
+      "title": {
+        "pt": "Quem trata as reuniões",
+        "en": "Who handles meetings"
+      },
+      "purpose": {
+        "pt": "Com a área «Reuniões» gerida pela equipa, só quem tem o papel «Transcrição e atas» usa o espaço — e vê as reuniões de todos (o secretário trata as do órgão). Sem ela, cada um vê as suas.",
+        "en": "With the «Minutes» area managed by the team, only people with the «Transcription and minutes» role use the space — and see everyone's meetings (the secretary handles the body's). Without it, each person sees their own."
+      },
+      "links": ["minutes_team"]
+    },
+    {
+      "key": "actions",
+      "level": "optional",
+      "title": {
+        "pt": "Das ações aos pedidos",
+        "en": "From action items to requests"
+      },
+      "purpose": {
+        "pt": "A fila onde quem lavra a ata transforma as ações combinadas em pedidos, escolhendo quais. Nada é criado sozinho.",
+        "en": "The queue where the minute-taker turns the agreed action items into requests, choosing which. Nothing is created on its own."
+      },
+      "essential": ["audio.minutes_action_items_queue"]
+    },
+    {
+      "key": "review",
+      "kind": "review",
+      "level": "essential",
+      "title": {
+        "pt": "Rever e testar",
+        "en": "Review and test"
+      },
+      "purpose": {
+        "pt": "O que falta e uma reunião de teste com duas vozes: preparar, transcrever, terminar e gerar a minuta.",
+        "en": "What is missing and a test meeting with two voices: prepare, transcribe, end and draw up the draft."
+      }
+    }
+  ],
+  "links": [
+    {
+      "key": "workspace",
+      "direction": "in",
+      "module": "frontend",
+      "path": "frontend.features.toolWorkspace",
+      "title": {
+        "pt": "Ecrã das ferramentas no assistente",
+        "en": "Tools screen in the assistant"
+      },
+      "purpose": {
+        "pt": "Abre o espaço «Reuniões» (lista, preparar, rever) em vez do chat.",
+        "en": "Opens the «Meetings» space (list, prepare, review) instead of the chat."
+      },
+      "expects": true
+    },
+    {
+      "key": "minutes_team",
+      "direction": "in",
+      "module": "team",
+      "path": "team.modules.minutes",
+      "title": {
+        "pt": "Equipa e papéis",
+        "en": "Team and roles"
+      },
+      "purpose": {
+        "pt": "Os papéis da equipa dizem quem pode usar as reuniões e as atas.",
+        "en": "Team roles say who can use meetings and minutes."
+      },
+      "expects": true
+    }
+  ]
+}
