@@ -26,7 +26,8 @@ def test_pedido_valido_normaliza():
     assert m.description == "Linha 1\nLinha 2"
 
 
-@pytest.mark.parametrize("bad", ["a\nb", "a\rb", "fim\n", "a\x00", "a‮b", "a​b", "", "   ", "x" * 121])
+@pytest.mark.parametrize("bad", ["a\nb", "a\rb", "fim\n", "a\x00", "a‮b", "a​b", "a\u2028b", "a\u2029b",
+                                 "", "   ", "x" * 121])
 def test_assunto_recusado(bad):
     with pytest.raises(ValidationError):
         gi.SupportMessage.model_validate(_msg(subject=bad))
@@ -89,6 +90,14 @@ def test_resultado():
         gi.SupportMessageResult(message_id="msg-abcdefgh12", status="failed", updated_at=NOW, reason="x" * 301)
     with pytest.raises(ValidationError):
         gi.SupportMessageResult(message_id="msg-abcdefgh12", status="sent", updated_at=NOW, extra=1)
+
+
+def test_exportacoes_e_tipos():
+    from typing import get_args
+    from genesis_profile_schema.gaibo_index import support_messages as sm
+    assert set(get_args(gi.SupportMessageStatus)) == {"pending", "sent", "failed", "invalid"}
+    assert "client_mismatch" in get_args(gi.SupportMessageReasonCode)
+    assert sm.MAX_DISPLAY_NAME_LEN == gi.invites.MAX_DISPLAY_NAME_LEN == 120
 
 
 def test_prefixos_nao_colidem_com_os_outros():

@@ -251,14 +251,16 @@ escreve um pedido e o Studio envia.
 - **Pedido (`SupportMessage`, GAIBO):** `message_id` (`msg-` + 8 a 40 de `[a-z0-9]`, `is_valid_message_id`),
   `client_id`, `requested_at`, `sender` (`email` — o Reply-To, normalizado por `normalize_email()` —,
   `display_name` com a regra dos convites e `kind` `member`/`genesis_support`), `locale` (`pt-PT`/`en-GB`),
-  `subject` (uma linha, 1 a 120, sem controlo nem invisíveis Cf/Co — `clean_subject`) e `description` (texto
+  `subject` (uma linha, 1 a 120, sem controlo, sem os separadores U+2028/U+2029 nem invisíveis Cf/Co —
+  `clean_subject`) e `description` (texto
   simples, 1 a 2000, só `
 ` e `	` de controlo, sem inversão bidirecional U+202A–U+202E e U+2066–U+2069; os
   outros invisíveis passam, por causa dos emojis compostos — `clean_description`). Os comprimentos contam
   pontos de código. Um reenvio no GAIBO é um pedido novo, com outro `message_id`.
 - **Resultado (`SupportMessageResult`, Studio):** `status` = `pending`, `sent`, `failed` ou `invalid`, com
   `reason_code` (`rate_limited`, `sending`, `uncertain`, `not_configured`, `client_mismatch`, `send_error`,
-  `expired`), `reason` em texto (até 300; o GAIBO não o mostra) e `sent_at`.
+  `expired`), `reason` em texto (até 300; o GAIBO não o mostra) e `sent_at` (a `null` enquanto não saiu).
+  `not_configured` e `send_error` ficam `pending` (o Studio tenta outra vez); `client_mismatch` vem com `invalid`.
 - **O Studio:** valida outra vez e recusa um `client_id` que não seja o desta caixa (`invalid`/`client_mismatch`);
   tira o nome do cliente e o URL da instância do seu registo, nunca do ficheiro; envia no máximo
   `SUPPORT_MESSAGES_PER_HOUR` (20) por cliente e por hora, com um teto de 50 por dia — o resto fica
