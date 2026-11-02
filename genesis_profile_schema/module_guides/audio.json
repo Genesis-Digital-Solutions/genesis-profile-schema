@@ -83,10 +83,17 @@
         "pt": "Liga a transcrição de reuniões pelo microfone (a tool «transcribe_audio» tem de estar ligada) e o ecrã das ferramentas, que abre o espaço «Reuniões» em vez do chat. Custa ~1,30–1,60 USD por hora de reunião e entra nos créditos.",
         "en": "Turns on meeting transcription through the microphone (the «transcribe_audio» tool must be on) and the tools screen, which opens the «Meetings» space instead of the chat. It costs ~1.30–1.60 USD per meeting hour and counts towards credits."
       },
-      "essential": ["audio.live_transcription_enabled"],
-      "advanced": ["audio.live_max_duration_min", "audio.speech_locale"],
-      "links": ["workspace"],
-      "done_if": ["audio.live_transcription_enabled"],
+      "essential": [
+        "audio.live_transcription_enabled"
+      ],
+      "advanced": [
+        "audio.live_max_duration_min",
+        "audio.speech_locale"
+      ],
+      "links": [
+        "tool",
+        "workspace"
+      ],
       "when": {
         "pt": "Sem o ecrã das ferramentas, a transcrição continua a abrir pelo botão «Transcrever reunião» do chat, sem lista de reuniões.",
         "en": "Without the tools screen, transcription still opens through the chat's «Transcribe meeting» button, with no meeting list."
@@ -103,13 +110,28 @@
         "pt": "O tipo e o nome do órgão e a lista oficial de membros do mandato: as presenças, as votações e os nomes da ata saem só desta lista (nunca deduzidos da fala).",
         "en": "The type and name of the body and the official member list for the term: attendance, votes and names in the minutes come only from this list (never inferred from speech)."
       },
-      "essential": ["audio.municipal_minutes.enabled", "audio.municipal_minutes.organ_type",
-                    "audio.municipal_minutes.organ_name", "audio.municipal_minutes.members.name",
-                    "audio.municipal_minutes.members.role"],
-      "advanced": ["audio.municipal_minutes.mandate", "audio.municipal_minutes.recorder",
-                   "audio.municipal_minutes.members.party", "audio.municipal_minutes.members.substitute"],
-      "show_if": {"case_in": ["municipal", "public_body"], "any_present": ["audio.municipal_minutes.enabled"]},
-      "done_if": ["audio.municipal_minutes.enabled", "audio.municipal_minutes.organ_name"],
+      "essential": [
+        "audio.municipal_minutes.enabled",
+        "audio.municipal_minutes.organ_type",
+        "audio.municipal_minutes.organ_name",
+        "audio.municipal_minutes.members.name",
+        "audio.municipal_minutes.members.role"
+      ],
+      "advanced": [
+        "audio.municipal_minutes.mandate",
+        "audio.municipal_minutes.recorder",
+        "audio.municipal_minutes.members.party",
+        "audio.municipal_minutes.members.substitute"
+      ],
+      "show_if": {
+        "case_in": [
+          "municipal",
+          "public_body"
+        ]
+      },
+      "done_if": [
+        "audio.municipal_minutes.organ_name"
+      ],
       "examples": [
         {
           "pt": "Câmara Municipal de Évora · mandato 2025–2029 · membros: o presidente e os vereadores, com cargo e partido; os substitutos marcados.",
@@ -129,11 +151,18 @@
         "en": "Hard names and terms"
       },
       "purpose": {
-        "pt": "Expressões que o reconhecimento de fala erra (siglas, nomes de lugares, termos técnicos). Os nomes dos membros entram sozinhos.",
-        "en": "Expressions speech recognition gets wrong (acronyms, place names, technical terms). Members' names are added automatically."
+        "pt": "Expressões que o reconhecimento de fala erra (siglas, nomes de lugares, termos técnicos). Com a ata legal ligada, os nomes dos membros e do órgão entram sozinhos. O peso, a limpeza de hesitações e o máximo de intervenientes só contam nos ficheiros de áudio carregados, não nas reuniões ao vivo.",
+        "en": "Expressions speech recognition gets wrong (acronyms, place names, technical terms). With the legal minutes on, the members' and the body's names are added automatically. The weight, disfluency removal and maximum speakers only apply to uploaded audio files, not to live meetings."
       },
-      "essential": ["audio.phrase_list"],
-      "advanced": ["audio.phrase_bias", "audio.glossary", "audio.disfluency_removal", "audio.max_speakers"]
+      "essential": [
+        "audio.phrase_list"
+      ],
+      "advanced": [
+        "audio.phrase_bias",
+        "audio.glossary",
+        "audio.disfluency_removal",
+        "audio.max_speakers"
+      ]
     },
     {
       "key": "retention",
@@ -146,7 +175,9 @@
         "pt": "Os dias que as reuniões, as transcrições e as atas ficam guardadas (até 180). Vazio = a retenção das conversas, com o mesmo teto.",
         "en": "The days meetings, transcripts and minutes are kept (up to 180). Empty = the conversations' retention, with the same cap."
       },
-      "essential": ["audio.files_retention_days"]
+      "essential": [
+        "audio.files_retention_days"
+      ]
     },
     {
       "key": "team",
@@ -156,10 +187,12 @@
         "en": "Who handles meetings"
       },
       "purpose": {
-        "pt": "Com a área «Reuniões» gerida pela equipa, só quem tem o papel «Transcrição e atas» usa o espaço — e vê as reuniões de todos (o secretário trata as do órgão). Sem ela, cada um vê as suas.",
-        "en": "With the «Minutes» area managed by the team, only people with the «Transcription and minutes» role use the space — and see everyone's meetings (the secretary handles the body's). Without it, each person sees their own."
+        "pt": "Com a equipa ligada e a área «Transcrição e atas» gerida por ela (no perfil base, que vale para as variantes), só quem tem esse papel usa o espaço — e vê as reuniões de todos da frente (o secretário trata as do órgão). Sem isso, cada um vê as suas.",
+        "en": "With the team on and the «Transcription and minutes» area managed by it (in the base profile, which applies to the variants), only people with that role use the space — and see everyone's meetings in the front (the secretary handles the body's). Without it, each person sees their own."
       },
-      "links": ["minutes_team"]
+      "links": [
+        "minutes_team"
+      ]
     },
     {
       "key": "actions",
@@ -169,10 +202,12 @@
         "en": "From action items to requests"
       },
       "purpose": {
-        "pt": "A fila onde quem lavra a ata transforma as ações combinadas em pedidos, escolhendo quais. Nada é criado sozinho.",
-        "en": "The queue where the minute-taker turns the agreed action items into requests, choosing which. Nothing is created on its own."
+        "pt": "A fila onde quem lavra a ata transforma as ações combinadas em pedidos, escolhendo quais (com as filas geridas pela equipa, também precisa do papel dessa fila). Nada é criado sozinho.",
+        "en": "The queue where the minute-taker turns the agreed action items into requests, choosing which (with queues managed by the team, the role for that queue is also needed). Nothing is created on its own."
       },
-      "essential": ["audio.minutes_action_items_queue"]
+      "essential": [
+        "audio.minutes_action_items_queue"
+      ]
     },
     {
       "key": "review",
@@ -189,6 +224,21 @@
     }
   ],
   "links": [
+    {
+      "key": "tool",
+      "direction": "in",
+      "module": "tools",
+      "path": "tools.enabled",
+      "expects": "transcribe_audio",
+      "title": {
+        "pt": "Ferramenta de transcrição ligada",
+        "en": "Transcription tool turned on"
+      },
+      "purpose": {
+        "pt": "Sem a ferramenta «transcribe_audio» ligada não há transcrição ao vivo, nem espaço, nem ata.",
+        "en": "Without the «transcribe_audio» tool turned on there is no live transcription, no space and no minutes."
+      }
+    },
     {
       "key": "workspace",
       "direction": "in",
