@@ -153,6 +153,8 @@ Contentor `gaibo-outbox`, privado, na storage do cliente:
 | `invites/<inv-…>.json` | GAIBO | `InviteRequest` | `If-None-Match: *` (v0.1.108) |
 | `invite-results/<inv-…>.json` | Studio | `InviteResult` | criado com `If-None-Match: *`, depois `If-Match` (v0.1.108) |
 | `genesis-removals/<gr-…>.json` | Studio | `GenesisRemovalNotice` | `If-None-Match: *`, nunca reescrito (v0.1.138) |
+| `support-messages/<msg-…>.json` | GAIBO | `SupportMessage` | `If-None-Match: *` (§5.2) |
+| `support-message-results/<msg-…>.json` | Studio | `SupportMessageResult` | criado com `If-None-Match: *`, depois `If-Match` (§5.2) |
 
 **`settings.json`:**
 - `enabled` vem a `false` por omissão.
@@ -240,12 +242,40 @@ um pedido e o Studio convida.
 - **A caixa de saída tem de existir mesmo com a indexação desligada** (lado do GAIBO: hoje só se monta com o
   ingest ligado).
 
+### 5.2 Mensagens de Suporte
+
+Na página **Suporte** do GAIBO, um membro do cliente escreve ao suporte da Genesis. O GAIBO **não envia email**
+(nenhuma credencial de envio da Genesis vive na subscrição do cliente, e o GAIBO não escolhe o destinatário):
+escreve um pedido e o Studio envia.
+
+- **Pedido (`SupportMessage`, GAIBO):** `message_id` (`msg-` + 8 a 40 de `[a-z0-9]`, `is_valid_message_id`),
+  `client_id`, `requested_at`, `sender` (`email` — o Reply-To, normalizado por `normalize_email()` —,
+  `display_name` com a regra dos convites e `kind` `member`/`genesis_support`), `locale` (`pt-PT`/`en-GB`),
+  `subject` (uma linha, 1 a 120, sem controlo nem invisíveis Cf/Co — `clean_subject`) e `description` (texto
+  simples, 1 a 2000, só `
+` e `	` de controlo, sem inversão bidirecional U+202A–U+202E e U+2066–U+2069; os
+  outros invisíveis passam, por causa dos emojis compostos — `clean_description`). Os comprimentos contam
+  pontos de código. Um reenvio no GAIBO é um pedido novo, com outro `message_id`.
+- **Resultado (`SupportMessageResult`, Studio):** `status` = `pending`, `sent`, `failed` ou `invalid`, com
+  `reason_code` (`rate_limited`, `sending`, `uncertain`, `not_configured`, `client_mismatch`, `send_error`,
+  `expired`), `reason` em texto (até 300; o GAIBO não o mostra) e `sent_at`.
+- **O Studio:** valida outra vez e recusa um `client_id` que não seja o desta caixa (`invalid`/`client_mismatch`);
+  tira o nome do cliente e o URL da instância do seu registo, nunca do ficheiro; envia no máximo
+  `SUPPORT_MESSAGES_PER_HOUR` (20) por cliente e por hora, com um teto de 50 por dia — o resto fica
+  `pending`/`rate_limited` e anda depois; reserva cada mensagem (`pending`/`sending`) ANTES de a enviar; um envio
+  cujo resultado se perdeu fica `failed`/`uncertain` (um reenvio pode dar um email duplicado, aceitável no
+  suporte); uma mensagem que passe 7 dias por enviar, contados desde o `requested_at`, fica `failed`/`expired`;
+  envia por ACS, em texto simples, para a caixa de suporte da Genesis (sem BCC), com Reply-To = `sender.email` e
+  assunto `[<nome do cliente>] <assunto>`; regista cada envio no audit.
+- **Retenção:** os resultados nunca se apagam; os pedidos (com o email e o texto) apagam-se aos 180 dias por uma
+  regra de ciclo de vida. O GAIBO nunca volta a ler um pedido depois de o escrever.
+
 ## 6. Acessos
 
 | Identidade | Papel | Âmbito |
 |---|---|---|
 | API do GAIBO | Storage Blob Data Reader | contentor `gaibo-outbox` |
-| API do GAIBO | Storage Blob Data Contributor, **com condição** (ABAC) que só permite escrever em `requests/`, `runs/` e `invites/` (v0.1.108) | contentor `gaibo-outbox` |
+| API do GAIBO | Storage Blob Data Contributor, **com condição** (ABAC) que só permite escrever em `requests/`, `runs/`, `invites/` (v0.1.108) e `support-messages/` (§5.2) | contentor `gaibo-outbox` |
 | API do GAIBO | Key Vault Secrets User | só o segredo `BACKEND-API-KEY` do Key Vault de cada core (dev e, depois da promoção, produção) |
 | Indexador do GAIBO | Search Index Data Contributor | **só** o índice dev |
 | Indexador do GAIBO | Reader | serviço de pesquisa (lê a definição do índice) |

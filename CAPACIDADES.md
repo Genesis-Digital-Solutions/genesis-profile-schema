@@ -616,6 +616,11 @@ um campo removido do modelo continua a viver no blob sem dar erro.
   `source_file` só do GAIBO, `origin_ref` da execução apagada, chunks, original removido; `is_valid_notice_id`,
   `removal_blob`. O GAIBO só lê: dev → removido pela Genesis (sai da capacidade, não do limite mensal); prod →
   «não publicado». Contrato §3.
+- **Mensagens de Suporte do GAIBO (`gaibo_index/support_messages.py`)** — `SupportMessage` (GAIBO, em
+  `support-messages/`, com o email de quem envia como Reply-To) e `SupportMessageResult` (Studio, em
+  `support-message-results/`, com `reason` até 300 e `sent_at`); `clean_subject`, `clean_description` (recusa a
+  inversão bidirecional), `is_valid_message_id`, `SUPPORT_MESSAGES_PER_HOUR`. O Studio envia por ACS para a caixa
+  de suporte da Genesis; a condição ABAC da API do GAIBO passa a incluir `support-messages/`. Contrato §5.2.
 - **Convites da Equipa do GAIBO (v0.1.108, `gaibo_index/invites.py`)** — `InviteRequest` (GAIBO, em
   `invites/`) e `InviteResult` (Studio, em `invite-results/`) na caixa de saída; `normalize_email`,
   `is_valid_invite_id`, `INVITES_PER_HOUR`. O Studio convida para o tenant do cliente (nunca o da Genesis); a
