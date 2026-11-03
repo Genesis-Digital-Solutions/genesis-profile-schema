@@ -1198,6 +1198,8 @@ class ProfileMunicipalMinutes(BaseModel):
     DAQUI; o que muda em cada reunião (tipo, número, local, ordem do dia,
     presenças e substituições) entra no ecrã da reunião. A IA é apoio a quem
     lavra: o valor legal vem da aprovação e da assinatura.
+    Desde a v0.1.146 (F4) serve também os órgãos privados (condomínio, sociedades, associações, IPSS): o
+    `organ_type` é um órgão da `minutes_library`, que diz o regime de cada um; o nome do bloco ficou.
     Consumidores: core `tools/transcribe_audio/municipal/`, `/client-config`
     (`transcription.municipal`) e o ecrã de transcrição do fecore."""
     model_config = ConfigDict(extra="allow")

@@ -71,6 +71,9 @@
         "Regista o sentido de voto de cada membro quando for dito: quem não vota contra responde pelos prejuízos da deliberação (Código Civil, art.º 164.º, n.º 2).",
         "Uma deliberação sobre assunto fora da ordem do dia é anulável (art.º 174.º, n.º 3): se acontecer, acrescenta em «a_confirmar».",
         "Quem se declarar impedido (conflito de interesses, art.º 176.º) vai em «impedidos» e não vota."
+      ],
+      "sign_each_present": [
+        "Os membros da Direção presentes"
       ]
     }
   ],

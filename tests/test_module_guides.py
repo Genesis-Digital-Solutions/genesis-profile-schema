@@ -291,7 +291,7 @@ def test_reunioes_e_atas():
     g = mg.get_guide("audio")
     steps = {s["key"]: s for s in g["steps"]}
     assert g["steps"][0]["kind"] == "cases" and g["steps"][-1]["kind"] == "review"
-    assert set(steps["legal_model"]["show_if"]["case_in"]) == {"municipal", "public_body"}
+    assert set(steps["legal_model"]["show_if"]["case_in"]) == {"municipal", "public_body", "private_body"}   # F4
     # nada depende de um booleano «com valor» (no Studio um `false` gravado conta como valor)
     assert not steps["legal_model"]["show_if"].get("any_present") and not steps["live"].get("done_if")
     tool = [l for l in g["links"] if l["key"] == "tool"][0]

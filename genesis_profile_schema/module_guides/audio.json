@@ -43,6 +43,21 @@
       }
     },
     {
+      "key": "private_body",
+      "title": {
+        "pt": "Condomínio, sociedade, associação ou IPSS",
+        "en": "Condominium, company, association or charity (IPSS)"
+      },
+      "description": {
+        "pt": "Assembleia de condóminos, assembleia geral, conselho de administração ou gerência de uma sociedade, órgãos de uma associação ou de uma IPSS: ata pelas regras de cada regime (Código Civil e DL 268/94, Código das Sociedades Comerciais, Estatuto das IPSS), com os votos por permilagem ou por capital quando a lei o manda.",
+        "en": "Condominium owners' meeting, a company's general meeting, board or management, or the bodies of an association or a charity (IPSS): minutes under each regime (Civil Code and Decree-Law 268/94, Companies Code, IPSS Statute), with votes by permillage or by capital where the law says so."
+      },
+      "when": {
+        "pt": "Administração de condomínio, empresa, associação ou IPSS que quer as atas dos seus órgãos.",
+        "en": "A condominium manager, company, association or charity that wants the minutes of its bodies."
+      }
+    },
+    {
       "key": "internal",
       "title": {
         "pt": "Reuniões internas",
@@ -121,12 +136,15 @@
         "audio.municipal_minutes.mandate",
         "audio.municipal_minutes.recorder",
         "audio.municipal_minutes.members.party",
-        "audio.municipal_minutes.members.substitute"
+        "audio.municipal_minutes.members.substitute",
+        "audio.municipal_minutes.members.weight",
+        "audio.municipal_minutes.members.email"
       ],
       "show_if": {
         "case_in": [
           "municipal",
-          "public_body"
+          "public_body",
+          "private_body"
         ]
       },
       "done_if": [

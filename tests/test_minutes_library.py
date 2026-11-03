@@ -109,3 +109,41 @@ def test_ca_e_gerencia_votam_por_cabeca_e_organ_info_e_copia():
     assert ml.organ_info("assembleia_condominos")["roles"]
     assert any("164.º" in r for r in ml.organ_info("direcao_associacao")["rules"])
     assert not any("164.º" in r for r in ml.organ_info("assembleia_geral_associacao")["rules"])
+
+
+_ORGAO = {"id": "x", "label": {"pt": "a", "en": "b"}, "default_name": "X", "preside": ["p"], "roles": ["p"],
+          "signatures": ["s"]}
+_PRAZO = {"id": "p1", "from": "meeting_date", "days": 5, "unit": "calendar", "law": "L",
+          "label": {"pt": "a", "en": "b"}}
+
+
+@pytest.mark.parametrize("bad", [
+    {"family": "public", "organs": [_ORGAO, dict(_ORGAO)]},                                  # órgão repetido
+    {"family": "public", "organs": [_ORGAO], "deadlines": [{**_PRAZO, "organs": ["y"]}]},     # prazo de outro órgão
+    {"deadlines": [{**_PRAZO, "organs": ["x"]}]},                                              # prazo com órgãos sem órgãos
+    {"weight": {"unit": "capital", "label": {"pt": "a", "en": "b"}}},                         # regime sem família
+    {"family": "public"},                                                                      # família sem órgãos
+    {"family": "public", "organs": [{**_ORGAO, "roles": ["p"] * (ml.MAX_LIST + 1)}]},          # lista sem limite
+])
+def test_modelo_a_meio_rebenta_ao_carregar(bad):
+    with pytest.raises(ValueError):
+        ml._check({"id": "m", "name": {"pt": "a", "en": "b"}, "deadlines": [], **bad}, "m.json")
+
+
+def test_prazos_por_orgao():
+    assert [d["id"] for d in ml.organ_info("assembleia_geral_ipss")["deadlines"]] == ["registo_iss"]
+    assert ml.organ_info("administracao_ipss")["deadlines"] == []
+    assert [d["id"] for d in ml.organ_info("camara_municipal")["deadlines"]] == ["edital", "publicacao"]
+    assert [d["id"] for d in ml.organ_info("assembleia_condominos")["deadlines"]] == ["comunicacao_ausentes"]
+
+
+def test_assinaturas_por_presente_so_as_marcadas():
+    assert ml.organ_info("assembleia_geral_sq")["sign_each_present"] == ["Os sócios que participaram na reunião"]
+    assert not ml.organ_info("assembleia_geral_associacao").get("sign_each_present")
+    assert not ml.organ_info("assembleia_geral_ipss").get("sign_each_present")
+    with pytest.raises(ValueError):
+        ml._check({"id": "m", "name": {"pt": "a", "en": "b"}, "deadlines": [], "family": "public",
+                   "organs": [{**_ORGAO, "sign_each_present": ["outra"]}]}, "m.json")
+    with pytest.raises(ValueError):                                  # peso do órgão sem rótulo
+        ml._check({"id": "m", "name": {"pt": "a", "en": "b"}, "deadlines": [], "family": "public",
+                   "organs": [{**_ORGAO, "weight": {"unit": "capital"}}]}, "m.json")

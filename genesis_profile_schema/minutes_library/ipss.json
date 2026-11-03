@@ -66,7 +66,10 @@
       "signatures": [
         "Os membros presentes"
       ],
-      "closing": "Nada mais havendo a tratar, foi encerrada a reunião, da qual se lavrou a presente ata, que vai ser assinada por todos os membros presentes (Estatuto das IPSS, art.º 16.º, n.º 3)."
+      "closing": "Nada mais havendo a tratar, foi encerrada a reunião, da qual se lavrou a presente ata, que vai ser assinada por todos os membros presentes (Estatuto das IPSS, art.º 16.º, n.º 3).",
+      "sign_each_present": [
+        "Os membros presentes"
+      ]
     }
   ],
   "deadlines": [
@@ -83,7 +86,10 @@
       "scope": {
         "pt": "Eleição dos corpos gerentes e alteração dos estatutos",
         "en": "Election of the governing bodies and amendments to the statutes"
-      }
+      },
+      "organs": [
+        "assembleia_geral_ipss"
+      ]
     }
   ]
 }

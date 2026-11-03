@@ -18,7 +18,8 @@ Campos do modelo (os da v0.1.146 são opcionais; os modelos publicados trazem-no
                 membro é dado do cliente (`members[].weight`), nunca inventado;
   organs      — [{id (o organ_type), label{pt,en}, default_name (PT, o nome quando o perfil não o dá),
                   subject (PT, «A Assembleia» na fórmula; vazio = «Foi deliberado»), preside [cargos, minúsculas],
-                  roles [PT, a lista fechada de cargos — o texto que se grava e vai para a ata, com as formas no feminino], signatures [PT, quem assina], closing (PT, a frase
+                  roles [PT, a lista fechada de cargos — o texto que se grava e vai para a ata, com as formas no feminino], signatures [PT, quem assina],
+                  sign_each_present [as `signatures` que dão uma linha por presente — «Os sócios que participaram»], closing (PT, a frase
                   final da ata)}].
 
 Um prazo:
@@ -29,7 +30,9 @@ Um prazo:
   days     — o prazo, contado a partir do DIA SEGUINTE ao `from`;
   unit     — `calendar` (dias corridos) | `business` (dias úteis, com o calendário do cliente);
   window   — opcional, dias que a afixação tem de durar dentro do prazo (o edital: «durante cinco dos 10 dias»);
-  scope    — opcional, {pt, en}: a que deliberações se aplica.
+  scope    — opcional, {pt, en}: a que deliberações se aplica;
+  organs   — opcional, [ids de órgãos do modelo]: os órgãos a que o prazo se aplica (sem ele, todos; revisão de
+             3 Nov 2026 — o registo no ISS é da assembleia geral, não da direção).
 Quem chama recebe CÓPIAS.
 """
 
@@ -75,6 +78,10 @@ def _check_deadline(d: Any, name: str) -> None:
         raise ValueError(f"{name}: prazo `{d['id']}` com `window` fora de 1–{days}")
     if d.get("scope") is not None:
         _text(d.get("scope"), name, f"deadlines.{d['id']}.scope")
+    orgs = d.get("organs")
+    if orgs is not None and (not isinstance(orgs, list) or not orgs or len(orgs) > MAX_LIST
+                             or any(not isinstance(x, str) or not _ID_RE.match(x) for x in orgs)):
+        raise ValueError(f"{name}: prazo `{d['id']}` com `organs` inválido")
 
 
 def _pt(v: Any, name: str, part: str, required: bool = True) -> None:
@@ -93,20 +100,32 @@ def _check_organ(o: Any, name: str) -> None:
     _pt(o.get("subject"), name, f"organs.{oid}.subject", required=False)
     _pt(o.get("closing"), name, f"organs.{oid}.closing", required=False)
     _pt(o.get("member_term"), name, f"organs.{oid}.member_term", required=False)
-    if "weight" in o and o["weight"] is not None and (not isinstance(o["weight"], dict) or o["weight"].get("unit") not in WEIGHT_UNITS):
-        raise ValueError(f"{name}: `organs.{oid}.weight` inválido")
-    for r in o.get("rules", []) if isinstance(o.get("rules", []), list) else [None]:
+    if "weight" in o and o["weight"] is not None:
+        if not isinstance(o["weight"], dict) or o["weight"].get("unit") not in WEIGHT_UNITS:
+            raise ValueError(f"{name}: `organs.{oid}.weight` inválido")
+        _text(o["weight"].get("label"), name, f"organs.{oid}.weight.label")   # o Studio mostra o rótulo
+    rules = o.get("rules", [])
+    if not isinstance(rules, list) or len(rules) > MAX_LIST:
+        raise ValueError(f"{name}: `organs.{oid}.rules` tem de ser uma lista (até {MAX_LIST})")
+    for r in rules:
         _pt(r, name, f"organs.{oid}.rules")
     for key in ("preside", "signatures", "roles"):
         v = o.get(key)
         if not isinstance(v, list) or not v or len(v) > MAX_LIST or any(not isinstance(x, str) or not x.strip() for x in v):
             raise ValueError(f"{name}: `organs.{oid}.{key}` tem de ser uma lista de textos")
+    each = o.get("sign_each_present", [])
+    if not isinstance(each, list) or any(x not in o["signatures"] for x in each):
+        raise ValueError(f"{name}: `organs.{oid}.sign_each_present` tem de ser uma lista de `signatures`")
 
 
 def _check_regime(doc: Dict[str, Any], name: str) -> None:
-    """Os campos da v0.1.146 (opcionais; com `organs`, a família é obrigatória)."""
+    """Os campos da v0.1.146 (opcionais; com `organs` ou `family`, os dois são obrigatórios — um modelo a meio
+    nunca passa sem validar o resto)."""
     organs = doc.get("organs")
-    if organs is None:
+    if organs is None and doc.get("family") is None:
+        for k in ("regime", "rules", "member_term", "outsiders", "weight"):
+            if k in doc:
+                raise ValueError(f"{name}: `{k}` sem `family` nem `organs`")
         return
     if doc.get("family") not in FAMILIES:
         raise ValueError(f"{name}: `family` tem de ser uma de {list(FAMILIES)}")
@@ -114,6 +133,13 @@ def _check_regime(doc: Dict[str, Any], name: str) -> None:
         raise ValueError(f"{name}: `organs` tem de ser uma lista não vazia")
     for o in organs:
         _check_organ(o, name)
+    ids = [o["id"] for o in organs]
+    if len(set(ids)) != len(ids):
+        raise ValueError(f"{name}: órgão repetido no modelo")
+    for d in doc.get("deadlines") or []:
+        fora = set(d.get("organs") or []) - set(ids)
+        if fora:
+            raise ValueError(f"{name}: prazo `{d['id']}` com órgãos que o modelo não tem: {sorted(fora)}")
     private = doc["family"] == "private"
     _pt(doc.get("regime"), name, "regime", required=private)
     _pt(doc.get("member_term"), name, "member_term", required=private)
@@ -147,6 +173,8 @@ def _check(doc: Any, name: str) -> Dict[str, Any]:
             raise ValueError(f"{name}: prazo `{d['id']}` repetido")
         ids.add(d["id"])
     _check_regime(doc, name)
+    if doc.get("organs") is None and any(d.get("organs") for d in deadlines):
+        raise ValueError(f"{name}: prazos com `organs` num modelo sem órgãos")
     return doc
 
 
@@ -194,7 +222,7 @@ def model_for_organ_type(organ_type: Any) -> Optional[Dict[str, Any]]:
 
 def organ_info(organ_type: Any) -> Optional[Dict[str, Any]]:
     """O órgão (cópia) com o regime do modelo junto: `{**órgão, model, family, regime, rules, member_term,
-    outsiders, weight}`; None para um tipo desconhecido."""
+    outsiders, weight, deadlines}` — `deadlines` só com os prazos deste órgão; None para um tipo desconhecido."""
     m = model_for_organ_type(organ_type)
     if not m:
         return None
@@ -204,4 +232,5 @@ def organ_info(organ_type: Any) -> Optional[Dict[str, Any]]:
         return o[k] if k in o else m.get(k, default)
     return {**o, "model": m["id"], "family": m.get("family"), "regime": m.get("regime") or "",
             "rules": list(pick("rules", []) or []), "member_term": pick("member_term", "") or "",
-            "outsiders": m.get("outsiders") or "", "weight": pick("weight", None)}
+            "outsiders": m.get("outsiders") or "", "weight": pick("weight", None),
+            "deadlines": [d for d in m.get("deadlines") or [] if not d.get("organs") or o["id"] in d["organs"]]}

@@ -49,7 +49,10 @@
         "O Presidente da Mesa",
         "Os condóminos presentes (ou concordância por email)"
       ],
-      "closing": "Nada mais havendo a tratar, o Presidente da Mesa declarou encerrada a reunião, da qual se lavrou a presente ata, que vai ser assinada por quem presidiu e subscrita pelos condóminos presentes, por assinatura ou por concordância enviada por email (Decreto-Lei n.º 268/94, art.º 1.º, n.ºs 1 e 7)."
+      "closing": "Nada mais havendo a tratar, o Presidente da Mesa declarou encerrada a reunião, da qual se lavrou a presente ata, que vai ser assinada por quem presidiu e subscrita pelos condóminos presentes, por assinatura ou por concordância enviada por email (Decreto-Lei n.º 268/94, art.º 1.º, n.ºs 1 e 7).",
+      "sign_each_present": [
+        "Os condóminos presentes (ou concordância por email)"
+      ]
     }
   ],
   "deadlines": [
@@ -62,7 +65,10 @@
       "label": {
         "pt": "Comunicar as deliberações aos condóminos ausentes (carta registada com aviso de receção ou email a quem o aceitou)",
         "en": "Send the resolutions to absent owners (registered letter with receipt, or email to those who accepted it)"
-      }
+      },
+      "organs": [
+        "assembleia_condominos"
+      ]
     }
   ]
 }

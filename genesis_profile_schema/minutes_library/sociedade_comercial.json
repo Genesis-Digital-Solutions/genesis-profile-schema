@@ -51,7 +51,10 @@
       "signatures": [
         "Os sócios que participaram na reunião"
       ],
-      "closing": "Nada mais havendo a tratar, foi encerrada a reunião, da qual se lavrou a presente ata, que vai ser assinada por todos os sócios que nela participaram (Código das Sociedades Comerciais, art.º 248.º, n.º 6)."
+      "closing": "Nada mais havendo a tratar, foi encerrada a reunião, da qual se lavrou a presente ata, que vai ser assinada por todos os sócios que nela participaram (Código das Sociedades Comerciais, art.º 248.º, n.º 6).",
+      "sign_each_present": [
+        "Os sócios que participaram na reunião"
+      ]
     },
     {
       "id": "assembleia_geral_sa",
@@ -114,6 +117,9 @@
         "O conselho e a gerência votam por cabeça (maioria dos presentes ou representados; Código das Sociedades Comerciais, art.º 410.º, n.º 7): nunca por capital.",
         "Quem se declarar em conflito de interesses vai em «impedidos» e não vota (art.º 410.º, n.º 6).",
         "Em reunião por meios telemáticos, regista quem interveio (art.º 410.º, n.º 8)."
+      ],
+      "sign_each_present": [
+        "Os membros do órgão, nos termos do contrato de sociedade"
       ]
     },
     {
@@ -142,6 +148,9 @@
         "O conselho e a gerência votam por cabeça (maioria dos presentes ou representados; Código das Sociedades Comerciais, art.º 410.º, n.º 7): nunca por capital.",
         "Quem se declarar em conflito de interesses vai em «impedidos» e não vota (art.º 410.º, n.º 6).",
         "Em reunião por meios telemáticos, regista quem interveio (art.º 410.º, n.º 8)."
+      ],
+      "sign_each_present": [
+        "Os membros do órgão, nos termos do contrato de sociedade"
       ]
     }
   ],
