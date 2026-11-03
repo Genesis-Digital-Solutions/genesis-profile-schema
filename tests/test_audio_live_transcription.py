@@ -82,6 +82,17 @@ def test_retencao_das_actas_e_audios_v0174():
             ProfileAudio(files_retention_days=mau)
 
 
+def test_retencao_do_audio_das_reunioes_v01143():
+    """30 por omissão (decisão de 2 Nov 2026); 0 = não se guarda; teto 180."""
+    import pytest as _pt
+    assert ProfileAudio().meeting_audio_retention_days == 30
+    assert ProfileAudio(meeting_audio_retention_days=0).meeting_audio_retention_days == 0
+    assert ProfileAudio(meeting_audio_retention_days=180).meeting_audio_retention_days == 180
+    for mau in (181, -1):
+        with _pt.raises(Exception):
+            ProfileAudio(meeting_audio_retention_days=mau)
+
+
 def test_duracao_maxima_de_um_ficheiro_por_omissao_e_4h():
     # v0.1.95: alinhado com o teto fixo do core (4 h por ficheiro).
     assert ProfileAudio().max_duration_min == 240

@@ -509,6 +509,8 @@ EXPOSURE: Dict[str, str] = {
     # Retenção das actas/áudios (v0.1.74): o cliente VÊ (é matéria de DPA);
     # quem define somos nós, como a própria transcrição.
     "audio.files_retention_days": _R,
+    # Áudio das reuniões (v0.1.143): o cliente VÊ (DPA); quem define somos nós, como a das atas.
+    "audio.meeting_audio_retention_days": _R,
     # Ata de órgão autárquico (v0.1.76): ligar é decisão nossa (contratado, como
     # a transcrição); o órgão e a lista de membros do mandato são DO CLIENTE.
     "audio.municipal_minutes.enabled": _R,

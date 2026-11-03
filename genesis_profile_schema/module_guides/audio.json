@@ -172,11 +172,12 @@
         "en": "How long they are kept"
       },
       "purpose": {
-        "pt": "Os dias que as reuniões, as transcrições e as atas ficam guardadas (até 180). Vazio = a retenção das conversas, com o mesmo teto.",
-        "en": "The days meetings, transcripts and minutes are kept (up to 180). Empty = the conversations' retention, with the same cap."
+        "pt": "Os dias que as reuniões, as transcrições e as atas ficam guardadas (até 180; vazio = a retenção das conversas, com o mesmo teto) e os dias do áudio das reuniões, para saber quem fala (30 por omissão; 0 = não se guarda).",
+        "en": "The days meetings, transcripts and minutes are kept (up to 180; empty = the conversations' retention, with the same cap) and the days of the meeting audio, to know who speaks (30 by default; 0 = not kept)."
       },
       "essential": [
-        "audio.files_retention_days"
+        "audio.files_retention_days",
+        "audio.meeting_audio_retention_days"
       ]
     },
     {

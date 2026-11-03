@@ -9,6 +9,11 @@
       "help": "Days the generated Word minutes and uploaded audio files are kept, from creation. Empty = this assistant's conversation period, up to 180 days. A data subject erasure request or «delete conversation» always deletes them sooner.",
       "note": "Applied by the lifecycle rule of the customer's storage account (Studio `lifecycle_policy.py`) at provisioning and on every rollout — a change counts from the next rollout. Capped at 180 days."
     },
+    "audio.meeting_audio_retention_days": {
+      "label": "Retention of meeting audio (days)",
+      "help": "Days a meeting's audio is kept, to know who speaks and play excerpts during review. 0 = not kept. Never above the minutes retention.",
+      "note": "Applied by the `expire-meeting-audio` lifecycle rule of the storage account (Studio `lifecycle_policy.py`) and by the core. 30 by default; capped at 180. The notice read at the start says the audio is kept and for how long; an erasure request from anyone in the meeting deletes the whole audio."
+    },
     "audio.glossary": {
       "label": "Terminology glossary"
     },
