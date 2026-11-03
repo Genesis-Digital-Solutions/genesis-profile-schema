@@ -1254,7 +1254,7 @@ class ProfileAudio(BaseModel):
         default=None, ge=1, le=180,
         json_schema_extra={"requires_tool": "transcribe_audio"},
     )
-    # v0.1.143 (3 Nov 2026, M2/R5 do épico «Reuniões e atas») — dias que se guarda o ÁUDIO de uma
+    # v0.1.144 (3 Nov 2026, M2/R5 do épico «Reuniões e atas») — dias que se guarda o ÁUDIO de uma
     # reunião gravada no espaço «Reuniões» (`upload/meeting-audio/`), para identificar quem fala no
     # fim (diarização) e ouvir um excerto ao rever. 0 = não se guarda (sem «quem fala» no fim).
     # 30 por omissão (decisão do Bruno, 2 Nov); nunca acima da retenção das atas — o core e o
