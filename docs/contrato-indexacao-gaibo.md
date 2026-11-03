@@ -209,6 +209,10 @@ limites, só em ambientes da Genesis). O plano de cada cliente é definido apena
 
 **`runs/`:** um relatório por execução, com o custo real — páginas Read e Layout em separado, tokens de
 enriquecimento (entrada e saída) e tokens de embeddings.
+Desde v0.1.143 cada documento do relatório pode levar `uploaded_by_ref` — a referência **opaca** de quem
+carregou o documento no GAIBO (a mesma natureza do `requested_by_ref`: nunca o email nem o nome; a pessoa fica no
+audit do GAIBO). É opcional e pode faltar nos relatórios antigos. O Studio mostra-o no histórico de auditoria da
+publicação, ao lado de quem pediu a publicação.
 
 **Validadores exportados (v0.1.103):** `is_valid_origin_ref`, `is_valid_request_id` e `is_valid_run_id` — não
 repitam os padrões do vosso lado.

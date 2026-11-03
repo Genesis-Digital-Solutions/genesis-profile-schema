@@ -179,6 +179,15 @@ def test_run_report():
     assert rep.di_pages_layout == 12
 
 
+def test_run_document_uploaded_by_ref_v0_1_143():
+    base = {"source_file": SRC, "action": "indexed"}
+    assert gi.RunDocument.model_validate(base).uploaded_by_ref is None      # relatórios antigos
+    assert gi.RunDocument.model_validate({**base, "uploaded_by_ref": "u-7"}).uploaded_by_ref == "u-7"
+    for bad in ("", "x" * 129):
+        with pytest.raises(Exception):
+            gi.RunDocument.model_validate({**base, "uploaded_by_ref": bad})
+
+
 def test_package_data_and_subpackage_declared():
     # o subpacote tem de ir no wheel (packages explícitos no pyproject)
     from pathlib import Path

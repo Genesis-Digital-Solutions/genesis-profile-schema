@@ -364,6 +364,10 @@ class RunDocument(BaseModel):
     bytes: int = Field(default=0, ge=0)
     content_sha256: str = Field(default="", max_length=64)
     error: str = Field(default="", max_length=300)
+    # v0.1.143: quem CARREGOU este documento no GAIBO — referência opaca para o audit do
+    # GAIBO (como o `requested_by_ref`: nunca o email nem o nome). Opcional: relatórios antigos
+    # não o têm. O Studio mostra-o no histórico de auditoria da publicação.
+    uploaded_by_ref: Optional[str] = Field(default=None, min_length=1, max_length=128)
 
 
 class RunReport(BaseModel):
