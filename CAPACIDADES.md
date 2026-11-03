@@ -302,7 +302,7 @@ gravado com ele por um core com o pin antigo dá 400 — a v0.1.141 traz-o; esco
 **v0.1.142 (2 Nov 2026, F2.4):** cada membro ganha `email` opcional (validado com a regex do Intake, minúsculas,
 `client_write`) — para onde o espaço «Reuniões» envia a convocatória, a minuta e a ata aprovadas; nunca chega ao
 prompt nem à ata (o `municipal_config` do core descarta-o).
-**Biblioteca de modelos de ata (3 Nov 2026, F3.6/R10; D11/D23):** `minutes_library.py` + `minutes_library/*.json`
+**Biblioteca de modelos de ata (v0.1.144, 3 Nov 2026, F3.6/R10; D11/D23):** `minutes_library.py` + `minutes_library/*.json`
 (`list_models()`, `get_model(id)`, `model_for_organ_type(organ_type)` — os quatro órgãos autárquicos → `autarquia`,
 `orgao_colegial` → `orgao_colegial`; cópias; cada modelo validado ao carregar). Nesta versão cada modelo traz só os
 PRAZOS LEGAIS depois da reunião (`deadlines`: `id`, `label` pt/en, `law`, `from: meeting_date`, `days`, `unit`
