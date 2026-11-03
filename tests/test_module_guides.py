@@ -17,8 +17,8 @@ def _raw(module="review_queues"):
 
 def test_todos_os_percursos_carregam():
     guides = mg.list_guides()
-    assert [g["module"] for g in guides] == ["ingest", "review_queues", "intake", "cv_screening", "retrieval", "auth",
-                                             "audio"]
+    assert [g["module"] for g in guides] == ["ingest", "review_queues", "intake", "cv_screening", "doc_verification",
+                                             "retrieval", "auth", "audio"]
 
 
 def test_filas_cobrem_todos_os_campos_de_uma_fila():
@@ -299,3 +299,67 @@ def test_reunioes_e_atas():
     links = {(l["key"], l["direction"], l["module"]) for l in mg.links_for("audio")}
     assert ("minutes_items", "out", "review_queues") in links
     assert ("workspace", "in", "frontend") in links
+
+
+# ── Verificação documental (3 Nov 2026): percurso de perfil sobre `tools.config.verify_documents` ──
+
+def test_verificacao_cobre_todos_os_campos_da_configuracao():
+    """Nenhum campo do módulo fica fora de um passo (nada sem ecrã)."""
+    from genesis_profile_schema import tool_config_models
+    g = mg.get_guide("doc_verification")
+    placed = {f.rsplit(".", 1)[1] for s in g["steps"] for f in s.get("essential", []) + s.get("advanced", [])}
+    assert placed == set(tool_config_models()["verify_documents"].model_fields)
+
+
+def test_verificacao_casos_de_uso_e_o_que_esta_em_preparacao():
+    g = mg.get_guide("doc_verification")
+    cases = {c["key"]: c for c in g["cases"]}
+    assert set(cases) == {"bidder", "support_applications", "tender_evaluation"}
+    assert cases["tender_evaluation"]["available"] is False and "preset" not in cases["tender_evaluation"]
+    assert cases["bidder"]["available"] is True
+    raw = _raw("doc_verification")
+    raw["cases"][2]["available"] = "false"
+    with pytest.raises(ValueError):
+        mg.ModuleGuide.model_validate(raw)
+    assert g["steps"][0]["kind"] == "cases" and g["steps"][-1]["kind"] == "review"
+
+
+def test_verificacao_ligacoes():
+    links = {l["key"]: l for l in mg.get_guide("doc_verification")["links"]}
+    assert set(links) == {"tool", "workspace", "login", "people"}
+    assert links["tool"]["expects"] == "verify_documents" and links["login"]["expects"] == "required"
+    assert links["people"]["path"] == "team.modules.docver"
+
+
+def test_verificacao_predefinicoes_por_caso_disponivel():
+    got = {(p["case"], p["lang"]): p for p in mg.list_presets("doc_verification")}
+    assert set(got) == {(c, l) for c in ("bidder", "support_applications") for l in ("pt", "en")}
+    assert got[("bidder", "pt")]["config"]["scheme"] == "concursos"
+    assert got[("support_applications", "en")]["config"]["scheme"] == "fem"
+    assert all(p["features"] == {"toolWorkspace": True} for p in got.values())
+
+
+def test_caso_em_preparacao_nao_tem_predefinicao():
+    raw = _raw("doc_verification")
+    raw["cases"][2]["preset"] = "x"
+    with pytest.raises(ValueError, match="em preparação"):
+        mg.ModuleGuide.model_validate(raw)
+    doc = mg.get_preset("doc_verification", "bidder", "pt")
+    doc["case"] = "tender_evaluation"
+    with pytest.raises(ValueError, match="em preparação"):
+        mg._check_preset(doc, "doc_verification.tender_evaluation.pt.json", _guides())
+
+
+@pytest.mark.parametrize("mutate,match", [
+    (lambda d: d["config"].update(parallelism=99), "parallelism"),
+    (lambda d: d.pop("config"), "falta `config`"),
+    (lambda d: d.update(item={}), "só em módulos de mapa"),
+    (lambda d: d.update(human=["fantasma"]), "`human`"),
+    (lambda d: d["config"].update(paralelism=4), "campos inexistentes"),
+    (lambda d: d.update(extra=1), "chaves desconhecidas"),
+])
+def test_predefinicao_de_perfil_invalida(mutate, match):
+    doc = mg.get_preset("doc_verification", "support_applications", "pt")
+    mutate(doc)
+    with pytest.raises(ValueError, match=match):
+        mg._check_preset(doc, "doc_verification.support_applications.pt.json", _guides())

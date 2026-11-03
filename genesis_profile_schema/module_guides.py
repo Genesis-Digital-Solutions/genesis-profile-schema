@@ -35,7 +35,7 @@ from functools import lru_cache
 from importlib import resources
 from typing import Any, Dict, List, Literal, Optional, Tuple, Union
 
-from pydantic import BaseModel, ConfigDict, Field, field_validator, model_validator
+from pydantic import BaseModel, ConfigDict, Field, StrictBool, field_validator, model_validator
 
 _CLOSED = ConfigDict(extra="forbid")
 _KEY_RE = r"^[a-z][a-z0-9_]{0,39}$"
@@ -87,11 +87,20 @@ class GuideCase(BaseModel):
     description: Text
     when: Text
     preset: Optional[str] = Field(default=None, pattern=_KEY_RE)
+    #: Caso de uso que o produto ainda não serve (3 Nov 2026; ex.: na verificação documental, «quem avalia» sem
+    #: esquema): aparece «em preparação», não se escolhe e não tem predefinição.
+    available: StrictBool = True
 
     @field_validator("title", "description", "when")
     @classmethod
     def _texts(cls, v):
         return _text(v)
+
+    @model_validator(mode="after")
+    def _unavailable_without_preset(self):
+        if not self.available and self.preset:
+            raise ValueError(f"caso {self.key!r} em preparação não pode ter `preset`")
+        return self
 
 
 class GuideLink(BaseModel):
@@ -356,10 +365,24 @@ def links_for(module: str) -> List[Dict[str, Any]]:
 # ── predefinições (os casos de uso, prontos a aplicar) ──────────────────────
 #
 # `module_guides/presets/<módulo>.<caso>.<língua>.json` — GERADAS a partir do código do editor
-# do Studio (`frontend/scripts/queue-presets.mjs`), que tem um teste de paridade contra estes
-# ficheiros: nunca se editam à mão. `item` é o item do mapa (ex.: uma fila), validado aqui com o
+# do Studio (`frontend/scripts/queue-presets.mjs`, `docver-presets.mjs`), que tem um teste de paridade contra
+# estes ficheiros: nunca se editam à mão. `item` é o item do mapa (ex.: uma fila), validado aqui com o
 # modelo do schema; `links` = ligações do percurso que o caso liga; `human` = campos do item que
-# ficam por preencher por uma pessoa (ex.: o servidor do ERP do cliente).
+# ficam por preencher por uma pessoa (ex.: o servidor do ERP do cliente). Num módulo de PERFIL cuja raiz é
+# um bloco de `tools.config` (3 Nov 2026, verificação documental), `config` é esse bloco, validado com o
+# modelo da tool.
+
+#: As chaves de uma predefinição de um módulo de PERFIL.
+_PROFILE_PRESET_KEYS = {"module", "case", "lang", "config", "links", "features", "human"}
+
+
+def _root_tool_model(root: str) -> Any:
+    """O modelo do bloco `tools.config.<tool>` da raiz de um percurso de perfil; None se a raiz não for um."""
+    head, _, tool = root.rpartition(".")
+    if head != "tools.config":
+        return None
+    from . import tool_config_models
+    return tool_config_models().get(tool)
 
 def _check_preset(doc: Any, name: str, guides: Dict[str, Dict[str, Any]]) -> Dict[str, Any]:
     if not isinstance(doc, dict):
@@ -370,8 +393,11 @@ def _check_preset(doc: Any, name: str, guides: Dict[str, Dict[str, Any]]) -> Dic
     g = guides.get(module)
     if g is None:
         raise ValueError(f"{name}: módulo sem percurso {module!r}")
-    if case not in {c["key"] for c in g.get("cases", [])}:
+    cases = {c["key"]: c for c in g.get("cases", [])}
+    if case not in cases:
         raise ValueError(f"{name}: caso inexistente no percurso {case!r}")
+    if cases[case].get("available") is False:
+        raise ValueError(f"{name}: caso em preparação não tem predefinição")
     if lang not in GUIDE_LANGS:
         raise ValueError(f"{name}: língua fora de {GUIDE_LANGS}")
     bad = sorted(set(doc.get("links") or []) - {l["key"] for l in g.get("links", [])})
@@ -397,6 +423,25 @@ def _check_preset(doc: Any, name: str, guides: Dict[str, Dict[str, Any]]) -> Dic
         # A chave do item no mapa (ex.: «encomendas», «pedidos-agente»).
         if not re.match(r"^[a-z][a-z0-9_-]{0,39}$", str(doc.get("key") or "")):
             raise ValueError(f"{name}: `key` inválida")
+    else:
+        model = _root_tool_model(g["root"])
+        if model is None:
+            raise ValueError(f"{name}: predefinição num percurso de perfil sem bloco de tools.config")
+        if "item" in doc or "key" in doc:
+            raise ValueError(f"{name}: `item`/`key` só em módulos de mapa (aqui é `config`)")
+        if not isinstance(doc.get("config"), dict):
+            raise ValueError(f"{name}: falta `config` (o bloco {g['root']})")
+        # O modelo da tool aceita chaves a mais (`extra="allow"`): uma gralha no gerador passava em silêncio.
+        bad = sorted(set(doc) - _PROFILE_PRESET_KEYS)
+        if bad:
+            raise ValueError(f"{name}: chaves desconhecidas na predefinição {bad}")
+        bad = sorted(set(doc["config"]) - set(model.model_fields))
+        if bad:
+            raise ValueError(f"{name}: `config` com campos inexistentes {bad}")
+        model.model_validate(doc["config"])
+        bad = sorted(h for h in doc.get("human") or [] if str(h).split(".", 1)[0] not in model.model_fields)
+        if bad:
+            raise ValueError(f"{name}: `human` com campos inexistentes {bad}")
     return doc
 
 

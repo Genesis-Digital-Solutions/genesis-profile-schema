@@ -1,0 +1,17 @@
+{
+  "module": "doc_verification",
+  "case": "support_applications",
+  "lang": "pt",
+  "config": {
+    "scheme": "fem",
+    "parallelism": 4,
+    "deployment": ""
+  },
+  "links": [
+    "workspace"
+  ],
+  "features": {
+    "toolWorkspace": true
+  },
+  "human": []
+}

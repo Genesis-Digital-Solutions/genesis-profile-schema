@@ -1,0 +1,17 @@
+{
+  "module": "doc_verification",
+  "case": "bidder",
+  "lang": "en",
+  "config": {
+    "scheme": "concursos",
+    "parallelism": 4,
+    "deployment": ""
+  },
+  "links": [
+    "workspace"
+  ],
+  "features": {
+    "toolWorkspace": true
+  },
+  "human": []
+}

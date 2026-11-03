@@ -1,0 +1,261 @@
+{
+  "module": "doc_verification",
+  "order": 35,
+  "title": {
+    "pt": "Verificação documental",
+    "en": "Document verification"
+  },
+  "summary": {
+    "pt": "O ecrã de verificação documental do assistente: cada caso junta as peças de referência e o objeto em análise, a IA lê-os com a citação, a página e a cláusula de onde vem cada coisa e propõe; a decisão é sempre de uma pessoa. O que o ecrã mostra (separadores, nomes, documentos finais) vem do esquema do caso de uso.",
+    "en": "The assistant's document verification screen: each case gathers the reference documents and the object under review, the AI reads them with the quote, page and clause behind everything and proposes; the decision always rests with a person. What the screen shows (tabs, names, final documents) comes from the use case's scheme."
+  },
+  "scope": "profile",
+  "root": "tools.config.verify_documents",
+  "cases": [
+    {
+      "key": "bidder",
+      "title": {
+        "pt": "Concursos — quem concorre",
+        "en": "Tenders — bidder"
+      },
+      "description": {
+        "pt": "A empresa que concorre: requisitos das peças com citação, documentos da empresa (certidões, alvarás, fichas técnicas) e a adequação de cada um, pedidos de esclarecimento, a lista do que entregar e a revisão do rascunho da proposta antes de submeter. Esquema «concursos»; documento final: o relatório de conformidade.",
+        "en": "The company bidding: requirements from the tender documents with quotes, company documents (certificates, licences, technical sheets) and how each fits, clarification requests, the list of what to submit and the review of the draft proposal before submitting. Scheme «concursos»; final document: the compliance report."
+      },
+      "when": {
+        "pt": "Quem responde a concursos públicos e quer saber, antes de submeter, o que pode excluir a proposta e o que falta entregar.",
+        "en": "Whoever answers public tenders and wants to know, before submitting, what can exclude the proposal and what is still missing."
+      }
+    },
+    {
+      "key": "support_applications",
+      "title": {
+        "pt": "Candidaturas a apoios por formulário",
+        "en": "Support applications by form"
+      },
+      "description": {
+        "pt": "Quem analisa candidaturas a apoios públicos entregues num formulário em folha de cálculo: o formulário verificado linha a linha contra as regras do aviso, as peças e fotografias que ele refere, a análise do técnico, o prazo da decisão em dias úteis e o parecer. No ecrã: Peças, Formulário, Decisão e Histórico, sem documentos da empresa. Esquema «fem»; documento final: o parecer.",
+        "en": "Whoever assesses applications for public support submitted in a spreadsheet form: the form checked line by line against the call rules, the documents and photographs it refers to, the reviewer's analysis, the decision deadline in working days and the opinion. On screen: Documents, Form, Decision and History, with no company documents. Scheme «fem»; final document: the opinion."
+      },
+      "when": {
+        "pt": "Uma entidade pública (ou quem a apoia) que recebe candidaturas num formulário fixo e tem de emitir um parecer dentro do prazo do aviso.",
+        "en": "A public body (or whoever supports it) that receives applications in a fixed form and must issue an opinion within the call deadline."
+      }
+    },
+    {
+      "key": "tender_evaluation",
+      "available": false,
+      "title": {
+        "pt": "Concursos — quem avalia",
+        "en": "Tenders — evaluator"
+      },
+      "description": {
+        "pt": "O júri ou a entidade adjudicante a avaliar as propostas recebidas contra as peças do procedimento. Em preparação: ainda não há esquema para este caso de uso.",
+        "en": "The jury or contracting authority assessing the proposals received against the procedure documents. In preparation: there is no scheme for this use case yet."
+      },
+      "when": {
+        "pt": "Ainda não se pode escolher. Entra quando o esquema existir, sem mudar nada no resto do percurso.",
+        "en": "Cannot be chosen yet. It arrives when the scheme exists, without changing the rest of the path."
+      }
+    }
+  ],
+  "steps": [
+    {
+      "key": "purpose",
+      "kind": "cases",
+      "level": "essential",
+      "title": {
+        "pt": "Para que é?",
+        "en": "What is it for?"
+      },
+      "purpose": {
+        "pt": "O caso de uso decide o esquema dos casos novos: o que a IA lê, os separadores que o ecrã do cliente mostra, os nomes e os documentos finais.",
+        "en": "The use case decides the scheme for new cases: what the AI reads, the tabs the client's screen shows, the names and the final documents."
+      },
+      "essential": [
+        "tools.config.verify_documents.scheme"
+      ],
+      "done_if": [
+        "tools.config.verify_documents.scheme"
+      ],
+      "when": {
+        "pt": "Cada caso guarda o seu esquema ao nascer: mudar isto só muda os casos novos. Para fixar uma versão do esquema escolhe «fixado na versão».",
+        "en": "Each case keeps its scheme from creation: changing this only changes new cases. To pin a scheme version choose «pinned to version»."
+      }
+    },
+    {
+      "key": "prepare",
+      "level": "essential",
+      "title": {
+        "pt": "Preparar o cliente",
+        "en": "Prepare the client"
+      },
+      "purpose": {
+        "pt": "O que o módulo precisa fora da sua configuração: a ferramenta e o ecrã ligados no assistente, o login obrigatório (cada decisão fica com o nome de quem a tomou) e quem pode fazer o quê — app roles do Entra (Leitor, Analista, Decisor, GestorEvidencia, Administrador) e, com o módulo «Casos» ligado na equipa, também os papéis da equipa.",
+        "en": "What the module needs outside its own configuration: the tool and the screen turned on in the assistant, required login (each decision carries the name of who took it) and who can do what — Entra app roles (Leitor, Analista, Decisor, GestorEvidencia, Administrador) and, with the «Cases» module on in the team, team roles as well."
+      },
+      "links": [
+        "tool",
+        "workspace",
+        "login",
+        "people"
+      ],
+      "when": {
+        "pt": "O botão «Aplicar preset» liga o ecrã e, se o login já estiver configurado na tab Autenticação, torna-o obrigatório. Não apaga nada.",
+        "en": "The «Apply preset» button turns the screen on and, if login is already set up in the Authentication tab, makes it required. It deletes nothing."
+      }
+    },
+    {
+      "key": "names",
+      "level": "optional",
+      "title": {
+        "pt": "Nomes no ecrã",
+        "en": "Names on screen"
+      },
+      "purpose": {
+        "pt": "Título, frase, nome do caso (singular e plural) e exemplo do nome que o ecrã do cliente mostra. Vazio = os nomes neutros do esquema.",
+        "en": "Title, subtitle, case name (singular and plural) and name example the client's screen shows. Empty = the scheme's neutral names."
+      },
+      "essential": [
+        "tools.config.verify_documents.labels"
+      ],
+      "when": {
+        "pt": "Quando o cliente chama aos casos outra coisa («processos», «pedidos»). Só português e inglês: o ecrã não tem outras línguas.",
+        "en": "When the client calls cases something else («processes», «requests»). Portuguese and English only: the screen has no other languages."
+      },
+      "examples": [
+        {
+          "pt": "Caso no singular: «processo»; no plural: «processos»; exemplo: «Processo 12/2026 — requerente».",
+          "en": "Case singular: «process»; plural: «processes»; example: «Process 12/2026 — applicant»."
+        }
+      ]
+    },
+    {
+      "key": "final_documents",
+      "level": "optional",
+      "title": {
+        "pt": "Documentos finais",
+        "en": "Final documents"
+      },
+      "purpose": {
+        "pt": "O documento que o caso produz a partir da análise e da decisão: o parecer nas candidaturas a apoios, o relatório de conformidade nos concursos. Gerado no ecrã do caso (separador Decisão), editável e emitido por quem decide.",
+        "en": "The document the case produces from the analysis and the decision: the opinion for support applications, the compliance report for tenders. Generated on the case screen (Decision tab), editable and issued by whoever decides."
+      },
+      "when": {
+        "pt": "Nada a configurar no perfil: o documento e o seu conteúdo vêm do esquema do caso de uso.",
+        "en": "Nothing to configure in the profile: the document and its content come from the use case's scheme."
+      }
+    },
+    {
+      "key": "capacity",
+      "level": "advanced",
+      "title": {
+        "pt": "Modelo e capacidade",
+        "en": "Model and capacity"
+      },
+      "purpose": {
+        "pt": "Que modelo lê as peças, quantos lotes em paralelo e os limites deste cliente (peças por caso, tamanho e páginas por peça, documentos no registo da empresa), até ao teto do core.",
+        "en": "Which model reads the documents, how many batches in parallel and this client's limits (documents per case, size and pages per document, documents in the company register), up to the core's ceiling."
+      },
+      "advanced": [
+        "tools.config.verify_documents.parallelism",
+        "tools.config.verify_documents.deployment"
+      ],
+      "when": {
+        "pt": "Com 4 lotes, um caderno de 226 páginas leva ~8 min (20 com 1), limitado pela quota do modelo. Modelo vazio = o do agente deste container (não segue a variante). Os limites pedidos aplicam-se no próximo rollout do cliente.",
+        "en": "With 4 batches, a 226-page specification takes ~8 min (20 with 1), bounded by the model quota. Empty model = this container's agent model (it does not follow the variant). Requested limits apply on the client's next rollout."
+      }
+    },
+    {
+      "key": "quality",
+      "level": "optional",
+      "title": {
+        "pt": "Qualidade",
+        "en": "Quality"
+      },
+      "purpose": {
+        "pt": "Corre o conjunto de referência contra o backend deste cliente (o motor real, com o modelo dele) e mostra a diferença para a execução anterior.",
+        "en": "Runs the reference set against this client's backend (the real engine, with its model) and shows the difference from the previous run."
+      },
+      "when": {
+        "pt": "Depois de mudar o modelo ou de um rollout. Gasta modelo no backend do cliente (pede confirmação).",
+        "en": "After changing the model or after a rollout. It spends model usage on the client's backend (asks for confirmation)."
+      }
+    },
+    {
+      "key": "review",
+      "kind": "review",
+      "level": "essential",
+      "title": {
+        "pt": "Rever e acompanhar",
+        "en": "Review and follow up"
+      },
+      "purpose": {
+        "pt": "Está pronto? A lista do perfil e do core (ecrã, login, esquema, papéis) e o uso: casos por estado, peças e páginas, falhas, trabalhos parados e custo estimado.",
+        "en": "Is it ready? The profile and core checklist (screen, login, scheme, roles) and usage: cases by status, documents and pages, failures, stalled jobs and estimated cost."
+      }
+    }
+  ],
+  "links": [
+    {
+      "key": "tool",
+      "direction": "in",
+      "module": "tools",
+      "path": "tools.enabled",
+      "title": {
+        "pt": "Ferramenta ligada",
+        "en": "Tool turned on"
+      },
+      "purpose": {
+        "pt": "Sem a ferramenta verify_documents ligada no perfil, o ecrã não aparece e o core recusa os casos.",
+        "en": "Without the verify_documents tool turned on in the profile, the screen does not appear and the core refuses cases."
+      },
+      "expects": "verify_documents"
+    },
+    {
+      "key": "workspace",
+      "direction": "in",
+      "module": "frontend",
+      "path": "frontend.features.toolWorkspace",
+      "title": {
+        "pt": "Ecrã das ferramentas no assistente",
+        "en": "Tools screen in the assistant"
+      },
+      "purpose": {
+        "pt": "Sem ele, o módulo não aparece no assistente.",
+        "en": "Without it, the module does not appear in the assistant."
+      },
+      "expects": true
+    },
+    {
+      "key": "login",
+      "direction": "in",
+      "module": "auth",
+      "path": "frontend.auth.mode",
+      "title": {
+        "pt": "Login obrigatório",
+        "en": "Required login"
+      },
+      "purpose": {
+        "pt": "O módulo só aceita pessoas identificadas: cada decisão fica com o nome de quem a tomou.",
+        "en": "The module only accepts identified people: each decision carries the name of who took it."
+      },
+      "expects": "required"
+    },
+    {
+      "key": "people",
+      "direction": "in",
+      "module": "team",
+      "path": "team.modules.docver",
+      "title": {
+        "pt": "Equipa e papéis",
+        "en": "Team and roles"
+      },
+      "purpose": {
+        "pt": "Com o módulo «Casos» ligado na equipa, os papéis da equipa (ver, trabalhar, decidir, documentos da empresa, administrar) juntam-se às app roles do Entra, que continuam a valer.",
+        "en": "With the «Cases» module on in the team, team roles (view, work, decide, company documents, administer) add to the Entra app roles, which still apply."
+      },
+      "expects": true
+    }
+  ]
+}

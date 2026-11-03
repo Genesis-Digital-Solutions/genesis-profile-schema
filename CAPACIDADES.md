@@ -311,6 +311,23 @@ Lei 75/2013, Anexo I, art.º 56.º n.º 1) e a publicação (30 dias, n.º 2), e
 confirmar com o jurídico); o órgão da AP não tem. Prompts, validador e fórmulas migram depois (D11). Não é campo do
 perfil: não entra no `EXPOSURE` nem no registo de sugestões do Studio.
 
+## Percursos de configuração — `module_guides.py` + `module_guides/*.json` (31 Out 2026, v0.1.140)
+
+O PERCURSO de cada módulo: casos de uso («Para que é?», com predefinição), passos por ordem marcados
+`essential`/`optional`/`advanced` (para que serve, quando usar, campos essenciais e avançados, condição, «feito»,
+exemplos), ligações a outros módulos (declaradas uma vez, do lado de quem recebe; `links_for` mostra-as dos dois
+lados) e «Rever». Fonte única do ecrã guiado do Studio, do Mapa dos módulos, da tool `get_module_guide` do agente e do
+manual. O genai-core não o lê. Módulos: `ingest`, `review_queues`, `intake`, `cv_screening`, `doc_verification`,
+`retrieval`, `auth`, `audio`. Validação ao carregar: caminhos que existem no schema, nenhum campo em dois passos; nos
+módulos de mapa todos os campos do item num passo; nos de perfil, testes de cobertura por módulo (CVs, Pesquisa, Autenticação, Verificação documental). Um caso pode
+estar «em preparação» (`available: false`, 3 Nov 2026 — sem predefinição; ex.: «Concursos — quem avalia», ainda sem
+esquema no core). Predefinições em `module_guides/presets/<módulo>.<caso>.<língua>.json`, GERADAS do código do editor
+do Studio (`frontend/scripts/queue-presets.mjs`, `docver-presets.mjs`) com teste de paridade lá — nunca à mão: num
+módulo de mapa `item` (validado com o modelo do item), num de perfil `config` = o bloco `tools.config.<tool>`
+(validado com o modelo da tool). `doc_verification` (3 Nov 2026): casos «Concursos — quem concorre» (esquema
+`concursos`), «Candidaturas a apoios por formulário» (`fem`) e «quem avalia» em preparação; o que o ecrã do cliente
+mostra (separadores, registo) é do ESQUEMA no core, não do perfil.
+
 ## Checklist: acrescentar um campo
 
 1. **Modelo** — o campo em `client_profile_schema.py`, com tipo, default seguro
