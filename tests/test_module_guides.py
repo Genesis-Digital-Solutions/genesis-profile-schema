@@ -363,3 +363,12 @@ def test_predefinicao_de_perfil_invalida(mutate, match):
     mutate(doc)
     with pytest.raises(ValueError, match=match):
         mg._check_preset(doc, "doc_verification.support_applications.pt.json", _guides())
+
+
+def test_reunioes_caso_rapido():
+    """O modo «Rápido» (v0.1.147): um caso próprio, sem o passo do órgão; o campo no passo da transcrição."""
+    g = mg.get_guide("audio")
+    steps = {s["key"]: s for s in g["steps"]}
+    assert "quick" in [c["key"] for c in g["cases"]]
+    assert "quick" not in steps["legal_model"]["show_if"]["case_in"]
+    assert "audio.meetings_quick_mode" in steps["live"]["advanced"]

@@ -14,6 +14,11 @@
       "help": "Days a meeting's audio is kept, to know who speaks and play excerpts during review. 0 = not kept. Never above the minutes retention.",
       "note": "Applied by the `expire-meeting-audio` lifecycle rule of the storage account (Studio `lifecycle_policy.py`) and by the core. 30 by default; capped at 180. The notice read at the start says the audio is kept and for how long; an erasure request from anyone in the meeting deletes the whole audio."
     },
+    "audio.meetings_quick_mode": {
+      "label": "Meetings «Quick» mode",
+      "help": "The «Meetings» space opens with the essentials: «Start now» transcribes straight away, with no meeting preparation; at the end, simple minutes, action items and sending. Only without legal minutes.",
+      "note": "Ignored with legal minutes on (legal minutes need attendance and the agenda). The «Start now» button exists in every mode; this only hides the preparation."
+    },
     "audio.glossary": {
       "label": "Terminology glossary"
     },

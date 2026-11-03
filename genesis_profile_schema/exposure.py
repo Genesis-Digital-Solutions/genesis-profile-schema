@@ -511,6 +511,8 @@ EXPOSURE: Dict[str, str] = {
     "audio.files_retention_days": _R,
     # Áudio das reuniões (v0.1.144): o cliente VÊ (DPA); quem define somos nós, como a das atas.
     "audio.meeting_audio_retention_days": _R,
+    # Modo «Rápido» das reuniões (v0.1.147): como o cliente usa o espaço no dia a dia — escolha dele.
+    "audio.meetings_quick_mode": _W,
     # Ata de órgão autárquico (v0.1.76): ligar é decisão nossa (contratado, como
     # a transcrição); o órgão e a lista de membros do mandato são DO CLIENTE.
     "audio.municipal_minutes.enabled": _R,

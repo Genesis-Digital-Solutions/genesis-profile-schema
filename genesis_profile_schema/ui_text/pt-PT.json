@@ -14,6 +14,11 @@
       "help": "Dias que fica guardado o áudio de uma reunião, para saber quem fala e ouvir excertos ao rever. 0 = não se guarda. Nunca acima da retenção das atas.",
       "note": "Aplicado pela regra de lifecycle `expire-meeting-audio` da conta de storage (Studio `lifecycle_policy.py`) e pelo core. 30 por omissão; teto 180. O aviso lido no início diz que o áudio é guardado e por quanto tempo; o apagamento RGPD de qualquer pessoa da reunião apaga o áudio inteiro."
     },
+    "audio.meetings_quick_mode": {
+      "label": "Modo «Rápido» das reuniões",
+      "help": "O espaço «Reuniões» abre no essencial: «Começar já» transcreve logo, sem preparar a reunião; no fim, a ata simples, as ações e o envio. Só sem a ata legal.",
+      "note": "Com a ata legal ligada é ignorado (a ata legal precisa das presenças e da ordem do dia). O botão «Começar já» existe em todos os modos; este só esconde a preparação."
+    },
     "audio.glossary": {
       "label": "Glossário de termos"
     },

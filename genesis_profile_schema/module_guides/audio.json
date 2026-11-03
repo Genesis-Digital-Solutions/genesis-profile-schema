@@ -6,8 +6,8 @@
     "en": "Meetings and minutes"
   },
   "summary": {
-    "pt": "O espaço «Reuniões» do assistente: preparar a reunião (ordem do dia, presenças), transcrevê-la ao vivo pelo microfone e gerar a minuta e a ata — no formato legal da autarquia ou do órgão da Administração Pública, ou uma ata simples. A ata é um rascunho para quem a lavra: só produz efeitos depois de aprovada e assinada.",
-    "en": "The assistant's «Meetings» space: prepare the meeting (agenda, attendance), transcribe it live through the microphone and draw up the draft and the minutes — in the legal format of a local authority or a Public Administration body, or as simple minutes. The minutes are a draft for the minute-taker: they only take effect once approved and signed."
+    "pt": "O espaço «Reuniões» do assistente: preparar a reunião (ordem do dia, presenças), transcrevê-la ao vivo pelo microfone e gerar a minuta e a ata — no formato legal da autarquia, do órgão da Administração Pública, do condomínio, da sociedade, da associação ou da IPSS, ou uma ata simples; ou, no modo «Rápido», começar logo a transcrever. A ata é um rascunho para quem a lavra: só produz efeitos depois de aprovada e assinada.",
+    "en": "The assistant's «Meetings» space: prepare the meeting (agenda, attendance), transcribe it live through the microphone and draw up the draft and the minutes — in the legal format of a local authority, a Public Administration body, a condominium, a company, an association or a charity (IPSS), or as simple minutes; or, in «Quick» mode, start transcribing straight away. The minutes are a draft for the minute-taker: they only take effect once approved and signed."
   },
   "scope": "profile",
   "root": "audio",
@@ -71,6 +71,21 @@
         "pt": "Empresas e equipas que querem a ata e as ações de cada reunião.",
         "en": "Companies and teams that want the minutes and action items of each meeting."
       }
+    },
+    {
+      "key": "quick",
+      "title": {
+        "pt": "Só transcrever, rápido",
+        "en": "Just transcribe, quickly"
+      },
+      "description": {
+        "pt": "Um botão: «Começar já» transcreve a reunião logo, sem convocatória, ordem do dia nem presenças. No fim, a ata simples (resumo, decisões, ações e quem interveio), as ações para a fila e o envio por email.",
+        "en": "One button: «Start now» transcribes the meeting straight away, with no notice of meeting, agenda or attendance. At the end, simple minutes (summary, decisions, action items and who spoke), the action items for the queue and sending by email."
+      },
+      "when": {
+        "pt": "Quem quer a ata de cada reunião sem preparar nada: equipas, reuniões com clientes, conversas de trabalho.",
+        "en": "Anyone who wants the minutes of each meeting without preparing anything: teams, client meetings, working conversations."
+      }
     }
   ],
   "steps": [
@@ -103,7 +118,8 @@
       ],
       "advanced": [
         "audio.live_max_duration_min",
-        "audio.speech_locale"
+        "audio.speech_locale",
+        "audio.meetings_quick_mode"
       ],
       "links": [
         "tool",
@@ -122,8 +138,8 @@
         "en": "The body and its members"
       },
       "purpose": {
-        "pt": "O tipo e o nome do órgão e a lista oficial de membros do mandato: as presenças, as votações e os nomes da ata saem só desta lista (nunca deduzidos da fala).",
-        "en": "The type and name of the body and the official member list for the term: attendance, votes and names in the minutes come only from this list (never inferred from speech)."
+        "pt": "O tipo e o nome do órgão e a lista oficial de membros: as presenças, as votações e os nomes da ata saem só desta lista (nunca deduzidos da fala).",
+        "en": "The type and name of the body and the official member list: attendance, votes and names in the minutes come only from this list (never inferred from speech)."
       },
       "essential": [
         "audio.municipal_minutes.enabled",
@@ -158,6 +174,10 @@
         {
           "pt": "Conselho Geral da Escola X · tipo «Órgão da Administração Pública» · membros com o cargo «Presidente» e «Secretário».",
           "en": "General Council of School X · type «Public Administration body» · members with the roles «Presidente» and «Secretário»."
+        },
+        {
+          "pt": "Assembleia de condóminos do Edifício Sol · tipo «Assembleia de condóminos» · cada condómino com a permilagem da fração (do título constitutivo).",
+          "en": "Owners' meeting of the Sol Building · type «Condominium owners' meeting» · each owner with the unit's permillage (from the title deed)."
         }
       ]
     },
@@ -237,8 +257,8 @@
         "en": "Review and test"
       },
       "purpose": {
-        "pt": "O que falta e uma reunião de teste com duas vozes: preparar, transcrever, terminar e gerar a minuta.",
-        "en": "What is missing and a test meeting with two voices: prepare, transcribe, end and draw up the draft."
+        "pt": "O que falta e uma reunião de teste com duas vozes: transcrever, terminar e gerar a ata (com ata legal, preparar primeiro e gerar a minuta).",
+        "en": "What is missing and a test meeting with two voices: transcribe, end and draw up the minutes (with legal minutes, prepare first and draw up the draft)."
       }
     }
   ],

@@ -1278,6 +1278,15 @@ class ProfileAudio(BaseModel):
         default=30, ge=0, le=180,
         json_schema_extra={"requires_tool": "transcribe_audio"},
     )
+    # v0.1.147 (3 Nov 2026, épico «Reuniões e atas» — o modo «Rápido», decisão do Bruno): o espaço
+    # «Reuniões» abre no essencial — «Começar já» transcreve logo, sem preparar a reunião (convocatória,
+    # ordem do dia, presenças); no fim, a ata simples, as ações e o envio. Só sem a ata legal (com ela o
+    # core e os ecrãs ignoram-no: a ata legal precisa das presenças e da ordem do dia). Escolha do
+    # cliente no dia a dia (GAIBO) e nossa no Studio.
+    meetings_quick_mode: bool = Field(
+        default=False,
+        json_schema_extra={"requires_tool": "transcribe_audio"},
+    )
     # v0.1.76 (30 Set 2026) — ata de órgão autárquico (ver a classe).
     municipal_minutes: ProfileMunicipalMinutes = Field(
         default_factory=ProfileMunicipalMinutes,
