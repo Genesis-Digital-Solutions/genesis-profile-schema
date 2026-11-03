@@ -482,6 +482,11 @@
       "label": "Link Intake cases to the contact",
       "help": "Each Intake case keeps a reference to the person's contact (by the invitation email or mobile) and shows in their timeline. It never merges different people; Intake data and retention do not change."
     },
+    "contacts.link_meetings": {
+      "label": "Link meeting members to contacts",
+      "help": "Members present are linked to the person's contact (by the email in the official list) when the draft minutes or minutes are approved, and the meeting joins their timeline.",
+      "note": "Declared identity: never merges contacts or adds identities to them. The party never goes into the contact. Needs contacts switched on."
+    },
     "custom_instructions": {
       "label": "Custom instructions",
       "help": "Free text added to the assistant's instructions: business policies, examples, redirects. It complements the structured sections rather than replacing them.",

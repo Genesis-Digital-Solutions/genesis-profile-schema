@@ -2609,6 +2609,11 @@ class ProfileContacts(BaseModel):
     # na linha temporal. Desligado por omissão; os dados e a retenção do Intake
     # não mudam. Aqui e não em `intake` (fechado): um core antigo ignora-o.
     link_intake: bool = False
+    # v0.1.148 (3 Nov 2026, R21 do épico «Reuniões e atas»): os membros do órgão ligam-se ao contacto da
+    # pessoa (só pelo EMAIL da lista oficial, identidade DECLARADA — nunca funde contactos; nunca o partido)
+    # e a reunião entra na linha temporal dela quando a minuta ou a ata é aprovada (os presentes).
+    # Desligado por omissão.
+    link_meetings: bool = False
 
 
 class ProfileIngestAlerts(BaseModel):
