@@ -524,6 +524,8 @@ EXPOSURE: Dict[str, str] = {
     "audio.municipal_minutes.members.substitute": _W,
     # 2 Nov 2026 (F2.4): o cliente mantém os emails do órgão no GAIBO (PII; nunca vai ao prompt)
     "audio.municipal_minutes.members.email": _W,
+    # v0.1.146 (F4): a permilagem/o capital de cada membro é do cliente (título constitutivo, registo)
+    "audio.municipal_minutes.members.weight": _W,
     # Atas -> pedidos (v0.1.117, I30): o NOME de uma fila de reviewQueues.
     # Interno como a fila da captura (tools.config.record_contact_details.queue,
     # I24) e como o proprio reviewQueues: o cliente nao ve as chaves das filas,

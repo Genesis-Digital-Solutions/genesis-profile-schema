@@ -72,13 +72,22 @@
     },
     "audio.municipal_minutes.organ_type": {
       "label": "Type of body",
-      "help": "Names the body in the minutes and says who chairs («Presidente»; «Presidente da Mesa» in assemblies). A Public Administration body follows the Administrative Procedure Code: chair and secretary sign, no public notice.",
+      "help": "Sets the minutes' law: who chairs, the roles, who signs and the wording. In condominiums and companies votes count by permillage or capital (each member's weight). Local authorities have a public notice; the rest do not.",
       "options": {
         "camara_municipal": "Municipal executive (câmara municipal)",
         "assembleia_municipal": "Municipal assembly",
         "junta_freguesia": "Parish executive (junta de freguesia)",
         "assembleia_freguesia": "Parish assembly",
-        "orgao_colegial": "Public Administration body (board, jury, committee) — Administrative Procedure Code rules, art. 34"
+        "orgao_colegial": "Public Administration body (board, jury, committee) — Administrative Procedure Code rules, art. 34",
+        "assembleia_condominos": "Condominium — owners' meeting",
+        "assembleia_geral_sq": "Private limited company (Lda.) — general meeting",
+        "assembleia_geral_sa": "Public limited company (S.A.) — general meeting",
+        "conselho_administracao": "Company — board of directors",
+        "gerencia": "Private limited company (Lda.) — management board",
+        "assembleia_geral_associacao": "Association — general meeting",
+        "direcao_associacao": "Association — board",
+        "assembleia_geral_ipss": "IPSS — general meeting",
+        "administracao_ipss": "IPSS — board (management)"
       }
     },
     "audio.municipal_minutes.recorder": {
@@ -688,10 +697,22 @@
       "label": "Confirm in the system after each action",
       "help": "After each action in a client system, the assistant reads the system again to confirm it was done; what does not confirm is flagged and never repeated. Off: no re-read."
     },
-    "agentic.events.sources.id": {"label": "Event source (id)", "help": "Name of the external system that may wake agent tasks (lowercase, digits and hyphen). Its secret lives in the client's Key Vault as AGENT-EVENTS-<ID>-SECRET."},
-    "agentic.events.sources.enabled": {"label": "Source on", "help": "Off: this source's events are refused."},
-    "agentic.events.sources.events": {"label": "Events the source may send", "help": "Only these names wake tasks; anything else is refused."},
-    "agentic.events.sources.ips": {"label": "Networks the source calls from", "help": "Optional (e.g. 10.0.0.0/8). Empty: any network — the signature is still required."},
+    "agentic.events.sources.id": {
+      "label": "Event source (id)",
+      "help": "Name of the external system that may wake agent tasks (lowercase, digits and hyphen). Its secret lives in the client's Key Vault as AGENT-EVENTS-<ID>-SECRET."
+    },
+    "agentic.events.sources.enabled": {
+      "label": "Source on",
+      "help": "Off: this source's events are refused."
+    },
+    "agentic.events.sources.events": {
+      "label": "Events the source may send",
+      "help": "Only these names wake tasks; anything else is refused."
+    },
+    "agentic.events.sources.ips": {
+      "label": "Networks the source calls from",
+      "help": "Optional (e.g. 10.0.0.0/8). Empty: any network — the signature is still required."
+    },
     "access.allowedRoles": {
       "label": "App roles",
       "help": "Only people with one of these roles in the token get in. Recommended.",
@@ -3078,6 +3099,10 @@
     "tools.config.check_ticket_status.queue": {
       "label": "Request queue",
       "help": "The requests in this queue whose status the assistant can look up by reference. Empty: the queue of the open-a-request tool."
+    },
+    "audio.municipal_minutes.members.weight": {
+      "label": "Vote weight (permillage or capital)",
+      "help": "Only for bodies that vote by weight: the unit's permillage (condominium) or the nominal value of the quota or shares (company). It comes from the deed or register, never made up; empty = count to confirm."
     }
   }
 }

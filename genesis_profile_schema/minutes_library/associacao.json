@@ -1,0 +1,78 @@
+{
+  "id": "associacao",
+  "name": {
+    "pt": "Associação (Código Civil, art.ºs 157.º a 184.º)",
+    "en": "Association (Civil Code, arts. 157–184)"
+  },
+  "family": "private",
+  "regime": "de um órgão de uma associação portuguesa sem fins lucrativos (Código Civil, art.ºs 157.º a 184.º, e os estatutos da associação)",
+  "member_term": "associado",
+  "outsiders": "Intervenções de quem não é associado nem membro do órgão: só um resumo do assunto, sem dados pessoais.",
+  "rules": [
+    "Uma deliberação sobre assunto fora da ordem do dia é anulável (art.º 174.º, n.º 3): se acontecer, acrescenta em «a_confirmar».",
+    "Quem se declarar impedido (conflito de interesses, art.º 176.º) vai em «impedidos» e não vota."
+  ],
+  "weight": null,
+  "organs": [
+    {
+      "id": "assembleia_geral_associacao",
+      "label": {
+        "pt": "Assembleia geral — associação",
+        "en": "General meeting — association"
+      },
+      "default_name": "Assembleia Geral",
+      "subject": "A Assembleia Geral",
+      "preside": [
+        "presidente da mesa da assembleia geral",
+        "presidente da mesa",
+        "presidente"
+      ],
+      "roles": [
+        "Presidente da Mesa da Assembleia Geral",
+        "1.º Secretário",
+        "1.ª Secretária",
+        "2.º Secretário",
+        "2.ª Secretária",
+        "Associado",
+        "Associada"
+      ],
+      "signatures": [
+        "O Presidente da Mesa",
+        "Os Secretários da Mesa"
+      ],
+      "closing": "Nada mais havendo a tratar, o Presidente da Mesa declarou encerrada a reunião, da qual se lavrou a presente ata, que vai ser assinada nos termos dos estatutos."
+    },
+    {
+      "id": "direcao_associacao",
+      "label": {
+        "pt": "Direção — associação",
+        "en": "Board — association"
+      },
+      "default_name": "Direção",
+      "subject": "A Direção",
+      "preside": [
+        "presidente da direção",
+        "presidente"
+      ],
+      "roles": [
+        "Presidente da Direção",
+        "Vice-Presidente",
+        "Secretário",
+        "Secretária",
+        "Tesoureiro",
+        "Tesoureira",
+        "Vogal"
+      ],
+      "signatures": [
+        "Os membros da Direção presentes"
+      ],
+      "closing": "Nada mais havendo a tratar, foi encerrada a reunião, da qual se lavrou a presente ata, que vai ser assinada nos termos dos estatutos.",
+      "rules": [
+        "Regista o sentido de voto de cada membro quando for dito: quem não vota contra responde pelos prejuízos da deliberação (Código Civil, art.º 164.º, n.º 2).",
+        "Uma deliberação sobre assunto fora da ordem do dia é anulável (art.º 174.º, n.º 3): se acontecer, acrescenta em «a_confirmar».",
+        "Quem se declarar impedido (conflito de interesses, art.º 176.º) vai em «impedidos» e não vota."
+      ]
+    }
+  ],
+  "deadlines": []
+}

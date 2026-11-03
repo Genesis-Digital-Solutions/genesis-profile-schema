@@ -72,13 +72,22 @@
     },
     "audio.municipal_minutes.organ_type": {
       "label": "Tipo de órgão",
-      "help": "Dá o nome do órgão nas fórmulas da ata e diz quem preside («Presidente»; «Presidente da Mesa» nas assembleias). Um órgão da Administração Pública segue o CPA: assinam o presidente e o secretário e não há edital.",
+      "help": "Diz a lei da ata: quem preside, os cargos, quem assina e as fórmulas. No condomínio e nas sociedades os votos contam por permilagem ou capital (o peso de cada membro). Autarquias têm edital; os outros não.",
       "options": {
         "camara_municipal": "Câmara municipal",
         "assembleia_municipal": "Assembleia municipal",
         "junta_freguesia": "Junta de freguesia",
         "assembleia_freguesia": "Assembleia de freguesia",
-        "orgao_colegial": "Órgão da Administração Pública (conselho, júri, comissão) — regras do CPA, art.º 34.º"
+        "orgao_colegial": "Órgão da Administração Pública (conselho, júri, comissão) — regras do CPA, art.º 34.º",
+        "assembleia_condominos": "Condomínio — assembleia de condóminos",
+        "assembleia_geral_sq": "Sociedade por quotas — assembleia geral",
+        "assembleia_geral_sa": "Sociedade anónima — assembleia geral",
+        "conselho_administracao": "Sociedade — conselho de administração",
+        "gerencia": "Sociedade por quotas — gerência",
+        "assembleia_geral_associacao": "Associação — assembleia geral",
+        "direcao_associacao": "Associação — direção",
+        "assembleia_geral_ipss": "IPSS — assembleia geral",
+        "administracao_ipss": "IPSS — direção (órgão de administração)"
       }
     },
     "audio.municipal_minutes.recorder": {
@@ -688,10 +697,22 @@
       "label": "Confirmar no sistema depois de cada ação",
       "help": "Depois de cada ação num sistema do cliente, o assistente volta a ler o sistema para confirmar que ficou feita; o que não se confirma fica marcado e nunca se repete. Desligado: não relê."
     },
-    "agentic.events.sources.id": {"label": "Fonte de eventos (id)", "help": "Nome do sistema externo que pode acordar tarefas do agente (minúsculas, dígitos e hífen). O segredo dela fica no Key Vault do cliente como AGENT-EVENTS-<ID>-SECRET."},
-    "agentic.events.sources.enabled": {"label": "Fonte ligada", "help": "Desligada: os eventos desta fonte são recusados."},
-    "agentic.events.sources.events": {"label": "Eventos que a fonte pode mandar", "help": "Só estes nomes acordam tarefas; qualquer outro é recusado."},
-    "agentic.events.sources.ips": {"label": "Redes de onde a fonte chama", "help": "Opcional (ex.: 10.0.0.0/8). Vazio: qualquer rede — a assinatura continua obrigatória."},
+    "agentic.events.sources.id": {
+      "label": "Fonte de eventos (id)",
+      "help": "Nome do sistema externo que pode acordar tarefas do agente (minúsculas, dígitos e hífen). O segredo dela fica no Key Vault do cliente como AGENT-EVENTS-<ID>-SECRET."
+    },
+    "agentic.events.sources.enabled": {
+      "label": "Fonte ligada",
+      "help": "Desligada: os eventos desta fonte são recusados."
+    },
+    "agentic.events.sources.events": {
+      "label": "Eventos que a fonte pode mandar",
+      "help": "Só estes nomes acordam tarefas; qualquer outro é recusado."
+    },
+    "agentic.events.sources.ips": {
+      "label": "Redes de onde a fonte chama",
+      "help": "Opcional (ex.: 10.0.0.0/8). Vazio: qualquer rede — a assinatura continua obrigatória."
+    },
     "access.allowedRoles": {
       "label": "Papéis de aplicação (App roles)",
       "help": "Só entra quem tiver um destes papéis no token. Recomendado.",
@@ -3078,6 +3099,10 @@
     "tools.config.check_ticket_status.queue": {
       "label": "Fila dos pedidos",
       "help": "Os pedidos desta fila cujo estado o assistente pode consultar pela referência. Vazio: a fila da ferramenta de abrir pedidos."
+    },
+    "audio.municipal_minutes.members.weight": {
+      "label": "Peso do voto (permilagem ou capital)",
+      "help": "Só nos órgãos que votam por peso: a permilagem da fração (condomínio) ou o valor nominal da quota ou das ações (sociedade). Vem do título ou do registo, nunca se inventa; vazio = contagem a confirmar."
     }
   }
 }

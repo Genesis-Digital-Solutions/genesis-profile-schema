@@ -1173,6 +1173,11 @@ class ProfileMunicipalMember(BaseModel):
     party: str = Field(default="", max_length=60)    # sigla/lista; vazio = sem filiação declarada
     substitute: bool = False
     email: str = Field(default="", max_length=254)
+    # v0.1.146 (3 Nov 2026, F4): o PESO do voto nos órgãos em que se vota por peso (o `weight` do modelo
+    # da `minutes_library`): a permilagem da fração no condomínio, o valor nominal da quota/das ações nas
+    # sociedades. Dado do cliente (do título constitutivo, do registo comercial), NUNCA inventado; vazio
+    # = por confirmar (a ata diz o resultado em pessoas e marca a contagem a confirmar).
+    weight: Optional[float] = Field(default=None, ge=0, le=1_000_000_000_000)
 
     @field_validator("email")
     @classmethod
@@ -1200,8 +1205,15 @@ class ProfileMunicipalMinutes(BaseModel):
     enabled: bool = Field(default=False, json_schema_extra={"requires_tool": "transcribe_audio"})
     # `orgao_colegial` (2 Nov 2026, épico «Reuniões e atas», R7): «Órgão da Administração
     # Pública» (conselho, júri, comissão) — ata pelas regras do CPA, art.ºs 34.º e 35.º, sem edital.
+    # v0.1.146 (3 Nov 2026, F4): os órgãos privados — condomínio, sociedades, associações e IPSS. Cada
+    # valor é o `id` de um órgão da `minutes_library` (é ela que diz o regime, quem preside, os cargos,
+    # quem assina e o peso dos votos); um teste prova que esta lista e a biblioteca são as mesmas.
     organ_type: Literal["camara_municipal", "assembleia_municipal", "junta_freguesia",
-                        "assembleia_freguesia", "orgao_colegial"] = "camara_municipal"
+                        "assembleia_freguesia", "orgao_colegial",
+                        "assembleia_condominos",
+                        "assembleia_geral_sq", "assembleia_geral_sa", "conselho_administracao", "gerencia",
+                        "assembleia_geral_associacao", "direcao_associacao",
+                        "assembleia_geral_ipss", "administracao_ipss"] = "camara_municipal"
     organ_name: str = Field(default="", max_length=200)   # «Câmara Municipal de …»
     mandate: str = Field(default="", max_length=40)       # «2025–2029»
     recorder: str = Field(default="", max_length=120)     # quem lavra por omissão (trabalhador designado)

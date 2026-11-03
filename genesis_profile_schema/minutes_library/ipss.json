@@ -1,0 +1,89 @@
+{
+  "id": "ipss",
+  "name": {
+    "pt": "IPSS (Estatuto das Instituições Particulares de Solidariedade Social)",
+    "en": "Private social solidarity institution (IPSS Statute)"
+  },
+  "family": "private",
+  "regime": "de um órgão de uma Instituição Particular de Solidariedade Social (Estatuto das IPSS, Decreto-Lei n.º 119/83, na redação em vigor, e os estatutos da instituição)",
+  "member_term": "associado",
+  "outsiders": "Intervenções de quem não é membro do órgão: só um resumo do assunto, sem dados pessoais.",
+  "rules": [
+    "Cada deliberação é reproduzida NA ÍNTEGRA, tal como foi votada: a deliberação que não esteja integrada e totalmente reproduzida na ata é nula (Estatuto das IPSS, art.º 21.º-D, n.º 1, al. c)). Nunca resumas nem parafraseies a deliberação; se o texto exato não se ouvir, acrescenta em «a_confirmar».",
+    "Regista os votos contra quando forem ditos (isentam de responsabilidade, art.º 20.º, n.º 2).",
+    "Eleições e assuntos pessoais votam-se por escrutínio secreto (art.º 16.º, n.º 2): nunca atribuas votos a pessoas nessas votações.",
+    "Quem se declarar impedido (art.º 21.º-B) vai em «impedidos» e não vota."
+  ],
+  "weight": null,
+  "organs": [
+    {
+      "id": "assembleia_geral_ipss",
+      "label": {
+        "pt": "Assembleia geral — IPSS",
+        "en": "General meeting — IPSS"
+      },
+      "default_name": "Assembleia Geral",
+      "subject": "A Assembleia Geral",
+      "preside": [
+        "presidente da mesa da assembleia geral",
+        "presidente da mesa",
+        "presidente"
+      ],
+      "roles": [
+        "Presidente da Mesa da Assembleia Geral",
+        "Secretário da Mesa",
+        "Secretária da Mesa",
+        "Associado",
+        "Associada"
+      ],
+      "signatures": [
+        "Os membros da Mesa"
+      ],
+      "closing": "Nada mais havendo a tratar, o Presidente da Mesa declarou encerrada a reunião, da qual se lavrou a presente ata, que vai ser assinada pelos membros da Mesa (Estatuto das IPSS, art.º 16.º, n.º 3)."
+    },
+    {
+      "id": "administracao_ipss",
+      "label": {
+        "pt": "Órgão de administração (direção) — IPSS",
+        "en": "Board (management) — IPSS"
+      },
+      "default_name": "Direção",
+      "subject": "A Direção",
+      "preside": [
+        "presidente da direção",
+        "presidente do órgão de administração",
+        "presidente"
+      ],
+      "roles": [
+        "Presidente da Direção",
+        "Vice-Presidente",
+        "Secretário",
+        "Secretária",
+        "Tesoureiro",
+        "Tesoureira",
+        "Vogal"
+      ],
+      "signatures": [
+        "Os membros presentes"
+      ],
+      "closing": "Nada mais havendo a tratar, foi encerrada a reunião, da qual se lavrou a presente ata, que vai ser assinada por todos os membros presentes (Estatuto das IPSS, art.º 16.º, n.º 3)."
+    }
+  ],
+  "deadlines": [
+    {
+      "id": "registo_iss",
+      "from": "meeting_date",
+      "days": 60,
+      "unit": "calendar",
+      "law": "Portaria n.º 139/2007, art.ºs 5.º e 17.º",
+      "label": {
+        "pt": "Pedir o registo no centro distrital do ISS, com a ata",
+        "en": "Request registration with the ISS district centre, with the minutes"
+      },
+      "scope": {
+        "pt": "Eleição dos corpos gerentes e alteração dos estatutos",
+        "en": "Election of the governing bodies and amendments to the statutes"
+      }
+    }
+  ]
+}

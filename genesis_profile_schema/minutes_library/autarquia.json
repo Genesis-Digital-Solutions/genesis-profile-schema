@@ -36,5 +36,108 @@
         "en": "Resolutions with external effect"
       }
     }
+  ],
+  "family": "municipal",
+  "organs": [
+    {
+      "id": "camara_municipal",
+      "label": {
+        "pt": "Câmara municipal",
+        "en": "Municipal executive (câmara municipal)"
+      },
+      "default_name": "Câmara Municipal",
+      "subject": "A Câmara",
+      "preside": [
+        "presidente da câmara",
+        "presidente"
+      ],
+      "roles": [
+        "Presidente da Câmara",
+        "Vice-Presidente",
+        "Vereador",
+        "Vereadora"
+      ],
+      "signatures": [
+        "O Presidente",
+        "Quem lavrou"
+      ]
+    },
+    {
+      "id": "assembleia_municipal",
+      "label": {
+        "pt": "Assembleia municipal",
+        "en": "Municipal assembly"
+      },
+      "default_name": "Assembleia Municipal",
+      "subject": "A Assembleia",
+      "preside": [
+        "presidente da mesa",
+        "presidente da assembleia"
+      ],
+      "roles": [
+        "Presidente da Mesa",
+        "1.º Secretário",
+        "1.ª Secretária",
+        "2.º Secretário",
+        "2.ª Secretária",
+        "Deputado municipal",
+        "Deputada municipal",
+        "Presidente da Junta de Freguesia"
+      ],
+      "signatures": [
+        "O Presidente",
+        "Quem lavrou"
+      ]
+    },
+    {
+      "id": "junta_freguesia",
+      "label": {
+        "pt": "Junta de freguesia",
+        "en": "Parish executive (junta de freguesia)"
+      },
+      "default_name": "Junta de Freguesia",
+      "subject": "A Junta",
+      "preside": [
+        "presidente da junta",
+        "presidente"
+      ],
+      "roles": [
+        "Presidente da Junta",
+        "Secretário",
+        "Secretária",
+        "Tesoureiro",
+        "Tesoureira",
+        "Vogal"
+      ],
+      "signatures": [
+        "O Presidente",
+        "Quem lavrou"
+      ]
+    },
+    {
+      "id": "assembleia_freguesia",
+      "label": {
+        "pt": "Assembleia de freguesia",
+        "en": "Parish assembly"
+      },
+      "default_name": "Assembleia de Freguesia",
+      "subject": "A Assembleia",
+      "preside": [
+        "presidente da mesa",
+        "presidente da assembleia"
+      ],
+      "roles": [
+        "Presidente da Mesa",
+        "1.º Secretário",
+        "1.ª Secretária",
+        "2.º Secretário",
+        "2.ª Secretária",
+        "Membro da assembleia"
+      ],
+      "signatures": [
+        "O Presidente",
+        "Quem lavrou"
+      ]
+    }
   ]
 }

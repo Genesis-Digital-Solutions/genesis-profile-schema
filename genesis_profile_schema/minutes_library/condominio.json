@@ -1,0 +1,68 @@
+{
+  "id": "condominio",
+  "name": {
+    "pt": "Condomínio (assembleia de condóminos — Código Civil e DL 268/94)",
+    "en": "Condominium (owners' meeting — Civil Code and Decree-Law 268/94)"
+  },
+  "family": "private",
+  "regime": "de uma assembleia de condóminos de um prédio em propriedade horizontal (Código Civil, art.ºs 1430.º a 1438.º-A; Decreto-Lei n.º 268/94, de 25 de outubro)",
+  "member_term": "condómino",
+  "outsiders": "Intervenções de quem não é condómino nem procurador (administrador externo, convidados): só um resumo do assunto, sem dados pessoais.",
+  "rules": [
+    "A ata é um resumo do que de essencial se passou: indica os condóminos presentes e os ausentes, os assuntos apreciados e as deliberações com o resultado de cada votação (DL 268/94, art.º 1.º, n.º 2).",
+    "Os votos contam por permilagem: o resultado só se escreve com os valores da lista oficial; nunca calcules nem inventes permilagens — se não houver, deixa os números a null e acrescenta em «a_confirmar».",
+    "Montantes, quotas e datas de vencimento só se forem ditos; uma deliberação sobre contribuições tem de dizer o montante anual de cada condómino e a data de vencimento (DL 268/94, art.º 6.º) — o que faltar vai para «a_confirmar».",
+    "Quem vota por procuração aparece como «representado por …» só se a procuração for referida na reunião."
+  ],
+  "weight": {
+    "unit": "permilagem",
+    "label": {
+      "pt": "Permilagem",
+      "en": "Permillage"
+    }
+  },
+  "organs": [
+    {
+      "id": "assembleia_condominos",
+      "label": {
+        "pt": "Assembleia de condóminos",
+        "en": "Condominium owners' meeting"
+      },
+      "default_name": "Assembleia de Condóminos",
+      "subject": "A Assembleia",
+      "preside": [
+        "presidente da mesa",
+        "presidente"
+      ],
+      "roles": [
+        "Presidente da Mesa",
+        "Secretário",
+        "Secretária",
+        "Administrador do condomínio",
+        "Administradora do condomínio",
+        "Condómino",
+        "Condómina",
+        "Procurador",
+        "Procuradora"
+      ],
+      "signatures": [
+        "O Presidente da Mesa",
+        "Os condóminos presentes (ou concordância por email)"
+      ],
+      "closing": "Nada mais havendo a tratar, o Presidente da Mesa declarou encerrada a reunião, da qual se lavrou a presente ata, que vai ser assinada por quem presidiu e subscrita pelos condóminos presentes, por assinatura ou por concordância enviada por email (Decreto-Lei n.º 268/94, art.º 1.º, n.ºs 1 e 7)."
+    }
+  ],
+  "deadlines": [
+    {
+      "id": "comunicacao_ausentes",
+      "from": "meeting_date",
+      "days": 30,
+      "unit": "calendar",
+      "law": "Código Civil, art.º 1432.º, n.º 9",
+      "label": {
+        "pt": "Comunicar as deliberações aos condóminos ausentes (carta registada com aviso de receção ou email a quem o aceitou)",
+        "en": "Send the resolutions to absent owners (registered letter with receipt, or email to those who accepted it)"
+      }
+    }
+  ]
+}

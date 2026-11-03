@@ -4,5 +4,32 @@
     "pt": "Órgão da Administração Pública (CPA, art.º 34.º)",
     "en": "Public administration body (CPA, art. 34)"
   },
-  "deadlines": []
+  "deadlines": [],
+  "family": "public",
+  "organs": [
+    {
+      "id": "orgao_colegial",
+      "label": {
+        "pt": "Órgão da Administração Pública (conselho, júri, comissão) — CPA, art.º 34.º",
+        "en": "Public Administration body (board, jury, committee) — Administrative Procedure Code, art. 34"
+      },
+      "default_name": "Órgão colegial",
+      "subject": "",
+      "preside": [
+        "presidente"
+      ],
+      "roles": [
+        "Presidente",
+        "Vice-Presidente",
+        "Secretário",
+        "Secretária",
+        "Vogal",
+        "Membro"
+      ],
+      "signatures": [
+        "O Presidente",
+        "O Secretário"
+      ]
+    }
+  ]
 }

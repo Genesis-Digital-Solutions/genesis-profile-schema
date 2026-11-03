@@ -1,0 +1,149 @@
+{
+  "id": "sociedade_comercial",
+  "name": {
+    "pt": "Sociedade comercial (Código das Sociedades Comerciais)",
+    "en": "Commercial company (Companies Code)"
+  },
+  "family": "private",
+  "regime": "de um órgão de uma sociedade comercial portuguesa (Código das Sociedades Comerciais)",
+  "member_term": "sócio",
+  "outsiders": "Intervenções de quem não é membro do órgão: só um resumo do assunto, sem dados pessoais.",
+  "rules": [
+    "A ata tem, pelo menos: identificação da sociedade, lugar, dia e hora; presidente e secretários; sócios presentes ou representados e o valor nominal das suas partes, quotas ou ações; ordem do dia (salvo se a lista de presenças ou a ordem do dia forem anexadas); documentos e relatórios submetidos; teor das deliberações; resultado das votações (Código das Sociedades Comerciais, art.º 63.º, n.º 2).",
+    "As declarações de voto só entram se o sócio o requerer na reunião (art.º 63.º, n.º 2, al. h)); uma frase dita não chega — na dúvida, acrescenta em «a_confirmar».",
+    "Os votos contam pelo capital: o resultado só se escreve com os valores da lista oficial; nunca calcules nem inventes capital, quotas ou ações.",
+    "Em reunião por meios telemáticos, regista quem interveio (art.º 377.º, n.º 6, al. b))."
+  ],
+  "weight": {
+    "unit": "capital",
+    "label": {
+      "pt": "Capital (valor nominal)",
+      "en": "Capital (nominal value)"
+    }
+  },
+  "organs": [
+    {
+      "id": "assembleia_geral_sq",
+      "label": {
+        "pt": "Assembleia geral — sociedade por quotas",
+        "en": "General meeting — private limited company (Lda.)"
+      },
+      "default_name": "Assembleia Geral",
+      "subject": "A Assembleia Geral",
+      "preside": [
+        "presidente da mesa",
+        "presidente"
+      ],
+      "roles": [
+        "Presidente da Mesa",
+        "Secretário da Mesa",
+        "Secretária da Mesa",
+        "Sócio",
+        "Sócia",
+        "Acionista",
+        "Representante",
+        "Gerente",
+        "Administrador",
+        "Administradora",
+        "Secretário da sociedade",
+        "Secretária da sociedade"
+      ],
+      "signatures": [
+        "Os sócios que participaram na reunião"
+      ],
+      "closing": "Nada mais havendo a tratar, foi encerrada a reunião, da qual se lavrou a presente ata, que vai ser assinada por todos os sócios que nela participaram (Código das Sociedades Comerciais, art.º 248.º, n.º 6)."
+    },
+    {
+      "id": "assembleia_geral_sa",
+      "label": {
+        "pt": "Assembleia geral — sociedade anónima",
+        "en": "General meeting — public limited company (S.A.)"
+      },
+      "default_name": "Assembleia Geral",
+      "subject": "A Assembleia Geral",
+      "preside": [
+        "presidente da mesa",
+        "presidente"
+      ],
+      "roles": [
+        "Presidente da Mesa",
+        "Secretário da Mesa",
+        "Secretária da Mesa",
+        "Sócio",
+        "Sócia",
+        "Acionista",
+        "Representante",
+        "Gerente",
+        "Administrador",
+        "Administradora",
+        "Secretário da sociedade",
+        "Secretária da sociedade"
+      ],
+      "signatures": [
+        "O Presidente da Mesa",
+        "O Secretário da Mesa"
+      ],
+      "closing": "Nada mais havendo a tratar, o Presidente da Mesa declarou encerrada a reunião, da qual se lavrou a presente ata, que vai ser assinada pelo Presidente e pelo Secretário da Mesa (Código das Sociedades Comerciais, art.º 388.º, n.º 2)."
+    },
+    {
+      "id": "conselho_administracao",
+      "label": {
+        "pt": "Conselho de administração",
+        "en": "Board of directors"
+      },
+      "default_name": "Conselho de Administração",
+      "subject": "O Conselho de Administração",
+      "preside": [
+        "presidente do conselho de administração",
+        "presidente"
+      ],
+      "roles": [
+        "Presidente do Conselho de Administração",
+        "Administrador",
+        "Administradora",
+        "Secretário da sociedade",
+        "Secretária da sociedade"
+      ],
+      "signatures": [
+        "Os membros do órgão, nos termos do contrato de sociedade"
+      ],
+      "closing": "Nada mais havendo a tratar, foi encerrada a reunião, da qual se lavrou a presente ata, que vai ser assinada nos termos do contrato de sociedade.",
+      "weight": null,
+      "member_term": "administrador",
+      "rules": [
+        "O conselho e a gerência votam por cabeça (maioria dos presentes ou representados; Código das Sociedades Comerciais, art.º 410.º, n.º 7): nunca por capital.",
+        "Quem se declarar em conflito de interesses vai em «impedidos» e não vota (art.º 410.º, n.º 6).",
+        "Em reunião por meios telemáticos, regista quem interveio (art.º 410.º, n.º 8)."
+      ]
+    },
+    {
+      "id": "gerencia",
+      "label": {
+        "pt": "Gerência (sociedade por quotas)",
+        "en": "Management board (Lda.)"
+      },
+      "default_name": "Gerência",
+      "subject": "A Gerência",
+      "preside": [
+        "gerente"
+      ],
+      "roles": [
+        "Gerente",
+        "Secretário da sociedade",
+        "Secretária da sociedade"
+      ],
+      "signatures": [
+        "Os membros do órgão, nos termos do contrato de sociedade"
+      ],
+      "closing": "Nada mais havendo a tratar, foi encerrada a reunião, da qual se lavrou a presente ata, que vai ser assinada nos termos do contrato de sociedade.",
+      "weight": null,
+      "member_term": "gerente",
+      "rules": [
+        "O conselho e a gerência votam por cabeça (maioria dos presentes ou representados; Código das Sociedades Comerciais, art.º 410.º, n.º 7): nunca por capital.",
+        "Quem se declarar em conflito de interesses vai em «impedidos» e não vota (art.º 410.º, n.º 6).",
+        "Em reunião por meios telemáticos, regista quem interveio (art.º 410.º, n.º 8)."
+      ]
+    }
+  ],
+  "deadlines": []
+}
