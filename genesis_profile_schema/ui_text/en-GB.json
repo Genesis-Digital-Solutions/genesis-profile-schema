@@ -2503,6 +2503,26 @@
       "label": "Example case name",
       "help": "The example in the name field when creating a case, without «e.g.». Never a real person's data."
     },
+    "tools.config.verify_documents.document_templates": {
+      "label": "Final document templates",
+      "help": "The client's own template for a final document (the opinion, the compliance report…), one per scheme and document. Empty = the Genesis base template. Uploaded in the «Final documents» step of the Document verification tab; back to the base = remove the template."
+    },
+    "tools.config.verify_documents.document_templates.scheme": {
+      "label": "Scheme",
+      "help": "The use case the template applies to («fem», «concursos»)."
+    },
+    "tools.config.verify_documents.document_templates.document": {
+      "label": "Document",
+      "help": "The final document's key in the scheme (e.g. «parecer»)."
+    },
+    "tools.config.verify_documents.document_templates.name": {
+      "label": "File name",
+      "help": "The Word file's name in the client's storage (.docx). A new template takes a new name (e.g. _v2)."
+    },
+    "tools.config.verify_documents.document_templates.sha256": {
+      "label": "Template fingerprint",
+      "help": "The approved template's SHA-256 fingerprint, returned by the core on upload. Other content under the same name is refused."
+    },
     "tools.config.extract_legal_terms": {
       "label": "Legal term extraction",
       "help": "A document extraction engine with a per-profile schema. Each field comes back with its value and the page or clause reference where it was found."

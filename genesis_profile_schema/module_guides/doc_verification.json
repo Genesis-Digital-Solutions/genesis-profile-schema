@@ -141,9 +141,12 @@
         "pt": "O documento que o caso produz a partir da análise e da decisão: o parecer nas candidaturas a apoios, o relatório de conformidade nos concursos. Gerado no ecrã do caso (separador Decisão), editável e emitido por quem decide.",
         "en": "The document the case produces from the analysis and the decision: the opinion for support applications, the compliance report for tenders. Generated on the case screen (Decision tab), editable and issued by whoever decides."
       },
+      "advanced": [
+        "tools.config.verify_documents.document_templates"
+      ],
       "when": {
-        "pt": "Nada a configurar no perfil: o documento e o seu conteúdo vêm do esquema do caso de uso.",
-        "en": "Nothing to configure in the profile: the document and its content come from the use case's scheme."
+        "pt": "O documento e o seu conteúdo vêm do esquema do caso de uso e saem no molde base da Genesis. Quando o cliente envia o modelo dele, carrega-se aqui e passa a ser o usado nesse documento; retirá-lo volta ao base.",
+        "en": "The document and its content come from the use case's scheme and come out in the Genesis base template. When the client sends their own, upload it here and it becomes the one used for that document; removing it goes back to the base."
       }
     },
     {

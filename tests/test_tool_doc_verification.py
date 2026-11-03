@@ -121,3 +121,57 @@ def test_nomes_sao_multilingues_internos_e_com_texto():
             assert ui.label_of(f"{L}.{c}", locale), (c, locale)
     for locale in ui.LOCALES:
         assert "fem" in ui.options_of(f"{P}.scheme", locale)
+
+# ── moldes do cliente dos documentos finais (3 Nov 2026) ─────────────────────
+
+T = f"{P}.document_templates"
+SHA = "a" * 64
+
+
+def _ref(**kw):
+    return {"scheme": "fem", "document": "parecer", "name": "parecer_cliente.docx", "sha256": SHA, **kw}
+
+
+def test_moldes_vazio_por_omissao_e_aceita_a_referencia_do_core():
+    assert ProfileToolDocVerificationConfig().document_templates == []
+    c = ProfileToolDocVerificationConfig.model_validate({"document_templates": [
+        _ref(), _ref(scheme="concursos@2026.10", document="conformidade", name="relatorio-v2.docx")]})
+    assert [(r.scheme, r.document) for r in c.document_templates] == [("fem", "parecer"),
+                                                                       ("concursos@2026.10", "conformidade")]
+
+
+@pytest.mark.parametrize("mau", [
+    {"scheme": "FEM"}, {"scheme": "../x"}, {"document": "Parecer"}, {"document": "p"}, {"document": "x" * 33},
+    {"name": "parecer.doc"}, {"name": "parecer.xlsx"}, {"name": "../parecer.docx"}, {"name": ".docx"},
+    {"name": "a b.docx"}, {"sha256": "A" * 64}, {"sha256": "a" * 63}, {"extra": 1},
+])
+def test_moldes_recusam_referencia_mal_escrita(mau):
+    with pytest.raises(ValidationError):
+        ProfileToolDocVerificationConfig.model_validate({"document_templates": [_ref(**mau)]})
+
+
+def test_moldes_um_por_documento_do_esquema():
+    with pytest.raises(ValidationError):
+        ProfileToolDocVerificationConfig.model_validate({"document_templates": [_ref(), _ref(name="outro.docx")]})
+    # a versão fixa conta como o esquema base (o core compara pelo base)
+    with pytest.raises(ValidationError):
+        ProfileToolDocVerificationConfig.model_validate({"document_templates": [_ref(), _ref(scheme="fem@2026.10")]})
+    ok = ProfileToolDocVerificationConfig.model_validate({"document_templates": [
+        _ref(), _ref(document="nota_decisao", name="nota.docx")]})
+    assert len(ok.document_templates) == 2
+
+
+def test_moldes_internos_com_texto_e_no_perfil_inteiro():
+    for campo in ("scheme", "document", "name", "sha256"):
+        assert exp.exposure_of(f"{T}.{campo}") == exp.INTERNAL, campo
+        for locale in ui.LOCALES:
+            assert ui.label_of(f"{T}.{campo}", locale), (campo, locale)
+    for locale in ui.LOCALES:
+        assert ui.label_of(T, locale) and ui.help_of(T, locale)
+    raw = {"client_id": "x", "tools": {"enabled": ["verify_documents"], "config": {"verify_documents": {
+        "scheme": "fem", "document_templates": [_ref()]}}}}
+    prof = ClientProfileSchema.model_validate(raw)
+    assert prof.tools.config["verify_documents"] == raw["tools"]["config"]["verify_documents"]
+    with pytest.raises(ValidationError):
+        ClientProfileSchema.model_validate({"client_id": "x", "tools": {"config": {"verify_documents": {
+            "document_templates": [_ref(sha256="x")]}}}})

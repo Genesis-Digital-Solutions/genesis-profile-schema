@@ -2503,6 +2503,26 @@
       "label": "Exemplo do nome de um caso",
       "help": "O exemplo no campo do nome ao criar um caso, sem o «ex.:». Nunca dados reais de uma pessoa."
     },
+    "tools.config.verify_documents.document_templates": {
+      "label": "Moldes dos documentos finais",
+      "help": "O modelo do cliente de um documento final (o parecer, o relatório de conformidade…), um por esquema e documento. Vazio = o molde base da Genesis. Carrega-se no passo «Documentos finais» da tab Verificação documental; voltar ao base = retirar o molde."
+    },
+    "tools.config.verify_documents.document_templates.scheme": {
+      "label": "Esquema",
+      "help": "O caso de uso a que o molde se aplica («fem», «concursos»)."
+    },
+    "tools.config.verify_documents.document_templates.document": {
+      "label": "Documento",
+      "help": "A chave do documento final no esquema (ex.: «parecer»)."
+    },
+    "tools.config.verify_documents.document_templates.name": {
+      "label": "Nome do ficheiro",
+      "help": "O nome do Word no armazenamento do cliente (.docx). Um modelo novo leva um nome novo (ex.: _v2)."
+    },
+    "tools.config.verify_documents.document_templates.sha256": {
+      "label": "Impressão do molde",
+      "help": "A impressão SHA-256 do molde aprovado, devolvida pelo core ao carregar. Outro conteúdo com o mesmo nome é recusado."
+    },
     "tools.config.extract_legal_terms": {
       "label": "Extração de termos legais",
       "help": "Motor de extração documental com esquema próprio por perfil. Cada campo é devolvido com o valor e a referência de página ou cláusula onde foi encontrado."

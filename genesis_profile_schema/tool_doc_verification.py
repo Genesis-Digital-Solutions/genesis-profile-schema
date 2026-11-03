@@ -21,13 +21,14 @@ exposição não os abre ao cliente.
 
 from __future__ import annotations
 
-from typing import Annotated, Dict, Optional
+from typing import Annotated, Dict, List, Optional
 
-from pydantic import AfterValidator, BaseModel, ConfigDict, Field
+from pydantic import AfterValidator, BaseModel, ConfigDict, Field, field_validator
 
 from .field_definition import I18nHelp
 
-__all__ = ["DocVerificationLabels", "ProfileToolDocVerificationConfig", "MAX_LABEL_TEXT"]
+__all__ = ["DocVerificationDocumentTemplate", "DocVerificationLabels", "ProfileToolDocVerificationConfig",
+           "MAX_LABEL_TEXT", "MAX_DOCUMENT_TEMPLATES"]
 
 #: Um nome de ecrã (título, nome do caso, exemplo): curto. A frase do subtítulo cabe nisto também.
 MAX_LABEL_TEXT = 200
@@ -59,6 +60,29 @@ class DocVerificationLabels(BaseModel):
     name_example: Annotated[I18nHelp, AfterValidator(_short)] = Field(default_factory=dict)
 
 
+#: A gramática do esquema (a mesma do `scheme` dos casos novos e do `create_case` do core).
+SCHEME_PATTERN = r"^[a-z0-9][a-z0-9_.@-]{0,63}$"
+#: Um por documento final de um esquema; a biblioteca tem dois esquemas com um documento cada (3 Nov 2026).
+MAX_DOCUMENT_TEMPLATES = 20
+
+
+class DocVerificationDocumentTemplate(BaseModel):
+    """O MOLDE DO CLIENTE de um documento final (3 Nov 2026): o parecer no FEM, o relatório de conformidade nos
+    concursos… O Word guarda-se no armazenamento do cliente pelo core (`PUT /admin/doc-verification/opinion-template`,
+    que o valida e devolve a impressão); aqui fica só a referência que o core usa para o ir buscar.
+    - scheme: o esquema do caso («fem», «concursos»; uma versão fixa «fem@2026.10» vale para o esquema base);
+    - document: a chave do documento no esquema (`describe().documents[].key` do core, ex. «parecer»);
+    - name: o nome do ficheiro no armazenamento (o mesmo contentor dos moldes do Intake, `intake-templates`);
+    - sha256: a impressão do molde aprovado — outro conteúdo com o mesmo nome é recusado pelo core (503), nunca o
+      molde base em silêncio."""
+    model_config = ConfigDict(extra="forbid")
+
+    scheme: str = Field(pattern=SCHEME_PATTERN)
+    document: str = Field(pattern=r"^[a-z][a-z0-9_]{1,31}$")
+    name: str = Field(pattern=r"^[A-Za-z0-9][A-Za-z0-9._-]{0,99}\.docx$")
+    sha256: str = Field(pattern=r"^[0-9a-f]{64}$")
+
+
 class ProfileToolDocVerificationConfig(BaseModel):
     """tools.config.verify_documents — Verificação Documental.
 
@@ -72,7 +96,9 @@ class ProfileToolDocVerificationConfig(BaseModel):
       2026: 226 páginas em 20 min com 1, 7,8 min com 4. Limitado pela quota de
       tokens por minuto do modelo do cliente.
     - deployment: vazio = o modelo do agente do container (não segue a variante).
-    - labels: os nomes do módulo no ecrã desta variante (vazio = os do esquema)."""
+    - labels: os nomes do módulo no ecrã desta variante (vazio = os do esquema).
+    - document_templates: os moldes do cliente dos documentos finais, um por esquema e documento (vazio = o molde
+      base da Genesis em todos). Voltar ao base = tirar a referência."""
     model_config = ConfigDict(extra="allow")
 
     # A mesma gramática que o core aceita ao criar um caso (`create_case`). Texto
@@ -81,9 +107,25 @@ class ProfileToolDocVerificationConfig(BaseModel):
     # (pin mais novo) partia o carregamento do perfil inteiro num core com o pin
     # antigo. O core, que conhece a biblioteca, usa o esquema por omissão e
     # regista quando não conhece o pedido.
-    scheme: str = Field(default="concursos", pattern=r"^[a-z0-9][a-z0-9_.@-]{0,63}$")
+    scheme: str = Field(default="concursos", pattern=SCHEME_PATTERN)
     parallelism: int = Field(default=4, ge=1, le=8)
     deployment: str = Field(default="", max_length=128)
     # Os nomes do módulo no ecrã (28 Out 2026). `None` (o que o blob gravado traz quando nunca se mexeu) =
     # os textos neutros do esquema.
     labels: Optional[DocVerificationLabels] = None
+    # Os moldes do cliente dos documentos finais (3 Nov 2026). Lista, nunca `None`: o core lê `[]` como «o base».
+    document_templates: List[DocVerificationDocumentTemplate] = Field(default_factory=list,
+                                                                      max_length=MAX_DOCUMENT_TEMPLATES)
+
+    @field_validator("document_templates")
+    @classmethod
+    def _one_per_document(cls, refs: List[DocVerificationDocumentTemplate]) -> List[DocVerificationDocumentTemplate]:
+        """Um molde por documento de um esquema: dois para o mesmo deixavam o core escolher o primeiro em silêncio.
+        A versão fixa conta como o esquema base (o core compara `fem@2026.10` com `fem`)."""
+        seen = set()
+        for r in refs:
+            key = (r.scheme.split("@")[0], r.document)
+            if key in seen:
+                raise ValueError(f"dois moldes para o documento {r.document!r} do esquema {key[0]!r}")
+            seen.add(key)
+        return refs
