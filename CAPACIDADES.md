@@ -302,6 +302,14 @@ gravado com ele por um core com o pin antigo dá 400 — a v0.1.141 traz-o; esco
 **v0.1.142 (2 Nov 2026, F2.4):** cada membro ganha `email` opcional (validado com a regex do Intake, minúsculas,
 `client_write`) — para onde o espaço «Reuniões» envia a convocatória, a minuta e a ata aprovadas; nunca chega ao
 prompt nem à ata (o `municipal_config` do core descarta-o).
+**Biblioteca de modelos de ata (3 Nov 2026, F3.6/R10; D11/D23):** `minutes_library.py` + `minutes_library/*.json`
+(`list_models()`, `get_model(id)`, `model_for_organ_type(organ_type)` — os quatro órgãos autárquicos → `autarquia`,
+`orgao_colegial` → `orgao_colegial`; cópias; cada modelo validado ao carregar). Nesta versão cada modelo traz só os
+PRAZOS LEGAIS depois da reunião (`deadlines`: `id`, `label` pt/en, `law`, `from: meeting_date`, `days`, `unit`
+`calendar|business`, `window` opcional, `scope` opcional): a autarquia tem o edital (5 dos 10 dias seguintes,
+Lei 75/2013, Anexo I, art.º 56.º n.º 1) e a publicação (30 dias, n.º 2), em dias corridos (a lei não diz; a
+confirmar com o jurídico); o órgão da AP não tem. Prompts, validador e fórmulas migram depois (D11). Não é campo do
+perfil: não entra no `EXPOSURE` nem no registo de sugestões do Studio.
 
 ## Checklist: acrescentar um campo
 

@@ -1,0 +1,40 @@
+{
+  "id": "autarquia",
+  "name": {
+    "pt": "Órgão autárquico (câmara, assembleia municipal, junta, assembleia de freguesia)",
+    "en": "Local authority body (municipal council or assembly, parish council or assembly)"
+  },
+  "deadlines": [
+    {
+      "id": "edital",
+      "from": "meeting_date",
+      "days": 10,
+      "window": 5,
+      "unit": "calendar",
+      "law": "Lei 75/2013, Anexo I, art.º 56.º, n.º 1",
+      "label": {
+        "pt": "Edital afixado nos lugares de estilo durante 5 dos 10 dias seguintes à deliberação",
+        "en": "Notice posted in the usual places for 5 of the 10 days after the resolution"
+      },
+      "scope": {
+        "pt": "Deliberações com eficácia externa",
+        "en": "Resolutions with external effect"
+      }
+    },
+    {
+      "id": "publicacao",
+      "from": "meeting_date",
+      "days": 30,
+      "unit": "calendar",
+      "law": "Lei 75/2013, Anexo I, art.º 56.º, n.º 2",
+      "label": {
+        "pt": "Publicação no sítio da Internet, no boletim e nos jornais regionais",
+        "en": "Publication on the website, in the bulletin and in regional newspapers"
+      },
+      "scope": {
+        "pt": "Deliberações com eficácia externa",
+        "en": "Resolutions with external effect"
+      }
+    }
+  ]
+}
