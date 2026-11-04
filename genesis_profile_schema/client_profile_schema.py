@@ -46,7 +46,7 @@ warnings.filterwarnings(
 )
 
 from typing import Annotated, Any, Dict, List, Literal, Optional, Union
-from pydantic import BaseModel, ConfigDict, Field, field_validator, model_validator
+from pydantic import BaseModel, ConfigDict, Field, field_validator, model_serializer, model_validator
 
 
 # ─────────────────────────────────────────────────────────────────────────────
@@ -1359,6 +1359,13 @@ class ProfileMCPAuth(BaseModel):
     variant_scope: bool = False
 
 
+class ProfileMCPSigning(BaseModel):
+    """`mcp.servers[].signing` (v0.1.154, épico «Agente colega», I3)."""
+    model_config = ConfigDict(extra="forbid")
+
+    enabled: bool = False
+
+
 class ProfileMCPServer(BaseModel):
     """Um MCP server configurado no profile do cliente."""
     model_config = ConfigDict(extra="allow")
@@ -1414,6 +1421,16 @@ class ProfileMCPServer(BaseModel):
     # que o aceita, e nunca vazio (lista vazia = omitir a chave). As forks
     # (Salmon, Demos) não o conhecem: não escrever nos perfis delas.
     read_tools: List[str] = Field(default_factory=list, max_length=500)
+    # signing — «Assinar os pedidos do agente» (v0.1.154, épico «Agente colega»,
+    # I3, 4 Nov 2026): no genai-core cada POST a este servidor leva uma assinatura
+    # RFC 9421 (ES256, a chave não exportável do cliente, `keyid` do JWKS público
+    # do core) e, com um agente a agir, `Genesis-Agent`/`Genesis-Mission`
+    # assinados. Ao lado da credencial (bearer/OAuth), nunca em vez dela. O
+    # servidor verifica se quiser (genesis-mcp: `MCP_SIGNATURE_JWKS_URL`). Interno.
+    # ⚠️ ORDEM DE ROLLOUT (a do `read_tools`): o `MCPServerConfig` do core é
+    # `extra="forbid"` — escrever SÓ num core que anuncie `mcp_request_signing`,
+    # e só ligado (desligado = omitir a chave). As forks não o conhecem.
+    signing: Optional[ProfileMCPSigning] = None
 
     @field_validator("read_tools", mode="before")
     @classmethod
@@ -1430,6 +1447,17 @@ class ProfileMCPServer(BaseModel):
             if name not in out:
                 out.append(name)
         return out
+
+    @model_serializer(mode="wrap")
+    def _signing_so_ligado(self, handler):
+        # `signing` desligado ou `None` NÃO sai no dump (revisão de 4 Nov 2026): o
+        # `to_blob_dict` do perfil gravava `"signing": null` em TODOS os servidores, e
+        # um core anterior a `mcp_request_signing` (`extra="forbid"`) recusava então a
+        # config MCP inteira — num rollback ou numa promoção para um prod atrás.
+        dados = handler(self)
+        if isinstance(dados, dict) and not (self.signing and self.signing.enabled):
+            dados.pop("signing", None)
+        return dados
 
 
 class ProfileMCP(BaseModel):

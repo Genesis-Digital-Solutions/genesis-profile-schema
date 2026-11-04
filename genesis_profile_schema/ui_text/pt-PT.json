@@ -1789,6 +1789,13 @@
       "label": "Ferramentas declaradas de leitura",
       "help": "Ferramentas deste servidor que a Genesis confirma serem só de consulta (nome tal como o servidor o dá, sem o prefixo). O assistente pede confirmação antes de usar uma ferramenta cujo nome sugere escrita (criar, enviar, executar, encomenda…), mesmo num servidor de confiança; as que estão aqui deixam de pedir. Nunca dispensa a confirmação de uma ferramenta que o servidor declara de escrita."
     },
+    "mcp.servers.signing": {
+      "label": "Assinatura dos pedidos"
+    },
+    "mcp.servers.signing.enabled": {
+      "label": "Assinar os pedidos do agente",
+      "help": "Cada pedido a este servidor leva uma assinatura digital com a chave do cliente (norma RFC 9421) e, quando é o agente a agir, quem ele é e a missão aprovada. O servidor pode verificar a assinatura com a chave pública do backend e recusar pedidos alterados pelo caminho ou de um agente revogado. Junta-se à credencial do servidor, não a substitui. Só fica disponível com o backend que o suporta e com a chave de assinatura criada."
+    },
     "mcp.servers.timeout_seconds": {
       "label": "Tempo limite (segundos)"
     },

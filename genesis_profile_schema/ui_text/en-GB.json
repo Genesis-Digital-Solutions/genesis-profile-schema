@@ -1789,6 +1789,13 @@
       "label": "Tools declared read-only",
       "help": "Tools on this server that Genesis confirms only read data (the name as the server gives it, without the prefix). The assistant asks for confirmation before using a tool whose name suggests a write (create, send, run, order…), even on a trusted server; the tools listed here no longer ask. It never removes the confirmation for a tool the server declares as a write."
     },
+    "mcp.servers.signing": {
+      "label": "Request signing"
+    },
+    "mcp.servers.signing.enabled": {
+      "label": "Sign the agent's requests",
+      "help": "Every request to this server carries a digital signature made with the client's key (RFC 9421) and, when the agent is acting, who it is and its approved mission. The server can check the signature against the backend's public key and refuse requests altered on the way or from a revoked agent. It adds to the server's credential, it does not replace it. Only available with a backend that supports it and with the signing key created."
+    },
     "mcp.servers.timeout_seconds": {
       "label": "Timeout (seconds)"
     },
