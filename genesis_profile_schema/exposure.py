@@ -453,7 +453,7 @@ EXPOSURE: Dict[str, str] = {
     # v0.1.78: transcricao das CHAMADAS (so o assistente, fase 1). Mesma
     # regra do `enabled`: o cliente ve (materia de DPA), quem liga somos nos.
     "voice.transcription.phone": _R,
-    "voice.transcription.model": _I,
+    "voice.transcription.model": _I,  # DEPRECADO (v0.1.149): sem consumidor desde a v0.1.32
     # v0.1.112: captura com consentimento na voz. Mesma regra da transcricao:
     # o cliente ve (materia de DPA), quem liga somos nos.
     "voice.capture.enabled": _R,
@@ -533,7 +533,7 @@ EXPOSURE: Dict[str, str] = {
     # I24) e como o proprio reviewQueues: o cliente nao ve as chaves das filas,
     # logo nao pode escolher uma com sentido; quem liga somos nos (Studio).
     "audio.minutes_action_items_queue": _I,
-    "audio.max_duration_min": _I,
+    "audio.max_duration_min": _I,  # DEPRECADO (v0.1.149): o teto de um ficheiro e fixo (4 h) no core
     "audio.max_speakers": _I,
     "audio.phrase_bias": _I,
     "audio.phrase_list": _W,

@@ -33,7 +33,8 @@
       "note": "Mirrors the core credits clamp (4 h); the value reaches the fecore via /client-config (`transcription.maxDurationMin`)."
     },
     "audio.max_duration_min": {
-      "label": "Maximum duration (minutes)"
+      "label": "Maximum duration of one file (unused)",
+      "note": "Deprecated (v0.1.149): nothing reads it. The cap of one file is fixed in the core (4 h, MAX_FILE_DURATION_MIN); the cap of a live meeting is audio.live_max_duration_min."
     },
     "audio.max_speakers": {
       "label": "Maximum number of speakers"
@@ -2825,8 +2826,8 @@
       "help": "Website widget with the GPT-Live engine only. The consent question is read word for word and a yes only counts right after it. Off by default; have legal approve the spoken question."
     },
     "voice.transcription.model": {
-      "label": "Transcription deployment (no effect on the site)",
-      "help": "No consumer: with the GPT-Live engine the transcript comes from the session itself. Reserved for a possible phone channel."
+      "label": "Transcription model (unused)",
+      "note": "Deprecated (v0.1.149): it never had a consumer. With GPT-Live the transcript comes from the session itself."
     },
     "voice.transcription.phone": {
       "label": "Keep the transcript of phone calls (assistant only)",

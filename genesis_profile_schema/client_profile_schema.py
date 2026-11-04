@@ -1244,11 +1244,13 @@ class ProfileAudio(BaseModel):
     glossary: List[str] = Field(default_factory=list)
     disfluency_removal: bool = True
     max_speakers: int = Field(default=10, ge=1, le=36)
-    # v0.1.95 (7 Out 2026): default 120 → 240 — o core aplica um teto FIXO de 4 h
-    # por ficheiro (`transcribe_audio.MAX_FILE_DURATION_MIN`) e este campo não
-    # muda nada; o 120 por omissão ficava gravado em todos os perfis e dizia o
-    # contrário do que o core faz.
-    max_duration_min: int = Field(default=240, ge=1, le=240)
+    # ⚠️ DEPRECADO (v0.1.149, 4 Nov 2026) — NENHUM consumidor o lê. O core aplica
+    # um teto FIXO de 4 h por ficheiro (`transcribe_audio.MAX_FILE_DURATION_MIN`,
+    # decisão do Bruno a 30 Set 2026) e deixou de ler este campo; o Studio deixou
+    # de o editar. Mantido por retrocompat (a frota tem-no no blob desde a
+    # v0.1.95, que o pôs a 240 — era 120 e dizia o contrário do que o core faz).
+    # Nunca mostrar em UI; `internal` em exposure.py.
+    max_duration_min: int = Field(default=240, ge=1, le=240, json_schema_extra={"deprecated": True})
     speech_locale: str = Field(default="pt-PT")
     live_transcription_enabled: bool = Field(
         default=False,
@@ -1303,6 +1305,17 @@ class ProfileAudio(BaseModel):
         json_schema_extra={"requires_tool": "transcribe_audio",
                            "requires_field": "reviewQueues"},
     )
+
+    @field_validator("max_duration_min", mode="before")
+    @classmethod
+    def _deprecated_duration_never_blocks(cls, v):
+        """Campo deprecado (v0.1.149): um valor antigo fora de 1–240 (ou lixo) normaliza para 240 em vez
+        de fazer o perfil inteiro responder 422 por um campo que ninguém lê. Os limites ficam no JSON Schema."""
+        try:
+            n = int(v)
+        except (TypeError, ValueError):
+            return 240
+        return n if 1 <= n <= 240 and not isinstance(v, bool) else 240
 
 
 # ─────────────────────────────────────────────────────────────────────────────
@@ -2403,9 +2416,9 @@ class ProfileVoiceTranscription(BaseModel):
     HISTÓRICO: nasceu RESERVADO na v0.1.32 (Jul 2026) e ficou sem consumidor
     até esta versão; entre v0.1.61 e v0.1.67 os três caminhos eram `internal`
     exactamente para nenhum cliente ver um campo de retenção de transcrições
-    que não existiam (crença que podia entrar num DPA). `model` continua SEM
-    consumidor: no GPT-Live as transcrições vêm da própria sessão; fica para
-    um eventual canal telefónico com deployment de transcrição.
+    que não existiam (crença que podia entrar num DPA). `model` nunca teve
+    consumidor (no GPT-Live as transcrições vêm da própria sessão) e está
+    DEPRECADO desde a v0.1.149.
     """
     model_config = ConfigDict(extra="allow", protected_namespaces=())
     enabled: bool = False
@@ -2416,7 +2429,11 @@ class ProfileVoiceTranscription(BaseModel):
     # tab, até alguém o corrigir à mão — sem proteger ninguém (regra do
     # CAPACIDADES). Em vez disso normaliza-se: 0, negativo, vazio ou lixo → None.
     retention_days: Optional[int] = None
-    model: Optional[str] = None     # sem consumidor (ver docstring)
+    # ⚠️ DEPRECADO (v0.1.149, 4 Nov 2026) — sem consumidor desde que nasceu
+    # (v0.1.32). No GPT-Live a transcrição vem da própria sessão; a fase 2 do
+    # telefone (o que o CHAMADOR diz), se vier, desenha o seu campo com o
+    # consumidor ao lado. Mantido por retrocompat; `internal` em exposure.py.
+    model: Optional[str] = Field(default=None, json_schema_extra={"deprecated": True})
     # v0.1.78 (1 Out 2026, fase 1 da transcrição das chamadas): guarda o que o
     # ASSISTENTE disse em cada chamada telefónica, na conversa
     # `voice:<call_id>` (a mesma das consultas ao agente), com a mesma `retention_days`. Interruptor

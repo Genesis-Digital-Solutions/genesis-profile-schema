@@ -174,8 +174,11 @@ CAMPOS_SEM_CONSUMIDOR = [
     # reabriram como client_read — ver tests/test_voice_web_engine.py. Fica
     # aqui só o que continua sem leitor.
     ("voice.transcription.model",
-     "SEM CONSUMIDOR: no motor GPT-Live a transcrição vem da própria sessão; "
+     "DEPRECADO (v0.1.149): no motor GPT-Live a transcrição vem da própria sessão; "
      "o nome de um deployment de transcrição não é lido por ninguém."),
+    ("audio.max_duration_min",
+     "DEPRECADO (v0.1.149): o teto de um ficheiro é fixo no core (4 h); "
+     "o campo não muda nada."),
 ]
 
 
@@ -196,8 +199,10 @@ def test_o_campo_deprecado_esta_marcado_no_proprio_schema():
     from genesis_profile_schema.client_profile_schema import ClientProfileSchema
 
     js = ClientProfileSchema.model_json_schema()
-    campo = js["$defs"]["ProfileIdentity"]["properties"]["default_language"]
-    assert campo.get("deprecated") is True, campo
+    for defn, prop in (("ProfileIdentity", "default_language"), ("ProfileAudio", "max_duration_min"),
+                       ("ProfileVoiceTranscription", "model")):
+        campo = js["$defs"][defn]["properties"][prop]
+        assert campo.get("deprecated") is True, (defn, prop, campo)
 
 
 # ── formatos de data no JSON Schema (issue #1 do gaibo, v0.1.53) ─────────────

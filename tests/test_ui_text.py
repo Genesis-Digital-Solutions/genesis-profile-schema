@@ -277,12 +277,13 @@ def test_campo_sem_consumidor_nao_promete_comportamento():
     o campo NÃO tem ("idioma inicial da conversa"). Texto errado é pior do que
     texto nenhum: descreve uma funcionalidade inexistente com autoridade."""
     for locale in ui.LOCALES:
-        assert ui.help_of("identity.default_language", locale) is None, (
-            "voltou a haver ajuda a prometer comportamento num campo que nada lê"
-        )
-        assert ui.note_of("identity.default_language", locale), (
-            "a nota de operador tem de explicar porque está aqui"
-        )
+        for path in ("identity.default_language", "audio.max_duration_min", "voice.transcription.model"):
+            assert ui.help_of(path, locale) is None, (
+                f"{path}: voltou a haver ajuda a prometer comportamento num campo que nada lê"
+            )
+            assert ui.note_of(path, locale), (
+                f"{path}: a nota de operador tem de explicar porque está aqui"
+            )
         assert ui.note_of("identity.timezone", locale)
 
 

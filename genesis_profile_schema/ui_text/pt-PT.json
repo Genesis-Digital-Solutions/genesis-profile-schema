@@ -33,7 +33,8 @@
       "note": "Espelha o clamp de créditos (4 h) do core; o valor chega ao fecore pelo /client-config (`transcription.maxDurationMin`)."
     },
     "audio.max_duration_min": {
-      "label": "Duração máxima (minutos)"
+      "label": "Duração máxima de um ficheiro (não usado)",
+      "note": "DEPRECADO (v0.1.149): nada o lê. O teto de um ficheiro é fixo no core (4 h, MAX_FILE_DURATION_MIN); o de uma reunião ao vivo é audio.live_max_duration_min."
     },
     "audio.max_speakers": {
       "label": "Número máximo de oradores"
@@ -2825,8 +2826,8 @@
       "help": "Só no widget com o motor GPT-Live. A pergunta de autorização é dita palavra por palavra e o «sim» só conta logo a seguir a ela. Desligado por omissão; validar a pergunta falada com o jurídico."
     },
     "voice.transcription.model": {
-      "label": "Modelo de transcrição (sem efeito no site)",
-      "help": "Sem consumidor: no motor GPT-Live a transcrição vem da própria sessão. Reservado para um eventual canal telefónico."
+      "label": "Modelo de transcrição (não usado)",
+      "note": "DEPRECADO (v0.1.149): nunca teve consumidor. No GPT-Live a transcrição vem da própria sessão."
     },
     "voice.transcription.phone": {
       "label": "Guardar a transcrição das chamadas telefónicas (só o assistente)",

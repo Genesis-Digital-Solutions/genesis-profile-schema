@@ -94,5 +94,12 @@ def test_retencao_do_audio_das_reunioes_v01143():
 
 
 def test_duracao_maxima_de_um_ficheiro_por_omissao_e_4h():
-    # v0.1.95: alinhado com o teto fixo do core (4 h por ficheiro).
+    # v0.1.95: alinhado com o teto fixo do core (4 h por ficheiro); deprecado na
+    # v0.1.149, mas um blob antigo com 120 continua a validar (retrocompat).
     assert ProfileAudio().max_duration_min == 240
+    assert ProfileAudio(max_duration_min=120).max_duration_min == 120
+    # um valor antigo fora dos limites (ou lixo) nunca bloqueia a gravação do perfil
+    for mau in (0, 999, "x", None, True):
+        assert ProfileAudio(max_duration_min=mau).max_duration_min == 240
+    js = ProfileAudio.model_json_schema()["properties"]["max_duration_min"]
+    assert (js["minimum"], js["maximum"], js["deprecated"]) == (1, 240, True)
