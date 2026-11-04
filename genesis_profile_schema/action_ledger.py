@@ -32,7 +32,7 @@ from __future__ import annotations
 import hashlib
 import json
 import re
-from typing import Any, Dict, Iterable, List, Mapping, Optional
+from typing import Any, Dict, Iterable, List, Mapping, Optional, Tuple
 
 from pydantic import BaseModel, ConfigDict, Field
 
@@ -124,6 +124,22 @@ CHAIN_FIELDS = ("seq", "ts", "client_id", "variant_slug", "event", "action", "ac
                 "rule_id", "decision", "approver", "result", "params_digest",
                 "expires_at", "prev_expires_at")
 
+#: Cadeia v2 (v0.1.153, 4 Nov 2026 — passo 3 do épico «Agente colega», I2): cada
+#: entrada NOVA leva `chain_v: 2` e `mission_s256` (o hash da missão aprovada de
+#: uma ação do agente, `None` nas outras). A lista de campos de cada entrada
+#: escolhe-se PELA VERSÃO dela: uma entrada antiga (sem `chain_v`) continua a
+#: contar só os `CHAIN_FIELDS` — acrescentar um campo à lista v1 mudaria o hash de
+#: todas as entradas já escritas (`entry.get(k)` → `null`) e partia a cadeia de
+#: todos os clientes. O próprio `chain_v` entra no hash da v2: tirá-lo de uma
+#: entrada (para a fazer passar por v1) parte-a.
+CHAIN_V = 2
+CHAIN_FIELDS_V2 = CHAIN_FIELDS + ("chain_v", "mission_s256")
+_FIELDS_BY_VERSION = {None: CHAIN_FIELDS, CHAIN_V: CHAIN_FIELDS_V2}
+
+#: `mission_s256`: SHA-256 dos BYTES da missão, em base64url sem padding (AAuth,
+#: draft-hardt-oauth-aauth-protocol-11 §8.2) — 43 caracteres.
+MISSION_S256 = re.compile(r"[A-Za-z0-9_-]{43}")    # usar com `fullmatch`
+
 #: Códigos aceites em `result.code` (o resto vira «error»).
 RESULT_CODE = re.compile(r"^[a-z][a-z0-9_]{0,39}$")
 
@@ -152,10 +168,30 @@ def params_digest(params: Any, salt: str = "") -> str:
     return salted_digest(salt, params if params is not None else {})
 
 
+class UnknownChainVersion(ValueError):
+    """Uma entrada com um `chain_v` que esta versão do schema não conhece."""
+
+
+def chain_fields(entry: Mapping[str, Any]) -> Tuple[str, ...]:
+    """Os campos que entram no hash DESTA entrada, pela versão dela."""
+    v = entry.get("chain_v")
+    if v not in _FIELDS_BY_VERSION or isinstance(v, bool):
+        raise UnknownChainVersion(str(v))
+    return _FIELDS_BY_VERSION[v]
+
+
 def entry_hash(prev_hash: str, entry: Mapping[str, Any]) -> str:
-    """sha256(prev_hash + canónico(campos da cadeia))."""
-    chained = {k: entry.get(k) for k in CHAIN_FIELDS}
+    """sha256(prev_hash + canónico(campos da cadeia da versão da entrada))."""
+    chained = {k: entry.get(k) for k in chain_fields(entry)}
     return hashlib.sha256((str(prev_hash or "") + "|" + _canonical(chained)).encode("utf-8")).hexdigest()
+
+
+def mission_s256(mission_bytes: bytes) -> str:
+    """O hash de uma missão (os bytes EXATOS que foram aprovados, nunca um
+    objeto re-serializado)."""
+    import base64
+    digest = hashlib.sha256(bytes(mission_bytes)).digest()
+    return base64.urlsafe_b64encode(digest).rstrip(b"=").decode("ascii")
 
 
 def result_code(value: Any) -> str:
@@ -199,7 +235,12 @@ def verify_chain(entries: Iterable[Mapping[str, Any]], *, start_prev: str = GENE
         if str(e.get("prev_hash") or "") != prev:
             return {"ok": False, "checked": checked, "broken_at": seq, "reason": "link_mismatch",
                     "last_seq": last_seq, "last_hash": prev}
-        if entry_hash(prev, e) != str(e.get("hash") or ""):
+        try:
+            h = entry_hash(prev, e)
+        except UnknownChainVersion:
+            return {"ok": False, "checked": checked, "broken_at": seq, "reason": "unknown_chain_version",
+                    "last_seq": last_seq, "last_hash": prev}
+        if h != str(e.get("hash") or ""):
             return {"ok": False, "checked": checked, "broken_at": seq, "reason": "hash_mismatch",
                     "last_seq": last_seq, "last_hash": prev}
         prev, expected_seq, checked, last_seq = str(e.get("hash")), seq + 1, checked + 1, seq
