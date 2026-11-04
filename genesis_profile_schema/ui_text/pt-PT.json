@@ -1443,7 +1443,7 @@
     },
     "frontend.widget.allowed_origins": {
       "label": "Sites autorizados a incorporar",
-      "help": "Vazio permite qualquer site https. Com valores, apenas o próprio site e estas origens podem incorporar o widget."
+      "help": "Vazio permite qualquer site https. Com sites, apenas o próprio site e estas origens podem incorporar o widget. Origens de app móvel (capacitor://…) somam-se sem fechar os sites."
     },
     "frontend.widget.bubble_color": {
       "label": "Cor da bolha",

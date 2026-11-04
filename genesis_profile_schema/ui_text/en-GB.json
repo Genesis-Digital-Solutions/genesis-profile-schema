@@ -1443,7 +1443,7 @@
     },
     "frontend.widget.allowed_origins": {
       "label": "Sites allowed to embed",
-      "help": "Empty allows any https site. With values, only the site itself and these origins may embed the widget."
+      "help": "Empty allows any https site. With values, only the site itself and these origins may embed the widget. Mobile app origins (capacitor://…) are added without closing the websites."
     },
     "frontend.widget.bubble_color": {
       "label": "Bubble colour",

@@ -32,6 +32,11 @@ VALIDAS = [
     "https://intranet",                   # host de rotulo unico COM esquema
     "https://portal_interno.cliente.pt",  # underscore no host
     "https://192.168.1.10:8080",
+    # Apps moveis hibridas (4 Nov 2026, app do MaxWork no iOS).
+    "capacitor://app.maxwork.pt",
+    "capacitor://realestate-dev-v2-backoffice.azurewebsites.net",
+    "capacitor://localhost",
+    "ionic://localhost",
 ]
 
 INVALIDAS = [
@@ -53,6 +58,15 @@ INVALIDAS = [
     "unsafe-inline",
     "intranet",
     "https://evil.com/a;b",               # caminho nao serve de veiculo
+    # Esquemas de app: so os da allowlist, sem caminho nem wildcard.
+    "capacitor://*.maxwork.pt",
+    "capacitor://app.maxwork.pt/embed",
+    "capacitor:",
+    "capacitor://",
+    "file://app.maxwork.pt",
+    "cordova://app.maxwork.pt",
+    "capacitor://app.maxwork.pt\n",      # o `$` deixava passar a quebra final
+    "https://www.cliente.pt\n",
 ]
 
 
@@ -97,6 +111,19 @@ def test_lista_vazia_ou_lixo_nao_rebenta():
     aceites, recusados = fc.sanitise_csp_sources([None, 123, {"a": 1}])
     assert aceites == []
     assert len(recusados) == 3
+
+
+def test_origem_de_app_e_reconhecida_a_parte():
+    assert fc.is_app_origin("capacitor://app.maxwork.pt")
+    assert fc.is_app_origin("ionic://localhost")
+    assert not fc.is_app_origin("https://app.maxwork.pt")
+    assert not fc.is_app_origin("capacitor://*.maxwork.pt")
+    assert not fc.is_app_origin(None)
+
+
+def test_origem_de_app_perde_a_barra_final():
+    aceites, recusados = fc.sanitise_csp_sources(["capacitor://app.maxwork.pt/"])
+    assert aceites == ["capacitor://app.maxwork.pt"] and recusados == []
 
 
 # ─────────────────────────────────────────────────────────────────────────────

@@ -66,6 +66,17 @@ _NO_SCHEME = re.compile(rf"^{_DOTTED}{_PORT}{_PATH}$")
 # `localhost:4200` não tem ponto e é legítimo em dev, mesmo sem esquema.
 _LOCAL = re.compile(rf"^(?:https?://)?localhost{_PORT}{_PATH}$")
 
+# Origem de uma app móvel híbrida (4 Nov 2026, app do MaxWork da Remax): a
+# WebView do Capacitor no iOS serve as páginas em `capacitor://<host>` (e a do
+# Ionic antigo em `ionic://<host>`). Esquema obrigatório e da allowlist, sem
+# caminho nem wildcard — só serve para o `frame-ancestors` deixar a app embeber
+# o widget. Fora dessa WebView nenhum browser carrega nada destes esquemas.
+# ⚠️ `capacitor://localhost` é a origem por omissão de TODAS as apps Capacitor
+# no iOS: autorizá-la abre o widget a qualquer uma. A app deve ter um
+# `server.hostname` próprio (ex. `capacitor://app.cliente.pt`).
+APP_SCHEMES = ("capacitor", "ionic")
+_APP = re.compile(rf"^(?:{'|'.join(APP_SCHEMES)})://{_LABEL}(?:\.{_LABEL})*{_PORT}/?$")
+
 _SEPARATORS = re.compile(r"[\s,]+")
 
 
@@ -88,8 +99,18 @@ def is_valid_csp_source(token: str) -> bool:
         return False
     if any(ch in token for ch in (";", "'", '"', "\\", "<", ">", "`")):
         return False
-    return bool(_WITH_SCHEME.match(token) or _NO_SCHEME.match(token)
-                or _LOCAL.match(token))
+    # `fullmatch`, não `match`: o `$` deixava passar uma quebra de linha no fim.
+    return bool(_WITH_SCHEME.fullmatch(token) or _NO_SCHEME.fullmatch(token)
+                or _LOCAL.fullmatch(token) or _APP.fullmatch(token))
+
+
+def is_app_origin(token: str) -> bool:
+    """A origem é de uma app móvel híbrida (`capacitor://…`, `ionic://…`).
+
+    Quem escreve o `frame-ancestors` usa isto para separar as origens de app
+    das origens web: juntar a app não pode fechar o widget aos sites.
+    """
+    return isinstance(token, str) and bool(_APP.fullmatch(token))
 
 
 def sanitise_csp_sources(values) -> Tuple[List[str], List[str]]:
