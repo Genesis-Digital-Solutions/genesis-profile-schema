@@ -368,9 +368,12 @@ EXPOSURE: Dict[str, str] = {
     "compliance.high_risk.enabled": _R,
     "compliance.high_risk.human_oversight_contact": _W,
     "compliance.high_risk.log_retention_days": _R,
-    # retenção de dados pessoais: decisão do deployer (igual a voice.transcription.retention_days)
-    "compliance.retention.conversations_anonymous_days": _W,
-    "compliance.retention.conversations_authenticated_days": _W,
+    # retenção: o cliente vê, não altera — combinado com o GAIBO a 4 Nov 2026
+    # (decisão do Bruno na triagem do backlog do GAIBO); alterar o prazo pede-se à
+    # Genesis (mínimos de 180 d decididos pelo Bruno). Igual a
+    # voice.transcription.retention_days, que já era só leitura.
+    "compliance.retention.conversations_anonymous_days": _R,
+    "compliance.retention.conversations_authenticated_days": _R,
     # O PRAZO é decisão do deployer; guardar métricas sem conteúdo depois dele
     # é operação nossa (subcontratante) — o cliente vê, não altera.
     "compliance.retention.redact_on_expiry": _R,
