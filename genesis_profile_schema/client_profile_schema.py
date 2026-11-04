@@ -1289,6 +1289,14 @@ class ProfileAudio(BaseModel):
         default=False,
         json_schema_extra={"requires_tool": "transcribe_audio"},
     )
+    # v0.1.150 (4 Nov 2026, R18 do épico «Reuniões e atas»): importar a transcrição de uma reunião Teams para
+    # uma reunião do espaço, pelo conector Microsoft Graph do core (`core/msgraph`, app registration própria no
+    # tenant do cliente, com consentimento de administrador). Só o organizador da reunião Teams, com sessão
+    # Entra do mesmo tenant. OFF por defeito: liga-se depois do consentimento (matéria de DPA, como a transcrição).
+    teams_import_enabled: bool = Field(
+        default=False,
+        json_schema_extra={"requires_tool": "transcribe_audio"},
+    )
     # v0.1.76 (30 Set 2026) — ata de órgão autárquico (ver a classe).
     municipal_minutes: ProfileMunicipalMinutes = Field(
         default_factory=ProfileMunicipalMinutes,

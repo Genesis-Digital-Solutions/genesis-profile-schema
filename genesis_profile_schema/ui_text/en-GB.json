@@ -19,6 +19,11 @@
       "help": "The «Meetings» space opens with the essentials: «Start now» transcribes straight away, with no meeting preparation; at the end, simple minutes, action items and sending. Only without legal minutes.",
       "note": "Ignored with legal minutes on (legal minutes need attendance and the agenda). The «Start now» button exists in every mode; this only hides the preparation."
     },
+    "audio.teams_import_enabled": {
+      "label": "Import Teams transcripts",
+      "help": "In the «Meetings» space, whoever organised a Teams meeting pastes its link and the Teams transcript comes into the meeting, with who speaks. Needs consent from the client's Microsoft 365 administrator.",
+      "note": "The core's Microsoft Graph connector (`core/msgraph`): its own app registration in the client's tenant with `OnlineMeetings.Read.All` and `OnlineMeetingTranscript.Read.All` (application) and a Teams Application Access Policy limiting it to the authorised organisers. `MSGRAPH_*` credentials on the core Container App, set by the Studio. No Speech cost."
+    },
     "audio.glossary": {
       "label": "Terminology glossary"
     },

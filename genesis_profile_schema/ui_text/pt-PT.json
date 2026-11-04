@@ -19,6 +19,11 @@
       "help": "O espaço «Reuniões» abre no essencial: «Começar já» transcreve logo, sem preparar a reunião; no fim, a ata simples, as ações e o envio. Só sem a ata legal.",
       "note": "Com a ata legal ligada é ignorado (a ata legal precisa das presenças e da ordem do dia). O botão «Começar já» existe em todos os modos; este só esconde a preparação."
     },
+    "audio.teams_import_enabled": {
+      "label": "Importar transcrições do Teams",
+      "help": "No espaço «Reuniões», quem organizou uma reunião Teams cola o link dela e a transcrição do Teams entra na reunião, com quem fala. Precisa do consentimento do administrador do Microsoft 365 do cliente.",
+      "note": "Conector Microsoft Graph do core (`core/msgraph`): app registration própria no tenant do cliente com `OnlineMeetings.Read.All` e `OnlineMeetingTranscript.Read.All` (aplicação) e uma Application Access Policy do Teams que a limite aos organizadores autorizados. Credenciais `MSGRAPH_*` no Container App do core, postas pelo Studio. Sem custo de Speech."
+    },
     "audio.glossary": {
       "label": "Glossário de termos"
     },

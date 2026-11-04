@@ -119,7 +119,8 @@
       "advanced": [
         "audio.live_max_duration_min",
         "audio.speech_locale",
-        "audio.meetings_quick_mode"
+        "audio.meetings_quick_mode",
+        "audio.teams_import_enabled"
       ],
       "links": [
         "tool",

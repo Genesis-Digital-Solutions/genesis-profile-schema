@@ -372,3 +372,13 @@ def test_reunioes_caso_rapido():
     assert "quick" in [c["key"] for c in g["cases"]]
     assert "quick" not in steps["legal_model"]["show_if"]["case_in"]
     assert "audio.meetings_quick_mode" in steps["live"]["advanced"]
+
+
+def test_reunioes_importar_do_teams():
+    """R18 (v0.1.150): o interruptor do Teams no passo da transcrição, visível ao cliente e ligado por nós."""
+    from genesis_profile_schema import exposure as exp
+    from genesis_profile_schema.client_profile_schema import ProfileAudio
+    steps = {s["key"]: s for s in mg.get_guide("audio")["steps"]}
+    assert "audio.teams_import_enabled" in steps["live"]["advanced"]
+    assert ProfileAudio().teams_import_enabled is False
+    assert exp.exposure_of("audio.teams_import_enabled") == exp.CLIENT_READ
