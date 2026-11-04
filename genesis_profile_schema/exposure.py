@@ -636,10 +636,11 @@ EXPOSURE: Dict[str, str] = {
     # (num cliente de alto risco regista sempre, ligado ou não).
     "actionLedger.enabled": _W,
     "actionLedger.retention_days": _W,
-    # agentic.* (A1 do core agêntico, 20 Out 2026): tarefas do agente — só a
-    # Genesis liga, no Studio, cliente a cliente (começa pelo demogen); abrir ao
-    # cliente no GAIBO só depois da medição.
-    "agentic.enabled": _I,
+    # agentic.* (A1 do core agêntico, 20 Out 2026): tarefas do agente — a
+    # Genesis configura tudo no Studio. Desde 4 Nov 2026 (passo 1 do épico
+    # «Agente colega», P8) o cliente LIGA e DESLIGA no GAIBO (é o seu travão);
+    # orçamentos, verificação e fontes de eventos continuam só da Genesis.
+    "agentic.enabled": _W,
     "agentic.budget.steps": _I,
     "agentic.budget.writes": _I,
     "agentic.budget.wall_clock_hours": _I,

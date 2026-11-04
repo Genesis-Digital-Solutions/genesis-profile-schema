@@ -686,8 +686,9 @@
       "help": "Mínimo 180 (6 meses, AI Act). Num cliente de alto risco vale a retenção dos registos de alto risco."
     },
     "agentic.enabled": {
-      "label": "Tarefas do agente (continuar depois da aprovação)",
-      "help": "Quando uma automação da fila fica à espera de uma aprovação, continua sozinha depois da decisão: corre o passo certo (sucesso ou erro) e os passos seguintes, uma vez. Rejeitada ou expirada, para. No chat, um pedido com vários passos ganha uma lista de passos e tetos de chamadas, ações, custo e tempo. Desligado: como antes."
+      "label": "Tarefas do agente",
+      "help": "Liga os agentes que trabalham sozinhos nas filas e a lista de passos no chat. Desligar põe os agentes das filas em pausa no passo seguinte; voltam a andar quando se liga. O que já foi aprovado termina.",
+      "note": "Na fila: quando um automatismo espera por uma aprovação, continua sozinho depois da decisão (ramo certo e passos seguintes, uma vez); rejeitada ou expirada, para. No chat: lista de passos e tetos de chamadas, ações, custo e tempo. Desligado: como antes. Desligar pausa só o agente operador da fila (`goal`); as continuações de uma aprovação já decidida seguem."
     },
     "agentic.budget.steps": {
       "label": "Máximo de passos por tarefa",

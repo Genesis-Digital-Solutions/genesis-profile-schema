@@ -686,8 +686,9 @@
       "help": "Minimum 180 (6 months, AI Act). For a high-risk client the high-risk log retention applies."
     },
     "agentic.enabled": {
-      "label": "Agent tasks (continue after approval)",
-      "help": "When a queue automation waits for an approval, it carries on by itself after the decision: it runs the right step (success or error) and the following steps, once. Rejected or expired, it stops. In the chat, a request with several steps gets a step list and ceilings on calls, actions, cost and time. Off: as before."
+      "label": "Agent tasks",
+      "help": "Turns on the agents that work on their own in the queues and the step list in the chat. Turning it off pauses the queue agents at their next step; they carry on when turned back on. Already-approved work finishes.",
+      "note": "In the queue: when an automation waits for an approval, it carries on by itself after the decision (right branch and following steps, once); rejected or expired, it stops. In the chat: step list and ceilings on calls, actions, cost and time. Off: as before. Turning it off pauses only the queue operator agent (`goal`); continuations of an already-decided approval go on."
     },
     "agentic.budget.steps": {
       "label": "Maximum steps per task",

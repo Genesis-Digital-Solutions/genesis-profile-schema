@@ -247,7 +247,7 @@ opcional na raiz e por frente; ausente ou `null` = desligado. Exposição INTERN
 Studio). O core lê-o como dicionário em `core/agent/durable/config.py`; os tetos espelham os do core.
 **v0.1.132 (A3, 27 Out 2026):** `budget.cost_eur` (0–50 €], `plan_visible` (lista de passos no chat;
 ausente = sim) e `verify` (A2: reler depois de cada escrita; ausente = sim) — todos INTERNAL, com label
-e ajuda em pt-PT/en-GB. Omissões do core: 20 passos, 3 escritas, 720 h, 0,50 €.
+e ajuda em pt-PT/en-GB. Omissões do core: 20 passos, 3 escritas, 720 h, 0,50 €. **v0.1.152 (4 Nov 2026, épico «Agente colega», passo 1):** `agentic.enabled` passa a CLIENT_WRITE (o cliente liga e desliga no GAIBO; desligar pausa os agentes das filas no core); o resto de `agentic.*` continua INTERNAL; a ajuda ao cliente cabe no popover e o detalhe de operador está na `note`.
 
 ---
 
