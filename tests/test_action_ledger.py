@@ -113,3 +113,17 @@ def test_evento_withdrawn_do_pedido_retirado():
     from genesis_profile_schema.action_ledger import EVENTS
     assert "withdrawn" in EVENTS
     assert EVENTS.index("checked") < EVENTS.index("withdrawn")   # acrescentado no fim
+
+
+def test_testemunha_selada_so_com_true_no_base():
+    """v0.1.156 (passo 5A): «Testemunha selada» — só `True` exato liga; nunca levanta."""
+    from genesis_profile_schema.action_ledger import witness_sealed
+    from genesis_profile_schema.exposure import EXPOSURE
+    assert witness_sealed({"actionLedger": {"enabled": True, "witness_sealed": True}}) is True
+    for prof in ({}, None, {"actionLedger": None}, {"actionLedger": "x"},
+                 {"actionLedger": {"witness_sealed": "true"}}, {"actionLedger": {"witness_sealed": 1}}):
+        assert witness_sealed(prof) is False
+    m = ClientProfileSchema.model_validate({"actionLedger": {"enabled": True, "witness_sealed": True}})
+    assert m.actionLedger.witness_sealed is True
+    assert ClientProfileSchema.model_validate({"actionLedger": {"enabled": True}}).actionLedger.witness_sealed is False
+    assert EXPOSURE["actionLedger.witness_sealed"] == "internal"

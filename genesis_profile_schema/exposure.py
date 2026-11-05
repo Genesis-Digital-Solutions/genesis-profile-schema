@@ -639,6 +639,9 @@ EXPOSURE: Dict[str, str] = {
     # (num cliente de alto risco regista sempre, ligado ou não).
     "actionLedger.enabled": _W,
     "actionLedger.retention_days": _W,
+    # v0.1.156: «Testemunha selada» (Locked) — só a Genesis: o storage do cliente
+    # deixa de se poder apagar até ao fim do prazo.
+    "actionLedger.witness_sealed": _I,
     # agentic.* (A1 do core agêntico, 20 Out 2026): tarefas do agente — a
     # Genesis configura tudo no Studio. Desde 4 Nov 2026 (passo 1 do épico
     # «Agente colega», P8) o cliente LIGA e DESLIGA no GAIBO (é o seu travão);

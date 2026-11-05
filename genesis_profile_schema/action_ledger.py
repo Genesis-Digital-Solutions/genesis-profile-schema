@@ -47,6 +47,22 @@ class ProfileActionLedger(BaseModel):
 
     enabled: bool = False
     retention_days: int = Field(default=DEFAULT_RETENTION_DAYS, ge=MIN_RETENTION_DAYS, le=MAX_RETENTION_DAYS)
+    # v0.1.156 (passo 5A do épico «Agente colega», decisão do Bruno a 5 Nov 2026):
+    # «Testemunha selada». As cópias dos carimbos no storage do cliente (contentor
+    # `ledger-witness`, só em produção) ficam em modo «Locked» até ao fim do prazo —
+    # ninguém as apaga, nem a Genesis, e o storage do cliente só se pode apagar
+    # depois. Desligado = «Unlocked» (protege contra erros e reescritas; quem tem a
+    # chave da conta pode retirar a proteção). Só a Genesis liga (internal).
+    witness_sealed: bool = False
+
+
+def witness_sealed(profile: Mapping[str, Any]) -> bool:
+    """`actionLedger.witness_sealed` do perfil BASE é exatamente `True`? Nunca levanta."""
+    try:
+        block = (profile or {}).get("actionLedger") or {}
+        return isinstance(block, Mapping) and block.get("witness_sealed") is True
+    except Exception:  # noqa: BLE001
+        return False
 
 
 def is_high_risk(profile: Mapping[str, Any]) -> bool:

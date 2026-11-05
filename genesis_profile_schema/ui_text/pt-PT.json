@@ -685,6 +685,11 @@
       "label": "Guardar o registo (dias)",
       "help": "Mínimo 180 (6 meses, AI Act). Num cliente de alto risco vale a retenção dos registos de alto risco."
     },
+    "actionLedger.witness_sealed": {
+      "label": "Testemunha selada (Avançado)",
+      "help": "As cópias diárias dos carimbos do registo, no armazenamento do cliente, ficam seladas até ao fim do prazo: ninguém as apaga, nem a Genesis. Desligado, ficam protegidas contra erros e reescritas, mas quem tem a chave da conta pode retirar a proteção. Só em produção.",
+      "note": "Sem volta atrás: com a testemunha selada, o armazenamento deste cliente só se pode apagar quando a última cópia selada chegar ao fim do prazo, e o desmantelar fica bloqueado até lá."
+    },
     "agentic.enabled": {
       "label": "Tarefas do agente",
       "help": "Liga os agentes que trabalham sozinhos nas filas e a lista de passos no chat. Desligar põe os agentes das filas em pausa no passo seguinte; voltam a andar quando se liga. O que já foi aprovado termina.",
