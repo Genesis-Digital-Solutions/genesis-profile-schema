@@ -132,9 +132,30 @@ CHAIN_FIELDS = ("seq", "ts", "client_id", "variant_slug", "event", "action", "ac
 #: todas as entradas já escritas (`entry.get(k)` → `null`) e partia a cadeia de
 #: todos os clientes. O próprio `chain_v` entra no hash da v2: tirá-lo de uma
 #: entrada (para a fazer passar por v1) parte-a.
-CHAIN_V = 2
 CHAIN_FIELDS_V2 = CHAIN_FIELDS + ("chain_v", "mission_s256")
-_FIELDS_BY_VERSION = {None: CHAIN_FIELDS, CHAIN_V: CHAIN_FIELDS_V2}
+
+#: Cadeia v3 (v0.1.155, 5 Nov 2026 — passo 5A do épico «Agente colega», «quem fez
+#: isto, porquê, e prova-o»): cada entrada NOVA leva também `effect_digest` (o
+#: EFEITO que o sistema devolveu a uma escrita — o n.º da encomenda, da fatura, do
+#: email) e `why_digest` (a justificação que o agente deu para a ação). Os dois são
+#: digest COM SAL, como os `params` (um n.º de fatura de uma pessoa singular
+#: identifica-a): o valor e o sal vivem na parte apagável (`effect`, `why`,
+#: `salt.effect`, `salt.why`); o apagamento RGPD tira-os e a cadeia continua a
+#: verificar-se. `None` quando a entrada não tem efeito ou justificação.
+CHAIN_V = 3
+CHAIN_FIELDS_V3 = CHAIN_FIELDS_V2 + ("effect_digest", "why_digest")
+_FIELDS_BY_VERSION = {None: CHAIN_FIELDS, 2: CHAIN_FIELDS_V2, CHAIN_V: CHAIN_FIELDS_V3}
+
+#: Todos os campos de cadeia de TODAS as versões — o que uma leitura com projeção
+#: (verificar, provar) tem de pedir. Projetar com uma lista antiga parte as entradas
+#: novas (`chain_v` em falta → contada como v1 → `hash_mismatch`; lição da v2).
+CHAIN_FIELDS_ALL = tuple(dict.fromkeys(f for fs in _FIELDS_BY_VERSION.values() for f in fs))
+
+#: O efeito guardado (valor na parte apagável): texto curto, normalizado por
+#: `effect_norm` antes do digest e da pesquisa.
+EFFECT_REF_MAX = 120
+#: A justificação de uma ação do agente: curta e de uma linha.
+WHY_MAX = 300
 
 #: `mission_s256`: SHA-256 dos BYTES da missão, em base64url sem padding (AAuth,
 #: draft-hardt-oauth-aauth-protocol-11 §8.2) — 43 caracteres.
@@ -146,7 +167,7 @@ RESULT_CODE = re.compile(r"^[a-z][a-z0-9_]{0,39}$")
 #: A parte apagável de cada entrada (nunca entra no hash). Os sais são POR
 #: PAPEL (`salt.who`, `salt.approver`, `salt.params`): apagar quem só aprovou
 #: não apaga os valores nem a identidade de quem pediu.
-ERASABLE_FIELDS = ("params", "detail", "salt", "who")
+ERASABLE_FIELDS = ("params", "detail", "salt", "who", "effect", "why")
 ERASED = "[apagado]"
 
 GENESIS_HASH = "0" * 64
@@ -192,6 +213,17 @@ def mission_s256(mission_bytes: bytes) -> str:
     import base64
     digest = hashlib.sha256(bytes(mission_bytes)).digest()
     return base64.urlsafe_b64encode(digest).rstrip(b"=").decode("ascii")
+
+
+def effect_norm(value: Any) -> str:
+    """A referência de um efeito, comparável: texto sem espaços nas pontas (até
+    `EFFECT_REF_MAX`); só dígitos → sem zeros à esquerda (o SAP guarda o `VBELN`
+    com zeros e a resposta pode não os trazer). '' quando não é um valor simples.
+    O que entra no `effect_digest` e o que a pesquisa por efeito compara."""
+    if isinstance(value, bool) or not isinstance(value, (str, int)):
+        return ""
+    s = str(value).strip()[:EFFECT_REF_MAX]
+    return (s.lstrip("0") or "0") if s.isdigit() else s
 
 
 def result_code(value: Any) -> str:

@@ -61,7 +61,7 @@ def test_mexer_na_missao_ou_tirar_a_versao_parte():
 
 def test_versao_desconhecida_e_dita():
     entries = _chain([V1])
-    entries[0]["chain_v"] = 3
+    entries[0]["chain_v"] = 99
     out = al.verify_chain(entries)
     assert out["ok"] is False and out["reason"] == "unknown_chain_version" and out["broken_at"] == 1
     with pytest.raises(al.UnknownChainVersion):
