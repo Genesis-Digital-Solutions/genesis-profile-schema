@@ -1826,6 +1826,10 @@
       "label": "Available in chat",
       "help": "When off, the server is for automations only (queue triggers, checks and resolver): the chat assistant does not see its tools and the voice agent does not announce it."
     },
+    "mcp.servers.trusted_data": {
+      "label": "Source of truth for values",
+      "help": "What this server returns (e.g. the ERP) counts as trusted data: an IBAN, tax ID or email read here can be used by the agent without approval. Never on a mail or ticket server."
+    },
     "mcp.servers.trusted": {
       "label": "Trusted server",
       "help": "The MCP spec treats tool descriptions as untrusted. Only on a trusted server is each tool description passed to the model, after sanitising; otherwise a neutral description is used."
@@ -2325,6 +2329,19 @@
     "actionRules.rules.note": {
       "label": "Why",
       "help": "Internal note on the reason for the rule (not shown to the person chatting)."
+    },
+    "actionRules.rules.sensitive_params": {
+      "label": "Fields that must come from trusted data",
+      "help": "Besides IBAN, email, tax ID and phone (always checked): fields the agent only uses if it read them in your systems (e.g. amount, address). If they only came from an email or attachment, it is recorded or goes for approval."
+    },
+    "actionRules.untrusted_values.mode": {
+      "label": "Values from untrusted content",
+      "help": "An IBAN, email or tax ID the agent only read in an email or attachment may be an attempt to trick it. Record only: it goes to the log. Ask for approval: a person sees the value and its origin; without approvers, it does not run.",
+      "options": {
+        "off": "Off",
+        "log": "Record only",
+        "approve": "Ask for approval"
+      }
     },
     "runtime.agent_mode": {
       "label": "Default reasoning effort",

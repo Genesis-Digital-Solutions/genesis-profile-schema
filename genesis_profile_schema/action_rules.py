@@ -110,6 +110,26 @@ INVALID_NOTIFY_EMAIL = "invalid_notify_email"
 APPROVAL_QUEUE_SHAPE = "approval_queue_shape"       # a fila não tem os estados/ações da aprovação
 INVALID_PERIOD_LIMIT = "invalid_period_limit"       # F4: período, quem, máximo ou campo inválidos
 TOO_MANY_PERIOD_LIMITS = "too_many_period_limits"
+# v0.1.158 (valores de origem não confiável): campo sensível mal escrito, ou
+# demasiados; e o aviso de uma regra «permitir» sem quem aprove quando o modo
+# do perfil é «pedir aprovação» (um valor não confiável BLOQUEIA nessa regra).
+INVALID_SENSITIVE_PARAM = "invalid_sensitive_param"
+UNTRUSTED_BLOCKS_WITHOUT_APPROVAL = "untrusted_blocks_without_approval"
+INVALID_UNTRUSTED_MODE = "invalid_untrusted_mode"
+
+# ── Valores de origem não confiável (v0.1.158, 5 Nov 2026) ──────────────────
+# Defesa contra prompt injection AO NÍVEL DO VALOR (CaMeL/FIDES): quando o
+# agente operador escreve num sistema com um valor sensível (IBAN, BIC, email,
+# NIF/VAT, telefone — detetados pela forma — e os campos que a regra declara em
+# `sensitive_params`) que não aparece em nenhum dado CONFIÁVEL que ele leu
+# (servidores `trusted`, o objetivo configurado), o core regista-o e, no modo
+# `approve`, a escrita vai para aprovação com o valor e a origem ligados por
+# hash. `off` = nada; `log` (o que vale quando o bloco falta) = só registar.
+UNTRUSTED_MODES: Tuple[str, ...] = ("off", "log", "approve")
+UNTRUSTED_DEFAULT_MODE = "log"
+MAX_SENSITIVE_PARAMS = 20
+# Caminho de um campo dos parâmetros (`bank.iban`, `ship_to.address`).
+_PARAM_PATH = re.compile(r"^[A-Za-z0-9_-]{1,64}(\.[A-Za-z0-9_-]{1,64}){0,5}$", re.ASCII)
 
 
 # ── Modelos ──────────────────────────────────────────────────────────────────
@@ -180,6 +200,18 @@ class ActionRule(BaseModel):
     # Só registar: avalia e regista o que TERIA feito, sem mudar nada.
     log_only: bool = False
     note: str = ""                               # porquê, em linguagem de negócio
+    # v0.1.158: campos desta ação cujo valor tem de vir de dados CONFIÁVEIS
+    # (além dos detetados pela forma): «montante», «morada de entrega», «conta».
+    sensitive_params: List[str] = Field(default_factory=list)
+
+
+class ActionRulesUntrustedValues(BaseModel):
+    """`actionRules.untrusted_values` (v0.1.158): o que o core faz a uma escrita
+    do agente operador com um valor sensível que só veio de conteúdo não
+    confiável (email, anexo, servidor não `trusted`) ou de lado nenhum."""
+    model_config = ConfigDict(extra="allow")
+
+    mode: Literal["off", "log", "approve"] = UNTRUSTED_DEFAULT_MODE
 
 
 class ProfileActionRules(BaseModel):
@@ -188,6 +220,37 @@ class ProfileActionRules(BaseModel):
 
     enabled: bool = False
     rules: List[ActionRule] = Field(default_factory=list)
+    # v0.1.158: ausente/`null` = `log` (só registar).
+    untrusted_values: Optional[ActionRulesUntrustedValues] = None
+
+
+def untrusted_values_mode(block: Any) -> str:
+    """O modo efetivo (`off` | `log` | `approve`) do bloco `actionRules`.
+    Bloco/campo ausente ou `null` → `log`; um valor desconhecido → `approve`
+    (falha fechada: quem escreveu algo queria mais do que registar). Nunca levanta."""
+    try:
+        uv = block.get("untrusted_values") if isinstance(block, Mapping) else None
+        if not isinstance(uv, Mapping):
+            return UNTRUSTED_DEFAULT_MODE
+        mode = uv.get("mode")
+        if mode is None:
+            return UNTRUSTED_DEFAULT_MODE
+        return str(mode) if str(mode) in UNTRUSTED_MODES else "approve"
+    except Exception:  # noqa: BLE001
+        return "approve"
+
+
+def sensitive_params_of(rule: Any) -> List[str]:
+    """Os caminhos declarados na regra, válidos e sem repetidos (até ao máximo)."""
+    raw = rule.get("sensitive_params") if isinstance(rule, Mapping) else None
+    if not isinstance(raw, list):
+        return []
+    out: List[str] = []
+    for p in raw:
+        p = str(p or "").strip()
+        if _PARAM_PATH.match(p) and p not in out:
+            out.append(p)
+    return out[:MAX_SENSITIVE_PARAMS]
 
 
 # ── Regras que dependem do resto do perfil ──────────────────────────────────
@@ -379,6 +442,10 @@ def action_rules_problems(profile: Mapping[str, Any]) -> List[Dict[str, str]]:
         queues = queues if isinstance(queues, Mapping) else {}
         servers = _mcp_servers(profile)
         seen: set = set()
+        uv = block.get("untrusted_values") if isinstance(block, Mapping) else None
+        if isinstance(uv, Mapping) and uv.get("mode") is not None and str(uv.get("mode")) not in UNTRUSTED_MODES:
+            add("", INVALID_UNTRUSTED_MODE, ERROR)
+        untrusted_approve = untrusted_values_mode(block) == "approve"
         for raw in rules:
             if not isinstance(raw, Mapping):
                 add("", INVALID_ACTION, ERROR)
@@ -422,7 +489,20 @@ def action_rules_problems(profile: Mapping[str, Any]) -> List[Dict[str, str]]:
                 for code, sev in _limit_problems(lim):
                     add(rid, code, sev)
 
+            sens = raw.get("sensitive_params")
+            if sens is not None and (not isinstance(sens, list) or len(sens) > MAX_SENSITIVE_PARAMS
+                                     or any(not _PARAM_PATH.match(str(p or "").strip()) for p in sens)):
+                add(rid, INVALID_SENSITIVE_PARAM, ERROR)
+
             uses_approve = rule_uses_approve(raw)
+            appr_cfg = raw.get("approval") if isinstance(raw.get("approval"), Mapping) else {}
+            has_approvers = bool(str(appr_cfg.get("queue") or "")) and bool(
+                (appr_cfg.get("roles") or []) or (appr_cfg.get("groups") or []))
+            if (untrusted_approve and server and not has_approvers and mode in ("allow", "confirm")
+                    and raw.get("log_only") is not True):
+                # Um valor não confiável pede aprovação — sem fila nem aprovadores
+                # nesta regra, a escrita do agente fica BLOQUEADA (falha fechada).
+                add(rid, UNTRUSTED_BLOCKS_WITHOUT_APPROVAL, WARNING)
             if uses_approve and not server:
                 add(rid, APPROVE_NATIVE, ERROR)
             elif uses_approve:

@@ -27,11 +27,11 @@ V3 = dict(V1, chain_v=3, mission_s256=None, effect_digest=al.salted_digest("s1",
 def test_listas_antigas_nao_mudaram_e_a_v3_acrescenta_dois():
     assert al.CHAIN_FIELDS_V2 == al.CHAIN_FIELDS + ("chain_v", "mission_s256")
     assert al.CHAIN_FIELDS_V3 == al.CHAIN_FIELDS_V2 + ("effect_digest", "why_digest")
-    assert al.CHAIN_V == 3
+    assert al.CHAIN_V >= 3
 
 
 def test_campos_de_todas_as_versoes_para_projecoes():
-    assert set(al.CHAIN_FIELDS_ALL) == set(al.CHAIN_FIELDS_V3)
+    assert set(al.CHAIN_FIELDS_V3) <= set(al.CHAIN_FIELDS_ALL)
     assert len(al.CHAIN_FIELDS_ALL) == len(set(al.CHAIN_FIELDS_ALL))
 
 

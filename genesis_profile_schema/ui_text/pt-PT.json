@@ -1826,6 +1826,10 @@
       "label": "Disponível no chat",
       "help": "Desligado, o servidor fica só para automações (gatilhos, verificações e resolvedor da fila): o assistente do chat não vê as suas ferramentas e o agente de voz não o anuncia."
     },
+    "mcp.servers.trusted_data": {
+      "label": "Fonte de verdade dos valores",
+      "help": "O que este servidor devolve (ex.: o ERP) conta como dado confiável: um IBAN, NIF ou email lido aqui pode ser usado pelo agente sem aprovação. Nunca num servidor de correio ou tickets."
+    },
     "mcp.servers.trusted": {
       "label": "Servidor de confiança",
       "help": "A especificação MCP trata as descrições das ferramentas como não fiáveis. Só num servidor de confiança a descrição de cada ferramenta é exposta ao modelo, já higienizada; caso contrário usa-se uma descrição neutra."
@@ -2325,6 +2329,19 @@
     "actionRules.rules.note": {
       "label": "Porquê",
       "help": "Nota interna sobre o motivo da regra (não é mostrada a quem conversa)."
+    },
+    "actionRules.rules.sensitive_params": {
+      "label": "Campos que têm de vir de dados de confiança",
+      "help": "Além de IBAN, email, NIF e telefone (sempre verificados): campos que o agente só usa se os leu nos vossos sistemas (ex.: montante, morada). Se só vieram de um email ou anexo, fica registado ou vai para aprovação."
+    },
+    "actionRules.untrusted_values.mode": {
+      "label": "Valores vindos de conteúdo não confiável",
+      "help": "Um IBAN, email ou NIF que o agente só leu num email ou anexo pode ser uma tentativa de o enganar. Só registar: fica no registo. Pedir aprovação: vai a uma pessoa com o valor e a origem; sem aprovadores, não corre.",
+      "options": {
+        "off": "Desligado",
+        "log": "Só registar",
+        "approve": "Pedir aprovação"
+      }
     },
     "runtime.agent_mode": {
       "label": "Esforço de raciocínio por defeito",

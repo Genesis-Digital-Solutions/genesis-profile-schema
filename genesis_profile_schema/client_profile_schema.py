@@ -1392,6 +1392,14 @@ class ProfileMCPServer(BaseModel):
     # (higienizada); quando False (default seguro), usa-se descrição neutra.
     # Consumido no genai-core (tool_loader) ao construir as MCPTool.
     trusted: bool = False
+
+    # trusted_data (v0.1.158, 5 Nov 2026, decisão do Bruno) — o que ESTE servidor devolve
+    # é fonte de verdade dos valores (o ERP, o sistema de registo do cliente): um IBAN,
+    # NIF ou email lido aqui pode ser escrito pelo agente operador sem contar como
+    # «valor de origem não confiável» (`core/agent/provenance`). À parte do `trusted`
+    # (que só expõe as descrições): um servidor de correio ou de tickets pode ter
+    # descrições de confiança e devolver texto do atacante. Omissão False.
+    trusted_data: bool = False
     # erp — metadata OPCIONAL: declara que este server desempenha o papel de
     # ERP para uma fila (ex.: {"lookup_tool": "erp_get_customer_history"}). Lido
     # pelo resolver/gates; forma livre (extra="allow") enquanto estabiliza.

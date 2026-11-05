@@ -181,9 +181,19 @@ CHAIN_FIELDS_V2 = CHAIN_FIELDS + ("chain_v", "mission_s256")
 #: identifica-a): o valor e o sal vivem na parte apagável (`effect`, `why`,
 #: `salt.effect`, `salt.why`); o apagamento RGPD tira-os e a cadeia continua a
 #: verificar-se. `None` quando a entrada não tem efeito ou justificação.
-CHAIN_V = 3
 CHAIN_FIELDS_V3 = CHAIN_FIELDS_V2 + ("effect_digest", "why_digest")
-_FIELDS_BY_VERSION = {None: CHAIN_FIELDS, 2: CHAIN_FIELDS_V2, CHAIN_V: CHAIN_FIELDS_V3}
+
+#: Cadeia v4 (v0.1.158, 5 Nov 2026 — defesa contra prompt injection ao nível do
+#: VALOR): cada entrada NOVA leva `provenance_digest` — digest COM SAL do registo de
+#: proveniência de uma escrita do agente (`provenance_record`: que parâmetros
+#: sensíveis só vieram de conteúdo não confiável ou de lado nenhum, de que origem,
+#: e o que o core fez). O mesmo `params_digest` da entrada liga o VALOR; este campo
+#: liga a ORIGEM e o motivo da aprovação. O registo e o sal vivem na parte apagável
+#: (`provenance`, `salt.provenance`). `None` quando a entrada não tem achados.
+CHAIN_V = 4
+CHAIN_FIELDS_V4 = CHAIN_FIELDS_V3 + ("provenance_digest",)
+_FIELDS_BY_VERSION = {None: CHAIN_FIELDS, 2: CHAIN_FIELDS_V2, 3: CHAIN_FIELDS_V3,
+                      CHAIN_V: CHAIN_FIELDS_V4}
 
 #: Todos os campos de cadeia de TODAS as versões — o que uma leitura com projeção
 #: (verificar, provar) tem de pedir. Projetar com uma lista antiga parte as entradas
@@ -206,7 +216,7 @@ RESULT_CODE = re.compile(r"^[a-z][a-z0-9_]{0,39}$")
 #: A parte apagável de cada entrada (nunca entra no hash). Os sais são POR
 #: PAPEL (`salt.who`, `salt.approver`, `salt.params`): apagar quem só aprovou
 #: não apaga os valores nem a identidade de quem pediu.
-ERASABLE_FIELDS = ("params", "detail", "salt", "who", "effect", "why")
+ERASABLE_FIELDS = ("params", "detail", "salt", "who", "effect", "why", "provenance")
 ERASED = "[apagado]"
 
 GENESIS_HASH = "0" * 64
@@ -252,6 +262,46 @@ def mission_s256(mission_bytes: bytes) -> str:
     import base64
     digest = hashlib.sha256(bytes(mission_bytes)).digest()
     return base64.urlsafe_b64encode(digest).rstrip(b"=").decode("ascii")
+
+
+#: O registo de proveniência guardado (forma fechada; o resto é descartado).
+PROVENANCE_V = 1
+PROVENANCE_MAX_FINDINGS = 20
+PROVENANCE_ORIGINS = ("untrusted", "unknown")
+PROVENANCE_OUTCOMES = ("logged", "approval", "blocked")
+_PROV_TEXT = re.compile(r"[\x00-\x1f\x7f]")
+
+
+def provenance_record(value: Any) -> Optional[Dict[str, Any]]:
+    """A forma canónica do registo de proveniência de UMA ação (o que entra no
+    `provenance_digest`), ou None sem achados. Cada achado: `param` (caminho do
+    campo), `kind` (iban, bic, email, tax_id, phone, declared), `origin`
+    (`untrusted` = visto só em conteúdo não confiável; `unknown` = em lado nenhum),
+    `sources` (de onde: `item`, `item_email`, `attachment`, `mcp:<servidor>`,
+    `event`) e `masked` (o valor mascarado — o valor exato está nos `params`, ligado
+    pelo `params_digest` da mesma entrada). `outcome`: o que o core fez."""
+    if not isinstance(value, Mapping):
+        return None
+    findings = value.get("findings")
+    if not isinstance(findings, list):
+        return None
+
+    def txt(v: Any, n: int) -> str:
+        return _PROV_TEXT.sub(" ", str(v or ""))[:n]
+
+    out: List[Dict[str, Any]] = []
+    for f in findings[:PROVENANCE_MAX_FINDINGS]:
+        if not isinstance(f, Mapping) or f.get("origin") not in PROVENANCE_ORIGINS:
+            continue
+        srcs = f.get("sources") if isinstance(f.get("sources"), list) else []
+        out.append({"param": txt(f.get("param"), 200), "kind": txt(f.get("kind"), 20),
+                    "origin": str(f.get("origin")), "masked": txt(f.get("masked"), 80),
+                    "sources": sorted({txt(x, 120) for x in srcs if str(x or "").strip()})[:10]})
+    if not out:
+        return None
+    outcome = str(value.get("outcome") or "")
+    return {"v": PROVENANCE_V, "outcome": outcome if outcome in PROVENANCE_OUTCOMES else "logged",
+            "findings": out}
 
 
 def effect_norm(value: Any) -> str:

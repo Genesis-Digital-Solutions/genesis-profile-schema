@@ -98,8 +98,12 @@ def test_never_raises():
 
 
 def test_client_writes_the_block():
-    paths = [k for k in EXPOSURE if k.startswith("actionRules.")]
+    # v0.1.158: a única exceção — o modo da proteção contra valores de origem não confiável
+    # vê-o o cliente e muda-o a Genesis (passa a «aprovar» depois de medir).
+    read_only = {"actionRules.untrusted_values.mode"}
+    paths = [k for k in EXPOSURE if k.startswith("actionRules.") and k not in read_only]
     assert paths and all(EXPOSURE[k] == CLIENT_WRITE for k in paths)
+    assert all(EXPOSURE[k] == "client_read" for k in read_only)
     assert "mcp.confirm_actions" not in paths
 
 

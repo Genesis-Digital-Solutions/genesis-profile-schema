@@ -780,6 +780,7 @@ EXPOSURE: Dict[str, str] = {
     "mcp.servers.timeout_seconds": _I,
     "mcp.servers.tool_prefix": _I,
     "mcp.servers.trusted": _I,
+    "mcp.servers.trusted_data": _I,  # v0.1.158: fonte de verdade dos valores (provenance)
     "mcp.servers.url": _I,
 
     # ──────────────────────────────────────────────────────────────────────
@@ -845,6 +846,11 @@ EXPOSURE: Dict[str, str] = {
     "actionRules.rules.variants": _W,
     "actionRules.rules.log_only": _W,
     "actionRules.rules.note": _W,
+    # v0.1.158 (valores de origem não confiável): os campos sensíveis são da regra
+    # (do cliente, como os limites); o modo é visto pelo cliente e mudado pela
+    # Genesis — passa de «só registar» a «pedir aprovação» depois de medir.
+    "actionRules.rules.sensitive_params": _W,
+    "actionRules.untrusted_values.mode": _R,
     # Calendário de negócio (v0.1.77): os feriados municipais e as tolerâncias
     # são DO CLIENTE (quem os conhece é ele); o país e o fim de semana vê-os,
     # decidimo-los nós no arranque.
