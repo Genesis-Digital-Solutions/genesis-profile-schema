@@ -32,7 +32,7 @@ from __future__ import annotations
 import hashlib
 import json
 import re
-from typing import Any, Dict, Iterable, List, Mapping, Optional, Tuple
+from typing import Any, Dict, Iterable, List, Literal, Mapping, Optional, Tuple
 
 from pydantic import BaseModel, ConfigDict, Field
 
@@ -54,6 +54,29 @@ class ProfileActionLedger(BaseModel):
     # depois. Desligado = «Unlocked» (protege contra erros e reescritas; quem tem a
     # chave da conta pode retirar a proteção). Só a Genesis liga (internal).
     witness_sealed: bool = False
+    # v0.1.158 (5 Nov 2026, decisão do Bruno): carimbo temporal RFC 3161 de uma TSA
+    # sobre o carimbo diário assinado (1 pedido por dia; só sai o hash). `public` =
+    # uma TSA pública grátis, não qualificada; `qualified` = um prestador qualificado
+    # eIDAS (a Genesis escolhe qual no código; enquanto não houver nenhum ativo usa-se
+    # a pública e o ecrã diz); `off` = nenhum. None (omitido / null no blob) = `public`.
+    # Só a Genesis escolhe (internal): o prestador qualificado tem contrato e custo.
+    timestamping: Optional[Literal["public", "qualified", "off"]] = None
+
+
+#: Os modos do carimbo temporal (`timestamping`), por ordem do ecrã.
+TIMESTAMPING_MODES = ("public", "qualified", "off")
+DEFAULT_TIMESTAMPING = "public"
+
+
+def timestamping_mode(profile: Mapping[str, Any]) -> str:
+    """`actionLedger.timestamping` do perfil BASE: `public` | `qualified` | `off`.
+    Ausente, null ou desconhecido → `public` (v0.1.158). Nunca levanta."""
+    try:
+        block = (profile or {}).get("actionLedger") or {}
+        mode = block.get("timestamping") if isinstance(block, Mapping) else None
+        return mode if mode in TIMESTAMPING_MODES else DEFAULT_TIMESTAMPING
+    except Exception:  # noqa: BLE001
+        return DEFAULT_TIMESTAMPING
 
 
 def witness_sealed(profile: Mapping[str, Any]) -> bool:

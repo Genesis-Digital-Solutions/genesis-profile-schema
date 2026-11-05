@@ -690,6 +690,16 @@
       "help": "The daily copies of the log's checkpoints, in the client's storage, are sealed until the end of the term: no one can delete them, not even Genesis. Off, they are protected against mistakes and rewrites, but whoever holds the account key can remove the protection. Production only.",
       "note": "No way back: with the witness sealed, this client's storage can only be deleted when the last sealed copy reaches the end of its term, and decommissioning is blocked until then."
     },
+    "actionLedger.timestamping": {
+      "label": "Timestamp (Advanced)",
+      "help": "Once a day, an independent time-stamping authority (TSA, RFC 3161) stamps the log's signed checkpoint: it proves to third parties that the log already existed at that time. Only a code (hash) leaves, never data. «Public» is free but not qualified; «Qualified eIDAS» carries the legal presumption of date and time across the EU.",
+      "note": "Until a qualified provider is active, «Qualified eIDAS» uses the public one and the witness screen says so.",
+      "options": {
+        "public": "Public (free, not qualified)",
+        "qualified": "Qualified eIDAS",
+        "off": "Off"
+      }
+    },
     "agentic.enabled": {
       "label": "Agent tasks",
       "help": "Turns on the agents that work on their own in the queues and the step list in the chat. Turning it off pauses the queue agents at their next step; they carry on when turned back on. Already-approved work finishes.",

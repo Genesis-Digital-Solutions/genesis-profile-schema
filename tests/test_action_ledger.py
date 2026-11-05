@@ -127,3 +127,23 @@ def test_testemunha_selada_so_com_true_no_base():
     assert m.actionLedger.witness_sealed is True
     assert ClientProfileSchema.model_validate({"actionLedger": {"enabled": True}}).actionLedger.witness_sealed is False
     assert EXPOSURE["actionLedger.witness_sealed"] == "internal"
+
+
+def test_carimbo_temporal_publica_por_omissao():
+    """v0.1.158: `actionLedger.timestamping` — ausente/null/desconhecido = `public`; nunca levanta."""
+    import pytest
+    from pydantic import ValidationError
+    from genesis_profile_schema.action_ledger import TIMESTAMPING_MODES, timestamping_mode
+    from genesis_profile_schema.exposure import EXPOSURE
+    assert TIMESTAMPING_MODES == ("public", "qualified", "off")
+    for mode in TIMESTAMPING_MODES:
+        assert timestamping_mode({"actionLedger": {"timestamping": mode}}) == mode
+        assert ClientProfileSchema.model_validate(
+            {"actionLedger": {"enabled": True, "timestamping": mode}}).actionLedger.timestamping == mode
+    for prof in ({}, None, {"actionLedger": None}, {"actionLedger": "x"}, {"actionLedger": {"timestamping": None}},
+                 {"actionLedger": {"timestamping": "QUALIFIED"}}, {"actionLedger": {"timestamping": 1}}):
+        assert timestamping_mode(prof) == "public"
+    assert ClientProfileSchema.model_validate({"actionLedger": {"enabled": True}}).actionLedger.timestamping is None
+    with pytest.raises(ValidationError):
+        ClientProfileSchema.model_validate({"actionLedger": {"timestamping": "eidas"}})
+    assert EXPOSURE["actionLedger.timestamping"] == "internal"

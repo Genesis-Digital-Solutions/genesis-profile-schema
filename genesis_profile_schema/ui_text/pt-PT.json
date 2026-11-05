@@ -690,6 +690,16 @@
       "help": "As cópias diárias dos carimbos do registo, no armazenamento do cliente, ficam seladas até ao fim do prazo: ninguém as apaga, nem a Genesis. Desligado, ficam protegidas contra erros e reescritas, mas quem tem a chave da conta pode retirar a proteção. Só em produção.",
       "note": "Sem volta atrás: com a testemunha selada, o armazenamento deste cliente só se pode apagar quando a última cópia selada chegar ao fim do prazo, e o desmantelar fica bloqueado até lá."
     },
+    "actionLedger.timestamping": {
+      "label": "Carimbo temporal (Avançado)",
+      "help": "Uma vez por dia, uma autoridade de tempo independente (TSA, RFC 3161) carimba o carimbo assinado do registo: prova a terceiros que o registo já existia àquela hora. Só sai um código (hash), nunca dados. «Pública» é grátis mas não qualificada; «Qualificada eIDAS» tem presunção legal de data e hora em toda a UE.",
+      "note": "Enquanto não houver um prestador qualificado ativo, «Qualificada eIDAS» usa a pública e o ecrã da testemunha diz.",
+      "options": {
+        "public": "Pública (grátis, não qualificada)",
+        "qualified": "Qualificada eIDAS",
+        "off": "Desligado"
+      }
+    },
     "agentic.enabled": {
       "label": "Tarefas do agente",
       "help": "Liga os agentes que trabalham sozinhos nas filas e a lista de passos no chat. Desligar põe os agentes das filas em pausa no passo seguinte; voltam a andar quando se liga. O que já foi aprovado termina.",
