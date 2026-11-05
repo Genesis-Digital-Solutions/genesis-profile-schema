@@ -673,6 +673,8 @@ class ProfileToolRunCodeConfig(BaseModel):
 from genesis_profile_schema.tool_cv_analysis import ProfileToolCvAnalysisConfig  # noqa: E402
 from genesis_profile_schema.tool_doc_verification import ProfileToolDocVerificationConfig  # noqa: E402
 from genesis_profile_schema.queue_fields import QueueFields  # noqa: E402
+from genesis_profile_schema.queue_summaries import (  # noqa: E402
+    QueueSummaryTables, QueueSummaryTotals, check_summary_references)
 from genesis_profile_schema.intake_schema import ProfileIntake  # noqa: E402
 from genesis_profile_schema.action_rules import ProfileActionRules  # noqa: E402
 from genesis_profile_schema.team import ProfileTeam  # noqa: E402
@@ -2684,6 +2686,33 @@ class ProfileIngest(BaseModel):
     model_config = ConfigDict(extra="allow")
     sources: Optional[List[Dict[str, Any]]] = None
     alerts: ProfileIngestAlerts = Field(default_factory=ProfileIngestAlerts)
+    # Domínios do PRÓPRIO cliente (v0.1.157; core `ingest/customer_mapping.py`,
+    # `internal_domains()`, lido do perfil BASE): um endereço destes (ou de um
+    # subdomínio) nunca identifica o cliente de uma encomenda — é a casa a
+    # reencaminhar (4 Nov 2026: `encomendas@salmon.pt` foi ao ERP como email
+    # do cliente). Normalizado como o core o lê: minúsculas, sem «@» à frente
+    # nem «.» no fim. Ausente/null = nenhum (o comportamento de antes).
+    internal_domains: Optional[List[str]] = Field(default=None, max_length=50)
+
+    @field_validator("internal_domains", mode="before")
+    @classmethod
+    def _internal_domains(cls, v):
+        if v is None:
+            return None
+        if not isinstance(v, list):
+            raise ValueError("internal_domains tem de ser uma lista de domínios")
+        out: List[str] = []
+        for raw in v:
+            d = str(raw or "").strip().lower().lstrip("@").rstrip(".")
+            if not d:
+                continue
+            # A regra do core (`"." in d and " " not in d`), um pouco mais firme: sem barras,
+            # «@» nem «:» (um URL ou um email não são domínios). Acentos e «_» passam, como lá.
+            if len(d) > 253 or "." not in d or d.startswith(".") or re.search(r"[\s/@:]", d):
+                raise ValueError(f"internal_domains: {str(raw)[:60]!r} não é um domínio (ex.: empresa.pt)")
+            if d not in out:
+                out.append(d)
+        return out
 
 
 class ProfileReviewQueueState(BaseModel):
@@ -2696,7 +2725,10 @@ class ProfileReviewQueueState(BaseModel):
 class ProfileReviewQueueAction(BaseModel):
     """Ação da máquina de estados. NOTA: a origem `from` é palavra reservada em
     Python — não é campo tipado; fica em extra="allow" (preservada byte a byte
-    no round-trip). Ex.: {"id":"resolver","from":["triaged"],"to":"resolved"}."""
+    no round-trip). Ex.: {"id":"resolver","from":["triaged"],"to":"resolved"}.
+    `to` = id de um estado ou `"@same"` (v0.1.157, `queue_summaries.SAME_STATE`):
+    fica no estado de onde partiu (a não ser que um gate desvie) — o core só o
+    entende desde o commit 145e88a0; um core anterior recusa a lista inteira."""
     model_config = ConfigDict(extra="allow")
     id: str = ""
     to: str = ""
@@ -2830,6 +2862,15 @@ class ProfileReviewQueue(BaseModel):
     onIngest: Optional[Dict[str, Any]] = None
     # Prazo da fila (v0.1.77) — ver ProfileReviewQueueSla.
     sla: Optional[ProfileReviewQueueSla] = None
+    # Tabelas-resumo e totais calculados ao vivo pelo fecore (v0.1.157; ver
+    # queue_summaries.py). Null/ausente = nenhum.
+    summaryTables: Optional[QueueSummaryTables] = None
+    summaryTotals: Optional[QueueSummaryTotals] = None
+
+    @model_validator(mode="after")
+    def _summary_refs(self):
+        check_summary_references(self.summaryTables, self.summaryTotals)
+        return self
 
 
 class ProfileCalendar(BaseModel):

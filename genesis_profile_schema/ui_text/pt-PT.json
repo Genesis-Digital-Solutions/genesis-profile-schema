@@ -1667,6 +1667,10 @@
       "label": "Ativar alertas",
       "help": "Avisa por email quando há documentos parados à espera de tratamento."
     },
+    "ingest.internal_domains": {
+      "label": "Domínios da própria empresa",
+      "help": "Domínios de email da própria empresa (ex.: empresa.pt). Um remetente destes domínios, ou de um subdomínio, nunca identifica o cliente de uma encomenda: é a equipa a reencaminhar."
+    },
     "ingest.sources": {
       "label": "Fontes de ingestão por email",
       "help": "Cada fonte descreve uma caixa de correio e o respetivo tratamento. O conteúdo é livre, pelo que não é validado campo a campo."

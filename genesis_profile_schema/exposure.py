@@ -551,6 +551,9 @@ EXPOSURE: Dict[str, str] = {
     "ingest.alerts.email": _W,
     "ingest.alerts.email_interval_hours": _W,
     "ingest.alerts.enabled": _W,
+    # Domínios do próprio cliente (v0.1.157): mexe na identificação do cliente das
+    # encomendas (core customer_mapping) — decisão de configuração da Genesis.
+    "ingest.internal_domains": _I,
     "ingest.sources": _I,  # wiring de blob/containers
 
     # ──────────────────────────────────────────────────────────────────────

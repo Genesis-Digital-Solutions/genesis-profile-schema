@@ -1667,6 +1667,10 @@
       "label": "Send alerts",
       "help": "Emails a warning when documents are stuck waiting to be processed."
     },
+    "ingest.internal_domains": {
+      "label": "Company's own domains",
+      "help": "Email domains of the company itself (e.g. company.com). A sender from these domains, or a subdomain, never identifies the customer of an order: it is the team forwarding it."
+    },
     "ingest.sources": {
       "label": "Email ingestion sources",
       "help": "Each source describes a mailbox and how its messages are handled. The shape is free-form, so it is not validated field by field."

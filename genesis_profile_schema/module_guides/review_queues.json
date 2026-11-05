@@ -206,11 +206,13 @@
       ],
       "advanced": [
         "operatorNotes",
-        "numberFields"
+        "numberFields",
+        "summaryTables",
+        "summaryTotals"
       ],
       "when": {
-        "pt": "Sem campos declarados a fila mostra os dados com o nome técnico. Avançado: as observações da equipa (notas internas em cada pedido) e as colunas numéricas (convertidas em número ao gravar).",
-        "en": "Without declared fields the queue shows the data with technical names. Advanced: team notes (internal notes on each request) and numeric columns (converted to numbers on save)."
+        "pt": "Sem campos declarados a fila mostra os dados com o nome técnico. Avançado: as observações da equipa (notas internas em cada pedido), as colunas numéricas (convertidas em número ao gravar) e as tabelas-resumo e totais calculados a partir das linhas (ex.: linhas de transporte agrupadas, total da encomenda com o transporte).",
+        "en": "Without declared fields the queue shows the data with technical names. Advanced: team notes (internal notes on each request), numeric columns (converted to numbers on save) and summary tables and totals computed from the lines (e.g. transport lines grouped, order total with transport)."
       },
       "examples": [
         {

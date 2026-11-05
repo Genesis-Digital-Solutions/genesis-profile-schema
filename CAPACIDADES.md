@@ -331,6 +331,17 @@ módulo de mapa `item` (validado com o modelo do item), num de perfil `config` =
 `concursos`), «Candidaturas a apoios por formulário» (`fem`) e «quem avalia» em preparação; o que o ecrã do cliente
 mostra (separadores, registo) é do ESQUEMA no core, não do perfil.
 
+## Tabelas-resumo, totais, `@same` e domínios da empresa — `queue_summaries.py` (5 Nov 2026, v0.1.157)
+
+`reviewQueues.<fila>.summaryTables`/`summaryTotals` tipados com as regras do produtor (core
+`review_queue_summaries.py`) — mas aqui uma entrada partida RECUSA o perfil, onde o core a largava em
+silêncio; `check_summary_references` liga as partes `summary` às tabelas da mesma fila (validador da
+`ProfileReviewQueue`). `columnLabels`/`valueLabels` usam o alias `SummaryText` (não `I18nMap`): são mapas
+coluna → texto, e com `I18nMap` no nome o `i18n_field_paths` marcava o mapa inteiro como multilíngue.
+`SAME_STATE = "@same"` documenta o destino reservado de `actions[].to` (só um core ≥ 145e88a0 o entende).
+`ProfileIngest.internal_domains` normaliza como `customer_mapping.internal_domains()` e recusa o que não é
+domínio (`_I`). Campos novos no passo `fields` (avançado) do percurso `review_queues`.
+
 ## Checklist: acrescentar um campo
 
 1. **Modelo** — o campo em `client_profile_schema.py`, com tipo, default seguro
