@@ -175,3 +175,49 @@ def test_moldes_internos_com_texto_e_no_perfil_inteiro():
     with pytest.raises(ValidationError):
         ClientProfileSchema.model_validate({"client_id": "x", "tools": {"config": {"verify_documents": {
             "document_templates": [_ref(sha256="x")]}}}})
+
+
+# ── regras mudadas pelo cliente (6 Nov 2026, F2 das regras configuráveis) ────
+
+R = f"{P}.rules"
+
+
+def _rules(rules):
+    return ClientProfileSchema.model_validate(
+        {"client_id": "x", "tools": {"config": {"verify_documents": {"scheme": "fem", "rules": rules}}}})
+
+
+def test_regras_validas_e_vazio_por_omissao():
+    ok = {"fem": {"overrides": {
+        "fem.territorio": {"params": {"values": ["Leiria", "Pombal"]}, "source": "Despacho X, n.º 2"},
+        "fem.janela_evento": {"params": {"from": "2026-01-27", "to": "2026-03-15"}},
+        "fem.foto.local": {"params": {"max_km": 2.5}, "severity": "critical"},
+        "fem.foto.repetida": {"enabled": False, "params": {"max_hamming": 4}},
+    }}}
+    cfg = _rules(ok).tools.config["verify_documents"]
+    assert cfg["rules"] == ok
+    m = ProfileToolDocVerificationConfig.model_validate({"scheme": "fem"})
+    assert m.rules == {} and m.model_dump()["rules"] == {}                      # nunca `null` no blob
+
+
+@pytest.mark.parametrize("bad", [
+    {"fem": {"overrides": {"fem.x": {"severity": "info"}}}},                     # gravidade fora da lista
+    {"fem": {"overrides": {"fem.x": {"params": {"max_km": True}}}}},            # bool não passa por número
+    {"fem": {"overrides": {"fem.x": {"params": {"values": []}}}}},              # lista vazia
+    {"fem": {"overrides": {"fem.x": {"params": {"values": ["a" * 201]}}}}},     # valor demasiado longo
+    {"fem": {"overrides": {"fem.x": {"params": {"values": ["ok", "  "]}}}}},    # valor em branco
+    {"fem": {"overrides": {"fem.x": {"params": {"values": ["a"] * 1001}}}}},    # lista demasiado longa
+    {"fem": {"overrides": {"fem.x": {"params": {"Bad-Key": 1}}}}},              # nome de parâmetro estranho
+    {"fem": {"overrides": {"fem.x": {"params": {"x": {"nested": 1}}}}}},        # nada de objetos
+    {"fem": {"overrides": {"FEM X": {}}}},                                      # id estranho
+    {"fem": {"overrides": {"fem.x": {"sentence": "texto livre"}}}},             # só os campos previstos
+    {"Fem!": {"overrides": {}}},                                                 # esquema estranho
+])
+def test_regras_invalidas_recusadas(bad):
+    with pytest.raises(Exception):
+        _rules(bad)
+
+
+def test_regras_tem_texto_nas_duas_linguas():
+    for locale in ui.LOCALES:
+        assert ui.label_of(R, locale)

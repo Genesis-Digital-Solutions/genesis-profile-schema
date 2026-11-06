@@ -2584,6 +2584,10 @@
       "label": "Exemplo do nome de um caso",
       "help": "O exemplo no campo do nome ao criar um caso, sem o «ex.:». Nunca dados reais de uma pessoa."
     },
+    "tools.config.verify_documents.rules": {
+      "label": "Regras mudadas pelo cliente",
+      "help": "As regras do esquema que este cliente mudou: ligar/desligar, gravidade («não cumpre» ou «por esclarecer»), os valores (datas, limites, listas) e o artigo de origem. Vazio = as regras do esquema tal como vêm do core. Edita-se no painel «Regras do esquema» da tab Verificação documental. Cada candidatura fica com as regras do dia em que é processada pela 1.ª vez: mudar aqui não altera as já analisadas."
+    },
     "tools.config.verify_documents.document_templates": {
       "label": "Moldes dos documentos finais",
       "help": "O modelo do cliente de um documento final (o parecer, o relatório de conformidade…), um por esquema e documento. Vazio = o molde base da Genesis. Carrega-se no passo «Documentos finais» da tab Verificação documental; voltar ao base = retirar o molde."

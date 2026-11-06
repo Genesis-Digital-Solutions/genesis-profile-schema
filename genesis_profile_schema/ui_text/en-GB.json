@@ -2584,6 +2584,10 @@
       "label": "Example case name",
       "help": "The example in the name field when creating a case, without «e.g.». Never a real person's data."
     },
+    "tools.config.verify_documents.rules": {
+      "label": "Rules changed by the client",
+      "help": "The scheme rules this client changed: on/off, severity («not met» or «to clarify»), the values (dates, limits, lists) and the source article. Empty = the scheme rules as they come from the core. Edited in the «Scheme rules» panel of the Document verification tab. Each application keeps the rules in force on the day it is first processed: changing them here does not change applications already assessed."
+    },
     "tools.config.verify_documents.document_templates": {
       "label": "Final document templates",
       "help": "The client's own template for a final document (the opinion, the compliance report…), one per scheme and document. Empty = the Genesis base template. Uploaded in the «Final documents» step of the Document verification tab; back to the base = remove the template."

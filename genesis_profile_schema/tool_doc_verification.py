@@ -21,14 +21,15 @@ exposição não os abre ao cliente.
 
 from __future__ import annotations
 
-from typing import Annotated, Dict, List, Optional
+from typing import Annotated, Dict, List, Literal, Optional, Union
 
-from pydantic import AfterValidator, BaseModel, ConfigDict, Field, field_validator
+from pydantic import AfterValidator, BaseModel, ConfigDict, Field, StrictFloat, StrictInt, StrictStr, field_validator
 
 from .field_definition import I18nHelp
 
-__all__ = ["DocVerificationDocumentTemplate", "DocVerificationLabels", "ProfileToolDocVerificationConfig",
-           "MAX_LABEL_TEXT", "MAX_DOCUMENT_TEMPLATES"]
+__all__ = ["DocVerificationDocumentTemplate", "DocVerificationLabels", "DocVerificationRuleOverride",
+           "DocVerificationSchemeRules", "ProfileToolDocVerificationConfig", "MAX_LABEL_TEXT", "MAX_DOCUMENT_TEMPLATES",
+           "MAX_RULE_OVERRIDES", "MAX_RULE_LIST_ITEMS"]
 
 #: Um nome de ecrã (título, nome do caso, exemplo): curto. A frase do subtítulo cabe nisto também.
 MAX_LABEL_TEXT = 200
@@ -83,6 +84,54 @@ class DocVerificationDocumentTemplate(BaseModel):
     sha256: str = Field(pattern=r"^[0-9a-f]{64}$")
 
 
+#: Regras de um esquema que o cliente mudou (F2 das regras configuráveis, 6 Nov 2026). O FEM tem 21; com folga.
+MAX_RULE_OVERRIDES = 200
+#: Os 90 municípios do FEM são a lista maior medida; com folga para outros avisos.
+MAX_RULE_LIST_ITEMS = 1000
+MAX_RULE_TEXT = 200
+
+
+def _short_items(value: List[str]) -> List[str]:
+    for x in value:
+        if not x.strip() or len(x) > MAX_RULE_TEXT:
+            raise ValueError(f"cada valor da lista tem de ter 1 a {MAX_RULE_TEXT} caracteres")
+    return value
+
+
+#: Um VALOR de uma regra: texto curto (datas ISO incluídas), número, ou lista de textos. Nunca expressões nem código —
+#: o core sabe que parâmetros cada tipo de verificação deixa mudar e valida o tipo de cada um (o resto é ignorado e
+#: dito no Studio). Estritos: `True` não passa por 1, `"1"` não passa por número.
+RuleParamValue = Union[StrictInt, StrictFloat, Annotated[StrictStr, Field(min_length=1, max_length=MAX_RULE_TEXT)],
+                       Annotated[List[StrictStr], Field(min_length=1, max_length=MAX_RULE_LIST_ITEMS),
+                                 AfterValidator(_short_items)]]
+
+
+class DocVerificationRuleOverride(BaseModel):
+    """O que o cliente mudou numa regra do esquema (6 Nov 2026; `codigo/CONTEXT_PACK_regras_configuraveis_
+    verificacao_documental.md`, camada 1). Campo ausente = o do esquema.
+    - enabled: ligar/desligar a regra;
+    - severity: «critical» (não cumpre) ou «attention» (por esclarecer);
+    - params: os VALORES da regra (datas, limites, listas) — só os que o tipo de verificação deixa mudar; onde ler no
+      formulário (folhas, colunas) nunca;
+    - source: o artigo de onde vem, quando o regulamento muda."""
+    model_config = ConfigDict(extra="forbid")
+
+    enabled: Optional[bool] = None
+    severity: Optional[Literal["critical", "attention"]] = None
+    params: Dict[Annotated[str, Field(pattern=r"^[a-z][a-z0-9_]{0,39}$")], RuleParamValue] = Field(
+        default_factory=dict, max_length=20)
+    source: Optional[str] = Field(default=None, min_length=1, max_length=400)
+
+
+class DocVerificationSchemeRules(BaseModel):
+    """As regras mudadas de UM esquema, por id da regra (`fem.territorio`, `fem.foto.local`…). Uma regra que o
+    esquema não tem é ignorada pelo core e dita no Studio — nunca cria uma regra (isso é a camada 2)."""
+    model_config = ConfigDict(extra="forbid")
+
+    overrides: Dict[Annotated[str, Field(pattern=r"^[a-z][a-z0-9_.]{1,79}$")], DocVerificationRuleOverride] = Field(
+        default_factory=dict, max_length=MAX_RULE_OVERRIDES)
+
+
 class ProfileToolDocVerificationConfig(BaseModel):
     """tools.config.verify_documents — Verificação Documental.
 
@@ -98,7 +147,10 @@ class ProfileToolDocVerificationConfig(BaseModel):
     - deployment: vazio = o modelo do agente do container (não segue a variante).
     - labels: os nomes do módulo no ecrã desta variante (vazio = os do esquema).
     - document_templates: os moldes do cliente dos documentos finais, um por esquema e documento (vazio = o molde
-      base da Genesis em todos). Voltar ao base = tirar a referência."""
+      base da Genesis em todos). Voltar ao base = tirar a referência.
+    - rules: as regras que o cliente mudou, por esquema base («fem»; a versão fixa «fem@2026.10» usa as do «fem»).
+      Vazio = as regras do esquema tal como vêm do core. Cada candidatura fica com as regras do dia em que é
+      processada pela 1.ª vez — mudar isto não mexe nas já analisadas (só com «Aplicar as regras atuais»)."""
     model_config = ConfigDict(extra="allow")
 
     # A mesma gramática que o core aceita ao criar um caso (`create_case`). Texto
@@ -116,6 +168,10 @@ class ProfileToolDocVerificationConfig(BaseModel):
     # Os moldes do cliente dos documentos finais (3 Nov 2026). Lista, nunca `None`: o core lê `[]` como «o base».
     document_templates: List[DocVerificationDocumentTemplate] = Field(default_factory=list,
                                                                       max_length=MAX_DOCUMENT_TEMPLATES)
+    # As regras mudadas pelo cliente (6 Nov 2026, F2). Dicionário, nunca `None`: o blob gravado traz `{}` e o core lê
+    # «sem mudanças» (lição de 7 Out: um Optional novo aparece como `null` em toda a frota no save seguinte).
+    rules: Dict[Annotated[str, Field(pattern=r"^[a-z0-9][a-z0-9_-]{0,31}$")], DocVerificationSchemeRules] = Field(
+        default_factory=dict, max_length=20)
 
     @field_validator("document_templates")
     @classmethod

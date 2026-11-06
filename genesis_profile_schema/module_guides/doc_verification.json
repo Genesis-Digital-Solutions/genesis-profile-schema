@@ -75,6 +75,9 @@
       "essential": [
         "tools.config.verify_documents.scheme"
       ],
+      "advanced": [
+        "tools.config.verify_documents.rules"
+      ],
       "done_if": [
         "tools.config.verify_documents.scheme"
       ],
