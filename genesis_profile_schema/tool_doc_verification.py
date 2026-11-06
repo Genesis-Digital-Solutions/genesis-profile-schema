@@ -27,9 +27,10 @@ from pydantic import AfterValidator, BaseModel, ConfigDict, Field, StrictFloat, 
 
 from .field_definition import I18nHelp
 
-__all__ = ["DocVerificationDocumentTemplate", "DocVerificationLabels", "DocVerificationRuleOverride",
-           "DocVerificationSchemeRules", "ProfileToolDocVerificationConfig", "MAX_LABEL_TEXT", "MAX_DOCUMENT_TEMPLATES",
-           "MAX_RULE_OVERRIDES", "MAX_RULE_LIST_ITEMS"]
+__all__ = ["DocVerificationAddedRule", "DocVerificationDocumentTemplate", "DocVerificationLabels",
+           "DocVerificationRuleOverride", "DocVerificationRuleSentence", "DocVerificationSchemeRules",
+           "ProfileToolDocVerificationConfig", "MAX_LABEL_TEXT", "MAX_DOCUMENT_TEMPLATES", "MAX_RULE_OVERRIDES",
+           "MAX_RULE_LIST_ITEMS", "MAX_ADDED_RULES"]
 
 #: Um nome de ecrã (título, nome do caso, exemplo): curto. A frase do subtítulo cabe nisto também.
 MAX_LABEL_TEXT = 200
@@ -123,13 +124,67 @@ class DocVerificationRuleOverride(BaseModel):
     source: Optional[str] = Field(default=None, min_length=1, max_length=400)
 
 
+#: Regras que o cliente acrescenta a um esquema (F4, 7 Nov 2026). O FEM tem 21 de origem; com folga.
+MAX_ADDED_RULES = 50
+#: A frase de uma regra (com `{parâmetros}`): uma linha de ecrã, com folga para listas citadas.
+MAX_RULE_SENTENCE = 400
+
+
+class DocVerificationRuleSentence(BaseModel):
+    """A frase de uma regra acrescentada, nas duas línguas, com os valores entre chavetas («A data do dano tem de
+    estar entre {from} e {to}»). As duas são obrigatórias (o agente do Studio traduz)."""
+    model_config = ConfigDict(extra="forbid")
+
+    pt: str = Field(min_length=1, max_length=MAX_RULE_SENTENCE)
+    en: str = Field(min_length=1, max_length=MAX_RULE_SENTENCE)
+
+
+class DocVerificationAddedRule(BaseModel):
+    """Uma regra que o cliente ACRESCENTA ao esquema (F4 das regras configuráveis, 7 Nov 2026; camada 2): uma
+    instância nova de um tipo de verificação que o core já tem (`check`), sem IA — por linha do formulário (`row`) ou
+    das fotografias (`photo`); os cruzamentos com os documentos ficam de fora (custam IA por candidatura).
+    - id: `c.` + nome curto, único no esquema (nunca colide com as do esquema);
+    - table: a tabela do formulário (regras por linha);
+    - doc_types: os tipos do índice de documentos que são fotografias (regras de fotografias);
+    - params: onde ler (colunas) e os valores; o core confere-os com o mapa do formulário e o tipo de verificação;
+    - sentence/source/criterion/severity/enabled: como nas regras do esquema.
+    O schema só valida a forma: uma regra que o core não consegue montar é ignorada e dita no Studio."""
+    model_config = ConfigDict(extra="forbid")
+
+    id: str = Field(pattern=r"^c\.[a-z0-9][a-z0-9_.]{0,59}$")
+    layer: Literal["row", "photo"]
+    check: str = Field(pattern=r"^[a-z][a-z0-9_]{1,39}$")
+    table: Optional[str] = Field(default=None, pattern=r"^[a-z][a-z0-9_]{0,39}$")
+    doc_types: List[Annotated[StrictStr, Field(min_length=1, max_length=MAX_RULE_TEXT)]] = Field(
+        default_factory=list, max_length=20)
+    params: Dict[Annotated[str, Field(pattern=r"^[a-z][a-z0-9_]{0,39}$")], RuleParamValue] = Field(
+        default_factory=dict, max_length=20)
+    sentence: DocVerificationRuleSentence
+    source: str = Field(min_length=1, max_length=400)
+    criterion: str = Field(pattern=r"^[a-z][a-z0-9_]{0,39}$")
+    severity: Literal["critical", "attention"] = "attention"
+    enabled: bool = True
+
+
 class DocVerificationSchemeRules(BaseModel):
-    """As regras mudadas de UM esquema, por id da regra (`fem.territorio`, `fem.foto.local`…). Uma regra que o
-    esquema não tem é ignorada pelo core e dita no Studio — nunca cria uma regra (isso é a camada 2)."""
+    """As regras de UM esquema que o cliente mudou (`overrides`, por id da regra do esquema: `fem.territorio`,
+    `fem.foto.local`…; uma que o esquema não tem é ignorada pelo core e dita no Studio) e as que acrescentou (`added`,
+    F4). `added` é lista, nunca `None` (o blob gravado traz `[]`)."""
     model_config = ConfigDict(extra="forbid")
 
     overrides: Dict[Annotated[str, Field(pattern=r"^[a-z][a-z0-9_.]{1,79}$")], DocVerificationRuleOverride] = Field(
         default_factory=dict, max_length=MAX_RULE_OVERRIDES)
+    added: List[DocVerificationAddedRule] = Field(default_factory=list, max_length=MAX_ADDED_RULES)
+
+    @field_validator("added")
+    @classmethod
+    def _unique_ids(cls, rules: List[DocVerificationAddedRule]) -> List[DocVerificationAddedRule]:
+        seen = set()
+        for r in rules:
+            if r.id in seen:
+                raise ValueError(f"duas regras acrescentadas com o id {r.id!r}")
+            seen.add(r.id)
+        return rules
 
 
 class ProfileToolDocVerificationConfig(BaseModel):

@@ -24,7 +24,7 @@ from genesis_profile_schema.client_profile_schema import (
     _DEFAULT_TOOLS_ENABLED,
     _KNOWN_TOOL_CONFIG_MODELS,
 )
-from genesis_profile_schema.tool_doc_verification import ProfileToolDocVerificationConfig
+from genesis_profile_schema.tool_doc_verification import DocVerificationSchemeRules, ProfileToolDocVerificationConfig
 
 P = "tools.config.verify_documents"
 
@@ -221,3 +221,55 @@ def test_regras_invalidas_recusadas(bad):
 def test_regras_tem_texto_nas_duas_linguas():
     for locale in ui.LOCALES:
         assert ui.label_of(R, locale)
+
+
+# ── regras acrescentadas pelo cliente (7 Nov 2026, F4) ───────────────────────
+
+def _added(**kw):
+    r = {"id": "c.obra_ate_dezembro", "layer": "row", "check": "date_before", "table": "execucao",
+         "params": {"column": "fim_previsto", "before": "2026-12-31"},
+         "sentence": {"pt": "A obra acaba antes de {before}.", "en": "Works end before {before}."},
+         "source": "Regulamento X, art. 9.º", "criterion": "contratacao"}
+    r.update(kw)
+    return r
+
+
+def test_regras_acrescentadas_validas_e_lista_por_omissao():
+    ok = {"fem": {"overrides": {}, "added": [_added(), _added(id="c.foto_ate", layer="photo",
+                                                                check="photo_date_window", table=None,
+                                                                doc_types=["Fotografias"],
+                                                                params={"not_before": "2026-01-27"},
+                                                                severity="critical", enabled=False)]}}
+    _rules(ok)
+    m = DocVerificationSchemeRules.model_validate({"overrides": {}})
+    assert m.added == [] and m.model_dump()["added"] == []                      # nunca `null` no blob
+    r = DocVerificationSchemeRules.model_validate({"added": [_added()]}).added[0]
+    assert (r.severity, r.enabled, r.doc_types) == ("attention", True, [])
+
+
+@pytest.mark.parametrize("bad", [
+    _added(id="fem.x"),                                                          # sem o prefixo do cliente
+    _added(id="c."),                                                             # sem nome
+    _added(layer="doc"),                                                         # cruzamentos ficam de fora (IA)
+    _added(check="Bad Check"),
+    _added(table="Danos!"),
+    _added(sentence={"pt": "só pt"}),                                            # as duas línguas
+    _added(sentence={"pt": "a" * 401, "en": "b"}),
+    _added(source=""),
+    _added(criterion="Nexo Causal"),
+    _added(severity="info"),
+    _added(params={"x": {"nested": 1}}),
+    _added(extra="não"),                                                         # só os campos previstos
+    _added(doc_types=[""]),
+])
+def test_regra_acrescentada_invalida_recusada(bad):
+    with pytest.raises(Exception):
+        _rules({"fem": {"added": [bad]}})
+
+
+def test_regras_acrescentadas_ids_unicos_e_teto():
+    with pytest.raises(Exception):
+        _rules({"fem": {"added": [_added(), _added()]}})
+    from genesis_profile_schema.tool_doc_verification import MAX_ADDED_RULES
+    with pytest.raises(Exception):
+        _rules({"fem": {"added": [_added(id=f"c.r{i}") for i in range(MAX_ADDED_RULES + 1)]}})
