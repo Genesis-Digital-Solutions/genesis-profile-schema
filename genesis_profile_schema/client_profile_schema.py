@@ -1525,6 +1525,12 @@ class ProfileVoices(BaseModel):
     max_tts_chars: int = Field(default=8000, ge=0)   # MAX_TTS_CHARS
     phonetic_map: Dict[str, str] = Field(default_factory=dict)  # TTS_PHONETIC_MAP
 
+    @field_validator("by_locale")
+    @classmethod
+    def _by_locale_sao_vozes(cls, v):
+        from genesis_profile_schema.voice_names import check_voice_map
+        return check_voice_map(v)
+
 
 # ─────────────────────────────────────────────────────────────────────────────
 # Sub-modelos: lado frontend (consumido pelo endpoint /client-config)
@@ -2128,6 +2134,13 @@ class ProfileFrontend(BaseModel):
         "en": "en-US-Ava:DragonHDLatestNeural",
         "es": "es-ES-ElviraNeural",
     })
+
+    @field_validator("ttsVoiceMap")
+    @classmethod
+    def _tts_voice_map_sao_vozes(cls, v):
+        # Os valores entram no SSML do core e do fecore (voice_names.py, v0.1.159).
+        from genesis_profile_schema.voice_names import check_voice_map
+        return check_voice_map(v)
     # Lista de modelos do LLM picker — só relevante quando enableLlmSelector=true.
     # Alimentada no editor pelos modelos realmente deployed no OpenAI do cliente.
     llmModels: List[str] = Field(default_factory=list)
