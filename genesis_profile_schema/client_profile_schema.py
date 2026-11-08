@@ -1467,6 +1467,19 @@ class ProfileMCPServer(BaseModel):
         dados = handler(self)
         if isinstance(dados, dict) and not (self.signing and self.signing.enabled):
             dados.pop("signing", None)
+        # O mesmo para os três campos com «ordem de rollout» que o `MCPServerConfig` do
+        # core já tira do dump dele (v0.1.161, 8 Nov 2026): MEDIDO na Indaqua dev — uma
+        # gravação pelo `/admin/profile/save` (aprovação do Studio) escreveu
+        # `"chat": true, "read_tools": [], "trusted_data": false` num servidor que não os
+        # tinha. Mesmo comportamento hoje (são os defaults), mas um core anterior a
+        # `trusted_data` (v0.1.158) recusava a config MCP inteira numa promoção.
+        if isinstance(dados, dict):
+            if self.chat:
+                dados.pop("chat", None)
+            if not self.read_tools:
+                dados.pop("read_tools", None)
+            if self.trusted_data is not True:
+                dados.pop("trusted_data", None)
         return dados
 
 
