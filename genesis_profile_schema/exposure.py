@@ -529,7 +529,8 @@ EXPOSURE: Dict[str, str] = {
     "audio.municipal_minutes.members.role": _W,
     "audio.municipal_minutes.members.party": _W,
     "audio.municipal_minutes.members.substitute": _W,
-    # 2 Nov 2026 (F2.4): o cliente mantém os emails do órgão no GAIBO (PII; nunca vai ao prompt)
+    # 2 Nov 2026 (F2.4): previsto para o cliente no GAIBO (PII; nunca vai ao prompt); lá negado
+    # (D-f) até à decisão 7 do ANALISE_cliente_no_gaibo.md
     "audio.municipal_minutes.members.email": _W,
     # v0.1.146 (F4): a permilagem/o capital de cada membro é do cliente (título constitutivo, registo)
     "audio.municipal_minutes.members.weight": _W,
