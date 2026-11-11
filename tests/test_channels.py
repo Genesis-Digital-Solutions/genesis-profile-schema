@@ -53,11 +53,6 @@ def test_forma_completa_e_dump_com_os_nomes_do_perfil():
     {"field": "subject", "op": "in_list", "value": ["ok", ""]},
     {"field": "subject", "op": "equals", "value": ""},
     {"field": "subject", "op": "equals", "value": "x" * 201},
-    {"field": "body", "op": "regex", "value": "(abc"},
-    {"field": "body", "op": "regex", "value": "abc"},                  # regex nunca no corpo
-    {"field": "subject", "op": "regex", "value": "(a+)+$"},            # quantificador aninhado
-    {"field": "subject", "op": "regex", "value": r"(\w+\s?)*x"},
-    {"field": "subject", "op": "regex", "value": "(a)" + chr(92) + "1"},  # referência para trás
     {"field": "attachments.size", "op": "gte", "value": float("inf")},
     {"field": "attachments.size", "op": "gte", "value": float("nan")},
     {"field": "subject", "op": "equals", "value": "x", "extra": 1},
@@ -125,9 +120,14 @@ def test_fonte_guardada_sem_espacos():
     assert ch.inputs[0].ingest_source == "caixa"
 
 
-@pytest.mark.parametrize("pat", [r"(?:x|y)+z", r"candidatura\s+fem", r"^RE:", r"(ab)+"])
-def test_regex_seguros_passam(pat):
-    ChannelCondition.model_validate({"field": "subject", "op": "regex", "value": pat})
+@pytest.mark.parametrize("cond", [
+    {"field": "from.domain", "op": "contains", "value": "exemplo.pt"},     # endereços: nunca substring
+    {"field": "to", "op": "contains", "value": "x"},
+    {"field": "subject", "op": "regex", "value": "x"},                    # sem regex (ReDoS)
+])
+def test_endereco_sem_substring_e_sem_regex(cond):
+    with pytest.raises(ValidationError):
+        ChannelCondition.model_validate(cond)
 
 
 def test_literais_batem_com_as_constantes():
@@ -137,4 +137,4 @@ def test_literais_batem_com_as_constantes():
     assert set(get_args(C.RouteField)) == set(C.ROUTE_FIELDS)
     assert set(get_args(C.RouteOp)) == set(C.OPS)
     assert set(get_args(C.RouteTarget.model_fields["module"].annotation)) == set(C.MODULES)
-    assert set(C.LIVE_CHANNELS) <= set(C.CHANNEL_KINDS) and set(C.REGEX_FIELDS) <= set(C.ROUTE_FIELDS)
+    assert set(C.LIVE_CHANNELS) <= set(C.CHANNEL_KINDS)

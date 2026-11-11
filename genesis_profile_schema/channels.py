@@ -25,13 +25,19 @@ com `field` e `op` FECHADOS (campo ou operador desconhecido = erro de schema,
 nunca silêncio). Como o core avalia (`core/platform/inbound/routing.py`):
   • texto (`subject`, `body`, `attachments.name`, `attachments.mime`,
     `classifier.label`, `content.language`, `front`): sem maiúsculas nem
-    acentos; `from.address`, `from.domain` e `to` comparam o endereço/domínio
-    EXATO (só minúsculas), como o `accept_filter`.
+    acentos.
+  • endereços (`from.address`, `from.domain`, `to`): só `equals`, `in_list` e
+    `exists`, com o endereço/domínio EXATO (só minúsculas), como o
+    `accept_filter` — nunca substring («exemplo.pt» não casa
+    «exemplo.pt.atacante.com»); `from.address` aceita um domínio («@d»).
   • listas (`to`, `attachments.*`): basta UM elemento bater.
   • `exists` (value true/false): o campo tem/não tem valor.
-  • `regex`: procura (não âncora), sem maiúsculas; padrão até 200 caracteres
-    — configuração da Genesis (exposure internal), nunca do cliente.
   • `time.hour`: a hora de receção no fuso do cliente (0–23).
+  • SEM `regex` (revisão de 11 Nov 2026): o padrão seria avaliado sobre texto
+    de quem envia, o `re` do Python não tem tempo limite e nenhuma lista de
+    padrões proibidos fecha o ReDoS (alternâncias como `(a|aa)+`, repetições encadeadas…) — um só email
+    parava o job de ingestão do cliente. Volta quando houver um motor com
+    tempo limite.
 `classifier.label` só existe quando a fonte tem classificador.
 
 Tudo `internal` no primeiro bump. O GAIBO não conhece a área: o handoff
@@ -49,11 +55,6 @@ de uma versão nova no perfil antes de o core (e o GAIBO) terem o pin; o Studio
 só escreve o que o core alvo anuncia; promoção e clone conferem o pin do
 destino. O `routing.parse` do core, ao ler, falha à vista e fica o
 encaminhamento de hoje.
-
-`regex`: configuração da Genesis, mas avaliada sobre texto de quem envia (o
-atacante) — o Python não tem timeout no `re`. Por isso: nunca no `body` (texto
-longo), padrão até 200 caracteres e SEM quantificadores aninhados nem
-referências para trás (`(a+)+`, `(a*)*`, `\\1`) — recusados aqui (`dangerous_regex`).
 """
 
 from __future__ import annotations
@@ -73,9 +74,9 @@ MODULES: Tuple[str, ...] = ("queue",)
 
 #: Campo → tipo. Fechado.
 ROUTE_FIELDS: Dict[str, str] = {
-    "from.address": "text",
-    "from.domain": "text",
-    "to": "text",
+    "from.address": "address",
+    "from.domain": "address",
+    "to": "address",
     "subject": "text",
     "body": "text",
     "attachments.name": "text",
@@ -89,33 +90,17 @@ ROUTE_FIELDS: Dict[str, str] = {
 }
 #: Operadores permitidos por tipo de campo.
 OPS_BY_KIND: Dict[str, Tuple[str, ...]] = {
-    "text": ("equals", "in_list", "contains", "regex", "exists"),
+    "text": ("equals", "in_list", "contains", "exists"),
+    "address": ("equals", "in_list", "exists"),
     "number": ("equals", "gte", "lte", "exists"),
     "bool": ("equals", "exists"),
 }
-OPS: Tuple[str, ...] = ("equals", "in_list", "contains", "regex", "gte", "lte", "exists")
+OPS: Tuple[str, ...] = ("equals", "in_list", "contains", "gte", "lte", "exists")
 
 #: Ids de entradas e rotas. Aceita os ids das fontes do Studio (maiúsculas,
 #: hífen, sublinhado, até 64 — sem entradas declaradas, o id da fonte é o da
 #: entrada). Avaliado com `fullmatch` (um `$` aceitava uma quebra de linha no fim).
 ID_RE = re.compile(r"[A-Za-z0-9][A-Za-z0-9_-]{0,63}")
-#: Quantificador aplicado a um grupo que já tem um quantificador lá dentro, ou
-#: uma referência para trás — os padrões de ReDoS clássicos.
-_NESTED_QUANT_RE = re.compile(r"\((?:[^()\\]|\\.)*[+*?}](?:[^()\\]|\\.)*\)\s*[+*{?]")
-_BACKREF_RE = re.compile(r"\\[1-9]|\(\?P=")
-#: O início de um grupo especial (`(?:`, `(?=`, `(?!`, `(?<=`, `(?<!`,
-#: `(?P<nome>`) — o «?» é sintaxe do grupo, não um quantificador.
-_GROUP_PREFIX_RE = re.compile(r"\(\?(?:[:=!]|<[=!]|P<\w+>)")
-
-
-def dangerous_regex(pattern: str) -> bool:
-    """Quantificador sobre um grupo já quantificado, ou referência para trás."""
-    if _BACKREF_RE.search(pattern):
-        return True
-    return _NESTED_QUANT_RE.search(_GROUP_PREFIX_RE.sub("(", pattern)) is not None
-#: Campos onde o `regex` é permitido (texto curto).
-REGEX_FIELDS: Tuple[str, ...] = ("from.address", "from.domain", "to", "subject", "attachments.name",
-                                 "attachments.mime", "classifier.label", "content.language", "front")
 MAX_INPUTS = 50
 MAX_ROUTES = 100
 MAX_CONDITIONS = 20
@@ -129,7 +114,7 @@ ChannelKind = Literal["email", "sms", "whatsapp", "voice", "teams", "http", "web
 RouteField = Literal["from.address", "from.domain", "to", "subject", "body", "attachments.name",
                      "attachments.mime", "attachments.size", "classifier.label", "thread.is_reply",
                      "content.language", "time.hour", "front"]
-RouteOp = Literal["equals", "in_list", "contains", "regex", "gte", "lte", "exists"]
+RouteOp = Literal["equals", "in_list", "contains", "gte", "lte", "exists"]
 
 
 def _check_id(v: str, what: str) -> str:
@@ -178,18 +163,9 @@ class ChannelCondition(BaseModel):
         elif kind == "bool":
             if not isinstance(v, bool):
                 raise ValueError(f"«{self.field}» compara com true ou false")
-        else:                                           # texto: equals, contains, regex
+        else:                                           # texto/endereço: equals, contains
             if not isinstance(v, str) or not v.strip() or len(v) > MAX_TEXT_VALUE:
                 raise ValueError(f"«{self.op}» leva um texto não vazio até {MAX_TEXT_VALUE} caracteres")
-            if self.op == "regex":
-                if self.field not in REGEX_FIELDS:
-                    raise ValueError(f"«regex» não serve o campo «{self.field}» (texto longo)")
-                if dangerous_regex(v):
-                    raise ValueError("«regex» sem quantificadores aninhados nem referências para trás")
-                try:
-                    re.compile(v)
-                except re.error as e:
-                    raise ValueError(f"expressão regular inválida: {e}") from None
         return self
 
 
@@ -338,6 +314,6 @@ class ProfileChannels(BaseModel):
         return self
 
 
-__all__ = ["ProfileChannels", "dangerous_regex", "ChannelInput", "ChannelRoute", "RouteWhen", "RouteTarget",
+__all__ = ["ProfileChannels", "ChannelInput", "ChannelRoute", "RouteWhen", "RouteTarget",
            "ChannelCondition", "CHANNEL_KINDS", "LIVE_CHANNELS", "MODULES", "ROUTE_FIELDS",
-           "OPS_BY_KIND", "OPS", "ID_RE", "REGEX_FIELDS", "MAX_INPUTS", "MAX_ROUTES", "MAX_CONDITIONS"]
+           "OPS_BY_KIND", "OPS", "ID_RE", "MAX_INPUTS", "MAX_ROUTES", "MAX_CONDITIONS"]
