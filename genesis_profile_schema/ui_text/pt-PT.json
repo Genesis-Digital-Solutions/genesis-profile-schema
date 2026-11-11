@@ -777,26 +777,76 @@
       "label": "Nome da rota"
     },
     "channels.routes.when.all.field": {
-      "label": "Campo (todas)"
+      "label": "Campo (todas)",
+      "options": {
+        "from.address": "Remetente (endereço)",
+        "from.domain": "Domínio do remetente",
+        "to": "Destinatário",
+        "subject": "Assunto",
+        "body": "Corpo",
+        "attachments.name": "Nome do anexo",
+        "attachments.mime": "Tipo do anexo",
+        "attachments.size": "Tamanho do anexo",
+        "classifier.label": "Rótulo do classificador",
+        "thread.is_reply": "É uma resposta",
+        "content.language": "Língua",
+        "time.hour": "Hora de receção",
+        "front": "Frente"
+      }
     },
     "channels.routes.when.all.op": {
-      "label": "Operador (todas)"
+      "label": "Operador (todas)",
+      "options": {
+        "equals": "é igual a",
+        "in_list": "está na lista",
+        "contains": "contém",
+        "gte": "maior ou igual a",
+        "lte": "menor ou igual a",
+        "exists": "existe"
+      }
     },
     "channels.routes.when.all.value": {
       "label": "Valor (todas)"
     },
     "channels.routes.when.any.field": {
-      "label": "Campo (pelo menos uma)"
+      "label": "Campo (pelo menos uma)",
+      "options": {
+        "from.address": "Remetente (endereço)",
+        "from.domain": "Domínio do remetente",
+        "to": "Destinatário",
+        "subject": "Assunto",
+        "body": "Corpo",
+        "attachments.name": "Nome do anexo",
+        "attachments.mime": "Tipo do anexo",
+        "attachments.size": "Tamanho do anexo",
+        "classifier.label": "Rótulo do classificador",
+        "thread.is_reply": "É uma resposta",
+        "content.language": "Língua",
+        "time.hour": "Hora de receção",
+        "front": "Frente"
+      }
     },
     "channels.routes.when.any.op": {
-      "label": "Operador (pelo menos uma)"
+      "label": "Operador (pelo menos uma)",
+      "options": {
+        "equals": "é igual a",
+        "in_list": "está na lista",
+        "contains": "contém",
+        "gte": "maior ou igual a",
+        "lte": "menor ou igual a",
+        "exists": "existe"
+      }
     },
     "channels.routes.when.any.value": {
       "label": "Valor (pelo menos uma)"
     },
     "channels.routes.to.module": {
       "label": "Módulo de destino",
-      "help": "Hoje: a fila de revisão."
+      "help": "A fila de revisão (cria um pedido) ou a Verificação Documental (abre um caso por reclamar, com as peças em quarentena).",
+      "options": {
+        "queue": "Fila de revisão",
+        "doc_verification": "Verificação Documental"
+      }
     },
     "channels.routes.to.queue": {
       "label": "Fila de destino"
@@ -3227,6 +3277,31 @@
     "audio.municipal_minutes.members.weight": {
       "label": "Peso do voto (permilagem ou capital)",
       "help": "Só nos órgãos que votam por peso: a permilagem da fração (condomínio) ou o valor nominal da quota ou das ações (sociedade). Vem do título ou do registo, nunca se inventa; vazio = contagem a confirmar."
+    },
+    "channels.routes.to.front": {
+      "label": "Frente do caso",
+      "help": "Em que frente nasce o caso da Verificação Documental (e com que esquema). Vazio = a frente dona da caixa."
+    },
+    "channels.routes.to.join.by": {
+      "label": "Juntar ao caso aberto por",
+      "help": "Quando um email novo entra num caso ainda por reclamar em vez de abrir outro: a referência do recibo no assunto (o mais fiável), o mesmo fio de email ou o mesmo remetente.",
+      "options": {
+        "reference": "Referência do recibo no assunto",
+        "thread": "Mesmo fio de email",
+        "sender": "Mesmo remetente"
+      }
+    },
+    "channels.routes.to.join.window_days": {
+      "label": "Janela de junção (dias)",
+      "help": "Só junta a casos abertos há menos destes dias (1 a 90)."
+    },
+    "channels.routes.to.receipt.enabled": {
+      "label": "Enviar recibo ao remetente",
+      "help": "Responde com o número do caso e as peças recebidas — a prova de entrega. Só a remetentes com email autenticado (DMARC), nunca a respostas automáticas."
+    },
+    "channels.routes.to.receipt.list_refused": {
+      "label": "Dizer no recibo as peças recusadas",
+      "help": "Lista as peças que não entraram (marcas de classificação, macros, tamanho) e porquê, para a pessoa as reenviar."
     }
   }
 }

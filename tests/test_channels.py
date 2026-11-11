@@ -104,10 +104,14 @@ def test_sem_entradas_declaradas_as_rotas_apontam_para_fontes():
     assert ch.routes[0].inputs == ["caixa_geral"]
 
 
-def test_tudo_internal_no_primeiro_bump():
-    for path in ("channels.inputs.id", "channels.routes.when.all.value", "channels.routes.to.queue",
-                 "channels.routes.enabled"):
+def test_entradas_da_genesis_rotas_do_cliente():
+    for path in ("channels.inputs.id", "channels.inputs.ingest_source", "channels.inputs.enabled"):
         assert exposure_of(path) == "internal"
+    for path in ("channels.routes.when.all.value", "channels.routes.to.queue", "channels.routes.enabled",
+                 "channels.routes.to.module", "channels.routes.to.front", "channels.routes.to.join.by",
+                 "channels.routes.to.join.window_days", "channels.routes.to.receipt.enabled",
+                 "channels.routes.to.receipt.list_refused", "channels.routes.id", "channels.routes.inputs"):
+        assert exposure_of(path) == "client_write"
 
 
 def test_ids_das_fontes_do_studio_servem_de_entrada():
@@ -130,6 +134,50 @@ def test_endereco_sem_substring_e_sem_regex(cond):
         ChannelCondition.model_validate(cond)
 
 
+def test_destino_verificacao_documental():
+    ch = ProfileChannels.model_validate({"routes": [{
+        "id": "cand", "when": {"all": [{"field": "subject", "op": "contains", "value": "candidatura"}]},
+        "to": {"module": "doc_verification", "front": " Candidaturas ",
+               "join": {"by": ["reference", "thread"], "window_days": 14},
+               "receipt": {"enabled": True}}}]})
+    t = ch.routes[0].to
+    assert t.module == "doc_verification" and t.front == "candidaturas" and t.queue is None
+    assert t.join.by == ["reference", "thread"] and t.join.window_days == 14
+    assert t.receipt.enabled and t.receipt.list_refused
+    # Por omissão: frente da caixa, junção pela referência em 7 dias, sem recibo.
+    t = ProfileChannels.model_validate({"routes": [{"id": "c", "to": {"module": "doc_verification"}}]}).routes[0].to
+    assert t.front is None and t.join is None and t.receipt is None
+    assert C_JOIN().by == ["reference"] and C_JOIN().window_days == 7
+
+
+def C_JOIN():
+    from genesis_profile_schema.channels import CaseJoin
+    return CaseJoin()
+
+
+@pytest.mark.parametrize("to", [
+    {"module": "doc_verification", "queue": "x"},                       # VD não leva fila
+    {"module": "queue"},                                                 # fila sem fila
+    {"module": "queue", "queue": "x", "front": "cand"},                  # frente só na VD
+    {"module": "queue", "queue": "x", "receipt": {"enabled": True}},     # recibo só na VD
+    {"module": "doc_verification", "front": "Não Slug!"},
+    {"module": "doc_verification", "join": {"by": ["nif"]}},             # critério fora da lista
+    {"module": "doc_verification", "join": {"by": ["sender", "sender"]}},
+    {"module": "doc_verification", "join": {"window_days": 0}},
+    {"module": "doc_verification", "join": {"window_days": 91}},
+    {"module": "doc_verification", "receipt": {"enabled": True, "text": "x"}},  # campo desconhecido
+    {"module": "doc_verification", "join": {"by": []}},                  # junção sem critério
+    {"module": "doc_verification", "join": {"window_days": True}},       # inteiro estrito
+    {"module": "doc_verification", "join": {"window_days": "7"}},
+    {"module": "doc_verification", "front": "-cand"},                    # slug começa por letra/dígito
+    {"module": "queue", "queue": "x", "join": {"by": ["reference"]}},    # junção só na VD
+    {"module": "outro"},
+])
+def test_destinos_invalidos(to):
+    with pytest.raises(ValidationError):
+        ProfileChannels.model_validate({"routes": [{"id": "r", "to": to}]})
+
+
 def test_literais_batem_com_as_constantes():
     from typing import get_args
     from genesis_profile_schema import channels as C
@@ -137,4 +185,25 @@ def test_literais_batem_com_as_constantes():
     assert set(get_args(C.RouteField)) == set(C.ROUTE_FIELDS)
     assert set(get_args(C.RouteOp)) == set(C.OPS)
     assert set(get_args(C.RouteTarget.model_fields["module"].annotation)) == set(C.MODULES)
+    by_args = get_args(get_args(C.CaseJoin.model_fields["by"].annotation)[0])
+    assert set(by_args) == set(C.JOIN_BY)
     assert set(C.LIVE_CHANNELS) <= set(C.CHANNEL_KINDS)
+
+
+def test_rota_de_fila_grava_so_o_que_tinha():
+    # Um core com a v0.1.163 (`extra="forbid"`) recusava chaves `null` novas no `to`.
+    ch = ProfileChannels.model_validate({"routes": [{"id": "r", "to": {"module": "queue", "queue": "fila"}}]})
+    assert ch.model_dump(mode="json")["routes"][0]["to"] == {"module": "queue", "queue": "fila"}
+    vd = ProfileChannels.model_validate({"routes": [{"id": "v", "to": {"module": "doc_verification"}}]})
+    assert vd.model_dump(mode="json")["routes"][0]["to"] == {"module": "doc_verification"}
+    # E pelo perfil inteiro (`to_blob_dict`).
+    blob = ClientProfile.model_validate({"client_id": "x", "channels": {"routes": [
+        {"id": "r", "to": {"module": "queue", "queue": "fila"}}]}}).to_blob_dict()
+    assert blob["channels"]["routes"][0]["to"] == {"module": "queue", "queue": "fila"}
+
+
+def test_vd_com_fila_vazia_e_a_mensagem_certa():
+    ch = ProfileChannels.model_validate({"routes": [{"id": "v", "to": {"module": "doc_verification", "queue": ""}}]})
+    assert ch.routes[0].to.queue is None
+    with pytest.raises(ValidationError, match="precisa da fila"):
+        ProfileChannels.model_validate({"routes": [{"id": "r", "to": {"module": "queue", "queue": "  "}}]})

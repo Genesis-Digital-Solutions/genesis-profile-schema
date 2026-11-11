@@ -777,26 +777,76 @@
       "label": "Route name"
     },
     "channels.routes.when.all.field": {
-      "label": "Field (all)"
+      "label": "Field (all)",
+      "options": {
+        "from.address": "Sender (address)",
+        "from.domain": "Sender domain",
+        "to": "Recipient",
+        "subject": "Subject",
+        "body": "Body",
+        "attachments.name": "Attachment name",
+        "attachments.mime": "Attachment type",
+        "attachments.size": "Attachment size",
+        "classifier.label": "Classifier label",
+        "thread.is_reply": "Is a reply",
+        "content.language": "Language",
+        "time.hour": "Time received",
+        "front": "Front"
+      }
     },
     "channels.routes.when.all.op": {
-      "label": "Operator (all)"
+      "label": "Operator (all)",
+      "options": {
+        "equals": "equals",
+        "in_list": "is in the list",
+        "contains": "contains",
+        "gte": "greater than or equal to",
+        "lte": "less than or equal to",
+        "exists": "exists"
+      }
     },
     "channels.routes.when.all.value": {
       "label": "Value (all)"
     },
     "channels.routes.when.any.field": {
-      "label": "Field (at least one)"
+      "label": "Field (at least one)",
+      "options": {
+        "from.address": "Sender (address)",
+        "from.domain": "Sender domain",
+        "to": "Recipient",
+        "subject": "Subject",
+        "body": "Body",
+        "attachments.name": "Attachment name",
+        "attachments.mime": "Attachment type",
+        "attachments.size": "Attachment size",
+        "classifier.label": "Classifier label",
+        "thread.is_reply": "Is a reply",
+        "content.language": "Language",
+        "time.hour": "Time received",
+        "front": "Front"
+      }
     },
     "channels.routes.when.any.op": {
-      "label": "Operator (at least one)"
+      "label": "Operator (at least one)",
+      "options": {
+        "equals": "equals",
+        "in_list": "is in the list",
+        "contains": "contains",
+        "gte": "greater than or equal to",
+        "lte": "less than or equal to",
+        "exists": "exists"
+      }
     },
     "channels.routes.when.any.value": {
       "label": "Value (at least one)"
     },
     "channels.routes.to.module": {
       "label": "Target module",
-      "help": "Today: the review queue."
+      "help": "The review queue (creates a request) or Document Verification (opens a case to be claimed, with the documents in quarantine).",
+      "options": {
+        "queue": "Review queue",
+        "doc_verification": "Document Verification"
+      }
     },
     "channels.routes.to.queue": {
       "label": "Target queue"
@@ -3227,6 +3277,31 @@
     "audio.municipal_minutes.members.weight": {
       "label": "Vote weight (permillage or capital)",
       "help": "Only for bodies that vote by weight: the unit's permillage (condominium) or the nominal value of the quota or shares (company). It comes from the deed or register, never made up; empty = count to confirm."
+    },
+    "channels.routes.to.front": {
+      "label": "Case front",
+      "help": "Which front the Document Verification case is born in (and with which scheme). Empty = the front that owns the mailbox."
+    },
+    "channels.routes.to.join.by": {
+      "label": "Join an open case by",
+      "help": "When a new email goes into a case not yet claimed instead of opening another: the receipt reference in the subject (the most reliable), the same email thread or the same sender.",
+      "options": {
+        "reference": "Receipt reference in the subject",
+        "thread": "Same email thread",
+        "sender": "Same sender"
+      }
+    },
+    "channels.routes.to.join.window_days": {
+      "label": "Join window (days)",
+      "help": "Only joins cases opened less than this many days ago (1 to 90)."
+    },
+    "channels.routes.to.receipt.enabled": {
+      "label": "Send a receipt to the sender",
+      "help": "Replies with the case number and the documents received — the proof of submission. Only to senders with authenticated email (DMARC), never to automatic replies."
+    },
+    "channels.routes.to.receipt.list_refused": {
+      "label": "List refused documents in the receipt",
+      "help": "Lists the documents that did not get in (classification marks, macros, size) and why, so the person can send them again."
     }
   }
 }

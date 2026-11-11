@@ -667,27 +667,35 @@ EXPOSURE: Dict[str, str] = {
     "agentic.events.sources.enabled": _I,
     "agentic.events.sources.events": _I,
     "agentic.events.sources.ips": _I,
-    # channels.* (v0.1.163, carril C1a do pack dos canais): entradas e
-    # encaminhamento — tudo da Genesis no 1.º bump. O GAIBO não conhece a área
-    # (não está no AREA_FLOOR dele): o handoff vem ANTES de qualquer campo
-    # passar a client_write.
+    # channels.* (v0.1.163, carril C1a do pack dos canais): as ENTRADAS são da
+    # Genesis (caixas, fontes). As ROTAS passaram a client_write na v0.1.164
+    # (C1b, decisão do Bruno de 11 Nov 2026): condições, destino, frente,
+    # junção e recibo. ⚠️ A área deixa de ser inteiramente interna: o teste das
+    # áreas do GAIBO já não falha fechado no re-pin — o GAIBO põe `channels` no
+    # AREA_FLOOR e abre as rotas por exceção NO MESMO commit do re-pin
+    # (handoff codigo/HANDOFF_gaibo_channels_area_floor.md).
     "channels.inputs.id": _I,
     "channels.inputs.channel": _I,
     "channels.inputs.enabled": _I,
     "channels.inputs.ingest_source": _I,
     "channels.inputs.label": _I,
-    "channels.routes.id": _I,
-    "channels.routes.enabled": _I,
-    "channels.routes.inputs": _I,
-    "channels.routes.label": _I,
-    "channels.routes.when.all.field": _I,
-    "channels.routes.when.all.op": _I,
-    "channels.routes.when.all.value": _I,
-    "channels.routes.when.any.field": _I,
-    "channels.routes.when.any.op": _I,
-    "channels.routes.when.any.value": _I,
-    "channels.routes.to.module": _I,
-    "channels.routes.to.queue": _I,
+    "channels.routes.id": _W,
+    "channels.routes.enabled": _W,
+    "channels.routes.inputs": _W,
+    "channels.routes.label": _W,
+    "channels.routes.when.all.field": _W,
+    "channels.routes.when.all.op": _W,
+    "channels.routes.when.all.value": _W,
+    "channels.routes.when.any.field": _W,
+    "channels.routes.when.any.op": _W,
+    "channels.routes.when.any.value": _W,
+    "channels.routes.to.module": _W,
+    "channels.routes.to.queue": _W,
+    "channels.routes.to.front": _W,
+    "channels.routes.to.join.by": _W,
+    "channels.routes.to.join.window_days": _W,
+    "channels.routes.to.receipt.enabled": _W,
+    "channels.routes.to.receipt.list_refused": _W,
     "access.allowedGroups": _I,
     "access.allowedEmailDomains": _I,
     "access.allowedProviders": _I,

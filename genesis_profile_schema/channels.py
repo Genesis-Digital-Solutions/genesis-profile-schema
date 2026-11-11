@@ -40,11 +40,33 @@ nunca silêncio). Como o core avalia (`core/platform/inbound/routing.py`):
     tempo limite.
 `classifier.label` só existe quando a fonte tem classificador.
 
-Tudo `internal` no primeiro bump. O GAIBO não conhece a área: o handoff
-(`codigo/HANDOFF_gaibo_channels_area_floor.md`) pede para a pôr no
-`AREA_FLOOR` ANTES de o GAIBO subir o pin para esta versão (senão o teste das
-áreas internas dele fica vermelho — falha fechada) e muito antes de qualquer
-campo passar a `client_write`.
+Destinos (`to.module`, v0.1.164 — carril C1b): `queue` (pedido numa fila,
+`to.queue`) e `doc_verification` (abre um caso da Verificação Documental por
+reclamar, com as peças em quarentena — `to.front` = a frente onde o caso nasce;
+vazio/ausente = a frente dona da caixa; `to.join` = quando um email novo se junta
+a um caso ainda por reclamar em vez de abrir outro: `reference` (a referência do
+recibo no assunto — o critério fiável), `thread` (o mesmo fio de email) e
+`sender` (o mesmo remetente), dentro de `window_days`; `to.receipt` = o recibo ao
+remetente com o número do caso e as peças recebidas e, com `list_refused`, as
+recusadas e porquê). O recibo só sai pela resposta automática fixa da fonte
+(DMARC + anti-ciclo do core).
+
+Exposição: as ENTRADAS são da Genesis (`internal` — caixas, fontes, segredos);
+as ROTAS são do cliente (`client_write`, v0.1.164): condições, destino, frente,
+junção e recibo. ⚠️ GAIBO: com folhas `client_write`, `channels` deixa de ser uma
+área inteiramente interna e o teste das áreas do GAIBO JÁ NÃO falha fechado ao
+subir o pin — as rotas abrir-se-iam sozinhas. O re-pin do GAIBO para ≥ 0.1.164
+leva no MESMO commit a área `channels` no `AREA_FLOOR` (que fecha a escrita da
+área inteira) e as rotas abertas por exceção, por decisão (handoff
+`codigo/HANDOFF_gaibo_channels_area_floor.md`). `channels.routes.inputs` aponta
+para ids de entradas que o cliente não lista (são internas): o GAIBO precisa de
+outra fonte para os nomes.
+
+Gravação: o `RouteTarget` só grava os campos com valor (`queue` na fila;
+`front`/`join`/`receipt` na VD) — um perfil com rotas de fila escrito por esta
+versão relê-se num core com a v0.1.163 (`extra="forbid"` recusava as chaves
+`null` novas). Numa rota de fila, `join`/`receipt` (mesmo desligados) e `front`
+são recusados: o editor só os envia com `module: doc_verification`.
 
 ⚠️ ORDEM DE ROLLOUT (a mesma regra do `mcp.servers[].signing`): os modelos são
 `extra="forbid"` e a gramática é fechada, logo um core com ESTE pin recusa um
@@ -62,15 +84,22 @@ from __future__ import annotations
 import re
 from typing import Any, Dict, List, Literal, Optional, Tuple, Union
 
-from pydantic import BaseModel, ConfigDict, Field, field_validator, model_validator
+from pydantic import BaseModel, ConfigDict, Field, StrictInt, field_validator, model_serializer, model_validator
 
 #: Canais conhecidos (allowlist). O core só LÊ os de `LIVE_CHANNELS`; os outros
 #: validam (o Studio pode prepará-los desligados) e ficam inertes com aviso.
 CHANNEL_KINDS: Tuple[str, ...] = ("email", "sms", "whatsapp", "voice", "teams", "http",
                                   "web", "mcp", "a2a", "tester")
 LIVE_CHANNELS: Tuple[str, ...] = ("email",)
-#: Portas dos módulos (cresce um carril de cada vez: C1b junta `doc_verification`).
-MODULES: Tuple[str, ...] = ("queue",)
+#: Portas dos módulos (cresce um carril de cada vez: C1b juntou `doc_verification`).
+MODULES: Tuple[str, ...] = ("queue", "doc_verification")
+#: Como um email se junta a um caso ainda por reclamar (C1b). Fechado.
+JOIN_BY: Tuple[str, ...] = ("reference", "thread", "sender")
+JOIN_WINDOW_DAYS_DEFAULT = 7
+JOIN_WINDOW_DAYS_MAX = 90
+#: Slug de uma frente — o das frentes que o core cria (`core/handlers/profile_front_write.py`:
+#: começa por letra ou dígito, até 40). Avaliado com `fullmatch`.
+FRONT_RE = re.compile(r"[a-z0-9][a-z0-9-]{0,39}")
 
 #: Campo → tipo. Fechado.
 ROUTE_FIELDS: Dict[str, str] = {
@@ -186,20 +215,93 @@ class RouteWhen(BaseModel):
         return v
 
 
-class RouteTarget(BaseModel):
-    """A porta do módulo e o que ela precisa. C1a: só a fila."""
+class CaseJoin(BaseModel):
+    """Quando um email se junta a um caso da VD ainda por reclamar (C1b)."""
     model_config = ConfigDict(extra="forbid")
 
-    module: Literal["queue"]
-    queue: str
+    by: List[Literal["reference", "thread", "sender"]] = Field(default_factory=lambda: ["reference"])
+    window_days: StrictInt = JOIN_WINDOW_DAYS_DEFAULT
+
+    @field_validator("by")
+    @classmethod
+    def _by(cls, v: List[str]) -> List[str]:
+        if not v:
+            raise ValueError("pelo menos um critério de junção (sem junção = não enviar o bloco `join`)")
+        if len(v) != len(set(v)):
+            raise ValueError("critério de junção repetido")
+        return v
+
+    @field_validator("window_days")
+    @classmethod
+    def _window(cls, v: int) -> int:
+        if not 1 <= int(v) <= JOIN_WINDOW_DAYS_MAX:
+            raise ValueError(f"janela de junção entre 1 e {JOIN_WINDOW_DAYS_MAX} dias")
+        return int(v)
+
+
+class CaseReceipt(BaseModel):
+    """O recibo ao remetente com o número do caso (C1b). Desligado por omissão."""
+    model_config = ConfigDict(extra="forbid")
+
+    enabled: bool = False
+    list_refused: bool = True
+
+
+class RouteTarget(BaseModel):
+    """A porta do módulo e o que ela precisa: `queue` (a fila) ou
+    `doc_verification` (caso da VD por reclamar; frente, junção e recibo)."""
+    model_config = ConfigDict(extra="forbid")
+
+    module: Literal["queue", "doc_verification"]
+    queue: Optional[str] = None
+    front: Optional[str] = None
+    join: Optional[CaseJoin] = None
+    receipt: Optional[CaseReceipt] = None
 
     @field_validator("queue")
     @classmethod
-    def _queue(cls, v: str) -> str:
-        v = (v or "").strip()
-        if not v or len(v) > MAX_QUEUE:
-            raise ValueError(f"fila obrigatória (até {MAX_QUEUE} caracteres)")
-        return v
+    def _queue(cls, v: Optional[str]) -> Optional[str]:
+        if v is None:
+            return None
+        v = v.strip()
+        if len(v) > MAX_QUEUE:
+            raise ValueError(f"fila até {MAX_QUEUE} caracteres")
+        return v or None       # vazia = sem fila; o validador por módulo diz se faz falta
+
+    @field_validator("front")
+    @classmethod
+    def _front(cls, v: Optional[str]) -> Optional[str]:
+        if v is None:
+            return None
+        v = v.strip().lower()
+        if v and not FRONT_RE.fullmatch(v):
+            raise ValueError("frente inválida (slug: minúsculas, dígitos e hífen, até 40)")
+        return v or None
+
+    @model_validator(mode="after")
+    def _per_module(self) -> "RouteTarget":
+        if self.module == "queue":
+            if not self.queue:
+                raise ValueError("uma rota para a fila precisa da fila (to.queue)")
+            if self.front or self.join or self.receipt:
+                raise ValueError("frente, junção e recibo só servem a Verificação Documental")
+        else:
+            if self.queue:
+                raise ValueError("uma rota para a Verificação Documental não leva fila (to.queue)")
+        return self
+
+    @model_serializer(mode="wrap")
+    def _so_com_valor(self, handler):
+        # Só grava o que tem valor (revisão de 11 Nov 2026): o `to_blob_dict` gravava
+        # `"front": null, "join": null, "receipt": null` em TODAS as rotas de fila e um
+        # core com a v0.1.163 (`extra="forbid"`) recusava então o `channels` — e com ele
+        # o save do perfil inteiro — sem nenhum valor novo. O padrão do `signing` do MCP.
+        dados = handler(self)
+        if isinstance(dados, dict):
+            for k in ("queue", "front", "join", "receipt"):
+                if dados.get(k) is None:
+                    dados.pop(k, None)
+        return dados
 
 
 class ChannelInput(BaseModel):
@@ -315,5 +417,6 @@ class ProfileChannels(BaseModel):
 
 
 __all__ = ["ProfileChannels", "ChannelInput", "ChannelRoute", "RouteWhen", "RouteTarget",
-           "ChannelCondition", "CHANNEL_KINDS", "LIVE_CHANNELS", "MODULES", "ROUTE_FIELDS",
-           "OPS_BY_KIND", "OPS", "ID_RE", "MAX_INPUTS", "MAX_ROUTES", "MAX_CONDITIONS"]
+           "ChannelCondition", "CaseJoin", "CaseReceipt", "CHANNEL_KINDS", "LIVE_CHANNELS", "MODULES",
+           "ROUTE_FIELDS", "OPS_BY_KIND", "OPS", "ID_RE", "MAX_INPUTS", "MAX_ROUTES", "MAX_CONDITIONS",
+           "JOIN_BY", "JOIN_WINDOW_DAYS_DEFAULT", "JOIN_WINDOW_DAYS_MAX", "FRONT_RE"]
