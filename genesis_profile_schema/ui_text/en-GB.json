@@ -2054,6 +2054,10 @@
       "label": "Suggest follow-ups",
       "help": "Show suggested related questions after each answer."
     },
+    "retrieval.category_filter": {
+      "label": "Document category filter",
+      "help": "Lets the search narrow to the category (folder) the user names. Only for indexes whose categories are real folders; off by default."
+    },
     "retrieval.chars_per_chunk": {
       "label": "Characters per chunk"
     },

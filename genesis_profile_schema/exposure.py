@@ -689,12 +689,13 @@ EXPOSURE: Dict[str, str] = {
 
     # ──────────────────────────────────────────────────────────────────────
     # RAG — motor interno, INTEIRO fechado
-    # ⚠ AREA INTEIRA INTERNA. Sao 38 knobs do motor de RAG. Quatro deles
+    # ⚠ AREA INTEIRA INTERNA. Sao 39 knobs do motor de RAG. Quatro deles
     #    (min_score, refuse_pregen_min_score, weak_grounding_ceiling,
     #    faithfulness_overlap_skip) sao os pisos anti-invencao: baixa-los desliga,
     #    em silencio, a protecao que impede o bot de inventar. Nenhum cliente tem
     #    como raciocinar sobre isto, e o efeito de errar nao e visivel na UI.
     # ──────────────────────────────────────────────────────────────────────
+    "retrieval.category_filter": _I,
     "retrieval.chars_per_chunk": _I,
     "retrieval.context_include_source_fields": _I,
     "retrieval.context_top_k": _I,

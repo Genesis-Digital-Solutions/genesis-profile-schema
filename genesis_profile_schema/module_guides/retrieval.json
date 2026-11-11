@@ -26,12 +26,15 @@
       "essential": [
         "retrieval.search_index_names"
       ],
+      "advanced": [
+        "retrieval.category_filter"
+      ],
       "links": [
         "kb_tool"
       ],
       "when": {
-        "pt": "O botão «Detetar» lista os índices do cliente. Vazio: os do ambiente do assistente — mas numa variante Separada, vazio quer dizer sem conhecimento.",
-        "en": "The «Detect» button lists the client's indexes. Empty: the assistant environment's — but in a Separate variant, empty means no knowledge."
+        "pt": "O botão «Detetar» lista os índices do cliente. Vazio: os do ambiente do assistente — mas numa variante Separada, vazio quer dizer sem conhecimento. Avançado: o filtro por categoria só se liga quando as categorias do índice são pastas do cliente (ex.: internos, públicos); com categorias de tema, uma palavra comum na pergunta escondia quase todo o índice.",
+        "en": "The «Detect» button lists the client's indexes. Empty: the assistant environment's — but in a Separate variant, empty means no knowledge. Advanced: turn on the category filter only when the index categories are the client's folders (e.g. internal, public); with topic categories, a common word in the question hid almost the whole index."
       }
     },
     {

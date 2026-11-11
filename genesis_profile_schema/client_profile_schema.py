@@ -891,6 +891,14 @@ class ProfileRetrieval(BaseModel):
     # histórico). Opt-in por cliente. Tier/Entity vêm do classify_source
     # (mesma lógica do source_priority).
     context_include_source_fields: bool = False               # KB_CONTEXT_SOURCE_FIELDS
+    # Filtro da pesquisa por `document_category` (o core v1 chamava-lhe
+    # gatekeeper): o LLM pode restringir a KB a uma categoria e a menção de uma
+    # categoria na mensagem restringe-a sozinha. Feito para categorias que são
+    # PASTAS do cliente ("internos", "publicos", "2025"). False por omissão
+    # desde v0.1.162 (11 Nov 2026): na frota as categorias são rótulos de tema
+    # gerados por LLM na indexação e uma frase comum ("emprego público")
+    # reduzia a KB a 0,24% do índice. Ligar só em clientes com pastas a sério.
+    category_filter: bool = False
     min_score: float = Field(default=0.15, ge=0.0, le=1.0)     # KB_MIN_SCORE
     enable_rerank: bool = True                                  # KB_ENABLE_RERANK
     chars_per_chunk: int = Field(default=5000, ge=0)           # KB_CHARS_PER_CHUNK

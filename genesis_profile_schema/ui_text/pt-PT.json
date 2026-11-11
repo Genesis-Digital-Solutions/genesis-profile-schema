@@ -2054,6 +2054,10 @@
       "label": "Sugerir perguntas de seguimento",
       "help": "Mostra sugestões de perguntas relacionadas depois de cada resposta."
     },
+    "retrieval.category_filter": {
+      "label": "Filtro por categoria de documento",
+      "help": "Deixa a pesquisa restringir-se à categoria (pasta) que o utilizador nomeia. Só para índices cujas categorias são pastas a sério; desligado por omissão."
+    },
     "retrieval.chars_per_chunk": {
       "label": "Caracteres por excerto"
     },
