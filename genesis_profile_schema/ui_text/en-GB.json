@@ -745,6 +745,62 @@
       "label": "Networks the source calls from",
       "help": "Optional (e.g. 10.0.0.0/8). Empty: any network — the signature is still required."
     },
+    "channels.inputs.id": {
+      "label": "Input id",
+      "help": "Lowercase, digits, «-» and «_». Routes point to it."
+    },
+    "channels.inputs.channel": {
+      "label": "Channel",
+      "help": "Only email is read today; the other channels are prepared and inert."
+    },
+    "channels.inputs.enabled": {
+      "label": "Input on"
+    },
+    "channels.inputs.ingest_source": {
+      "label": "Email source",
+      "help": "The Ingestion tab source the emails of this input come from (mailbox, secret and filters stay there)."
+    },
+    "channels.inputs.label": {
+      "label": "Input name"
+    },
+    "channels.routes.id": {
+      "label": "Route id"
+    },
+    "channels.routes.enabled": {
+      "label": "Route on"
+    },
+    "channels.routes.inputs": {
+      "label": "Route inputs",
+      "help": "Empty: applies to every input."
+    },
+    "channels.routes.label": {
+      "label": "Route name"
+    },
+    "channels.routes.when.all.field": {
+      "label": "Field (all)"
+    },
+    "channels.routes.when.all.op": {
+      "label": "Operator (all)"
+    },
+    "channels.routes.when.all.value": {
+      "label": "Value (all)"
+    },
+    "channels.routes.when.any.field": {
+      "label": "Field (at least one)"
+    },
+    "channels.routes.when.any.op": {
+      "label": "Operator (at least one)"
+    },
+    "channels.routes.when.any.value": {
+      "label": "Value (at least one)"
+    },
+    "channels.routes.to.module": {
+      "label": "Target module",
+      "help": "Today: the review queue."
+    },
+    "channels.routes.to.queue": {
+      "label": "Target queue"
+    },
     "access.allowedRoles": {
       "label": "App roles",
       "help": "Only people with one of these roles in the token get in. Recommended.",

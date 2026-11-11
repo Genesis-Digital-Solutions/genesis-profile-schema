@@ -667,6 +667,27 @@ EXPOSURE: Dict[str, str] = {
     "agentic.events.sources.enabled": _I,
     "agentic.events.sources.events": _I,
     "agentic.events.sources.ips": _I,
+    # channels.* (v0.1.163, carril C1a do pack dos canais): entradas e
+    # encaminhamento — tudo da Genesis no 1.º bump. O GAIBO não conhece a área
+    # (não está no AREA_FLOOR dele): o handoff vem ANTES de qualquer campo
+    # passar a client_write.
+    "channels.inputs.id": _I,
+    "channels.inputs.channel": _I,
+    "channels.inputs.enabled": _I,
+    "channels.inputs.ingest_source": _I,
+    "channels.inputs.label": _I,
+    "channels.routes.id": _I,
+    "channels.routes.enabled": _I,
+    "channels.routes.inputs": _I,
+    "channels.routes.label": _I,
+    "channels.routes.when.all.field": _I,
+    "channels.routes.when.all.op": _I,
+    "channels.routes.when.all.value": _I,
+    "channels.routes.when.any.field": _I,
+    "channels.routes.when.any.op": _I,
+    "channels.routes.when.any.value": _I,
+    "channels.routes.to.module": _I,
+    "channels.routes.to.queue": _I,
     "access.allowedGroups": _I,
     "access.allowedEmailDomains": _I,
     "access.allowedProviders": _I,

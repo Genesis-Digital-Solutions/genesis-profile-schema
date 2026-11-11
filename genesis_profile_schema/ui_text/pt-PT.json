@@ -745,6 +745,62 @@
       "label": "Redes de onde a fonte chama",
       "help": "Opcional (ex.: 10.0.0.0/8). Vazio: qualquer rede — a assinatura continua obrigatória."
     },
+    "channels.inputs.id": {
+      "label": "Id da entrada",
+      "help": "Minúsculas, dígitos, «-» e «_». As rotas apontam para ele."
+    },
+    "channels.inputs.channel": {
+      "label": "Canal",
+      "help": "Hoje só o email é lido; os outros canais ficam preparados e inertes."
+    },
+    "channels.inputs.enabled": {
+      "label": "Entrada ligada"
+    },
+    "channels.inputs.ingest_source": {
+      "label": "Fonte de email",
+      "help": "A fonte da tab Ingestão de onde vêm os emails desta entrada (caixa, segredo e filtros continuam lá)."
+    },
+    "channels.inputs.label": {
+      "label": "Nome da entrada"
+    },
+    "channels.routes.id": {
+      "label": "Id da rota"
+    },
+    "channels.routes.enabled": {
+      "label": "Rota ligada"
+    },
+    "channels.routes.inputs": {
+      "label": "Entradas da rota",
+      "help": "Vazio: vale para todas as entradas."
+    },
+    "channels.routes.label": {
+      "label": "Nome da rota"
+    },
+    "channels.routes.when.all.field": {
+      "label": "Campo (todas)"
+    },
+    "channels.routes.when.all.op": {
+      "label": "Operador (todas)"
+    },
+    "channels.routes.when.all.value": {
+      "label": "Valor (todas)"
+    },
+    "channels.routes.when.any.field": {
+      "label": "Campo (pelo menos uma)"
+    },
+    "channels.routes.when.any.op": {
+      "label": "Operador (pelo menos uma)"
+    },
+    "channels.routes.when.any.value": {
+      "label": "Valor (pelo menos uma)"
+    },
+    "channels.routes.to.module": {
+      "label": "Módulo de destino",
+      "help": "Hoje: a fila de revisão."
+    },
+    "channels.routes.to.queue": {
+      "label": "Fila de destino"
+    },
     "access.allowedRoles": {
       "label": "Papéis de aplicação (App roles)",
       "help": "Só entra quem tiver um destes papéis no token. Recomendado.",

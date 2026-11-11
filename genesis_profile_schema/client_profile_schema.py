@@ -680,6 +680,7 @@ from genesis_profile_schema.action_rules import ProfileActionRules  # noqa: E402
 from genesis_profile_schema.team import ProfileTeam  # noqa: E402
 from genesis_profile_schema.action_ledger import ProfileActionLedger  # noqa: E402
 from genesis_profile_schema.agentic import ProfileAgentic  # noqa: E402
+from genesis_profile_schema.channels import ProfileChannels  # noqa: E402
 
 # Mapa key de tools.config → model tipado. Tools fora deste mapa passam sem
 # validação estrutural (estrutura aberta, como sempre).
@@ -3139,6 +3140,10 @@ class ClientProfileSchema(BaseModel):
     voice: ProfileVoice = Field(default_factory=ProfileVoice)
     contacts: ProfileContacts = Field(default_factory=ProfileContacts)
     ingest: ProfileIngest = Field(default_factory=ProfileIngest)
+    # Entradas e encaminhamento (v0.1.163, carril C1a do pack dos canais):
+    # None/null = o de hoje (o core traduz o `ingest.sources` em memória).
+    # Modelo e gramática em `channels.py`. Só o perfil BASE conta.
+    channels: Optional[ProfileChannels] = None
     reviewQueues: Dict[str, ProfileReviewQueue] = Field(default_factory=dict)
     # Regras por ação do agente (v0.1.109): permitir / confirmar / aprovar por
     # outra pessoa / bloquear, com limites de valor. Desligado = como antes.

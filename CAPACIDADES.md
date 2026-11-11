@@ -251,6 +251,10 @@ e ajuda em pt-PT/en-GB. Omissões do core: 20 passos, 3 escritas, 720 h, 0,50 �
 
 ---
 
+### 7d. Entradas e encaminhamento — `channels.py` (11 Nov 2026, v0.1.163)
+
+`ProfileChannels` (`channels: {inputs[], routes[]}`, carril C1a do `codigo/CONTEXT_PACK_canais_entrada_saida.md`): entradas (`id`, `channel` numa allowlist de 10 canais — só `email` é lido pelo core, `LIVE_CHANNELS`; uma entrada de email aponta sempre para uma fonte do `ingest.sources` por `ingest_source`) e rotas por ordem (`inputs` vazio = todas, `when: {all, any}` com condições `{field, op, value}` FECHADAS — `ROUTE_FIELDS` com tipo e `OPS_BY_KIND`; campo ou operador desconhecido = erro de schema — e `to: {module: queue, queue}`; `MODULES` cresce um carril de cada vez). É a única gramática das rotas: o core e o Studio importam as constantes daqui (nunca uma segunda allowlist). `None` = hoje (o core traduz o `ingest.sources` em memória). Tudo `internal`; modelos `extra="forbid"`; `all`/`any` sem alias (o `to_blob_dict` grava pelos nomes dos campos). O GAIBO não conhece a área — o handoff (`codigo/HANDOFF_gaibo_channels_area_floor.md`) pede para a pôr no `AREA_FLOOR` ANTES de o GAIBO subir o pin para a v0.1.163 (senão o `test_every_wholly_internal_area_is_floored` dele fica vermelho — falha fechada) e muito antes de qualquer campo passar a `client_write`. **Ordem de rollout** (a regra do `mcp.servers[].signing`): modelos `forbid` + gramática fechada ⇒ um core com este pin recusa um `channels` escrito por uma versão futura e, com ele, o save do perfil inteiro (400) — nunca valores novos no perfil antes de core e GAIBO terem o pin; promoção e clone conferem o pin do destino. `regex` só em campos curtos (`REGEX_FIELDS`, nunca o `body`) e sem quantificadores aninhados nem referências para trás (`dangerous_regex`): o `re` do Python não tem timeout e o texto é de quem envia. `allow_inf_nan=False` nas condições. Ids (`ID_RE`, `fullmatch`) aceitam os ids das fontes do Studio (maiúsculas, até 64).
+
 ## Camada 8 — o que o prompt base impõe: `house_rules.py` + `house_rules/<locale>.json`
 
 A primeira camada que NÃO descreve a forma do perfil: descreve o comportamento
