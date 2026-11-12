@@ -160,6 +160,31 @@ class TeamModules(BaseModel):
     documents: bool = False     # v0.1.122
 
 
+class TeamNotifyArea(BaseModel):
+    """Avisos por email à equipa de UMA área (v0.1.165, 12 Nov 2026). Desligados por omissão.
+
+    Vão para as pessoas da equipa que já entraram e que, NA FRENTE do trabalho, têm o papel que o
+    trata (fila: quem opera aquela fila; Verificação Documental: quem escreve ou administra). Só a
+    referência, o assunto e o link — nunca o conteúdo nem dados de quem enviou."""
+    model_config = ConfigDict(extra="allow")
+
+    # Resumo do trabalho NOVO (pedidos novos na fila, casos por reclamar) — no máximo um por hora
+    # e por área; antes da hora só sai se o conjunto mudar.
+    new: bool = False
+    # Trabalho PARADO: pedidos fora do prazo (o da fila/urgência, senão o `ingest.alerts.aging_hours`)
+    # e casos por reclamar a 7 dias de se apagarem (Verificação Documental, 30 dias).
+    stale: bool = False
+
+
+class TeamNotify(BaseModel):
+    """Avisos à equipa por área (v0.1.165). Só as áreas onde entra trabalho sem uma pessoa o criar
+    (por email): as filas e a Verificação Documental. O Intake tem os avisos próprios."""
+    model_config = ConfigDict(extra="allow")
+
+    queues: TeamNotifyArea = Field(default_factory=TeamNotifyArea)
+    docver: TeamNotifyArea = Field(default_factory=TeamNotifyArea)
+
+
 #: Quem pode usar o assistente (v0.1.121, «saída limpa», 16 Out 2026).
 ENTRY_ANYONE = "anyone"     # qualquer conta com login (como até aqui)
 ENTRY_TEAM = "team"         # só as pessoas da equipa (ficha ou papel do Entra mapeado)
@@ -179,6 +204,8 @@ class ProfileTeam(BaseModel):
     entry: Literal["anyone", "team"] = ENTRY_ANYONE
     modules: TeamModules = Field(default_factory=TeamModules)
     roles: List[TeamRole] = Field(default_factory=list)
+    # v0.1.165: avisos por email à equipa (trabalho novo / parado) por área — `TeamNotify`.
+    notify: TeamNotify = Field(default_factory=TeamNotify)
     # v0.1.123: sinais da fase 2 da «Saúde da equipa» (ativação dos convites,
     # aprovações «a carimbo», separação de funções, acessos negados). Só a
     # Genesis liga, depois de o DPO validar o tamanho mínimo de grupo, as

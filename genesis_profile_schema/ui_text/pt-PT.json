@@ -579,6 +579,10 @@
       "label": "Rótulo para o Console",
       "help": "Rótulo amigável apresentado na interface do Console."
     },
+    "frontend.auth.providers.client_directory": {
+      "label": "Diretório do cliente (os papéis deste emissor contam)",
+      "help": "Marcado = os papéis e grupos do Entra que este emissor põe no token contam nas filas, aprovações, Intake, acesso às frentes e Verificação Documental. O emissor marcado como primário (ou o único) conta sempre; com vários e nenhum primário, nenhum conta. Marque outro só se também for do cliente."
+    },
     "frontend.auth.providers.primary": {
       "label": "Emissor primário",
       "help": "O emissor primário produz identificadores de utilizador simples; os restantes ficam prefixados pelo emissor. Sem nenhum marcado, é primário o primeiro da lista."
@@ -656,6 +660,22 @@
     "team.modules.variant_access": {
       "label": "Papéis no acesso às frentes",
       "help": "Ligado = entrar numa frente também pode vir de ter um papel com «Entrar na frente» nela."
+    },
+    "team.notify.queues.new": {
+      "label": "Avisar a equipa de pedidos novos na fila",
+      "help": "Ligado = quem opera cada fila recebe um email com os pedidos novos (no máximo um por hora; só a referência, o assunto e o link)."
+    },
+    "team.notify.queues.stale": {
+      "label": "Avisar a equipa de pedidos fora do prazo",
+      "help": "Ligado = quem opera cada fila recebe um email com os pedidos por decidir fora do prazo da fila ou da urgência."
+    },
+    "team.notify.docver.new": {
+      "label": "Avisar a equipa de casos novos por reclamar",
+      "help": "Ligado = quem pode trabalhar os casos na frente recebe um email com os casos que chegaram por email (no máximo um por hora)."
+    },
+    "team.notify.docver.stale": {
+      "label": "Avisar a equipa de casos a expirar",
+      "help": "Ligado = um caso que chegou por email e ninguém reclamou é avisado 7 dias antes de se apagar (aos 30 dias)."
     },
     "team.roles.id": {
       "label": "Identificador do papel",

@@ -579,6 +579,10 @@
       "label": "Label for the Console",
       "help": "A friendly label shown in the Console’s interface."
     },
+    "frontend.auth.providers.client_directory": {
+      "label": "Client directory (this issuer's roles count)",
+      "help": "Ticked = the Entra roles and groups this issuer puts in the token count in queues, approvals, Intake, front access and Document Verification. The issuer marked primary (or the only one) always counts; with several and none primary, none counts. Tick another only if it also belongs to the client."
+    },
     "frontend.auth.providers.primary": {
       "label": "Primary issuer",
       "help": "The primary issuer produces plain user identifiers; the rest are namespaced by issuer. With none marked, the first in the list is the primary one."
@@ -656,6 +660,22 @@
     "team.modules.variant_access": {
       "label": "Roles in front access",
       "help": "On = entering a front can also come from having a role with «Enter the front» there."
+    },
+    "team.notify.queues.new": {
+      "label": "Notify the team of new queue requests",
+      "help": "On = whoever operates each queue gets an email with the new requests (at most one per hour; only the reference, the subject and the link)."
+    },
+    "team.notify.queues.stale": {
+      "label": "Notify the team of overdue requests",
+      "help": "On = whoever operates each queue gets an email with the undecided requests past the queue's or the urgency's deadline."
+    },
+    "team.notify.docver.new": {
+      "label": "Notify the team of new cases to claim",
+      "help": "On = whoever can work the cases in the front gets an email with the cases that came in by email (at most one per hour)."
+    },
+    "team.notify.docver.stale": {
+      "label": "Notify the team of cases about to expire",
+      "help": "On = a case that came in by email and nobody claimed is flagged 7 days before it is deleted (at 30 days)."
     },
     "team.roles.id": {
       "label": "Role identifier",

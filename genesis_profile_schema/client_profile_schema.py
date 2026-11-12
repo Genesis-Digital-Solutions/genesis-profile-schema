@@ -1350,12 +1350,14 @@ class ProfileMCPAuth(BaseModel):
 
     # Bearer
     token_env: Optional[str] = None  # preferido: nome de env var / secret KV
-    token: Optional[str] = None      # apenas dev — literal (evitar)
+    # Literal: RECUSADO pelo genai-core ao gravar desde 12 Nov 2026 (Finding 37 — `config/profile_secret_guard.py`;
+    # o Studio também, `profile_write_guard/secret_literal_guard.py`). Usar `token_env`.
+    token: Optional[str] = None
 
     # OAuth 2.1 + PKCE
     client_id: Optional[str] = None
     client_id_env: Optional[str] = None
-    client_secret: Optional[str] = None
+    client_secret: Optional[str] = None   # literal: recusado ao gravar (como o `token`) — usar `client_secret_env`
     client_secret_env: Optional[str] = None
     scopes: List[str] = Field(default_factory=list)
     authorize_url: Optional[str] = None
@@ -1965,6 +1967,13 @@ class ProfileAuthProvider(BaseModel):
     # Apps aceites (claim `azp`, ou `appid` nos tokens v1 do Entra). Vazio =
     # qualquer app do emissor com a audience certa (o de sempre).
     allowed_client_ids: List[str] = Field(default_factory=list)
+    # v0.1.165 (Finding 38 do genai-core, 12 Nov 2026): os papéis/grupos do Entra que este emissor põe no
+    # token só contam (filas, aprovações, Intake, acesso às frentes, Verificação Documental) se ele for um
+    # DIRETÓRIO DO CLIENTE: o marcado `primary` (ou o ÚNICO emissor) é-o sempre; outro só com `true` literal
+    # (com vários emissores e nenhum `primary`, nenhum conta). Sem isto, o
+    # admin de outro tenant de confiança (a Genesis num login com várias organizações) dava a si próprio o
+    # app role. As fichas da equipa não dependem disto. Só a Genesis marca (interno).
+    client_directory: bool = False
 
     @field_validator("team_email_domains", mode="before")
     @classmethod

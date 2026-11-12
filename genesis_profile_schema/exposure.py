@@ -174,6 +174,8 @@ EXPOSURE: Dict[str, str] = {
     "frontend.auth.providers.type": _I,
     "frontend.auth.providers.team_email_domains": _I,
     "frontend.auth.providers.allowed_client_ids": _I,
+    # v0.1.165 (Finding 38): os papéis do Entra deste emissor contam — fronteira de segurança, só a Genesis.
+    "frontend.auth.providers.client_directory": _I,
     "frontend.auth.scope": _I,
     "frontend.auth.stepUp": _I,                  # v0.1.125 (fase H): só a Genesis
     "frontend.auth.tenantId": _I,
@@ -637,6 +639,11 @@ EXPOSURE: Dict[str, str] = {
     "team.roles.capabilities": _W,
     "team.roles.entra.roles": _W,
     "team.roles.entra.groups": _W,
+    # v0.1.165: avisos à equipa por área — o cliente liga e desliga no GAIBO (e a Genesis no Studio).
+    "team.notify.queues.new": _W,
+    "team.notify.queues.stale": _W,
+    "team.notify.docver.new": _W,
+    "team.notify.docver.stale": _W,
     # v0.1.123: fase 2 da «Saúde da equipa» — só a Genesis, depois do DPO.
     "team.insights_phase2": _I,
     # actionLedger.* (v0.1.115): registo das ações — o cliente liga no GAIBO
