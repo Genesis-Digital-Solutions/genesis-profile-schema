@@ -681,6 +681,7 @@ from genesis_profile_schema.team import ProfileTeam  # noqa: E402
 from genesis_profile_schema.action_ledger import ProfileActionLedger  # noqa: E402
 from genesis_profile_schema.agentic import ProfileAgentic  # noqa: E402
 from genesis_profile_schema.channels import ProfileChannels  # noqa: E402
+from genesis_profile_schema.error_summary import error_summary_without_values  # noqa: E402
 
 # Mapa key de tools.config → model tipado. Tools fora deste mapa passam sem
 # validação estrutural (estrutura aberta, como sempre).
@@ -725,7 +726,12 @@ class ProfileTools(BaseModel):
             try:
                 model.model_validate(raw)
             except Exception as e:
-                raise ValueError(f"tools.config.{key} inválido: {e}") from e
+                # `from None` e resumo sem valores: o `str()` do erro interno traz
+                # `input_value=` de cada campo e a config de uma tool pode ter
+                # segredos (Finding 62 do core / F-S56 do Studio).
+                raise ValueError(
+                    f"tools.config.{key} inválido: {error_summary_without_values(e)}"
+                ) from None
         return self
 
 
@@ -2874,7 +2880,7 @@ class ProfileReviewQueueSla(BaseModel):
             try:
                 f = float(n)
             except (TypeError, ValueError):
-                raise ValueError("prazo por urgência tem de ser um número")
+                raise ValueError("prazo por urgência tem de ser um número") from None
             if not (0 < f <= 8784):
                 raise ValueError("prazo por urgência fora de ]0, 8784]")
             out[key] = f
@@ -2986,7 +2992,7 @@ class ProfileCalendar(BaseModel):
                 else:
                     raise ValueError
             except ValueError:
-                raise ValueError(f"feriado inválido {s[:20]!r}: use AAAA-MM-DD, MM-DD ou easter±N")
+                raise ValueError(f"feriado inválido {s[:20]!r}: use AAAA-MM-DD, MM-DD ou easter±N") from None
             if s not in out:
                 out.append(s)
         if len(out) > 100:

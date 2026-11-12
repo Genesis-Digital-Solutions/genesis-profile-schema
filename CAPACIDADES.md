@@ -424,6 +424,15 @@ um campo removido do modelo continua a viver no blob sem dar erro.
 - Forma válida ≠ língua conhecida: `looks_like_language_tag("sw")` é `True` e
   `is_known_language_code("sw")` é `False`, e `language_tag_problems` **não**
   consulta o mapa. É o que mantém `allowed` aberto.
+- **Um erro de validação nunca leva o valor recusado na mensagem** (v0.1.166,
+  Finding 62 do core / F-S56 do Studio): quem embrulha um erro interno usa
+  `error_summary.error_summary_without_values` (`loc: msg`, até 5, e quantos
+  ficaram de fora; só o nome da classe para outra exceção) e `from None`. A
+  guarda AST de `test_error_summary_no_values.py` parte a suite se um `raise X(…)`
+  dentro de um `except` não tiver `from None` ou se o erro apanhado aparecer no
+  corpo fora do resumo (allowlist por ficheiro e função, com a razão). O
+  `str(ValidationError)` exterior continua a trazer o `input_value` do bloco
+  (é o Pydantic) — os consumidores cortam a mensagem antes dele.
 
 ---
 
