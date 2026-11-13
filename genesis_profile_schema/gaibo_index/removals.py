@@ -46,11 +46,11 @@ _CLOSED = ConfigDict(extra="forbid")
 
 def is_valid_notice_id(value: Any) -> bool:
     """`gr-` + 8 a 40 de [a-z0-9]."""
-    return isinstance(value, str) and bool(_NOTICE_ID_RE.match(value))
+    return isinstance(value, str) and bool(_NOTICE_ID_RE.fullmatch(value))
 
 
 def removal_blob(notice_id: str) -> str:
-    if not _NOTICE_ID_RE.match(notice_id or ""):
+    if not _NOTICE_ID_RE.fullmatch(notice_id or ""):
         raise ValueError("id de aviso inválido")
     return f"{REMOVALS_PREFIX}{notice_id}.json"
 
@@ -78,7 +78,7 @@ class GenesisRemovalNotice(BaseModel):
     @field_validator("notice_id")
     @classmethod
     def _nid(cls, value: str) -> str:
-        if not _NOTICE_ID_RE.match(value):
+        if not _NOTICE_ID_RE.fullmatch(value):
             raise ValueError("id de aviso inválido")
         return value
 

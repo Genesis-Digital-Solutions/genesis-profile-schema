@@ -248,7 +248,7 @@ def sensitive_params_of(rule: Any) -> List[str]:
     out: List[str] = []
     for p in raw:
         p = str(p or "").strip()
-        if _PARAM_PATH.match(p) and p not in out:
+        if _PARAM_PATH.fullmatch(p) and p not in out:
             out.append(p)
     return out[:MAX_SENSITIVE_PARAMS]
 
@@ -288,7 +288,7 @@ def _limit_problems(limit: Any) -> List[Tuple[str, str]]:
         # como não avaliável (falha fechada), não rebenta.
         out.append((NUMERIC_OP_ON_TEXT, WARNING))
     cur = limit.get("currency")
-    if cur not in (None, "") and not _CURRENCY.match(str(cur)):
+    if cur not in (None, "") and not _CURRENCY.fullmatch(str(cur)):
         out.append((INVALID_CURRENCY, ERROR))
     return out
 
@@ -304,7 +304,7 @@ def _period_limit_problems(pl: Any) -> List[Tuple[str, str]]:
     if str(pl.get("over") or "block") not in OVER_MODES:
         out.append((INVALID_MODE, ERROR))
     cur = pl.get("currency")
-    if cur not in (None, "") and not _CURRENCY.match(str(cur)):
+    if cur not in (None, "") and not _CURRENCY.fullmatch(str(cur)):
         out.append((INVALID_CURRENCY, ERROR))
     return out
 
@@ -451,14 +451,14 @@ def action_rules_problems(profile: Mapping[str, Any]) -> List[Dict[str, str]]:
                 add("", INVALID_ACTION, ERROR)
                 continue
             rid = str(raw.get("id") or "")
-            if not _RULE_ID.match(rid):
+            if not _RULE_ID.fullmatch(rid):
                 add(rid, INVALID_ID, ERROR)
             elif rid in seen:
                 add(rid, DUPLICATE_ID, ERROR)
             seen.add(rid)
 
             action = str(raw.get("action") or "")
-            if not _ACTION.match(action):
+            if not _ACTION.fullmatch(action):
                 add(rid, INVALID_ACTION, ERROR)
             mode = str(raw.get("mode") or "confirm")
             if mode not in MODES:
@@ -491,7 +491,7 @@ def action_rules_problems(profile: Mapping[str, Any]) -> List[Dict[str, str]]:
 
             sens = raw.get("sensitive_params")
             if sens is not None and (not isinstance(sens, list) or len(sens) > MAX_SENSITIVE_PARAMS
-                                     or any(not _PARAM_PATH.match(str(p or "").strip()) for p in sens)):
+                                     or any(not _PARAM_PATH.fullmatch(str(p or "").strip()) for p in sens)):
                 add(rid, INVALID_SENSITIVE_PARAM, ERROR)
 
             uses_approve = rule_uses_approve(raw)
@@ -522,12 +522,12 @@ def action_rules_problems(profile: Mapping[str, Any]) -> List[Dict[str, str]]:
                 if not roles and not groups:
                     add(rid, APPROVE_WITHOUT_APPROVERS, ERROR)
                 if (len(roles) + len(groups) > MAX_APPROVERS
-                        or any(not _ROLE.match(str(r)) for r in roles)
-                        or any(not _GROUP.match(str(g)) for g in groups)):
+                        or any(not _ROLE.fullmatch(str(r)) for r in roles)
+                        or any(not _GROUP.fullmatch(str(g)) for g in groups)):
                     add(rid, INVALID_APPROVER, ERROR)
                 emails = appr.get("notify_emails") or []
                 if (not isinstance(emails, list) or len(emails) > MAX_NOTIFY_EMAILS
-                        or any(not _EMAIL.match(str(e)) for e in emails)):
+                        or any(not _EMAIL.fullmatch(str(e)) for e in emails)):
                     add(rid, INVALID_NOTIFY_EMAIL, WARNING)
                 # D2: a aprovação corre fora da conversa, sem o login de quem
                 # pediu — um servidor `per_user` ficaria sem token.

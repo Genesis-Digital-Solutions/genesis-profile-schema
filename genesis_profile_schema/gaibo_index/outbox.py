@@ -29,6 +29,8 @@ from typing import Any, List, Literal, Optional
 
 from pydantic import AwareDatetime, BaseModel, ConfigDict, Field, field_validator, model_validator
 
+from ..digits import ascii_digits
+from ..field_checks import PORT_SUFFIX
 from .index_fields import CONTRACT_VERSION, extraction_for, is_gaibo_source
 
 OUTBOX_CONTAINER = "gaibo-outbox"
@@ -40,7 +42,9 @@ RUNS_PREFIX = "runs/"
 _REQUEST_ID_RE = re.compile(r"^pr-[a-z0-9]{8,40}$")
 _RUN_ID_RE = re.compile(r"^run-[a-z0-9]{8,40}$")
 _ORIGIN_REF_RE = re.compile(r"^[A-Za-z0-9_-]{1,64}$")
-_MONTH_RE = re.compile(r"^\d{4}-(0[1-9]|1[0-2])$")
+# `[0-9]` + `fullmatch`, nunca `\d` (v0.1.168): `٢٠٢٦-٠١` passava e nunca era igual ao
+# mês corrente do `monthly_allowance` — o desbloqueio da Genesis não valia.
+_MONTH_RE = re.compile(r"[0-9]{4}-(0[1-9]|1[0-2])")
 _EXT_RE = re.compile(r"^\.[a-z0-9]{1,8}$")
 
 MAX_ITEMS_PER_REQUEST = 5000
@@ -51,38 +55,39 @@ _CLOSED = ConfigDict(extra="forbid")
 
 def is_valid_request_id(value: Any) -> bool:
     """`pr-` + 8 a 40 de [a-z0-9] (v0.1.103: exportado para o GAIBO não repetir o padrão)."""
-    return isinstance(value, str) and bool(_REQUEST_ID_RE.match(value))
+    return isinstance(value, str) and bool(_REQUEST_ID_RE.fullmatch(value))
 
 
 def is_valid_run_id(value: Any) -> bool:
     """`run-` + 8 a 40 de [a-z0-9]."""
-    return isinstance(value, str) and bool(_RUN_ID_RE.match(value))
+    return isinstance(value, str) and bool(_RUN_ID_RE.fullmatch(value))
 
 
 def is_valid_origin_ref(value: Any) -> bool:
     """1 a 64 de [A-Za-z0-9_-] — a execução do GAIBO que produziu os chunks."""
-    return isinstance(value, str) and bool(_ORIGIN_REF_RE.match(value))
+    return isinstance(value, str) and bool(_ORIGIN_REF_RE.fullmatch(value))
 
 
 def request_blob(request_id: str) -> str:
-    if not _REQUEST_ID_RE.match(request_id or ""):
+    if not _REQUEST_ID_RE.fullmatch(request_id or ""):
         raise ValueError("id de pedido inválido")
     return f"{REQUESTS_PREFIX}{request_id}.json"
 
 
 def result_blob(request_id: str) -> str:
-    if not _REQUEST_ID_RE.match(request_id or ""):
+    if not _REQUEST_ID_RE.fullmatch(request_id or ""):
         raise ValueError("id de pedido inválido")
     return f"{RESULTS_PREFIX}{request_id}.json"
 
 
 def run_blob(run_id: str) -> str:
-    if not _RUN_ID_RE.match(run_id or ""):
+    if not _RUN_ID_RE.fullmatch(run_id or ""):
         raise ValueError("id de execução inválido")
     return f"{RUNS_PREFIX}{run_id}.json"
 
 
-_HOST_RE = re.compile(r"^[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?(?:\.[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?)*(?::[0-9]{1,5})?$")
+# Porta só 1..65535 (v0.1.168; `PORT_SUFFIX` do `field_checks`).
+_HOST_RE = re.compile(r"[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?(?:\.[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?)*" + PORT_SUFFIX)
 
 
 def _normalize_core_url(value: str) -> str:
@@ -97,7 +102,7 @@ def _normalize_core_url(value: str) -> str:
     if rest.endswith("/"):
         rest = rest[:-1]
     host = rest.lower()
-    if not host or not _HOST_RE.match(host):
+    if not host or not _HOST_RE.fullmatch(host):
         raise ValueError("URL do core tem de ser só a origem https://<host>")
     return f"https://{host}"
 
@@ -219,7 +224,8 @@ class GaiboSettings(BaseModel):
     @field_validator("extra_documents_month")
     @classmethod
     def _month(cls, value: str) -> str:
-        if value and not _MONTH_RE.match(value):
+        value = ascii_digits(value)
+        if value and not _MONTH_RE.fullmatch(value):
             raise ValueError("mês inválido (AAAA-MM)")
         return value
 
@@ -245,7 +251,7 @@ class GaiboSettings(BaseModel):
         out = []
         for ext in value:
             ext = (ext or "").strip().lower()
-            if not _EXT_RE.match(ext):
+            if not _EXT_RE.fullmatch(ext):
                 raise ValueError(f"extensão inválida: {ext!r}")
             if ext not in out:
                 out.append(ext)
@@ -268,7 +274,7 @@ class PublishItem(BaseModel):
         if not is_gaibo_source(self.source_file):
             raise ValueError("source_file fora do formato gaibo/<chave>/<nome>")
         if self.action == "publish":
-            if not self.origin_ref or not _ORIGIN_REF_RE.match(self.origin_ref):
+            if not self.origin_ref or not _ORIGIN_REF_RE.fullmatch(self.origin_ref):
                 raise ValueError("publish exige origin_ref")
             if self.chunk_count is None:
                 raise ValueError("publish exige chunk_count")
@@ -291,7 +297,7 @@ class PublishRequest(BaseModel):
     @field_validator("request_id")
     @classmethod
     def _rid(cls, value: str) -> str:
-        if not _REQUEST_ID_RE.match(value):
+        if not _REQUEST_ID_RE.fullmatch(value):
             raise ValueError("id de pedido inválido")
         return value
 
@@ -392,13 +398,13 @@ class RunReport(BaseModel):
     @field_validator("run_id")
     @classmethod
     def _run(cls, value: str) -> str:
-        if not _RUN_ID_RE.match(value):
+        if not _RUN_ID_RE.fullmatch(value):
             raise ValueError("id de execução inválido")
         return value
 
     @field_validator("origin_ref")
     @classmethod
     def _ref(cls, value: str) -> str:
-        if not _ORIGIN_REF_RE.match(value):
+        if not _ORIGIN_REF_RE.fullmatch(value):
             raise ValueError("origin_ref inválido")
         return value

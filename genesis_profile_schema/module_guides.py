@@ -421,7 +421,7 @@ def _check_preset(doc: Any, name: str, guides: Dict[str, Dict[str, Any]]) -> Dic
     if g["scope"] == "map":
         _item_model(g["item_model"]).model_validate(doc.get("item") or {})
         # A chave do item no mapa (ex.: «encomendas», «pedidos-agente»).
-        if not re.match(r"^[a-z][a-z0-9_-]{0,39}$", str(doc.get("key") or "")):
+        if not re.fullmatch(r"^[a-z][a-z0-9_-]{0,39}$", str(doc.get("key") or "")):
             raise ValueError(f"{name}: `key` inválida")
     else:
         model = _root_tool_model(g["root"])

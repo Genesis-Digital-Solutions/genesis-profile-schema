@@ -153,7 +153,7 @@ class ProfileToolCvCandidateNotice(BaseModel):
     @classmethod
     def _contact(cls, v: str) -> str:
         v = (v or "").strip()
-        if v and not (_EMAIL_RE.match(v) or _URL_RE.match(v)):
+        if v and not (_EMAIL_RE.fullmatch(v) or _URL_RE.fullmatch(v)):
             raise ValueError("o contacto é um email ou um endereço https://")
         return v
 

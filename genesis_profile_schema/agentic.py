@@ -73,7 +73,7 @@ class AgenticEventSource(BaseModel):
     @field_validator("id")
     @classmethod
     def _id(cls, v: str) -> str:
-        if not SOURCE_ID_RE.match(v or ""):
+        if not SOURCE_ID_RE.fullmatch(v or ""):
             raise ValueError("id da fonte: minúsculas e dígitos, separados por um hífen (até 40)")
         return v
 
@@ -83,7 +83,7 @@ class AgenticEventSource(BaseModel):
         if len(v) > MAX_EVENTS:
             raise ValueError(f"no máximo {MAX_EVENTS} eventos por fonte")
         for e in v:
-            if not EVENT_NAME_RE.match(str(e or "")):
+            if not EVENT_NAME_RE.fullmatch(str(e or "")):
                 raise ValueError(f"nome de evento inválido: {str(e)[:40]!r}")
         return v
 

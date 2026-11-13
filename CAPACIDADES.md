@@ -135,7 +135,8 @@ carregar. Quem escreve é que descarta; quem lê continua a ler tudo.
   directiva e abria outra, e o `allowed_origins` é editável pelo cliente.
   O `creator.py` do Studio passou a filtrar por aqui.
   Porta só com dígitos ASCII e `capacitor://localhost`/`ionic://localhost` recusados (v0.1.168, 13 Nov 2026: o `\d` casava
-  dígitos Unicode; o localhost é a origem de TODAS as apps desse tipo).
+  dígitos Unicode; o localhost é a origem de TODAS as apps desse tipo). Porta só 1..65535 sem zeros à esquerda
+  (`PORT_SUFFIX`, também no URL do core do `GaiboSettings`; v0.1.168).
   Aceita também origens de app móvel híbrida (`capacitor://host`, `ionic://host`,
   sem caminho nem wildcard; v0.1.151) e `is_app_origin()` separa-as das web.
 - `regex_risk()` — aviso para as regex de `product_identification.patterns`. O
@@ -445,6 +446,21 @@ um campo removido do modelo continua a viver no blob sem dar erro.
 ---
 
 ## Armadilhas medidas
+
+- **O `\d` casa dígitos de qualquer escrita** (`٢٠٢٦`, `２０２６`), em `re` e no
+  `Field(pattern=)`. `٢٠٢٦-٠١-٠١` passava como feriado, data do Intake ou mês do
+  GAIBO e depois não batia com `2026-01-01`. Regra (v0.1.168): regex com `[0-9]`
+  (ou `re.ASCII`) e `fullmatch`; campos de data/mês escritos por pessoas
+  NORMALIZAM os dígitos com `digits.ascii_digits` antes de validar (o valor fica
+  ASCII e um perfil gravado nunca deixa de carregar). O
+  `test_ascii_digits.py` parte com um `\d`, `\w` ou `\p{N` novo no pacote.
+- **`.match` com `$` aceita um `\n` no fim** (`pr-abcdefgh\n` montava
+  `requests/pr-abcdefgh\n.json`; F-S71). Validação é sempre `fullmatch`; o
+  mesmo teste parte com qualquer `.match(` no pacote.
+- **As datas do Intake (`IsoDate`) recusam datas que não existem** desde a
+  v0.1.168 (`2026-02-30`); antes só se via a forma. Frota limpa a 13 Nov 2026,
+  mas repor uma versão antiga com uma data dessas dá erro ao gravar.
+  `calendar.holidays` recusa listas com mais de 1000 itens antes de as ler.
 
 - **Um default aqui é comportamento em produção, não só documentação.** O core
   funde o perfil do Blob por cima de `ClientProfileSchema().to_blob_dict()`

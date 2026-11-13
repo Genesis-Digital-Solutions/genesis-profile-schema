@@ -118,7 +118,7 @@ class _Budget:
 
 
 def is_valid_key(value: Any) -> bool:
-    return isinstance(value, str) and bool(_KEY_RE.match(value))
+    return isinstance(value, str) and bool(_KEY_RE.fullmatch(value))
 
 
 def _key(value: Any, what: str) -> str:

@@ -53,7 +53,10 @@ _DOTTED = rf"(?:\*\.)?{_LABEL}(?:\.{_LABEL})+"
 # `[0-9]`, nunca `\d`: em Python o `\d` sobre `str` casa QUALQUER dígito Unicode
 # (`https://a.pt:٨٠`, `:８０` passavam — o browser ignora a origem e a imagem nginx
 # do light recusava-a e não arrancava; revisão do B-4/T4, 13 Nov 2026).
-_PORT = r"(?::[0-9]{1,5})?"
+# Só portas 1..65535, sem zeros à esquerda (v0.1.168): `:0` e `:99999` passavam e
+# nenhum browser os casa — a origem ficava no cabeçalho a não autorizar nada.
+PORT_SUFFIX = r"(?::(?:6553[0-5]|655[0-2][0-9]|65[0-4][0-9]{2}|6[0-4][0-9]{3}|[1-5][0-9]{4}|[1-9][0-9]{0,3}))?"
+_PORT = PORT_SUFFIX
 
 # Caminho opcional. É gramática válida de CSP (source com caminho) e o
 # `frame-ancestors` ignora-o — recusá-lo tirava a autorização a quem tivesse

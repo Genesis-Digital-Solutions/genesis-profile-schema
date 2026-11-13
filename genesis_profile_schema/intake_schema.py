@@ -38,8 +38,9 @@ from __future__ import annotations
 
 from typing import Annotated, Any, Dict, Iterable, List, Literal, Optional, Set, Union
 
-from pydantic import AfterValidator, BaseModel, ConfigDict, Field, model_validator, StrictBool, StrictInt
+from pydantic import AfterValidator, BaseModel, BeforeValidator, ConfigDict, Field, model_validator, StrictBool, StrictInt
 
+from .digits import ascii_digits_before
 from .field_definition import FieldDefinition, I18nHelp, I18nText, StrictNumber, _i18n_checker
 from .field_values import iso_value, number_fits, validate_answers
 from .rules_grammar import KEY_PATTERN, PredicateRefs, validate_predicate
@@ -105,7 +106,27 @@ MAX_CASE_ANSWERS = 400
 MAX_DEFINITION_NODES = 8000
 
 Key = Annotated[str, Field(pattern=KEY_PATTERN)]
-_DATE_RE = r"^\d{4}-\d{2}-\d{2}$"
+# `[0-9]`, nunca `\d` (v0.1.168): o `\d` do `Field(pattern=)` casa dígitos de
+# qualquer escrita, e `٢٠٢٦-٠١-٠١` passava — depois a comparação de texto
+# `revoked_from <= effective_from` e o `date.fromisoformat` de quem lê falhavam.
+# As datas normalizam os dígitos para ASCII ANTES do padrão (`IsoDate`): o valor
+# fica canónico e um perfil já gravado nunca deixa de carregar.
+_DATE_RE = r"^[0-9]{4}-[0-9]{2}-[0-9]{2}$"
+
+
+def _real_date(value: str) -> str:
+    """`2026-02-30` tem a forma certa e não existe (v0.1.168; frota verificada a
+    13 Nov 2026: nenhuma data do Intake inexistente)."""
+    from datetime import date
+    try:
+        date.fromisoformat(value)
+    except ValueError:
+        raise ValueError("data inexistente (AAAA-MM-DD)") from None
+    return value
+
+
+# Esta ordem: o padrão fica no JSON Schema e corre DEPOIS da normalização.
+IsoDate = Annotated[str, Field(pattern=_DATE_RE), BeforeValidator(ascii_digits_before), AfterValidator(_real_date)]
 _CURRENCY_RE = r"^[A-Z]{3}$"
 _VERSION_RE = r"^[0-9A-Za-z][0-9A-Za-z._-]{0,31}$"
 
@@ -394,7 +415,7 @@ class IntakeReferenceCase(BaseModel):
     label: str = Field(default="", max_length=300)
     answers: Dict[Key, Any] = Field(max_length=MAX_CASE_ANSWERS)
     # Data de referência fixa do caso (a avaliação real fotografa a sua).
-    reference_date: Optional[str] = Field(default=None, pattern=_DATE_RE)
+    reference_date: Optional[IsoDate] = None
     # Unidades de cada moeda por 1 unidade da moeda base (o caso traz as suas
     # taxas: um teste nunca depende do câmbio do dia).
     fx_rates: Dict[Annotated[str, Field(pattern=_CURRENCY_RE)], FxRate] = Field(
@@ -413,7 +434,7 @@ class MethodologyApproval(BaseModel):
     model_config = _CLOSED
     by: str = Field(min_length=1, max_length=200)
     role: str = Field(default="", max_length=200)
-    at: str = Field(pattern=_DATE_RE)
+    at: IsoDate
 
 
 class IntakeFxPolicy(BaseModel):
@@ -453,7 +474,7 @@ class IntakeMethodology(BaseModel):
     model_config = _CLOSED
 
     version: str = Field(pattern=_VERSION_RE)
-    effective_from: Optional[str] = Field(default=None, pattern=_DATE_RE)
+    effective_from: Optional[IsoDate] = None
     approval: Optional[MethodologyApproval] = None
     base_currency: str = Field(default="EUR", pattern=_CURRENCY_RE)
     fx: Optional[IntakeFxPolicy] = None
@@ -834,8 +855,8 @@ class IntakeDocumentTemplate(BaseModel):
     template: str = Field(pattern=_TEMPLATE_RE)
     sha256: str = Field(pattern=_SHA256_RE)
     version: str = Field(min_length=1, max_length=20, pattern=r"^[A-Za-z0-9][A-Za-z0-9._-]*$")
-    effective_from: str = Field(pattern=_DATE_RE)
-    revoked_from: Optional[str] = Field(default=None, pattern=_DATE_RE)
+    effective_from: IsoDate
+    revoked_from: Optional[IsoDate] = None
     # Só nas folhas de cálculo (`kind: spreadsheet`, v0.1.92).
     cells: List[IntakeSheetCell] = Field(default_factory=list, max_length=MAX_SHEET_CELLS)
     result: Optional[IntakeSheetResult] = None

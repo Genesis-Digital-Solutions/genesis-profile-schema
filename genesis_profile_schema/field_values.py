@@ -27,6 +27,7 @@ from dataclasses import dataclass, field
 from datetime import date, datetime
 from typing import Any, Dict, Iterable, Mapping, Optional
 
+from .digits import ascii_digits
 from .field_definition import FieldDefinition, TableColumn
 
 __all__ = [
@@ -93,7 +94,7 @@ def _money(value: Any, currencies: Iterable[str], what: str) -> Dict[str, Any]:
     if amount < 0:
         raise ValueError(f"{what}: montante negativo")
     currency = value["currency"]
-    if not isinstance(currency, str) or not _CURRENCY_RE.match(currency):
+    if not isinstance(currency, str) or not _CURRENCY_RE.fullmatch(currency):
         raise ValueError(f"{what}: moeda inválida (código ISO de 3 letras)")
     allowed = list(currencies)
     if allowed and currency not in allowed:
@@ -111,15 +112,21 @@ def _text(value: Any, max_len: int, what: str) -> str:
 
 # Só a forma ISO estendida (o Python 3.11+ aceitaria também «20000101» ou
 # «2000-W01-6», que depois não batiam com um literal «2000-01-01»).
-_DATE_RE = re.compile(r"^\d{4}-\d{2}-\d{2}$")
-_DATETIME_RE = re.compile(r"^\d{4}-\d{2}-\d{2}[T ]\d{2}:\d{2}(:\d{2}(\.\d{1,6})?)?(Z|[+-]\d{2}:\d{2})?$")
+# `[0-9]` + `fullmatch`, nunca `\d` (v0.1.168): o `\d` casava `٢٠٢٦-٠١-٠١`, que o
+# `fromisoformat` depois recusava com «data inválida». Agora os dígitos de outras
+# escritas passam a ASCII antes (`ascii_digits`) e a data fica canónica.
+_DATE_RE = re.compile(r"[0-9]{4}-[0-9]{2}-[0-9]{2}")
+_DATETIME_RE = re.compile(r"[0-9]{4}-[0-9]{2}-[0-9]{2}[T ][0-9]{2}:[0-9]{2}(:[0-9]{2}(\.[0-9]{1,6})?)?(Z|[+-][0-9]{2}:[0-9]{2})?")
 
 
 def _iso(value: Any, kind: str, what: str) -> str:
     """Data/data-hora ISO estendida, devolvida na forma canónica
     (`isoformat()`), para as comparações por igualdade baterem sempre."""
     pattern = _DATE_RE if kind == "date" else _DATETIME_RE
-    if not isinstance(value, str) or len(value) > 40 or not pattern.match(value):
+    if not isinstance(value, str) or len(value) > 40:
+        raise ValueError(f"{what}: {kind} em formato ISO (AAAA-MM-DD)")
+    value = ascii_digits(value)          # depois do teto: uma resposta enorme não é percorrida
+    if not pattern.fullmatch(value):
         raise ValueError(f"{what}: {kind} em formato ISO (AAAA-MM-DD)")
     try:
         if kind == "date":

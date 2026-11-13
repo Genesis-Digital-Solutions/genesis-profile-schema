@@ -21,7 +21,7 @@ _RE = re.compile(VOICE_NAME_PATTERN)
 
 
 def is_valid_voice_name(value: Any) -> bool:
-    return isinstance(value, str) and len(value) <= VOICE_NAME_MAX and bool(_RE.match(value))
+    return isinstance(value, str) and len(value) <= VOICE_NAME_MAX and bool(_RE.fullmatch(value))
 
 
 def check_voice_map(value: Any) -> Any:

@@ -121,11 +121,12 @@ def extraction_for(extension: str, di_model: str = "layout") -> str:
         return "prebuilt-read"
     return model
 
-_PAGE_FRAGMENT_RE = re.compile(r"^page=\d{1,6}$")
+# `[0-9]` + `fullmatch` (v0.1.168): o `\d` aceitava `#page=١٢`, que nenhum visor de PDF lê.
+_PAGE_FRAGMENT_RE = re.compile(r"page=[0-9]{1,6}")
 
 
 def is_valid_doc_key(value: Any) -> bool:
-    return isinstance(value, str) and bool(_DOC_KEY_RE.match(value))
+    return isinstance(value, str) and bool(_DOC_KEY_RE.fullmatch(value))
 
 
 def file_name_problems(name: Any) -> List[str]:
@@ -201,7 +202,7 @@ def _url_problems(url: Any) -> List[str]:
         out.append("url tem de ser https numa conta de blob storage")
     if parts.query:
         out.append("url com query (nunca SAS: quem assina é o core)")
-    if parts.fragment and not _PAGE_FRAGMENT_RE.match(parts.fragment):
+    if parts.fragment and not _PAGE_FRAGMENT_RE.fullmatch(parts.fragment):
         out.append("fragmento do url só pode ser #page=N")
     segments = parts.path.lstrip("/").split("/")
     if segments[0] != SOURCES_CONTAINER:
@@ -226,7 +227,7 @@ def chunk_problems(doc: Dict[str, Any]) -> List[str]:
     if doc.get(ORIGIN_FIELD) != ORIGIN_GAIBO:
         out.append(f"{ORIGIN_FIELD} tem de ser '{ORIGIN_GAIBO}'")
     ref = doc.get(ORIGIN_REF_FIELD)
-    if not isinstance(ref, str) or not _ORIGIN_REF_RE.match(ref):
+    if not isinstance(ref, str) or not _ORIGIN_REF_RE.fullmatch(ref):
         out.append(f"{ORIGIN_REF_FIELD} inválido")
     source = doc.get("source_file")
     if not is_gaibo_source(source):
@@ -243,7 +244,7 @@ def chunk_problems(doc: Dict[str, Any]) -> List[str]:
         if not isinstance(val, int) or isinstance(val, bool) or val < 0:
             out.append(f"{key} de topo obrigatório (inteiro ≥ 0)")
     dv = doc.get("doc_version")
-    if not isinstance(dv, str) or not _DOC_VERSION_RE.match(dv):
+    if not isinstance(dv, str) or not _DOC_VERSION_RE.fullmatch(dv):
         out.append("doc_version obrigatório: sha256 (hex minúsculo) do original")
     title = doc.get("document_title")
     if not isinstance(title, str) or len(title.strip()) < 3:

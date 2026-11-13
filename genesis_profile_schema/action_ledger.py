@@ -318,7 +318,7 @@ def effect_norm(value: Any) -> str:
 def result_code(value: Any) -> str:
     """O código que pode entrar na cadeia (`RESULT_CODE`) ou «error»."""
     v = str(value or "").strip().lower()
-    return v if RESULT_CODE.match(v) else ("error" if v else "")
+    return v if RESULT_CODE.fullmatch(v) else ("error" if v else "")
 
 
 def chain_start(first: Mapping[str, Any], now: float) -> Dict[str, Any]:

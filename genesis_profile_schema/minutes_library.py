@@ -63,7 +63,7 @@ def _text(v: Any, name: str, part: str) -> None:
 
 
 def _check_deadline(d: Any, name: str) -> None:
-    if not isinstance(d, dict) or not isinstance(d.get("id"), str) or not _ID_RE.match(d["id"]):
+    if not isinstance(d, dict) or not isinstance(d.get("id"), str) or not _ID_RE.fullmatch(d["id"]):
         raise ValueError(f"{name}: prazo com `id` inválido")
     _text(d.get("label"), name, f"deadlines.{d['id']}.label")
     if not str(d.get("law") or "").strip():
@@ -80,7 +80,7 @@ def _check_deadline(d: Any, name: str) -> None:
         _text(d.get("scope"), name, f"deadlines.{d['id']}.scope")
     orgs = d.get("organs")
     if orgs is not None and (not isinstance(orgs, list) or not orgs or len(orgs) > MAX_LIST
-                             or any(not isinstance(x, str) or not _ID_RE.match(x) for x in orgs)):
+                             or any(not isinstance(x, str) or not _ID_RE.fullmatch(x) for x in orgs)):
         raise ValueError(f"{name}: prazo `{d['id']}` com `organs` inválido")
 
 
@@ -92,7 +92,7 @@ def _pt(v: Any, name: str, part: str, required: bool = True) -> None:
 
 
 def _check_organ(o: Any, name: str) -> None:
-    if not isinstance(o, dict) or not isinstance(o.get("id"), str) or not _ID_RE.match(o["id"]):
+    if not isinstance(o, dict) or not isinstance(o.get("id"), str) or not _ID_RE.fullmatch(o["id"]):
         raise ValueError(f"{name}: órgão com `id` inválido")
     oid = o["id"]
     _text(o.get("label"), name, f"organs.{oid}.label")
@@ -160,7 +160,7 @@ def _check(doc: Any, name: str) -> Dict[str, Any]:
     if not isinstance(doc, dict):
         raise ValueError(f"{name}: não é um objeto")
     mid = doc.get("id")
-    if not isinstance(mid, str) or not _ID_RE.match(mid) or name != f"{mid}.json":
+    if not isinstance(mid, str) or not _ID_RE.fullmatch(mid) or name != f"{mid}.json":
         raise ValueError(f"{name}: `id` inválido ou diferente do nome do ficheiro")
     _text(doc.get("name"), name, "name")
     deadlines = doc.get("deadlines")

@@ -35,7 +35,7 @@ import re
 from typing import Dict, List
 
 PLAYBOOK_MARKER_RE = re.compile(
-    r"^##[^\n]*?\[(?P<family>genesis-mcp-[a-z0-9-]*?playbook)-v(?P<version>\d+)\][^\n]*$",
+    r"^##[^\n]*?\[(?P<family>genesis-mcp-[a-z0-9-]*?playbook)-v(?P<version>[0-9]+)\][^\n]*$",
     re.MULTILINE,
 )
 _HEADING_RE = re.compile(r"^## ", re.MULTILINE)

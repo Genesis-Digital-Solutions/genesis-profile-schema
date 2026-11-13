@@ -375,7 +375,7 @@ def team_problems(profile: Mapping[str, Any]) -> List[Dict[str, str]]:
                 add("", INVALID_ROLE_ID, ERROR)
                 continue
             rid = str(raw.get("id") or "")
-            if not _ROLE_ID.match(rid):
+            if not _ROLE_ID.fullmatch(rid):
                 add(rid, INVALID_ROLE_ID, ERROR)
             elif rid in seen:
                 add(rid, DUPLICATE_ROLE_ID, ERROR)
@@ -389,7 +389,7 @@ def team_problems(profile: Mapping[str, Any]) -> List[Dict[str, str]]:
                 if cid not in CAPABILITY_IDS:
                     add(rid, UNKNOWN_CAPABILITY, ERROR)
                     continue
-                if target and (cid not in _TARGETED or not _TARGET.match(target)):
+                if target and (cid not in _TARGETED or not _TARGET.fullmatch(target)):
                     add(rid, INVALID_TARGET, ERROR)
                 granted.add(cid)
             entra = raw.get("entra") or {}
@@ -398,8 +398,8 @@ def team_problems(profile: Mapping[str, Any]) -> List[Dict[str, str]]:
                 egroups = entra.get("groups") or []
                 if (not isinstance(eroles, list) or not isinstance(egroups, list)
                         or len(eroles) + len(egroups) > MAX_ENTRA
-                        or any(not _ENTRA_ROLE.match(str(x)) for x in eroles)
-                        or any(not _GROUP.match(str(x)) for x in egroups)):
+                        or any(not _ENTRA_ROLE.fullmatch(str(x)) for x in eroles)
+                        or any(not _GROUP.fullmatch(str(x)) for x in egroups)):
                     add(rid, INVALID_ENTRA, ERROR)
         if team.get("enabled") is True:
             if "team.manage" not in granted:

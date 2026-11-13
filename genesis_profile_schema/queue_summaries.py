@@ -78,7 +78,7 @@ SummaryText = Union[str, Dict[str, str]]
 
 def _col(v: str, what: str) -> str:
     s = str(v or "").strip()
-    if not _KEY_RE.match(s):
+    if not _KEY_RE.fullmatch(s):
         raise ValueError(f"{what}: {s[:40]!r} não é uma chave válida (letras, números, «.», «_», «-»; até 64)")
     return s
 

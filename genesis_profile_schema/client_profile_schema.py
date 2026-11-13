@@ -1201,7 +1201,7 @@ class ProfileMunicipalMember(BaseModel):
     def _email_ok(cls, v: str) -> str:
         from genesis_profile_schema.intake_schema import _EMAIL_RE
         v = (v or "").strip().lower()
-        if v and not re.match(_EMAIL_RE, v):
+        if v and not re.fullmatch(_EMAIL_RE, v):
             raise ValueError("email inválido")
         return v
 
@@ -2026,7 +2026,7 @@ class ProfileAuthProvider(BaseModel):
             d = str(raw or "").strip().lower().lstrip("@")
             if not d:
                 continue
-            if not _EMAIL_DOMAIN_RE.match(d):
+            if not _EMAIL_DOMAIN_RE.fullmatch(d):
                 raise ValueError(f"team_email_domains: domínio inválido {str(raw)[:80]!r}")
             if d not in out:
                 out.append(d)
@@ -2046,7 +2046,7 @@ class ProfileAuthProvider(BaseModel):
             c = str(raw or "").strip()
             if not c:
                 continue
-            if not _CLIENT_ID_RE.match(c):
+            if not _CLIENT_ID_RE.fullmatch(c):
                 raise ValueError(f"allowed_client_ids: valor inválido {c[:80]!r}")
             if c not in out:
                 out.append(c)
@@ -3018,12 +3018,20 @@ class ProfileCalendar(BaseModel):
     def _holiday_dates(cls, v):
         import re
         from datetime import date
+        from genesis_profile_schema.digits import ascii_digits
+        if len(v) > 1000:                 # teto antes do ciclo (o limite real, 100, é depois de tirar repetidos)
+            raise ValueError("holidays: lista demasiado longa (no máximo 100 datas distintas)")
         out = []
         for raw in v:
+            # Dígitos de outras escritas → ASCII (v0.1.168): `٢٠٢٦-٠١-٠١` passava
+            # no `\d`, ficava gravado assim e não batia com `2026-01-01` (editor do
+            # Studio, deduplicação). Normaliza-se em vez de recusar — nunca parte a
+            # leitura de um perfil já gravado. `[0-9]` + `fullmatch`, nunca `\d`.
             s = str(raw or "").strip()
-            m = re.match(r"^(\d{4})-(\d{2})-(\d{2})$", s)
-            n = re.match(r"^(\d{2})-(\d{2})$", s)
-            e = re.match(r"^easter(?:[+-](\d{1,3}))?$", s.lower())
+            s = ascii_digits(s) if len(s) <= 20 else s     # nenhum feriado válido passa de 10 caracteres
+            m = re.fullmatch(r"([0-9]{4})-([0-9]{2})-([0-9]{2})", s)
+            n = re.fullmatch(r"([0-9]{2})-([0-9]{2})", s)
+            e = re.fullmatch(r"easter(?:[+-]([0-9]{1,3}))?", s.lower())
             try:
                 if e:
                     if e[1] and int(e[1]) > 120:

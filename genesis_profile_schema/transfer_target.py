@@ -52,24 +52,24 @@ _SPACES = re.compile(r"\s+")
 
 # Separadores que as pessoas escrevem num número e que o URI não aceita.
 _SEPARATORS = re.compile(r"[\s.\-()/]")
-# Tudo `re.ASCII`: sem isto o `\d` aceita dígitos árabes/devanágari e o
+# `[0-9]` e tudo `re.ASCII` (v0.1.168: sem `\d`, regra do pacote): sem isto o `\d` aceitava dígitos árabes/devanágari e o
 # IGNORECASE aceita `K` (U+212A) e `ſ` (U+017F) por `k`/`s` — o espelho do
 # editor (JS sem flag `u`) recusa-os, e as duas regras têm de bater.
 # E.164: `+`, indicativo sem zero à cabeça, 8 a 15 dígitos no total.
-_E164 = re.compile(r"^\+[1-9]\d{7,14}$", re.ASCII)
+_E164 = re.compile(r"^\+[1-9][0-9]{7,14}$", re.ASCII)
 # Extensão curta (2–6) ou número nacional sem indicativo (7–15).
-_DIGITS = re.compile(r"^\d{2,15}$", re.ASCII)
+_DIGITS = re.compile(r"^[0-9]{2,15}$", re.ASCII)
 _NO_PLUS_MIN = 7
 
 # SIP: utilizador opcional, host DNS ou IPv4, porta opcional, e só os
 # parâmetros `transport` e `user` (allowlist — nada de headers `?…`).
 _LABEL = r"[A-Za-z0-9](?:[A-Za-z0-9-]{0,61}[A-Za-z0-9])?"
-_HOST = rf"(?:{_LABEL}(?:\.{_LABEL})+|\d{{1,3}}(?:\.\d{{1,3}}){{3}})"
+_HOST = rf"(?:{_LABEL}(?:\.{_LABEL})+|[0-9]{{1,3}}(?:\.[0-9]{{1,3}}){{3}})"
 _USER = r"[A-Za-z0-9._~+\-]{1,64}"
 _PARAM = r";(?:transport=(?:tls|tcp|udp)|user=phone)"
-_SIP = re.compile(rf"^sip:(?:{_USER}@)?(?P<host>{_HOST})(?::(?P<port>\d{{1,5}}))?(?:{_PARAM}){{0,2}}$",
+_SIP = re.compile(rf"^sip:(?:{_USER}@)?(?P<host>{_HOST})(?::(?P<port>[0-9]{{1,5}}))?(?:{_PARAM}){{0,2}}$",
                   re.IGNORECASE | re.ASCII)
-_IPV4 = re.compile(r"^\d{1,3}(?:\.\d{1,3}){3}$", re.ASCII)
+_IPV4 = re.compile(r"^[0-9]{1,3}(?:\.[0-9]{1,3}){3}$", re.ASCII)
 
 
 def phone_target(raw: Any) -> Tuple[str, Optional[str]]:
@@ -85,9 +85,9 @@ def phone_target(raw: Any) -> Tuple[str, Optional[str]]:
     if text[:4].lower() == "tel:":
         text = text[4:]
     number = _SEPARATORS.sub("", text)
-    if _E164.match(number):
+    if _E164.fullmatch(number):
         return f"tel:{number}", None
-    if _DIGITS.match(number):
+    if _DIGITS.fullmatch(number):
         return f"tel:{number}", (NO_PLUS if len(number) >= _NO_PLUS_MIN else None)
     return "", INVALID
 
@@ -97,11 +97,11 @@ def sip_target(raw: Any) -> Tuple[str, Optional[str]]:
     text = str(raw or "").strip()
     if not text:
         return "", EMPTY
-    m = _SIP.match(text)
+    m = _SIP.fullmatch(text)
     if not m:
         return "", INVALID_SIP
     host, port = m.group("host"), m.group("port")
-    if _IPV4.match(host) and any(int(o) > 255 for o in host.split(".")):
+    if _IPV4.fullmatch(host) and any(int(o) > 255 for o in host.split(".")):
         return "", INVALID_SIP
     if port is not None and not 1 <= int(port) <= 65535:
         return "", INVALID_SIP
@@ -174,7 +174,7 @@ def voice_transfer_targets(voice: Any) -> Tuple[List[Dict[str, Any]], List[Tuple
     for i, item in enumerate(raw_list):
         where = f"voice.transfer_targets[{i}]"
         tid = str(_field(item, "id") or "").strip()
-        if not _ID.match(tid):
+        if not _ID.fullmatch(tid):
             problems.append((f"{where}.id", INVALID_ID))
             continue
         if tid in seen:

@@ -62,7 +62,7 @@ _CLOSED = ConfigDict(extra="forbid")
 
 def is_valid_invite_id(value: Any) -> bool:
     """`inv-` + 8 a 40 de [a-z0-9]."""
-    return isinstance(value, str) and bool(_INVITE_ID_RE.match(value))
+    return isinstance(value, str) and bool(_INVITE_ID_RE.fullmatch(value))
 
 
 def normalize_email(value: Any) -> Optional[str]:
@@ -70,19 +70,19 @@ def normalize_email(value: Any) -> Optional[str]:
     if not isinstance(value, str):
         return None
     email = value.strip().lower()
-    if not email or len(email) > MAX_EMAIL_LEN or not _EMAIL_RE.match(email) or ".." in email:
+    if not email or len(email) > MAX_EMAIL_LEN or not _EMAIL_RE.fullmatch(email) or ".." in email:
         return None
     return email
 
 
 def invite_blob(invite_id: str) -> str:
-    if not _INVITE_ID_RE.match(invite_id or ""):
+    if not _INVITE_ID_RE.fullmatch(invite_id or ""):
         raise ValueError("id de convite inválido")
     return f"{INVITES_PREFIX}{invite_id}.json"
 
 
 def invite_result_blob(invite_id: str) -> str:
-    if not _INVITE_ID_RE.match(invite_id or ""):
+    if not _INVITE_ID_RE.fullmatch(invite_id or ""):
         raise ValueError("id de convite inválido")
     return f"{INVITE_RESULTS_PREFIX}{invite_id}.json"
 
@@ -104,7 +104,7 @@ class InviteRequest(BaseModel):
     @field_validator("invite_id")
     @classmethod
     def _iid(cls, value: str) -> str:
-        if not _INVITE_ID_RE.match(value):
+        if not _INVITE_ID_RE.fullmatch(value):
             raise ValueError("id de convite inválido")
         return value
 
@@ -168,6 +168,6 @@ class InviteResult(BaseModel):
     @field_validator("invite_id")
     @classmethod
     def _iid(cls, value: str) -> str:
-        if not _INVITE_ID_RE.match(value):
+        if not _INVITE_ID_RE.fullmatch(value):
             raise ValueError("id de convite inválido")
         return value

@@ -33,7 +33,7 @@ def _check(doc: Any, name: str) -> Dict[str, Any]:
     if not isinstance(doc, dict):
         raise ValueError(f"{name}: não é um objeto")
     tid = doc.get("id")
-    if not isinstance(tid, str) or not _ID_RE.match(tid) or name != f"{tid}.json":
+    if not isinstance(tid, str) or not _ID_RE.fullmatch(tid) or name != f"{tid}.json":
         raise ValueError(f"{name}: `id` inválido ou diferente do nome do ficheiro")
     if not isinstance(doc.get("order"), int):
         raise ValueError(f"{name}: `order` em falta")
