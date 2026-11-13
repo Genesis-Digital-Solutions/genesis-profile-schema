@@ -79,6 +79,9 @@ _LOCAL = re.compile(rf"^(?:https?://)?localhost{_PORT}{_PATH}$")
 # uma. RECUSADA desde 13 Nov 2026 (`_APP_LOCALHOST`; até aí só este aviso — e uma
 # regra de segurança só em texto não existe). A app deve ter um `server.hostname`
 # próprio (ex. `capacitor://app.cliente.pt`). Nenhum perfil da frota a usava.
+# Limite: o hostname é escolhido pela PRÓPRIA app — qualquer app pode declarar-se
+# `capacitor://app.cliente.pt`. Uma origem de app no `frame-ancestors` não prova o
+# dono; só fecha a porta a todas as apps de uma vez.
 APP_SCHEMES = ("capacitor", "ionic")
 _APP = re.compile(rf"^(?:{'|'.join(APP_SCHEMES)})://{_LABEL}(?:\.{_LABEL})*{_PORT}/?$")
 _APP_LOCALHOST = re.compile(rf"(?:{'|'.join(APP_SCHEMES)})://localhost{_PORT}/?", re.IGNORECASE)
@@ -118,7 +121,7 @@ def is_app_origin(token: str) -> bool:
     Quem escreve o `frame-ancestors` usa isto para separar as origens de app
     das origens web: juntar a app não pode fechar o widget aos sites.
     """
-    return isinstance(token, str) and bool(_APP.fullmatch(token))
+    return isinstance(token, str) and bool(_APP.fullmatch(token)) and not _APP_LOCALHOST.fullmatch(token)
 
 
 def sanitise_csp_sources(values) -> Tuple[List[str], List[str]]:

@@ -129,7 +129,8 @@ def test_lista_vazia_ou_lixo_nao_rebenta():
 
 def test_origem_de_app_e_reconhecida_a_parte():
     assert fc.is_app_origin("capacitor://app.maxwork.pt")
-    assert fc.is_app_origin("ionic://localhost")
+    assert not fc.is_app_origin("ionic://localhost")       # recusada (13 Nov 2026)
+    assert fc.is_app_origin("ionic://app.cliente.pt")
     assert not fc.is_app_origin("https://app.maxwork.pt")
     assert not fc.is_app_origin("capacitor://*.maxwork.pt")
     assert not fc.is_app_origin(None)
