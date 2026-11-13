@@ -46,7 +46,7 @@ warnings.filterwarnings(
 )
 
 from typing import Annotated, Any, Dict, List, Literal, Optional, Union
-from pydantic import BaseModel, ConfigDict, Field, field_validator, model_serializer, model_validator
+from pydantic import BaseModel, ConfigDict, Field, field_validator, model_serializer, model_validator, StrictInt
 
 
 # ─────────────────────────────────────────────────────────────────────────────
@@ -2253,7 +2253,8 @@ class ProfileFrontend(BaseModel):
     # browser: o que o servidor guarda segue `compliance.retention`. Quem tem
     # login ou identidade do portal (widget) não é afetado. Tecto 365: acima
     # disso deixa de ser um prazo.
-    anonymousDataRetentionDays: Optional[int] = Field(default=None, ge=1, le=365)
+    # StrictInt (revisão da junção, 13 Nov 2026, X13): `true` ou "30" não passam por 1 ou 30 em silêncio.
+    anonymousDataRetentionDays: Optional[StrictInt] = Field(default=None, ge=1, le=365)
     # Género gramatical do assistente: labels fixas do FE e, desde v0.1.95, a
     # forma como o core fala de si (prompt do chat e da voz).
     assistantGender: Literal["feminine", "masculine", "neutral"] = "masculine"

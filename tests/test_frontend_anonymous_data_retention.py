@@ -35,3 +35,10 @@ def test_limites():
 def test_o_cliente_ve_mas_nao_altera_como_os_outros_prazos_de_retencao():
     assert exposure_of("frontend.anonymousDataRetentionDays") == exposure_of(
         "compliance.retention.conversations_anonymous_days")
+
+
+def test_so_inteiros_nunca_true_nem_texto():
+    """X13 da revisão da junção (13 Nov 2026): no modo lax do Pydantic `True` passava por 1 e `"30"` por 30."""
+    for bad in (True, False, "30", 30.0, "1"):
+        with pytest.raises(ValidationError):
+            ProfileFrontend(anonymousDataRetentionDays=bad)
