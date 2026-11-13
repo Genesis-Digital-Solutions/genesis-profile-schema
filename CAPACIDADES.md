@@ -134,7 +134,7 @@ carregar. Quem escreve é que descarta; quem lê continua a ler tudo.
   quando o Studio escreve o `staticwebapp.config.json`; um `;` fechava a
   directiva e abria outra, e o `allowed_origins` é editável pelo cliente.
   O `creator.py` do Studio passou a filtrar por aqui.
-  Porta só com dígitos ASCII e `capacitor://localhost`/`ionic://localhost` recusados (13 Nov 2026: o `\d` casava
+  Porta só com dígitos ASCII e `capacitor://localhost`/`ionic://localhost` recusados (v0.1.168, 13 Nov 2026: o `\d` casava
   dígitos Unicode; o localhost é a origem de TODAS as apps desse tipo).
   Aceita também origens de app móvel híbrida (`capacitor://host`, `ionic://host`,
   sem caminho nem wildcard; v0.1.151) e `is_app_origin()` separa-as das web.
@@ -427,7 +427,7 @@ um campo removido do modelo continua a viver no blob sem dar erro.
   `is_known_language_code("sw")` é `False`, e `language_tag_problems` **não**
   consulta o mapa. É o que mantém `allowed` aberto.
 - **`frontend.anonymousDataRetentionDays`** (13 Nov 2026, security-audit fecore
-  T2; entra no próximo bump): prazo, em dias sem uso, dos dados de anónimos no
+  T2; v0.1.168): prazo, em dias sem uso, dos dados de anónimos no
   BROWSER (conversas locais e chaves de acesso sem login). Opcional, 1–365;
   `None` = 30, e o valor por omissão vive no fecore (o campo chega como `null`
   aos blobs já gravados). Só leitura para o cliente, como `compliance.retention.*`.
