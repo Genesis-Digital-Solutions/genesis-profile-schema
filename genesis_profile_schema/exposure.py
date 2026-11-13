@@ -156,6 +156,10 @@ EXPOSURE: Dict[str, str] = {
     "frontend.aiDisclosure.enabled": _R,  # obrigacao AI Act Art. 50 — nao pode ser desligavel pelo cliente
     "frontend.aiDisclosure.text": _W,
     "frontend.aiDisclosure.textI18n": _W,
+    # prazo dos dados de anónimos no browser (T2, 13 Nov 2026): o cliente vê,
+    # não altera — mesma regra de `compliance.retention.*` (prazos de retenção
+    # pedem-se à Genesis).
+    "frontend.anonymousDataRetentionDays": _R,
     "frontend.assistantGender": _W,
     "frontend.auth.apiScopes": _I,
     "frontend.auth.authority": _I,

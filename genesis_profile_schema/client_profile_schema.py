@@ -2244,6 +2244,16 @@ class ProfileFrontend(BaseModel):
         max_length=30,
     )
     shareDefaultExpiryDays: int = Field(default=7, ge=1, le=30)
+    # Prazo (dias) dos dados de ANÓNIMOS guardados no browser (security-audit
+    # fecore T2, 13 Nov 2026): conversas locais e chaves de acesso sem login
+    # (segredo do browser, chaves dos espaços de CVs/Reuniões). O fecore apaga
+    # o que está parado há mais do que isto; o id de convidado e os ponteiros só
+    # saem no botão «Limpar este dispositivo». None = 30 dias (o valor por omissão vive no fecore:
+    # um campo opcional novo chega como null aos blobs já gravados). Só o
+    # browser: o que o servidor guarda segue `compliance.retention`. Quem tem
+    # login ou identidade do portal (widget) não é afetado. Tecto 365: acima
+    # disso deixa de ser um prazo.
+    anonymousDataRetentionDays: Optional[int] = Field(default=None, ge=1, le=365)
     # Género gramatical do assistente: labels fixas do FE e, desde v0.1.95, a
     # forma como o core fala de si (prompt do chat e da voz).
     assistantGender: Literal["feminine", "masculine", "neutral"] = "masculine"

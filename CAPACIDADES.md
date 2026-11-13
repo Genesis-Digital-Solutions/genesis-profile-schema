@@ -424,6 +424,12 @@ um campo removido do modelo continua a viver no blob sem dar erro.
 - Forma válida ≠ língua conhecida: `looks_like_language_tag("sw")` é `True` e
   `is_known_language_code("sw")` é `False`, e `language_tag_problems` **não**
   consulta o mapa. É o que mantém `allowed` aberto.
+- **`frontend.anonymousDataRetentionDays`** (13 Nov 2026, security-audit fecore
+  T2; entra no próximo bump): prazo, em dias sem uso, dos dados de anónimos no
+  BROWSER (conversas locais e chaves de acesso sem login). Opcional, 1–365;
+  `None` = 30, e o valor por omissão vive no fecore (o campo chega como `null`
+  aos blobs já gravados). Só leitura para o cliente, como `compliance.retention.*`.
+  Não é a retenção do servidor — essa continua em `compliance.retention`.
 - **Um erro de validação nunca leva o valor recusado na mensagem** (v0.1.166,
   Finding 62 do core / F-S56 do Studio): quem embrulha um erro interno usa
   `error_summary.error_summary_without_values` (`loc: msg`, até 5, e quantos
