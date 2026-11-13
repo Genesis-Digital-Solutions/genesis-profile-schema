@@ -518,6 +518,11 @@
       "label": "Texto do aviso (multilingue)",
       "help": "Mapa {idioma: texto}. Tem precedência sobre o texto único."
     },
+    "frontend.anonymousDataRetentionDays": {
+      "label": "Dados de visitantes sem login no browser (dias)",
+      "help": "Ao fim de quantos dias sem uso o browser apaga as conversas e as chaves de acesso de quem não iniciou sessão. Vazio = 30 dias. Não muda o que o servidor guarda nem afeta quem tem login.",
+      "note": "Dias sem uso até o browser apagar os dados de quem não tem login (vazio = 30)"
+    },
     "frontend.assistantGender": {
       "label": "Género do assistente",
       "help": "Género gramatical do assistente — afeta as concordâncias nas legendas fixas do frontend e a forma como o assistente fala de si no chat e na voz (ex.: «obrigada», «estou pronta»). Neutro evita formas com género.",

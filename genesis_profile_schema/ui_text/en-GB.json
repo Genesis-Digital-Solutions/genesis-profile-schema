@@ -518,6 +518,11 @@
       "label": "Disclosure text (multilingual)",
       "help": "A map of {language: text}. Takes precedence over the single text."
     },
+    "frontend.anonymousDataRetentionDays": {
+      "label": "Data of visitors without sign-in kept in the browser (days)",
+      "help": "After how many days without use the browser deletes the conversations and access keys of people who are not signed in. Empty = 30 days. It does not change what the server keeps, nor affect signed-in users.",
+      "note": "Days without use until the browser deletes the data of people who are not signed in (empty = 30)"
+    },
     "frontend.assistantGender": {
       "label": "Assistant gender",
       "help": "The assistant’s grammatical gender — affects agreement in the frontend’s fixed captions and how the assistant refers to itself in chat and voice (e.g. Portuguese «obrigada», «estou pronta»). Neutral avoids gendered forms.",
