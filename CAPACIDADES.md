@@ -134,6 +134,8 @@ carregar. Quem escreve é que descarta; quem lê continua a ler tudo.
   quando o Studio escreve o `staticwebapp.config.json`; um `;` fechava a
   directiva e abria outra, e o `allowed_origins` é editável pelo cliente.
   O `creator.py` do Studio passou a filtrar por aqui.
+  Porta só com dígitos ASCII e `capacitor://localhost`/`ionic://localhost` recusados (13 Nov 2026: o `\d` casava
+  dígitos Unicode; o localhost é a origem de TODAS as apps desse tipo).
   Aceita também origens de app móvel híbrida (`capacitor://host`, `ionic://host`,
   sem caminho nem wildcard; v0.1.151) e `is_app_origin()` separa-as das web.
 - `regex_risk()` — aviso para as regex de `product_identification.patterns`. O
