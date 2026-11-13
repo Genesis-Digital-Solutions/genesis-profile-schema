@@ -50,7 +50,10 @@ from typing import List, Optional, Tuple
 # Domínios internacionais entram em punycode (`xn--…`), como o CSP exige.
 _LABEL = r"[A-Za-z0-9](?:[A-Za-z0-9_-]{0,61}[A-Za-z0-9])?"
 _DOTTED = rf"(?:\*\.)?{_LABEL}(?:\.{_LABEL})+"
-_PORT = r"(?::\d{1,5})?"
+# `[0-9]`, nunca `\d`: em Python o `\d` sobre `str` casa QUALQUER dígito Unicode
+# (`https://a.pt:٨٠`, `:８０` passavam — o browser ignora a origem e a imagem nginx
+# do light recusava-a e não arrancava; revisão do B-4/T4, 13 Nov 2026).
+_PORT = r"(?::[0-9]{1,5})?"
 
 # Caminho opcional. É gramática válida de CSP (source com caminho) e o
 # `frame-ancestors` ignora-o — recusá-lo tirava a autorização a quem tivesse
@@ -72,10 +75,13 @@ _LOCAL = re.compile(rf"^(?:https?://)?localhost{_PORT}{_PATH}$")
 # caminho nem wildcard — só serve para o `frame-ancestors` deixar a app embeber
 # o widget. Fora dessa WebView nenhum browser carrega nada destes esquemas.
 # ⚠️ `capacitor://localhost` é a origem por omissão de TODAS as apps Capacitor
-# no iOS: autorizá-la abre o widget a qualquer uma. A app deve ter um
-# `server.hostname` próprio (ex. `capacitor://app.cliente.pt`).
+# no iOS (e `ionic://localhost` das Ionic): autorizá-la abre o widget a qualquer
+# uma. RECUSADA desde 13 Nov 2026 (`_APP_LOCALHOST`; até aí só este aviso — e uma
+# regra de segurança só em texto não existe). A app deve ter um `server.hostname`
+# próprio (ex. `capacitor://app.cliente.pt`). Nenhum perfil da frota a usava.
 APP_SCHEMES = ("capacitor", "ionic")
 _APP = re.compile(rf"^(?:{'|'.join(APP_SCHEMES)})://{_LABEL}(?:\.{_LABEL})*{_PORT}/?$")
+_APP_LOCALHOST = re.compile(rf"(?:{'|'.join(APP_SCHEMES)})://localhost{_PORT}/?", re.IGNORECASE)
 
 _SEPARATORS = re.compile(r"[\s,]+")
 
@@ -98,6 +104,8 @@ def is_valid_csp_source(token: str) -> bool:
     if not isinstance(token, str) or not token:
         return False
     if any(ch in token for ch in (";", "'", '"', "\\", "<", ">", "`")):
+        return False
+    if _APP_LOCALHOST.fullmatch(token):      # a origem de TODAS as apps desse tipo
         return False
     # `fullmatch`, não `match`: o `$` deixava passar uma quebra de linha no fim.
     return bool(_WITH_SCHEME.fullmatch(token) or _NO_SCHEME.fullmatch(token)
@@ -208,7 +216,7 @@ def regex_risks(patterns) -> List[Tuple[str, str]]:
 # desenha o formulário.
 # ─────────────────────────────────────────────────────────────────────────────
 
-_LANGUAGE_TAG = re.compile(r"^[A-Za-z]{2,3}(?:-[A-Za-z]{4})?(?:-(?:[A-Za-z]{2}|\d{3}))?$")
+_LANGUAGE_TAG = re.compile(r"^[A-Za-z]{2,3}(?:-[A-Za-z]{4})?(?:-(?:[A-Za-z]{2}|[0-9]{3}))?$")   # `[0-9]`: o `\d` casa `٤١٩`
 
 # Locales para os quais o produto já traz voz configurada de fábrica
 # (`voices.by_locale`). São SUGESTÕES para uma caixa de selecção editável —
@@ -225,7 +233,7 @@ def looks_like_language_tag(value: str) -> bool:
     value = value.strip()
     if not value or value == "*":
         return False
-    return bool(_LANGUAGE_TAG.match(value))
+    return bool(_LANGUAGE_TAG.fullmatch(value))
 
 
 def language_tag_problems(values) -> List[str]:

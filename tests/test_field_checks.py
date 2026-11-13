@@ -35,8 +35,9 @@ VALIDAS = [
     # Apps moveis hibridas (4 Nov 2026, app do MaxWork no iOS).
     "capacitor://app.maxwork.pt",
     "capacitor://realestate-dev-v2-backoffice.azurewebsites.net",
-    "capacitor://localhost",
-    "ionic://localhost",
+    "capacitor://app.maxwork.pt:8100",
+    "localhost",                          # um SITE em localhost (dev) continua a passar
+    "http://localhost:5000",
 ]
 
 INVALIDAS = [
@@ -67,6 +68,19 @@ INVALIDAS = [
     "cordova://app.maxwork.pt",
     "capacitor://app.maxwork.pt\n",      # o `$` deixava passar a quebra final
     "https://www.cliente.pt\n",
+    # A origem por omissão de TODAS as apps Capacitor/Ionic (13 Nov 2026; até aí só um aviso).
+    "capacitor://localhost",
+    "ionic://localhost",
+    "capacitor://localhost:8100",
+    "capacitor://localhost/",
+    "capacitor://LOCALHOST",
+    "ionic://LocalHost:8100/",
+    # Dígitos não ASCII numa porta (o `\d` do Python casa-os; 13 Nov 2026).
+    "https://cliente.pt:٨٠",
+    "https://cliente.pt:８０",
+    "capacitor://app.maxwork.pt:８１００",
+    "localhost:٤٢٠٠",
+    "cliente.pt:٤٤٣",
 ]
 
 
@@ -173,7 +187,7 @@ def test_etiquetas_bem_formadas():
 
 
 def test_os_typos_do_pedido_do_backoffice_sao_apanhados():
-    for tag in ("pt_PT", "portugues", "PT-PT-PT", "", "   ", "*"):
+    for tag in ("pt_PT", "portugues", "PT-PT-PT", "", "   ", "*", "es-٤١٩", "es-４１９"):
         assert not fc.looks_like_language_tag(tag), tag
     # `PT-PT` maiúsculo é forma válida de BCP-47 (a norma é case-insensitive).
     assert fc.looks_like_language_tag("PT-PT")
