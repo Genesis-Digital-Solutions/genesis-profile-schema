@@ -1,4 +1,4 @@
-"""`mcp.servers[]`: `chat`, `read_tools` e `trusted_data` só saem no dump quando NÃO
+"""`mcp.servers[]`: `chat`, `read_tools`, `trusted_data` e `chat_tools_off` só saem no dump quando NÃO
 são o default (v0.1.161, 8 Nov 2026) — o mesmo que o `MCPServerConfig` do core faz.
 
 Medido na Indaqua dev: uma aprovação do Studio gravou pelo `/admin/profile/save`
@@ -15,10 +15,11 @@ SRV = {"name": "db", "url": "https://mcp"}
 @pytest.mark.parametrize("raw", [
     {}, {"chat": True}, {"read_tools": []}, {"read_tools": None},
     {"trusted_data": False}, {"chat": True, "read_tools": [], "trusted_data": False},
+    {"chat_tools_off": []}, {"chat_tools_off": None},
 ])
 def test_defaults_nao_saem(raw):
     d = ProfileMCPServer.model_validate(dict(SRV, **raw)).model_dump(mode="json")
-    for k in ("chat", "read_tools", "trusted_data"):
+    for k in ("chat", "read_tools", "trusted_data", "chat_tools_off"):
         assert k not in d, k
 
 
@@ -40,5 +41,5 @@ def test_o_caminho_real_do_save_to_blob_dict():
     """É o `to_blob_dict` que o `/admin/profile/save` do core grava."""
     perfil = ClientProfileSchema.model_validate({"client_id": "x", "mcp": {"servers": [SRV]}})
     srv = perfil.to_blob_dict()["mcp"]["servers"][0]
-    for k in ("chat", "read_tools", "trusted_data", "signing"):
+    for k in ("chat", "read_tools", "trusted_data", "signing", "chat_tools_off"):
         assert k not in srv, k

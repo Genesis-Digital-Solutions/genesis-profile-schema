@@ -1841,7 +1841,7 @@
     },
     "mcp.confirm_actions": {
       "label": "Action confirmation",
-      "help": "When the assistant asks for confirmation before running an MCP tool. The default sits on the safe side."
+      "help": "The assistant always asks for confirmation before running an MCP tool that writes or deletes. No value switches this off."
     },
     "mcp.disabledServers": {
       "label": "Disabled servers",
@@ -1929,6 +1929,10 @@
     "mcp.servers.protocol_era": {
       "label": "MCP protocol era",
       "help": "Which MCP protocol version this server speaks. “Automatic” starts with the older, handshake-based protocol — what the fleet uses — and moves to the new one (2026-07-28, sessionless) only if the server proves it speaks nothing else. “Legacy” never switches; “Modern” goes straight to the new one, for a server already known not to support the old."
+    },
+    "mcp.servers.chat_tools_off": {
+      "label": "Tools switched off in chat",
+      "help": "Tools on this server that the chat assistant does not see (the name as the server gives it, without the prefix). Empty = chat sees them all. Switching a tool off here does not remove it from automations (queue checks, triggers), and writes and deletions always ask for confirmation, switched on or not."
     },
     "mcp.servers.read_tools": {
       "label": "Tools declared read-only",

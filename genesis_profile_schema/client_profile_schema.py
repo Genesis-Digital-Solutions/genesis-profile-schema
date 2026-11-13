@@ -1458,6 +1458,35 @@ class ProfileMCPServer(BaseModel):
     # `extra="forbid"` — escrever SÓ num core que anuncie `mcp_request_signing`,
     # e só ligado (desligado = omitir a chave). As forks não o conhecem.
     signing: Optional[ProfileMCPSigning] = None
+    # chat_tools_off — interruptor POR TOOL do chat (v0.1.167, F-20 do genesis-mcp,
+    # decisão do Bruno a 13 Nov 2026): nomes brutos das tools deste server (sem o
+    # prefixo) que NÃO chegam ao agente do chat. Vazio, `null` ou ausente = todas
+    # as tools chegam, como sempre (não há «lista vazia = nenhuma»: para isso é o
+    # `chat: false`). Só decide o que o chat vê: as automações (gates da fila,
+    # gatilhos, resolver, agente operador) chamam a tool pelo `invoker` como
+    # antes, e o gate de confirmação das escritas não depende disto. Interno.
+    # ⚠️ ORDEM DE ROLLOUT (a do `read_tools`): o `MCPServerConfig` do core é
+    # `extra="forbid"` — escrever SÓ num core que anuncie `mcp_chat_tools_off`,
+    # e nunca vazio (lista vazia = omitir a chave). As forks não o conhecem.
+    chat_tools_off: List[str] = Field(default_factory=list, max_length=500)
+
+    @field_validator("chat_tools_off", mode="before")
+    @classmethod
+    def _chat_tools_off_limpos(cls, v):
+        if v is None:
+            return []
+        if not isinstance(v, list):
+            raise ValueError("chat_tools_off tem de ser uma lista de nomes de tools")
+        out: List[str] = []
+        for item in v:
+            if not isinstance(item, str):
+                raise ValueError("chat_tools_off: cada nome de tool tem de ser texto")
+            name = item.strip()
+            if not name or len(name) > 128:
+                raise ValueError("chat_tools_off: nome de tool vazio ou com mais de 128 caracteres")
+            if name not in out:
+                out.append(name)
+        return out
 
     @field_validator("read_tools", mode="before")
     @classmethod
@@ -1497,6 +1526,8 @@ class ProfileMCPServer(BaseModel):
                 dados.pop("read_tools", None)
             if self.trusted_data is not True:
                 dados.pop("trusted_data", None)
+            if not self.chat_tools_off:
+                dados.pop("chat_tools_off", None)
         return dados
 
 
@@ -1511,18 +1542,20 @@ class ProfileMCP(BaseModel):
     # numa VARIANTE, desliga por NOME servers herdados do base (listas
     # substituem, não subtraem — isto resolve "o base tem, a persona não quer").
     disabledServers: List[str] = Field(default_factory=list)
-    # Gate de confirmação de ações MCP (write/destructive). Lido pelo runtime
-    # do genai-core (_confirm_actions_policy). "all_writes" = pede confirmação em
-    # qualquer tool não-readonly; "destructive_only" = só nas marcadas destrutivas.
-    # Default no lado seguro. O valor "never" (sem gate) foi RETIRADO na v0.1.137
-    # (relatório STEP, risco 4, decisão do Bruno a 29 Out 2026 — nenhum cliente o
-    # usava): um perfil antigo com "never" lê-se como "all_writes", nunca falha.
-    confirm_actions: Literal["all_writes", "destructive_only"] = "all_writes"
+    # Gate de confirmação de ações MCP. Lido pelo runtime do genai-core
+    # (_confirm_actions_policy). Só há um valor: "all_writes" = pede confirmação em
+    # qualquer tool que não seja só-leitura (escritas e apagamentos, sempre).
+    # Valores RETIRADOS, que um perfil antigo pode trazer e se leem "all_writes",
+    # nunca falham: "never" (v0.1.137, relatório STEP, risco 4, 29 Out 2026) e
+    # "destructive_only" (v0.1.167, decisão do Bruno a 13 Nov 2026 com o F-20:
+    # deixava correr sem confirmação as escritas não destrutivas; medido nesse
+    # dia, nenhum perfil o usava).
+    confirm_actions: Literal["all_writes"] = "all_writes"
 
     @field_validator("confirm_actions", mode="before")
     @classmethod
-    def _never_retirado(cls, v):
-        if v is None or (isinstance(v, str) and v.strip().lower() == "never"):
+    def _valores_retirados(cls, v):
+        if v is None or (isinstance(v, str) and v.strip().lower() in ("never", "destructive_only")):
             return "all_writes"
         return v
 
