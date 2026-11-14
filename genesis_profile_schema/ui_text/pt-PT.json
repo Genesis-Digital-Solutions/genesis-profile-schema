@@ -3023,8 +3023,8 @@
     },
     "voice.transcription.phone": {
       "label": "Guardar a transcrição das chamadas telefónicas (só o assistente)",
-      "help": "Ligado = o que o ASSISTENTE disse em cada chamada fica numa conversa própria, marcada como chamada, com a retenção abaixo (ou a das conversas). O que o chamador diz NÃO é guardado. Requer menção no DPA do cliente.",
-      "note": "Independente da transcrição do site. Desligado por defeito. Com o agente completo ligado, a conversa da chamada já guardava as perguntas que o assistente passa ao agente."
+      "help": "Ligado = o que o ASSISTENTE disse em cada chamada fica numa conversa própria, com a retenção abaixo. Só grava com a prova da autorização do cliente e o aviso falado no início da chamada.",
+      "note": "Desde a v0.1.169 sem a prova e o aviso a chamada corre mas nada se guarda. Independente da transcrição do site. Desligado por defeito. Com o agente completo ligado, a conversa da chamada já guardava as perguntas que o assistente passa ao agente."
     },
     "voice.transcription.retention_days": {
       "label": "Retenção da transcrição (dias)",
@@ -3331,6 +3331,74 @@
     "channels.routes.to.receipt.list_refused": {
       "label": "Dizer no recibo as peças recusadas",
       "help": "Lista as peças que não entraram (marcas de classificação, macros, tamanho) e porquê, para a pessoa as reenviar."
+    },
+    "frontend.llmDefaultId": {
+      "label": "Modelo pré-selecionado no seletor",
+      "help": "Um dos modelos da lista acima (id fornecedor:modelo:modo). Vazio = o primeiro da lista."
+    },
+    "voice.transcription.caller": {
+      "label": "Transcrever também o munícipe (chamadas telefónicas)",
+      "help": "Ligado = a chamada fica transcrita por inteiro (munícipe e assistente), a partir do momento em que o aviso falado foi dito. Exige a prova da autorização escrita do cliente, o aviso e um deployment de transcrição. Requer menção no DPA."
+    },
+    "voice.transcription.caller_model": {
+      "label": "Deployment de transcrição do munícipe",
+      "help": "Nome do deployment Azure (ex.: gpt-4o-transcribe) no recurso de voz do cliente."
+    },
+    "voice.recording.enabled": {
+      "label": "Gravar o áudio das chamadas",
+      "help": "Ainda não disponível (fase 2): enquanto não existir, ligar isto não grava nada. Quando existir, exige a prova da autorização escrita do cliente e o aviso falado."
+    },
+    "voice.recording.retention_days": {
+      "label": "Retenção das gravações (dias)",
+      "help": "1 a 180, por omissão 30. Nunca acima da retenção das conversas."
+    },
+    "voice.recording.channels": {
+      "label": "Canais da gravação",
+      "help": "stereo = munícipe num canal e assistente no outro; mono = os dois misturados."
+    },
+    "voice.capture_notice": {
+      "label": "Aviso de gravação e transcrição (dito no início da chamada)",
+      "help": "Frase dita logo a seguir à identificação como assistente de IA, por língua. Sem ela nada da chamada se guarda. Sem aspas nem quebras de linha, até 400 caracteres; escrever os números por extenso (ex.: «trinta dias»)."
+    },
+    "voice.capture_consent.kind": {
+      "label": "Tipo de prova da autorização",
+      "help": "document = documento assinado guardado; email = registo do email de autorização."
+    },
+    "voice.capture_consent.document_sha256": {
+      "label": "Impressão do documento (sha256)"
+    },
+    "voice.capture_consent.document_blob": {
+      "label": "Documento da autorização (no armazenamento do cliente)"
+    },
+    "voice.capture_consent.email_sender": {
+      "label": "Email de quem autorizou"
+    },
+    "voice.capture_consent.email_date": {
+      "label": "Data do email de autorização"
+    },
+    "voice.capture_consent.email_subject": {
+      "label": "Assunto do email de autorização"
+    },
+    "voice.capture_consent.legal_basis": {
+      "label": "Base legal indicada pelo cliente"
+    },
+    "voice.capture_consent.purpose": {
+      "label": "Finalidade indicada pelo cliente"
+    },
+    "voice.capture_consent.dpa_updated": {
+      "label": "DPA / subcontratação atualizados"
+    },
+    "voice.capture_consent.notice_ack": {
+      "label": "Aviso no início da chamada confirmado"
+    },
+    "voice.capture_consent.retention_ack": {
+      "label": "Prazo de conservação confirmado"
+    },
+    "voice.capture_consent.recorded_by": {
+      "label": "Registado por"
+    },
+    "voice.capture_consent.recorded_at": {
+      "label": "Registado em"
     }
   }
 }

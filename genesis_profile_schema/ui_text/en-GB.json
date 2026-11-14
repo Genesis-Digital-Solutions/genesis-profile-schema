@@ -3023,8 +3023,8 @@
     },
     "voice.transcription.phone": {
       "label": "Keep the transcript of phone calls (assistant only)",
-      "help": "On = what the ASSISTANT said in each call is stored in a conversation of its own, marked as a call, with the retention below (or the conversations'). What the caller says is NOT stored. Requires a mention in the client's DPA.",
-      "note": "Independent from the site transcript. Off by default. With the full agent on, the call's conversation already stored the questions the assistant passes to the agent."
+      "help": "On = what the ASSISTANT said in each call is kept in its own conversation, with the retention below. It only records with the client's authorisation proof and the spoken notice at the start of the call.",
+      "note": "Since v0.1.169, without the proof and the notice the call runs but nothing is kept. Independent from the website transcript. Off by default. With the full agent on, the call conversation already kept the questions the assistant hands to the agent."
     },
     "voice.transcription.retention_days": {
       "label": "Transcript retention (days)",
@@ -3331,6 +3331,74 @@
     "channels.routes.to.receipt.list_refused": {
       "label": "List refused documents in the receipt",
       "help": "Lists the documents that did not get in (classification marks, macros, size) and why, so the person can send them again."
+    },
+    "frontend.llmDefaultId": {
+      "label": "Model preselected in the picker",
+      "help": "One of the models in the list above (provider:model:mode id). Empty = the first one."
+    },
+    "voice.transcription.caller": {
+      "label": "Also transcribe the caller (phone calls)",
+      "help": "On = the whole call is transcribed (caller and assistant), from the moment the spoken notice was said. Requires the client's written authorisation proof, the notice and a transcription deployment. Must be in the DPA."
+    },
+    "voice.transcription.caller_model": {
+      "label": "Caller transcription deployment",
+      "help": "Azure deployment name (e.g. gpt-4o-transcribe) in the client's voice resource."
+    },
+    "voice.recording.enabled": {
+      "label": "Record the call audio",
+      "help": "Not available yet (phase 2): until then, turning this on records nothing. Once available, it requires the client's written authorisation proof and the spoken notice."
+    },
+    "voice.recording.retention_days": {
+      "label": "Recording retention (days)",
+      "help": "1 to 180, 30 by default. Never above the conversations retention."
+    },
+    "voice.recording.channels": {
+      "label": "Recording channels",
+      "help": "stereo = caller on one channel and assistant on the other; mono = both mixed."
+    },
+    "voice.capture_notice": {
+      "label": "Recording and transcription notice (said at the start of the call)",
+      "help": "Sentence said right after the AI assistant identification, per language. Without it nothing from the call is kept. No quotes or line breaks, up to 400 characters; write numbers in words (e.g. «thirty days»)."
+    },
+    "voice.capture_consent.kind": {
+      "label": "Kind of authorisation proof",
+      "help": "document = signed document kept; email = record of the authorisation email."
+    },
+    "voice.capture_consent.document_sha256": {
+      "label": "Document fingerprint (sha256)"
+    },
+    "voice.capture_consent.document_blob": {
+      "label": "Authorisation document (in the client's storage)"
+    },
+    "voice.capture_consent.email_sender": {
+      "label": "Email of who authorised"
+    },
+    "voice.capture_consent.email_date": {
+      "label": "Date of the authorisation email"
+    },
+    "voice.capture_consent.email_subject": {
+      "label": "Subject of the authorisation email"
+    },
+    "voice.capture_consent.legal_basis": {
+      "label": "Legal basis stated by the client"
+    },
+    "voice.capture_consent.purpose": {
+      "label": "Purpose stated by the client"
+    },
+    "voice.capture_consent.dpa_updated": {
+      "label": "DPA / subprocessing updated"
+    },
+    "voice.capture_consent.notice_ack": {
+      "label": "Notice at the start of the call confirmed"
+    },
+    "voice.capture_consent.retention_ack": {
+      "label": "Retention period confirmed"
+    },
+    "voice.capture_consent.recorded_by": {
+      "label": "Recorded by"
+    },
+    "voice.capture_consent.recorded_at": {
+      "label": "Recorded at"
     }
   }
 }

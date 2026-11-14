@@ -2214,6 +2214,11 @@ class ProfileFrontend(BaseModel):
     # Lista de modelos do LLM picker — só relevante quando enableLlmSelector=true.
     # Alimentada no editor pelos modelos realmente deployed no OpenAI do cliente.
     llmModels: List[str] = Field(default_factory=list)
+    # O modelo pré-selecionado no picker (um dos ids `provider:model:mode` de
+    # `llmModels`; vazio = o primeiro). Lido pelo fecore desde sempre e só
+    # declarado na v0.1.169 — até lá saía pelo `BROWSER_READS_OUTSIDE_SCHEMA`
+    # do core (`client_config_public.py`).
+    llmDefaultId: str = ""
     aiDisclosure: ProfileAiDisclosure = Field(default_factory=ProfileAiDisclosure)
     # Título de boas-vindas do empty-state — mapa i18n {lang:texto}.
     welcomeMessage: I18nMap = Field(default_factory=dict)
@@ -2583,6 +2588,23 @@ class ProfileVoiceTranscription(BaseModel):
     # CHAMADOR diz fica para a fase 2 (consentimento + deployment de
     # transcrição) e não é ligado por este campo.
     phone: bool = False
+    # v0.1.169 (14 Nov 2026, pack da gravação, fase 1): transcrever também o
+    # MUNÍCIPE ao telefone — liga a transcrição COMPLETA (com o assistente),
+    # exige a prova e o aviso (`voice.capture_consent`/`capture_notice`,
+    # validador em `ProfileVoice`) e um deployment de transcrição
+    # (`caller_model`, ex.: `gpt-4o-transcribe`). Consumidor: genai-core
+    # `voice/capture_gate.py`. OFF por defeito.
+    caller: bool = False
+    caller_model: Optional[str] = None
+
+    @field_validator("caller_model", mode="before")
+    @classmethod
+    def _caller_model_shape(cls, v):
+        # Nome de deployment ou nada — nunca recusa (o core trata vazio como «falta o modelo»).
+        from genesis_profile_schema.voice_capture import DEPLOYMENT_RE
+        if isinstance(v, str) and DEPLOYMENT_RE.fullmatch(v.strip()):
+            return v.strip()
+        return None
 
     @field_validator("retention_days", mode="before")
     @classmethod
@@ -2663,6 +2685,11 @@ class ProfileVoiceAgent(BaseModel):
     # anónimo veria. Desligado por omissão — é abrir a KB de um bot
     # fechado a quem liga, decisão consciente por cliente.
     phone_when_login_required: bool = False
+
+
+from genesis_profile_schema.voice_capture import (  # noqa: E402
+    ProfileVoiceCaptureConsent, ProfileVoiceRecording, consent_problem, notice_problem,
+)
 
 
 class ProfileVoiceCapture(BaseModel):
@@ -2749,6 +2776,32 @@ class ProfileVoice(BaseModel):
     transcription: ProfileVoiceTranscription = Field(default_factory=ProfileVoiceTranscription)
     # Captura com consentimento na voz (v0.1.112) — ver ProfileVoiceCapture.
     capture: ProfileVoiceCapture = Field(default_factory=ProfileVoiceCapture)
+    # v0.1.169 (14 Nov 2026, pack «Voz: gravação e transcrição completa») —
+    # `genesis_profile_schema/voice_capture.py`. Tudo `internal` (só o Studio).
+    recording: ProfileVoiceRecording = Field(default_factory=ProfileVoiceRecording)
+    # O aviso falado na 1.ª fala da chamada, a seguir à divulgação de IA (str na
+    # língua do perfil ou {lang: texto}); sem ele nada se capta.
+    capture_notice: Union[str, I18nMap] = ""
+    # A prova da autorização escrita do cliente (documento ou email).
+    capture_consent: Optional[ProfileVoiceCaptureConsent] = None
+
+    @model_validator(mode="after")
+    def _captura_exige_prova_e_aviso(self):
+        """A transcrição do munícipe e a gravação NÃO se ligam sem a prova
+        completa e o aviso (D2). O `phone` sozinho não é recusado aqui (já
+        existia gravado — ver a docstring de `voice_capture.py`); o core
+        bloqueia-o na chamada."""
+        tr = self.transcription
+        if not (tr.caller or self.recording.enabled):
+            return self
+        problem = consent_problem(self.capture_consent) or notice_problem(self.capture_notice)
+        if not problem and tr.caller and not tr.caller_model:
+            problem = "caller_model_missing"
+        if problem:
+            raise ValueError(
+                f"voice: a transcrição do munícipe ou a gravação exigem a prova da autorização "
+                f"do cliente e o aviso falado ({problem})")
+        return self
 
 
 class ProfileContacts(BaseModel):

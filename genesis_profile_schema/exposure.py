@@ -322,6 +322,7 @@ EXPOSURE: Dict[str, str] = {
     "frontend.language.enabled": _W,
     "frontend.legalNotice": _W,
     "frontend.llmModels": _I,  # ids provider:model:mode — escolha de modelo e custo nosso
+    "frontend.llmDefaultId": _I,  # v0.1.169: o pré-selecionado de llmModels — mesma razão
     "frontend.privacyPolicyI18n": _W,
     "frontend.privacyPolicyUrl": _W,
     "frontend.shareDefaultExpiryDays": _W,
@@ -467,6 +468,31 @@ EXPOSURE: Dict[str, str] = {
     # o cliente ve (materia de DPA), quem liga somos nos.
     "voice.capture.enabled": _R,
     "voice.transcription.retention_days": _R,
+    # v0.1.169 (14 Nov 2026, pack da gravação): mesma regra do `phone` — o
+    # cliente ve o que se capta e por quanto tempo (DPA), quem liga somos nos.
+    "voice.transcription.caller": _R,
+    "voice.transcription.caller_model": _I,  # deployment Azure
+    "voice.recording.enabled": _R,
+    "voice.recording.retention_days": _R,
+    "voice.recording.channels": _I,
+    # O aviso falado vai para as instrucoes do modelo: o cliente le-o, nunca o
+    # escreve por aqui (o Studio valida-o — sem aspas, quebras nem controlo).
+    "voice.capture_notice": _R,
+    # A prova da autorizacao: so o Studio a grava (upload + hash no servidor).
+    # Tem dados pessoais (email de quem autorizou, quem registou) — interna.
+    "voice.capture_consent.kind": _I,
+    "voice.capture_consent.document_sha256": _I,
+    "voice.capture_consent.document_blob": _I,
+    "voice.capture_consent.email_sender": _I,
+    "voice.capture_consent.email_date": _I,
+    "voice.capture_consent.email_subject": _I,
+    "voice.capture_consent.legal_basis": _I,
+    "voice.capture_consent.purpose": _I,
+    "voice.capture_consent.dpa_updated": _I,
+    "voice.capture_consent.notice_ack": _I,
+    "voice.capture_consent.retention_ack": _I,
+    "voice.capture_consent.recorded_by": _I,
+    "voice.capture_consent.recorded_at": _I,
     "voice.transfer_number": _W,  # só telefone (transfer_target.phone_target)
     # destino SIP: encaminhamento nosso; um host SIP escrito pelo cliente desviava chamadas
     "voice.transfer_sip_uri": _I,
