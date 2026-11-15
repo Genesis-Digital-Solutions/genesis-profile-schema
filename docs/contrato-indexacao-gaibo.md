@@ -217,7 +217,7 @@ publicação, ao lado de quem pediu a publicação.
 **Validadores exportados (v0.1.103):** `is_valid_origin_ref`, `is_valid_request_id` e `is_valid_run_id` — não
 repitam os padrões do vosso lado.
 
-**Referências opacas de pessoas (F-S104, próximo bump depois da v0.1.169):** `requested_by_ref` (pedido de
+**Referências opacas de pessoas (F-S104, v0.1.170):** `requested_by_ref` (pedido de
 publicação e convite) e `uploaded_by_ref` (relatório) têm de passar `is_valid_opaque_ref` — 1 a 128 de
 `[A-Za-z0-9_:.-]`, a começar por letra ou dígito ASCII (`ref-<hex>`, oid, `genesis-support:<oid>`). Um email, um nome
 ou texto livre torna o ficheiro **inválido** (o pedido não é publicado, o convite não é enviado e o relatório `runs/` inteiro fica ilegível — sai dos custos, do limite mensal e dos tamanhos do histórico). O Studio, além

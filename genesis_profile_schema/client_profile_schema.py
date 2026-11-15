@@ -2529,7 +2529,7 @@ class ProfileCompliance(BaseModel):
     # v0.1.68: responsável pelo tratamento e canal para pedidos de titulares.
     data_subject_rights: ProfileComplianceDataSubjectRights = Field(
         default_factory=ProfileComplianceDataSubjectRights)
-    # 19 Out 2026 (próximo bump): factos do AI Act Statement por deployment.
+    # 19 Out 2026 (v0.1.128): factos do AI Act Statement por deployment.
     statement: ProfileComplianceStatement = Field(default_factory=ProfileComplianceStatement)
 
 

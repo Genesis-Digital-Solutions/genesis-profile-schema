@@ -880,7 +880,7 @@ class IntakeDocumentTemplate(BaseModel):
         return self
 
 
-# ─── Fundos a escolher por processo (próximo bump; Quadrantis 21 Out 2026) ──
+# ─── Fundos a escolher por processo (v0.1.130; Quadrantis 21 Out 2026) ──
 # «O campo OIC/Fund deverá ser dinâmico e corresponder à designação legal exata
 # do OIC objeto da subscrição em cada processo»: a definição tem a LISTA e quem
 # cria o processo escolhe um (fica no processo; os documentos usam-no). Sem
@@ -940,7 +940,7 @@ class IntakeDefinition(BaseModel):
     communications: IntakeCommunications = Field(default_factory=IntakeCommunications)
     # Fundo / OIC a que o questionário se aplica (v0.1.85; Anexos III/IV «OIC/Fund»).
     fund: I18nHelp = Field(default_factory=dict)
-    # Lista de fundos a escolher em cada processo (próximo bump); vazia = o `fund` acima.
+    # Lista de fundos a escolher em cada processo (v0.1.130); vazia = o `fund` acima.
     funds: List[IntakeFund] = Field(default_factory=list, max_length=MAX_FUNDS)
     metric_targets: Optional[IntakeMetricTargets] = None
     review: IntakeReviewPolicy = Field(default_factory=IntakeReviewPolicy)
