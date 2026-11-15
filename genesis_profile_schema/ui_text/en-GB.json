@@ -1884,7 +1884,7 @@
     },
     "mcp.servers.auth.client_secret": {
       "label": "Client secret",
-      "help": "Prefer naming the environment variable over the literal value."
+      "help": "A literal value is not accepted: the backend refuses to save the profile with it. Name the environment variable (the secret lives in Key Vault)."
     },
     "mcp.servers.auth.client_secret_env": {
       "label": "Environment variable holding the client secret"
@@ -1909,7 +1909,7 @@
     },
     "mcp.servers.auth.token": {
       "label": "Literal token",
-      "help": "Development only. Use the environment variable instead."
+      "help": "A literal value is not accepted: the backend refuses to save the profile with it. Name the environment variable (the secret lives in Key Vault)."
     },
     "mcp.servers.auth.token_env": {
       "label": "Environment variable holding the token",

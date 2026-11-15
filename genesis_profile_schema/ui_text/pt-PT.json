@@ -1884,7 +1884,7 @@
     },
     "mcp.servers.auth.client_secret": {
       "label": "Segredo do cliente",
-      "help": "Prefira indicar a variável de ambiente em vez do valor literal."
+      "help": "Não se aceita um valor literal: o backend recusa gravar o perfil com ele. Indique a variável de ambiente (o segredo vive no Key Vault)."
     },
     "mcp.servers.auth.client_secret_env": {
       "label": "Variável de ambiente com o segredo do cliente"
@@ -1909,7 +1909,7 @@
     },
     "mcp.servers.auth.token": {
       "label": "Token literal",
-      "help": "Apenas para desenvolvimento. Use antes a variável de ambiente."
+      "help": "Não se aceita um valor literal: o backend recusa gravar o perfil com ele. Indique a variável de ambiente (o segredo vive no Key Vault)."
     },
     "mcp.servers.auth.token_env": {
       "label": "Variável de ambiente com o token",
