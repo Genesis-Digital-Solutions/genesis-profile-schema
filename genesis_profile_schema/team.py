@@ -192,7 +192,10 @@ ENTRIES: Tuple[str, ...] = (ENTRY_ANYONE, ENTRY_TEAM)
 
 
 class ProfileTeam(BaseModel):
-    """`team` do perfil (só o BASE conta). Desligado por omissão."""
+    """`team` do perfil. Desligado por omissão. No BASE conta tudo. Numa variante SEPARADA só `roles` (o
+    catálogo da frente; sem `entra`), e o genai-core só o usa quando a frente é de OUTRO cliente — os papéis
+    atribuídos com o âmbito dela resolvem-se aí, nunca no base que o backoffice do principal lê (resíduo do
+    Finding 101, 15 Nov 2026; core `core/team/front_catalog.py`). Numa Partilhada o core recusa `team`."""
     model_config = ConfigDict(extra="allow")
 
     enabled: bool = False
