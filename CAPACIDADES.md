@@ -720,6 +720,11 @@ um campo removido do modelo continua a viver no blob sem dar erro.
   condição ABAC da API do GAIBO passa a incluir `invites/`. Contrato §5.1. **v0.1.109:** `reason_code` ganha
   `sending`/`duplicate`/`expired`/`uncertain` (o executor do Studio usa-os — a v0.1.108 recusava-os) e o `display_name`
   recusa invisíveis Cf/Co (U+202E, largura zero).
+- **Referências opacas de pessoas do GAIBO (F-S104, 15 Nov 2026, à espera do bump)** — `requested_by_ref`
+  (`PublishRequest`, `InviteRequest`) e `uploaded_by_ref` (`RunDocument`) validados por `is_valid_opaque_ref`
+  (`[A-Za-z0-9][A-Za-z0-9_:.-]{0,127}`, `fullmatch`, só ASCII): a regra «nunca o email nem o nome» deixou de viver
+  num comentário. Aceita o que o GAIBO produz (`ref-<hex>`, oid, uuid da ficha, `genesis-support:<oid>`) e o
+  `studio-republish`; canário com email e nome em `test_gaibo_opaque_refs.py`. Ficheiro com valor fora = inválido.
 - **Contrato da indexação pelo GAIBO (v0.1.92, `gaibo_index/`; v0.1.101: limite mensal com desbloqueio, recursos do cliente para indexar e planos `demo`/`pilot`/`internal`; v0.1.102: `di_model` por plano — Read no Starter/Demo, Layout nos restantes, via `extraction_for()` — e Enterprise ligado sem limites; v0.1.103: ação `reindexed` fora do limite mensal, `settings_missing_keys`/`REQUIRED_SETTINGS_KEYS`, validadores `is_valid_origin_ref/request_id/run_id` e as regras de apagar com o cliente desligado e de substituir acima da capacidade; v0.1.143: `RunDocument.uploaded_by_ref` opcional — quem carregou o documento no GAIBO, referência opaca).** O formato de um
   chunk do GAIBO no índice dev (`origin`/`origin_ref`, `source_file` =
   `gaibo/<chave>/<nome>`, ids `gaibo_`, o JSON `metadata` que o core lê) com

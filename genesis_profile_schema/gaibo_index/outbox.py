@@ -46,6 +46,11 @@ _ORIGIN_REF_RE = re.compile(r"^[A-Za-z0-9_-]{1,64}$")
 # mês corrente do `monthly_allowance` — o desbloqueio da Genesis não valia.
 _MONTH_RE = re.compile(r"[0-9]{4}-(0[1-9]|1[0-2])")
 _EXT_RE = re.compile(r"^\.[a-z0-9]{1,8}$")
+# Referência OPACA de quem pede/carrega no GAIBO (F-S104, 15 Nov 2026): `ref-<hex>` na
+# publicação, o `user_id` (oid GUID, uuid da ficha, `genesis-support:<oid>`) nos convites.
+# A regra «nunca o email nem o nome» deixou de viver num comentário: allowlist ASCII com
+# `fullmatch` — recusa `@`, espaços, acentos e texto livre. 1 a 128 caracteres.
+_OPAQUE_REF_RE = re.compile(r"[A-Za-z0-9][A-Za-z0-9_:.-]{0,127}")
 
 MAX_ITEMS_PER_REQUEST = 5000
 MAX_CHUNKS_PER_DOCUMENT = 20000
@@ -66,6 +71,19 @@ def is_valid_run_id(value: Any) -> bool:
 def is_valid_origin_ref(value: Any) -> bool:
     """1 a 64 de [A-Za-z0-9_-] — a execução do GAIBO que produziu os chunks."""
     return isinstance(value, str) and bool(_ORIGIN_REF_RE.fullmatch(value))
+
+
+def is_valid_opaque_ref(value: Any) -> bool:
+    """Referência opaca de uma pessoa do GAIBO (`requested_by_ref`, `uploaded_by_ref`):
+    1 a 128 de `[A-Za-z0-9_:.-]`, a começar por letra ou dígito ASCII. Nunca um email
+    (`@`), um nome (espaços, acentos) nem texto livre (F-S104)."""
+    return isinstance(value, str) and bool(_OPAQUE_REF_RE.fullmatch(value))
+
+
+def _opaque_ref(value: Optional[str]) -> Optional[str]:
+    if value is not None and not is_valid_opaque_ref(value):
+        raise ValueError("referência opaca inválida (nunca o email nem o nome)")
+    return value
 
 
 def request_blob(request_id: str) -> str:
@@ -290,7 +308,7 @@ class PublishRequest(BaseModel):
     request_id: str
     client_id: str = Field(min_length=1, max_length=80)
     requested_at: AwareDatetime
-    # Referência opaca para o audit do GAIBO (nunca o email nem o nome).
+    # Referência opaca para o audit do GAIBO (nunca o email nem o nome): `is_valid_opaque_ref`.
     requested_by_ref: str = Field(min_length=1, max_length=128)
     items: List[PublishItem] = Field(min_length=1, max_length=MAX_ITEMS_PER_REQUEST)
 
@@ -300,6 +318,11 @@ class PublishRequest(BaseModel):
         if not _REQUEST_ID_RE.fullmatch(value):
             raise ValueError("id de pedido inválido")
         return value
+
+    @field_validator("requested_by_ref")
+    @classmethod
+    def _by(cls, value: str) -> str:
+        return _opaque_ref(value)
 
     @model_validator(mode="after")
     def _unique(self) -> "PublishRequest":
@@ -371,9 +394,14 @@ class RunDocument(BaseModel):
     content_sha256: str = Field(default="", max_length=64)
     error: str = Field(default="", max_length=300)
     # v0.1.143: quem CARREGOU este documento no GAIBO — referência opaca para o audit do
-    # GAIBO (como o `requested_by_ref`: nunca o email nem o nome). Opcional: relatórios antigos
+    # GAIBO (como o `requested_by_ref`: nunca o email nem o nome; `is_valid_opaque_ref`). Opcional: relatórios antigos
     # não o têm. O Studio mostra-o no histórico de auditoria da publicação.
     uploaded_by_ref: Optional[str] = Field(default=None, min_length=1, max_length=128)
+
+    @field_validator("uploaded_by_ref")
+    @classmethod
+    def _by(cls, value: Optional[str]) -> Optional[str]:
+        return _opaque_ref(value)
 
 
 class RunReport(BaseModel):

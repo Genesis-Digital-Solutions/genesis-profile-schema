@@ -37,6 +37,7 @@ from typing import Any, Literal, Optional
 from pydantic import AwareDatetime, BaseModel, ConfigDict, Field, field_validator
 
 from .index_fields import CONTRACT_VERSION
+from .outbox import is_valid_opaque_ref
 
 INVITES_PREFIX = "invites/"
 INVITE_RESULTS_PREFIX = "invite-results/"
@@ -96,7 +97,8 @@ class InviteRequest(BaseModel):
     invite_id: str
     client_id: str = Field(min_length=1, max_length=80)
     requested_at: AwareDatetime
-    # Referência opaca para o audit do GAIBO (quem pediu; nunca o email dele).
+    # Referência opaca para o audit do GAIBO (quem pediu; nunca o email dele): o `user_id`
+    # do GAIBO (oid, uuid da ficha ou `genesis-support:<oid>`) — `is_valid_opaque_ref` (F-S104).
     requested_by_ref: str = Field(min_length=1, max_length=128)
     email: str = Field(min_length=3, max_length=MAX_EMAIL_LEN)
     display_name: str = Field(default="", max_length=MAX_DISPLAY_NAME_LEN)
@@ -106,6 +108,13 @@ class InviteRequest(BaseModel):
     def _iid(cls, value: str) -> str:
         if not _INVITE_ID_RE.fullmatch(value):
             raise ValueError("id de convite inválido")
+        return value
+
+    @field_validator("requested_by_ref")
+    @classmethod
+    def _by(cls, value: str) -> str:
+        if not is_valid_opaque_ref(value):
+            raise ValueError("referência opaca inválida (nunca o email nem o nome)")
         return value
 
     @field_validator("email")
