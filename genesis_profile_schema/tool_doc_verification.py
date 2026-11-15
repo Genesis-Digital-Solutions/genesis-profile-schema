@@ -15,8 +15,14 @@ O que NÃO está aqui, de propósito:
     Container App, nunca no perfil;
   * a deteção de marcas de classificação: é o contrato do módulo, não opção.
 
-Todos os campos são INTERNOS (custo, quota e o caso de uso vendido); a tabela de
-exposição não os abre ao cliente.
+Na tabela de exposição todos os campos são INTERNOS (custo, quota e o caso de uso
+vendido) e assim ficam: o GAIBO lê essa tabela para o save do perfil, e abri-la
+poria estes campos no caminho do `PUT /admin/profile/save`. MAS, desde 7 Nov 2026,
+o cliente muda no GAIBO o que é dele — `labels`, `document_templates` e `rules` —
+por rotas PRÓPRIAS do genai-core (`core/handlers/doc_verification_settings_write.py`
+e `doc_verification_rules_write.py`, If-Match, por frente, auditadas), que validam
+a forma com os modelos daqui. «Interno» na tabela não quer dizer «só a Genesis
+escreve»: quer dizer «não passa pelo save genérico».
 """
 
 from __future__ import annotations

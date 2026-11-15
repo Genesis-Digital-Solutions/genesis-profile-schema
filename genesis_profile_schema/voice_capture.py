@@ -75,6 +75,11 @@ class ProfileVoiceCaptureConsent(BaseModel):
     kind: Optional[str] = None                 # "document" | "email"
     document_sha256: Optional[str] = None
     document_blob: Optional[str] = None
+    # Recibo HMAC do core (64 hex, `voice/consent_receipt.py`), escrito pelo core ao guardar o
+    # documento e copiado pelo Studio para o perfil; o `voice/capture_gate.py` só aceita a prova
+    # «documento» com o recibo certo. Declarado no bump seguinte à v0.1.169 (até lá ia pelo
+    # `extra="allow"`). Leniente como as irmãs: a verificação vive no core (a chave só lá existe).
+    document_receipt: Optional[str] = None
     email_sender: Optional[str] = None
     email_date: Optional[str] = None
     email_subject: Optional[str] = None

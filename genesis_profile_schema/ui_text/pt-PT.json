@@ -3370,6 +3370,10 @@
     "voice.capture_consent.document_blob": {
       "label": "Documento da autorização (no armazenamento do cliente)"
     },
+    "voice.capture_consent.document_receipt": {
+      "label": "Recibo do documento (assinatura do core)",
+      "help": "Preenchido pelo core ao guardar o documento da autorização: prova que o documento foi carregado pelo Studio. Não se edita — sem ele o core não capta as chamadas."
+    },
     "voice.capture_consent.email_sender": {
       "label": "Email de quem autorizou"
     },

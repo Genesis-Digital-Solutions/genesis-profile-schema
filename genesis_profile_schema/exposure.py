@@ -483,6 +483,7 @@ EXPOSURE: Dict[str, str] = {
     "voice.capture_consent.kind": _I,
     "voice.capture_consent.document_sha256": _I,
     "voice.capture_consent.document_blob": _I,
+    "voice.capture_consent.document_receipt": _I,
     "voice.capture_consent.email_sender": _I,
     "voice.capture_consent.email_date": _I,
     "voice.capture_consent.email_subject": _I,
@@ -592,6 +593,9 @@ EXPOSURE: Dict[str, str] = {
     # ──────────────────────────────────────────────────────────────────────
     # Tools — escopo comercial, nao preferencia
     # ──────────────────────────────────────────────────────────────────────
+    # `tools.config.verify_documents.{labels,document_templates,rules}` são escritos pelo cliente,
+    # mas por rotas próprias do core (não pelo save genérico) — ver a docstring de
+    # `tool_doc_verification.py`; NÃO abrir aqui.
     "tools.config": _I,  # mapa aberto: leva wiring do Foundry e a politica de captura (PII, base legal)
     "tools.enabled": _R,  # escopo contratado, nao preferencia de UI
 

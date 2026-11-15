@@ -74,3 +74,24 @@ def test_regras_iguais_as_do_core():
     assert consent_problem({**DOC, "kind": "email", "email_sender": "a@b.pt",
                             "email_date": "2026-02-30", "email_subject": "x"}) == "consent_email_date"
     assert notice_problem(NOTICE) == "" and notice_problem({"pt": "a\nb"}) == "notice_invalid"
+
+
+# ── recibo do documento (declarado no bump seguinte à v0.1.169) ─────────────
+
+def test_recibo_do_documento_declarado_opcional_e_interno():
+    """O core escreve `document_receipt` (64 hex, `voice/consent_receipt.py`) e o Studio copia-o
+    para o perfil; até aqui ia pelo `extra="allow"`. Declarado: o valor sobrevive ao dump, um
+    perfil sem ele (ou com `null`) carrega igual, e fica `internal` (só o Studio o escreve)."""
+    from genesis_profile_schema.exposure import exposure_of
+    from genesis_profile_schema.voice_capture import ProfileVoiceCaptureConsent
+    assert "document_receipt" in ProfileVoiceCaptureConsent.model_fields
+    assert ProfileVoiceCaptureConsent().document_receipt is None
+    assert ProfileVoiceCaptureConsent(document_receipt=None).document_receipt is None
+    rec = "b" * 64
+    v = ProfileVoice(transcription={"caller": True, "caller_model": "gpt-4o-transcribe"},
+                     capture_consent={**DOC, "document_receipt": rec}, capture_notice=NOTICE)
+    assert v.capture_consent.document_receipt == rec
+    assert v.model_dump()["capture_consent"]["document_receipt"] == rec
+    # a verificação do recibo vive no core (a chave só lá existe): o schema não a repete
+    assert consent_problem({**DOC, "document_receipt": None}) == ""
+    assert exposure_of("voice.capture_consent.document_receipt") == "internal"

@@ -3370,6 +3370,10 @@
     "voice.capture_consent.document_blob": {
       "label": "Authorisation document (in the client's storage)"
     },
+    "voice.capture_consent.document_receipt": {
+      "label": "Document receipt (core signature)",
+      "help": "Filled in by the core when it stores the authorisation document: proves the document was uploaded through the Studio. Not editable — without it the core captures no calls."
+    },
     "voice.capture_consent.email_sender": {
       "label": "Email of who authorised"
     },
