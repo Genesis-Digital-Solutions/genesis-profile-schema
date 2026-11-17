@@ -80,6 +80,8 @@ O aviso de que a mensagem foi escrita por IA (AI Act art. 50) NÃO é
 configurável: o core põe-no sempre que quem escreve é o agente — um interruptor
 deixaria desligá-lo. Destinatários, níveis de consentimento por kind,
 idempotência e registo vivem no core (`core/platform/outbound/`), nunca aqui.
+`outbound.deliveries[]` (mesma versão, C2-mín fase 5) = entregas de um documento emitido a um
+sistema de gestão documental pelo servidor MCP (`channels_deliveries.py`, onde está a forma).
 Exposição `internal` (a Genesis liga; o GAIBO só com handoff). Grava-se só
 quando tem tipos: `channels` sem `outbound` relê-se num core com a v0.1.171 e
 num GAIBO com a v0.1.170 (com `outbound`, ambos o recusam — pins primeiro).
@@ -102,6 +104,8 @@ from typing import Any, Dict, List, Literal, Optional, Tuple, Union
 
 from pydantic import (BaseModel, ConfigDict, Field, StrictBool, StrictInt, field_validator, model_serializer,
                       model_validator)
+
+from .channels_deliveries import OutboundDelivery, check_deliveries
 
 #: Canais conhecidos (allowlist). O core só LÊ os de `LIVE_CHANNELS`; os outros
 #: validam (o Studio pode prepará-los desligados) e ficam inertes com aviso.
@@ -406,10 +410,24 @@ class OutboundKind(BaseModel):
 
 
 class ChannelsOutbound(BaseModel):
-    """`channels.outbound` (v0.1.172): um interruptor por tipo de saída."""
+    """`channels.outbound` (v0.1.172): um interruptor por tipo de saída e as ENTREGAS a sistemas de
+    gestão documental (`deliveries`, `channels_deliveries.py`)."""
     model_config = ConfigDict(extra="forbid")
 
     kinds: List[OutboundKind] = Field(default_factory=list)
+    deliveries: List[OutboundDelivery] = Field(default_factory=list)
+
+    @model_serializer(mode="wrap")
+    def _deliveries_so_com_valor(self, handler):
+        dados = handler(self)
+        if isinstance(dados, dict) and not dados.get("deliveries"):
+            dados.pop("deliveries", None)
+        return dados
+
+    @field_validator("deliveries")
+    @classmethod
+    def _deliveries(cls, v: List[OutboundDelivery]) -> List[OutboundDelivery]:
+        return check_deliveries(v)
 
     @field_validator("kinds")
     @classmethod
@@ -433,11 +451,11 @@ class ProfileChannels(BaseModel):
         # Um core com a v0.1.171 (`extra="forbid"`) recusava `"outbound": null` — e
         # com ele o save do perfil inteiro — sem nenhum valor novo. O padrão do
         # `RouteTarget` e do `signing` do MCP.
-        # `{kinds: []}` vale o mesmo que ausente: também não se grava.
+        # `{kinds: [], deliveries: []}` vale o mesmo que ausente: também não se grava.
         dados = handler(self)
         if isinstance(dados, dict):
             out = dados.get("outbound")
-            if out is None or (isinstance(out, dict) and not out.get("kinds")):
+            if out is None or (isinstance(out, dict) and not out.get("kinds") and not out.get("deliveries")):
                 dados.pop("outbound", None)
         return dados
 

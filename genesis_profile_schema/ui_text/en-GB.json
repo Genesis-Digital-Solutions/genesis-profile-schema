@@ -3354,6 +3354,203 @@
         "front": "Front's language"
       }
     },
+    "channels.outbound.deliveries.id": {
+      "label": "Delivery id",
+      "help": "Short identifier of this delivery (lower case, digits, «-» and «_»)."
+    },
+    "channels.outbound.deliveries.enabled": {
+      "label": "On",
+      "help": "When off, this delivery sends nothing. The «Deliver a document to an external system» kind must be on too."
+    },
+    "channels.outbound.deliveries.label": {
+      "label": "Name",
+      "help": "Name for whoever configures it (e.g. «Opinion to Filedoc»)."
+    },
+    "channels.outbound.deliveries.when.module": {
+      "label": "Module",
+      "help": "The module whose event triggers the delivery."
+    },
+    "channels.outbound.deliveries.when.event": {
+      "label": "Event",
+      "help": "When to deliver."
+    },
+    "channels.outbound.deliveries.to.transport": {
+      "label": "Transport",
+      "help": "How the delivery travels."
+    },
+    "channels.outbound.deliveries.to.server": {
+      "label": "Document management server",
+      "help": "The profile's MCP server that connects to the document management system (e.g. the Filedoc adapter)."
+    },
+    "channels.outbound.deliveries.to.connector": {
+      "label": "Connector",
+      "help": "The tool family used on the server."
+    },
+    "channels.outbound.deliveries.record.record_type": {
+      "label": "Document type",
+      "help": "The document type in the document management system (from the «Test» list)."
+    },
+    "channels.outbound.deliveries.record.subtype": {
+      "label": "Subtype",
+      "help": "Internal, incoming or outgoing.",
+      "options": {
+        "internal": "Internal",
+        "incoming": "Incoming",
+        "outgoing": "Outgoing"
+      }
+    },
+    "channels.outbound.deliveries.record.company_id": {
+      "label": "Company",
+      "help": "The company in the document management system, when the system requires it."
+    },
+    "channels.outbound.deliveries.record.support_type_id": {
+      "label": "Support type",
+      "help": "The support type, when the system requires it."
+    },
+    "channels.outbound.deliveries.record.classification": {
+      "label": "Classification",
+      "help": "The filing classification codes (up to 20)."
+    },
+    "channels.outbound.deliveries.record.confidential": {
+      "label": "Confidential",
+      "help": "Marks the record as confidential in the document management system."
+    },
+    "channels.outbound.deliveries.record.subject.source": {
+      "label": "Subject: case field",
+      "help": "The subject comes from this case field.",
+      "options": {
+        "case.application_number": "Application number",
+        "case.entity_name": "Entity",
+        "case.entity_nif": "Entity tax number",
+        "case.procedure": "Procedure / call",
+        "case.project": "Project",
+        "case.outcome": "Opinion outcome (code)",
+        "case.outcome_label": "Opinion outcome",
+        "case.opinion_ref": "Opinion reference",
+        "case.opinion_version": "Opinion version",
+        "case.issued_on": "Issue date",
+        "case.issuer_email": "Issuer email",
+        "case.name": "Case name"
+      }
+    },
+    "channels.outbound.deliveries.record.subject.literal": {
+      "label": "Subject: fixed text",
+      "help": "Fixed subject (up to 512 characters)."
+    },
+    "channels.outbound.deliveries.record.subject.template": {
+      "label": "Subject: template",
+      "help": "Text with case fields, e.g. «Opinion — {case.application_number} — {case.entity_name}». If the filled subject exceeds the system's limit, the delivery is refused (never cut)."
+    },
+    "channels.outbound.deliveries.record.from_user": {
+      "label": "Sender",
+      "help": "Who appears as the sender of the record.",
+      "options": {
+        "issuer_by_email": "The issuer (by email)",
+        "technical": "Technical user"
+      }
+    },
+    "channels.outbound.deliveries.record.to.user_id": {
+      "label": "Record recipient: user",
+      "help": "The document management user (from the «Test» list)."
+    },
+    "channels.outbound.deliveries.record.to.email": {
+      "label": "Record recipient: email",
+      "help": "The email of a document management user."
+    },
+    "channels.outbound.deliveries.record.dynamic_fields": {
+      "label": "Dynamic fields",
+      "help": "The document type's own fields (the required ones come from «Test»), each with a case field or a fixed text."
+    },
+    "channels.outbound.deliveries.process.by": {
+      "label": "Process: find by",
+      "help": "How to find the process the record is linked to.",
+      "options": {
+        "id": "Process id",
+        "number": "Process number",
+        "reference": "Process reference"
+      }
+    },
+    "channels.outbound.deliveries.process.from": {
+      "label": "Process: case field",
+      "help": "The case field with the process id, number or reference.",
+      "options": {
+        "case.application_number": "Application number",
+        "case.entity_name": "Entity",
+        "case.entity_nif": "Entity tax number",
+        "case.procedure": "Procedure / call",
+        "case.project": "Project",
+        "case.outcome": "Opinion outcome (code)",
+        "case.outcome_label": "Opinion outcome",
+        "case.opinion_ref": "Opinion reference",
+        "case.opinion_version": "Opinion version",
+        "case.issued_on": "Issue date",
+        "case.issuer_email": "Issuer email",
+        "case.name": "Case name"
+      }
+    },
+    "channels.outbound.deliveries.files.main": {
+      "label": "Main file",
+      "help": "The delivery's main document."
+    },
+    "channels.outbound.deliveries.files.extra": {
+      "label": "Other files",
+      "help": "Files sent with the main one.",
+      "options": {
+        "docx": "Word",
+        "xlsx": "Excel",
+        "rules": "Rules applied"
+      }
+    },
+    "channels.outbound.deliveries.route.routing_type": {
+      "label": "Routing: type",
+      "help": "The circulation type (e.g. «For signature»)."
+    },
+    "channels.outbound.deliveries.route.to.user_id": {
+      "label": "Route to: user",
+      "help": "The user who receives the routing."
+    },
+    "channels.outbound.deliveries.route.to.group_id": {
+      "label": "Route to: group",
+      "help": "The functional group that receives the routing."
+    },
+    "channels.outbound.deliveries.route.to.email": {
+      "label": "Route to: email",
+      "help": "The email of a document management user."
+    },
+    "channels.outbound.deliveries.route.message.source": {
+      "label": "Message: case field",
+      "help": "The message comes from this case field.",
+      "options": {
+        "case.application_number": "Application number",
+        "case.entity_name": "Entity",
+        "case.entity_nif": "Entity tax number",
+        "case.procedure": "Procedure / call",
+        "case.project": "Project",
+        "case.outcome": "Opinion outcome (code)",
+        "case.outcome_label": "Opinion outcome",
+        "case.opinion_ref": "Opinion reference",
+        "case.opinion_version": "Opinion version",
+        "case.issued_on": "Issue date",
+        "case.issuer_email": "Issuer email",
+        "case.name": "Case name"
+      }
+    },
+    "channels.outbound.deliveries.route.message.literal": {
+      "label": "Message: fixed text",
+      "help": "Fixed routing message (up to 1000 characters)."
+    },
+    "channels.outbound.deliveries.route.message.template": {
+      "label": "Message: template",
+      "help": "Text with case fields, e.g. «Opinion {case.opinion_ref} for signature»."
+    },
+    "channels.outbound.deliveries.route.deadline_days": {
+      "label": "Deadline (days)",
+      "help": "Routing deadline in days (1 to 365)."
+    },
+    "channels.outbound.deliveries.route.confidential": {
+      "label": "Confidential routing",
+      "help": "Marks the routing as confidential."
+    },
     "frontend.llmDefaultId": {
       "label": "Model preselected in the picker",
       "help": "One of the models in the list above (provider:model:mode id). Empty = the first one."

@@ -3354,6 +3354,203 @@
         "front": "Língua da frente"
       }
     },
+    "channels.outbound.deliveries.id": {
+      "label": "Id da entrega",
+      "help": "Identificador curto desta entrega (minúsculas, dígitos, «-» e «_»)."
+    },
+    "channels.outbound.deliveries.enabled": {
+      "label": "Ligada",
+      "help": "Desligada, esta entrega não envia nada. O tipo «Entregar documento a um sistema externo» também tem de estar ligado."
+    },
+    "channels.outbound.deliveries.label": {
+      "label": "Nome",
+      "help": "Nome para quem configura (ex.: «Parecer para o Filedoc»)."
+    },
+    "channels.outbound.deliveries.when.module": {
+      "label": "Módulo",
+      "help": "O módulo cujo evento dispara a entrega."
+    },
+    "channels.outbound.deliveries.when.event": {
+      "label": "Evento",
+      "help": "Quando entregar."
+    },
+    "channels.outbound.deliveries.to.transport": {
+      "label": "Transporte",
+      "help": "Por onde segue a entrega."
+    },
+    "channels.outbound.deliveries.to.server": {
+      "label": "Servidor de gestão documental",
+      "help": "O servidor MCP do perfil que liga ao sistema de gestão documental (ex.: o adaptador Filedoc)."
+    },
+    "channels.outbound.deliveries.to.connector": {
+      "label": "Conector",
+      "help": "A família de ferramentas usada no servidor."
+    },
+    "channels.outbound.deliveries.record.record_type": {
+      "label": "Tipo de documento",
+      "help": "O tipo de documento no sistema de gestão documental (vem da lista do «Testar»)."
+    },
+    "channels.outbound.deliveries.record.subtype": {
+      "label": "Subtipo",
+      "help": "Interno, entrada ou saída.",
+      "options": {
+        "internal": "Interno",
+        "incoming": "Entrada",
+        "outgoing": "Saída"
+      }
+    },
+    "channels.outbound.deliveries.record.company_id": {
+      "label": "Empresa",
+      "help": "A empresa no sistema de gestão documental, quando o sistema a exige."
+    },
+    "channels.outbound.deliveries.record.support_type_id": {
+      "label": "Tipo de suporte",
+      "help": "O tipo de suporte, quando o sistema o exige."
+    },
+    "channels.outbound.deliveries.record.classification": {
+      "label": "Classificação",
+      "help": "Os códigos do classificador documental (até 20)."
+    },
+    "channels.outbound.deliveries.record.confidential": {
+      "label": "Confidencial",
+      "help": "Marca o registo como confidencial no sistema de gestão documental."
+    },
+    "channels.outbound.deliveries.record.subject.source": {
+      "label": "Assunto: campo do caso",
+      "help": "O assunto vem deste campo do caso.",
+      "options": {
+        "case.application_number": "N.º da candidatura",
+        "case.entity_name": "Entidade",
+        "case.entity_nif": "NIF da entidade",
+        "case.procedure": "Procedimento / aviso",
+        "case.project": "Projeto",
+        "case.outcome": "Sentido do parecer (código)",
+        "case.outcome_label": "Sentido do parecer",
+        "case.opinion_ref": "Referência do parecer",
+        "case.opinion_version": "Versão do parecer",
+        "case.issued_on": "Data de emissão",
+        "case.issuer_email": "Email de quem emitiu",
+        "case.name": "Nome do caso"
+      }
+    },
+    "channels.outbound.deliveries.record.subject.literal": {
+      "label": "Assunto: texto fixo",
+      "help": "Assunto fixo (até 512 caracteres)."
+    },
+    "channels.outbound.deliveries.record.subject.template": {
+      "label": "Assunto: modelo",
+      "help": "Texto com campos do caso, ex.: «Parecer — {case.application_number} — {case.entity_name}». Se o assunto preenchido passar o limite do sistema, a entrega é recusada (nunca se corta)."
+    },
+    "channels.outbound.deliveries.record.from_user": {
+      "label": "Remetente",
+      "help": "Quem aparece como remetente no registo.",
+      "options": {
+        "issuer_by_email": "Quem emitiu (pelo email)",
+        "technical": "Utilizador técnico"
+      }
+    },
+    "channels.outbound.deliveries.record.to.user_id": {
+      "label": "Destinatário do registo: utilizador",
+      "help": "O utilizador do sistema de gestão documental (vem da lista do «Testar»)."
+    },
+    "channels.outbound.deliveries.record.to.email": {
+      "label": "Destinatário do registo: email",
+      "help": "O email de um utilizador do sistema de gestão documental."
+    },
+    "channels.outbound.deliveries.record.dynamic_fields": {
+      "label": "Campos dinâmicos",
+      "help": "Os campos próprios do tipo de documento (os obrigatórios vêm do «Testar»), cada um com um campo do caso ou um texto fixo."
+    },
+    "channels.outbound.deliveries.process.by": {
+      "label": "Processo: procurar por",
+      "help": "Como encontrar o processo a que o registo se associa.",
+      "options": {
+        "id": "Id do processo",
+        "number": "Número do processo",
+        "reference": "Referência do processo"
+      }
+    },
+    "channels.outbound.deliveries.process.from": {
+      "label": "Processo: campo do caso",
+      "help": "O campo do caso com o id, o número ou a referência do processo.",
+      "options": {
+        "case.application_number": "N.º da candidatura",
+        "case.entity_name": "Entidade",
+        "case.entity_nif": "NIF da entidade",
+        "case.procedure": "Procedimento / aviso",
+        "case.project": "Projeto",
+        "case.outcome": "Sentido do parecer (código)",
+        "case.outcome_label": "Sentido do parecer",
+        "case.opinion_ref": "Referência do parecer",
+        "case.opinion_version": "Versão do parecer",
+        "case.issued_on": "Data de emissão",
+        "case.issuer_email": "Email de quem emitiu",
+        "case.name": "Nome do caso"
+      }
+    },
+    "channels.outbound.deliveries.files.main": {
+      "label": "Ficheiro principal",
+      "help": "O documento principal da entrega."
+    },
+    "channels.outbound.deliveries.files.extra": {
+      "label": "Outros ficheiros",
+      "help": "Ficheiros que seguem junto do principal.",
+      "options": {
+        "docx": "Word",
+        "xlsx": "Excel",
+        "rules": "Regras aplicadas"
+      }
+    },
+    "channels.outbound.deliveries.route.routing_type": {
+      "label": "Encaminhamento: tipo",
+      "help": "O tipo de circulação (ex.: «Para assinatura»)."
+    },
+    "channels.outbound.deliveries.route.to.user_id": {
+      "label": "Encaminhar para: utilizador",
+      "help": "O utilizador que recebe o encaminhamento."
+    },
+    "channels.outbound.deliveries.route.to.group_id": {
+      "label": "Encaminhar para: grupo",
+      "help": "O grupo funcional que recebe o encaminhamento."
+    },
+    "channels.outbound.deliveries.route.to.email": {
+      "label": "Encaminhar para: email",
+      "help": "O email de um utilizador do sistema de gestão documental."
+    },
+    "channels.outbound.deliveries.route.message.source": {
+      "label": "Mensagem: campo do caso",
+      "help": "A mensagem vem deste campo do caso.",
+      "options": {
+        "case.application_number": "N.º da candidatura",
+        "case.entity_name": "Entidade",
+        "case.entity_nif": "NIF da entidade",
+        "case.procedure": "Procedimento / aviso",
+        "case.project": "Projeto",
+        "case.outcome": "Sentido do parecer (código)",
+        "case.outcome_label": "Sentido do parecer",
+        "case.opinion_ref": "Referência do parecer",
+        "case.opinion_version": "Versão do parecer",
+        "case.issued_on": "Data de emissão",
+        "case.issuer_email": "Email de quem emitiu",
+        "case.name": "Nome do caso"
+      }
+    },
+    "channels.outbound.deliveries.route.message.literal": {
+      "label": "Mensagem: texto fixo",
+      "help": "Mensagem fixa do encaminhamento (até 1000 caracteres)."
+    },
+    "channels.outbound.deliveries.route.message.template": {
+      "label": "Mensagem: modelo",
+      "help": "Texto com campos do caso, ex.: «Parecer {case.opinion_ref} para assinatura»."
+    },
+    "channels.outbound.deliveries.route.deadline_days": {
+      "label": "Prazo (dias)",
+      "help": "Prazo do encaminhamento, em dias (1 a 365)."
+    },
+    "channels.outbound.deliveries.route.confidential": {
+      "label": "Encaminhamento confidencial",
+      "help": "Marca o encaminhamento como confidencial."
+    },
     "frontend.llmDefaultId": {
       "label": "Modelo pré-selecionado no seletor",
       "help": "Um dos modelos da lista acima (id fornecedor:modelo:modo). Vazio = o primeiro da lista."
