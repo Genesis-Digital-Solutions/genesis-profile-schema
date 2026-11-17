@@ -3332,6 +3332,28 @@
       "label": "Dizer no recibo as peças recusadas",
       "help": "Lista as peças que não entraram (marcas de classificação, macros, tamanho) e porquê, para a pessoa as reenviar."
     },
+    "channels.outbound.kinds.kind": {
+      "label": "Tipo de saída",
+      "help": "O que a plataforma envia: o agente pergunta ou informa uma pessoa, entrega um documento a um sistema externo ou envia o relatório de uma rotina.",
+      "options": {
+        "contact.ask": "Agente pergunta a uma pessoa",
+        "contact.tell": "Agente informa uma pessoa",
+        "document.deliver": "Entregar documento a um sistema externo",
+        "routine.report": "Relatório de uma rotina"
+      }
+    },
+    "channels.outbound.kinds.enabled": {
+      "label": "Ligado",
+      "help": "Desligado, este tipo de saída não envia nada. O aviso de que a mensagem foi escrita por IA vai sempre, não se desliga."
+    },
+    "channels.outbound.kinds.language": {
+      "label": "Língua da mensagem",
+      "help": "A língua da pessoa (contacto ou membro da equipa) ou sempre a língua da frente.",
+      "options": {
+        "person": "Língua da pessoa",
+        "front": "Língua da frente"
+      }
+    },
     "frontend.llmDefaultId": {
       "label": "Modelo pré-selecionado no seletor",
       "help": "Um dos modelos da lista acima (id fornecedor:modelo:modo). Vazio = o primeiro da lista."

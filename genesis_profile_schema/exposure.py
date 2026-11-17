@@ -758,6 +758,12 @@ EXPOSURE: Dict[str, str] = {
     "channels.routes.to.join.window_days": _W,
     "channels.routes.to.receipt.enabled": _W,
     "channels.routes.to.receipt.list_refused": _W,
+    # channels.outbound (v0.1.172, C2-mín): que tipos de saída a Genesis liga.
+    # Interno: o agente a contactar pessoas tem níveis de consentimento por kind
+    # (core); o GAIBO só com handoff e decisão.
+    "channels.outbound.kinds.kind": _I,
+    "channels.outbound.kinds.enabled": _I,
+    "channels.outbound.kinds.language": _I,
     "access.allowedGroups": _I,
     "access.allowedEmailDomains": _I,
     "access.allowedProviders": _I,

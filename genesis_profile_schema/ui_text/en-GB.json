@@ -3332,6 +3332,28 @@
       "label": "List refused documents in the receipt",
       "help": "Lists the documents that did not get in (classification marks, macros, size) and why, so the person can send them again."
     },
+    "channels.outbound.kinds.kind": {
+      "label": "Outbound type",
+      "help": "What the platform sends: the agent asks or informs a person, delivers a document to an external system or sends a routine's report.",
+      "options": {
+        "contact.ask": "Agent asks a person",
+        "contact.tell": "Agent informs a person",
+        "document.deliver": "Deliver a document to an external system",
+        "routine.report": "Routine report"
+      }
+    },
+    "channels.outbound.kinds.enabled": {
+      "label": "On",
+      "help": "When off, this outbound type sends nothing. The notice that the message was written by AI always goes out and cannot be turned off."
+    },
+    "channels.outbound.kinds.language": {
+      "label": "Message language",
+      "help": "The person's language (contact or team member) or always the front's language.",
+      "options": {
+        "person": "Person's language",
+        "front": "Front's language"
+      }
+    },
     "frontend.llmDefaultId": {
       "label": "Model preselected in the picker",
       "help": "One of the models in the list above (provider:model:mode id). Empty = the first one."

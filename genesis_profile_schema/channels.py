@@ -68,6 +68,22 @@ versão relê-se num core com a v0.1.163 (`extra="forbid"` recusava as chaves
 `null` novas). Numa rota de fila, `join`/`receipt` (mesmo desligados) e `front`
 são recusados: o editor só os envia com `module: doc_verification`.
 
+SAÍDA (`outbound`, v0.1.172 — carril C2-mín, D19: só kinds NOVOS; nenhum emissor
+de hoje passa por aqui): `outbound.kinds[]` = um interruptor por tipo de saída
+(`contact.ask`/`contact.tell` — o agente contacta uma pessoa, passo 6 do épico;
+`document.deliver` — entregar um documento a um sistema externo, §6.6;
+`routine.report` — relatório de uma rotina, passo 7). Desligado por omissão:
+um kind que não está aqui ligado NÃO envia nada (falha fechada). `language`
+= `person` (a língua da pessoa à frente: contacto › membro da equipa › item ›
+frente › principal › pt) ou `front` (sempre a língua da frente).
+O aviso de que a mensagem foi escrita por IA (AI Act art. 50) NÃO é
+configurável: o core põe-no sempre que quem escreve é o agente — um interruptor
+deixaria desligá-lo. Destinatários, níveis de consentimento por kind,
+idempotência e registo vivem no core (`core/platform/outbound/`), nunca aqui.
+Exposição `internal` (a Genesis liga; o GAIBO só com handoff). Grava-se só
+quando tem tipos: `channels` sem `outbound` relê-se num core com a v0.1.171 e
+num GAIBO com a v0.1.170 (com `outbound`, ambos o recusam — pins primeiro).
+
 ⚠️ ORDEM DE ROLLOUT (a mesma regra do `mcp.servers[].signing`): os modelos são
 `extra="forbid"` e a gramática é fechada, logo um core com ESTE pin recusa um
 `channels` escrito por uma versão futura (um módulo, campo ou operador novo) —
@@ -84,7 +100,8 @@ from __future__ import annotations
 import re
 from typing import Any, Dict, List, Literal, Optional, Tuple, Union
 
-from pydantic import BaseModel, ConfigDict, Field, StrictInt, field_validator, model_serializer, model_validator
+from pydantic import (BaseModel, ConfigDict, Field, StrictBool, StrictInt, field_validator, model_serializer,
+                      model_validator)
 
 #: Canais conhecidos (allowlist). O core só LÊ os de `LIVE_CHANNELS`; os outros
 #: validam (o Studio pode prepará-los desligados) e ficam inertes com aviso.
@@ -137,6 +154,13 @@ MAX_LIST_VALUES = 200
 MAX_TEXT_VALUE = 200
 MAX_LABEL = 80
 MAX_QUEUE = 64
+#: Tipos de saída do C2-mín (D19: só kinds novos). Fechado: um kind novo entra
+#: com o código que o emite.
+OUTBOUND_KINDS: Tuple[str, ...] = ("contact.ask", "contact.tell", "document.deliver", "routine.report")
+#: De onde vem a língua de uma saída.
+OUTBOUND_LANGUAGES: Tuple[str, ...] = ("person", "front")
+OutboundKindName = Literal["contact.ask", "contact.tell", "document.deliver", "routine.report"]
+OutboundLanguage = Literal["person", "front"]
 
 ChannelKind = Literal["email", "sms", "whatsapp", "voice", "teams", "http", "web", "mcp", "a2a",
                       "tester"]
@@ -371,12 +395,51 @@ class ChannelRoute(BaseModel):
         return _check_label(v)
 
 
+class OutboundKind(BaseModel):
+    """Um tipo de saída (C2-mín). Desligado por omissão = não envia."""
+    model_config = ConfigDict(extra="forbid")
+
+    kind: OutboundKindName
+    # Estrito: um interruptor de envio que falha fechado não aceita «yes»/«on»/1.
+    enabled: StrictBool = False
+    language: OutboundLanguage = "person"
+
+
+class ChannelsOutbound(BaseModel):
+    """`channels.outbound` (v0.1.172): um interruptor por tipo de saída."""
+    model_config = ConfigDict(extra="forbid")
+
+    kinds: List[OutboundKind] = Field(default_factory=list)
+
+    @field_validator("kinds")
+    @classmethod
+    def _kinds(cls, v: List[OutboundKind]) -> List[OutboundKind]:
+        names = [k.kind for k in v]
+        if len(names) != len(set(names)):
+            raise ValueError("o mesmo tipo de saída repetido")
+        return v
+
+
 class ProfileChannels(BaseModel):
     """`channels` do perfil. `null`/ausente = o encaminhamento de hoje (`ingest.sources`)."""
     model_config = ConfigDict(extra="forbid")
 
     inputs: List[ChannelInput] = Field(default_factory=list)
     routes: List[ChannelRoute] = Field(default_factory=list)
+    outbound: Optional[ChannelsOutbound] = None
+
+    @model_serializer(mode="wrap")
+    def _outbound_so_com_valor(self, handler):
+        # Um core com a v0.1.171 (`extra="forbid"`) recusava `"outbound": null` — e
+        # com ele o save do perfil inteiro — sem nenhum valor novo. O padrão do
+        # `RouteTarget` e do `signing` do MCP.
+        # `{kinds: []}` vale o mesmo que ausente: também não se grava.
+        dados = handler(self)
+        if isinstance(dados, dict):
+            out = dados.get("outbound")
+            if out is None or (isinstance(out, dict) and not out.get("kinds")):
+                dados.pop("outbound", None)
+        return dados
 
     @field_validator("inputs")
     @classmethod
@@ -417,6 +480,7 @@ class ProfileChannels(BaseModel):
 
 
 __all__ = ["ProfileChannels", "ChannelInput", "ChannelRoute", "RouteWhen", "RouteTarget",
-           "ChannelCondition", "CaseJoin", "CaseReceipt", "CHANNEL_KINDS", "LIVE_CHANNELS", "MODULES",
+           "ChannelCondition", "CaseJoin", "CaseReceipt", "ChannelsOutbound", "OutboundKind",
+           "OUTBOUND_KINDS", "OUTBOUND_LANGUAGES", "CHANNEL_KINDS", "LIVE_CHANNELS", "MODULES",
            "ROUTE_FIELDS", "OPS_BY_KIND", "OPS", "ID_RE", "MAX_INPUTS", "MAX_ROUTES", "MAX_CONDITIONS",
            "JOIN_BY", "JOIN_WINDOW_DAYS_DEFAULT", "JOIN_WINDOW_DAYS_MAX", "FRONT_RE"]
