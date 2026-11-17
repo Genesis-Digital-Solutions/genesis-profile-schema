@@ -35,11 +35,12 @@ retiraria a um site a autorização para embeber que ele já tinha.
 2. Regex do cliente
 ─────────────────────────────────────────────────────────────────────────────
 `product_identification.patterns` são regex escritas pelo cliente e compiladas
-do nosso lado (core/agent/product_identification.py). O core já apanha
-`re.error` e ignora a regex má — o que ele NÃO tem é limite de tempo de
-execução, por isso uma regex com quantificadores encaixados pode pôr um worker
-a girar. `regex_risk()` serve para avisar quem a escreve; o limite de execução
-é trabalho do core e não se resolve aqui.
+do nosso lado (core/agent/product_identification.py). `regex_risk()` é só um
+AVISO de editor (heurístico, mais largo). A REGRA DO SAVE é outra e vive no
+`pattern_guard.py` (v0.1.171): custo de execução limitado por padrão e somado,
+com motivos estáveis; o core recusa o save com ela (400 `unsafe_pattern`) e
+corre os padrões palavra a palavra. Quem quiser saber se um padrão GRAVA usa o
+`pattern_guard`, nunca isto.
 """
 
 import re
@@ -176,9 +177,10 @@ def regex_risk(pattern: str) -> Optional[str]:
     """Motivo pelo qual esta regex é arriscada, ou `None`.
 
     Heurística, não prova: apanha as formas clássicas de backtracking
-    catastrófico e o que não compila. Uma regex que passe aqui pode ainda
-    assim ser lenta — a garantia tem de vir de um limite de tempo na execução,
-    que vive no core.
+    catastrófico e o que não compila. É um aviso de editor, NÃO a regra do
+    save: a regra que decide se o padrão grava é `pattern_guard.pattern_refusal`
+    / `find_unsafe_patterns` (a mesma que o core aplica no save). Uma regex que
+    passe aqui pode ser recusada lá.
     """
     if not isinstance(pattern, str) or not pattern.strip():
         return "padrão vazio"

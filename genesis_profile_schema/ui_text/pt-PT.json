@@ -672,7 +672,7 @@
     },
     "team.notify.queues.stale": {
       "label": "Avisar a equipa de pedidos fora do prazo",
-      "help": "Ligado = quem opera cada fila recebe um email com os pedidos por decidir fora do prazo da fila ou da urgência."
+      "help": "Ligado = quem opera cada fila recebe um email com os pedidos parados: por decidir fora do prazo da fila ou da urgência, ou à espera do ERP (gravação falhada, por fazer ou com anexos por enviar)."
     },
     "team.notify.docver.new": {
       "label": "Avisar a equipa de casos novos por reclamar",

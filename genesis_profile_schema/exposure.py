@@ -29,6 +29,22 @@ uma montra não deve depender só do upstream para não expor um campo.
 
 Também não valida valores: isso é do Pydantic, no ficheiro do lado.
 
+`client_write` NÃO QUER DIZER «ABERTO NO GAIBO»
+───────────────────────────────────────────────
+`client_write` diz que o campo é do cliente pela natureza dele, não que o
+backoffice do cliente o abre hoje. O GAIBO decide o que abre, com o seu
+`AREA_FLOOR` + exceções, e mantém FECHADOS por decisão (handoff consolidado de
+16 Nov 2026, §C.3): `team.*` (fora os quatro `team.notify.*` do §7 e o que o
+§18 abrir de `team.entry`/`team.modules.*`), `actionRules.*`,
+`actionLedger.*`, `audio.*` (incluindo `audio.municipal_minutes.*`), `voice.*`
+(incluindo os `transfer_targets`), `voices.*`, `calendar.*`,
+`ingest.alerts.*`, `frontend.insightsPanel.*` e `memory.onboarding.*`. Nesses,
+os comentários da tabela dizem a quem o campo pertence; quem o grava hoje é a
+Genesis, no Studio. O inverso também existe: há áreas `internal` que o cliente
+escreve por uma rota própria do core, nunca pelo save do perfil
+(`tools.config.verify_documents.*` e os servidores `mcp.*` — ver as notas
+desses blocos). O save do core não aplica a exposição.
+
 NÍVEIS
 ──────
   internal      — só Genesis (Studio/engenharia). Nunca sai para o cliente.
@@ -656,8 +672,10 @@ EXPOSURE: Dict[str, str] = {
     # decide com o cliente e configura no Studio; expor ao cliente no GAIBO é
     # decisão futura (é uma fronteira de segurança).
     "access.allowedRoles": _I,
-    # team.* (v0.1.114): equipa e papéis do produto — o cliente configura no
-    # GAIBO (e a Genesis no Studio). As PESSOAS não vivem no perfil (core).
+    # team.* (v0.1.114): equipa e papéis do produto — previsto para o cliente;
+    # fechado no GAIBO por decisão (§C.3 do handoff de 16 Nov 2026; o §18 é que
+    # decide a ordem de abrir `team.entry`/`team.modules.*`) — hoje configura a
+    # Genesis no Studio. As PESSOAS não vivem no perfil (core).
     "team.enabled": _W,
     "team.entry": _W,
     "team.modules.approvals": _W,
@@ -673,15 +691,18 @@ EXPOSURE: Dict[str, str] = {
     "team.roles.capabilities": _W,
     "team.roles.entra.roles": _W,
     "team.roles.entra.groups": _W,
-    # v0.1.165: avisos à equipa por área — o cliente liga e desliga no GAIBO (e a Genesis no Studio).
+    # v0.1.165: avisos à equipa por área — do cliente; os únicos de `team.*` que o
+    # GAIBO abre (exceção no AREA_FLOOR, só no principal; §7 do handoff de 16 Nov
+    # 2026, decisão do GAIBO). A Genesis liga-os também no Studio.
     "team.notify.queues.new": _W,
     "team.notify.queues.stale": _W,
     "team.notify.docver.new": _W,
     "team.notify.docver.stale": _W,
     # v0.1.123: fase 2 da «Saúde da equipa» — só a Genesis, depois do DPO.
     "team.insights_phase2": _I,
-    # actionLedger.* (v0.1.115): registo das ações — o cliente liga no GAIBO
-    # (num cliente de alto risco regista sempre, ligado ou não).
+    # actionLedger.* (v0.1.115): registo das ações — previsto para o cliente;
+    # fechado no GAIBO por decisão (§C.3 do handoff de 16 Nov 2026), liga a
+    # Genesis no Studio (num cliente de alto risco regista sempre, ligado ou não).
     "actionLedger.enabled": _W,
     "actionLedger.retention_days": _W,
     # v0.1.156: «Testemunha selada» (Locked) — só a Genesis: o storage do cliente
@@ -822,6 +843,11 @@ EXPOSURE: Dict[str, str] = {
     # ⚠ AREA INTEIRA INTERNA. Contem slots de credencial (auth.token,
     #    auth.client_secret) e o flag `trusted`, que decide se uma tool externa
     #    corre sem confirmacao.
+    #    Nota (§C.4 do handoff de 16 Nov 2026): apesar de `internal`, os
+    #    servidores são escritos pelo cliente pela consola MCP do core (rota
+    #    própria, ecrã Integrações do GAIBO, BACKLOG 3.1151) — nunca pelo save
+    #    do perfil —, como a Verificação Documental. O nível continua `internal`:
+    #    a montra do perfil não os mostra nem grava.
     # ──────────────────────────────────────────────────────────────────────
     "mcp.confirm_actions": _I,
     "mcp.disabledServers": _I,
@@ -892,7 +918,8 @@ EXPOSURE: Dict[str, str] = {
     # ──────────────────────────────────────────────────────────────────────
     # Regras por ação (v0.1.109, D1 do pack das Ações): o cliente decide o
     # que o SEU bot pode fazer. Fora de `mcp.*` (interno: credenciais,
-    # `trusted`); os mínimos de segurança vivem no código do core.
+    # `trusted`); os mínimos de segurança vivem no código do core. Fechado no
+    # GAIBO por decisão (§C.3 do handoff de 16 Nov 2026): grava a Genesis no Studio.
     # ──────────────────────────────────────────────────────────────────────
     "actionRules.enabled": _W,
     "actionRules.rules.id": _W,

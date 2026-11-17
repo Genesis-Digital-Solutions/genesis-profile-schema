@@ -672,7 +672,7 @@
     },
     "team.notify.queues.stale": {
       "label": "Notify the team of overdue requests",
-      "help": "On = whoever operates each queue gets an email with the undecided requests past the queue's or the urgency's deadline."
+      "help": "On = whoever operates each queue gets an email with the stuck requests: undecided past the queue's or the urgency's deadline, or waiting on the ERP (write failed, not yet done or attachments pending)."
     },
     "team.notify.docver.new": {
       "label": "Notify the team of new cases to claim",

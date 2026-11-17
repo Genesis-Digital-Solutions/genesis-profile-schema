@@ -128,6 +128,8 @@ NAME_USE_ALLOWLIST = {
         "guarda o texto de um ValueError do próprio field_values, cujas mensagens nunca têm o valor",
     ("field_checks.py", "regex_risk"):
         "o texto de re.error só diz o motivo e a posição, nunca o padrão",
+    ("pattern_guard.py", "_analyse"):
+        "lê `_Unsafe.reason`, um motivo fixo de `REASONS` levantado pelo próprio módulo — nunca o padrão",
 }
 
 

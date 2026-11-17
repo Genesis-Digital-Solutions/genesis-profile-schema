@@ -58,6 +58,13 @@ entre a v0.1.41 e a v0.1.49 entraram 29 campos, 24 dos quais ficariam
 client-editáveis na subida de pin sem decisão de ninguém — incluindo os cinco
 de `frontend.csp`.
 
+`client_write` diz a quem o campo pertence, não que o GAIBO o abre: o GAIBO mantém
+fechados por decisão `team.*` (fora os `team.notify.*`), `actionRules.*`,
+`actionLedger.*`, `audio.*`, `voice.*`, `voices.*`, `calendar.*`, `ingest.alerts.*`,
+`frontend.insightsPanel.*` e `memory.onboarding.*` (§C.3 do handoff de 16 Nov 2026;
+nota no topo do `exposure.py`). E `mcp.*`/`tools.config.verify_documents.*` são
+`internal` mas escritos pelo cliente por rotas próprias do core.
+
 ### 4. Como se chama — `ui_text/<locale>.json` + `ui_text.py`
 
 `label`, `help`, `note`, `options`, indexados **pelo caminho do campo**. O
@@ -139,9 +146,17 @@ carregar. Quem escreve é que descarta; quem lê continua a ler tudo.
   (`PORT_SUFFIX`, também no URL do core do `GaiboSettings`; v0.1.168).
   Aceita também origens de app móvel híbrida (`capacitor://host`, `ionic://host`,
   sem caminho nem wildcard; v0.1.151) e `is_app_origin()` separa-as das web.
-- `regex_risk()` — aviso para as regex de `product_identification.patterns`. O
-  core já apanha `re.error`; o que falta lá é limite de TEMPO de execução, e
-  isso resolve-se no core, não aqui.
+- `regex_risk()` — AVISO de editor para as regex de `product_identification.patterns`
+  (heurístico, mais largo). Não é a regra do save: essa é o `pattern_guard.py`.
+- `pattern_guard.py` (v0.1.171, 17 Nov 2026; nasceu no core a 14 Nov) — a REGRA DO SAVE
+  de `product_identification.patterns`: cada padrão com custo de execução limitado
+  (produto das larguras dos quantificadores, aberto conta 128; teto por padrão e somado),
+  até 200 caracteres e 10 padrões, sem quantificador variável dentro de um que repete,
+  sem alternativa dentro de quantificador, sem `\1`, sem espaço. `pattern_refusal`,
+  `pattern_cost`, `find_unsafe_patterns` (caminho + motivo, nunca o valor); motivos
+  estáveis em `REASONS`/`LIST_REASONS`. O core (pin ≥ v0.1.171) delega aqui e recusa o save com 400
+  `unsafe_pattern`; a execução palavra a palavra continua no core. Não é validador do
+  modelo de propósito (um perfil antigo com um padrão hoje recusado tem de carregar).
 - `looks_like_language_tag()` / `SUGGESTED_LOCALES` — forma BCP-47 e os locales
   com voz de fábrica. Valida a FORMA, nunca a pertença: `language.allowed` aceita
   `["*"]` e línguas de fora do mapa de propósito. E não serve para
@@ -743,9 +758,9 @@ um campo removido do modelo continua a viver no blob sem dar erro.
   precisar do default-deny local, porque uma montra não deve depender só do
   upstream para não expor um campo.
 - **Validação de valores para lá do Pydantic.** Em aberto e conhecido:
-  `product_identification.patterns` são regex do cliente executadas do nosso
-  lado, sem limite de complexidade (ReDoS), e
-  `frontend.widget.allowed_origins` não valida formato de origem.
+  `frontend.widget.allowed_origins` não valida formato de origem no modelo. (As
+  regex de `product_identification.patterns` deixaram de estar aqui: a regra do
+  save é o `pattern_guard.py`, mas fora do modelo — ver acima.)
 - **Classificação por cliente.** A tabela é do PRODUTO, igual para toda a frota.
   Se um dia houver override por cliente, só pode ESTREITAR o que a tabela
   permite, nunca alargar.
