@@ -15,7 +15,9 @@ encaminhamento por rótulo/triagem que ela já tem) e NADA muda.
   routes[]   para onde vai, por ORDEM — a 1.ª rota ligada que casa ganha.
              Nenhuma casa → o encaminhamento de hoje da fonte (fila da fonte,
              rótulos, triagem): nada se perde e nada muda em silêncio.
-             `inputs` vazio = vale para todas as entradas. `when` vazio = casa
+             `inputs` vazio = vale só para as entradas do PRINCIPAL (as que não
+             são de nenhuma variante — o core, `core/platform/inbound/routing.py`);
+             uma rota para entradas de uma variante lista-as. `when` vazio = casa
              sempre (rota de recurso de uma entrada).
 
 Gramática das condições (`when: {all, any}`, D16 do pack — substitui, não soma,
@@ -367,7 +369,7 @@ class ChannelInput(BaseModel):
 
 
 class ChannelRoute(BaseModel):
-    """Uma ROTA: `inputs` (vazio = todas) + `when` → `to`."""
+    """Uma ROTA: `inputs` (vazio = só as entradas do principal) + `when` → `to`."""
     model_config = ConfigDict(extra="forbid")
 
     id: str

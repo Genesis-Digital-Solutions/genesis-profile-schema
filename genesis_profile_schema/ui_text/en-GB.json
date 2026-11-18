@@ -796,7 +796,7 @@
     },
     "channels.routes.inputs": {
       "label": "Route inputs",
-      "help": "Empty: applies to every input."
+      "help": "Empty: applies only to the main profile's inputs. For a variant's inputs, choose them."
     },
     "channels.routes.label": {
       "label": "Route name"

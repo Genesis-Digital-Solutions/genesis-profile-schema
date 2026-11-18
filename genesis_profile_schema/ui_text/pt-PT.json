@@ -796,7 +796,7 @@
     },
     "channels.routes.inputs": {
       "label": "Entradas da rota",
-      "help": "Vazio: vale para todas as entradas."
+      "help": "Vazio: vale só para as entradas do perfil principal. Para as entradas de uma variante, escolha-as."
     },
     "channels.routes.label": {
       "label": "Nome da rota"
