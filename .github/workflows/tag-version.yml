@@ -1,0 +1,22 @@
+# A tag tem de ser o número do pyproject (18 Nov 2026: a v0.1.173 saiu com o pyproject em 0.1.172 e o core/GAIBO
+# anunciariam a versão errada no `schema_version`). Falha a vermelho logo que a tag chega ao GitHub.
+name: tag-version
+on:
+  push:
+    tags: ["v*"]
+permissions:
+  contents: read
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: tag == pyproject version
+        run: |
+          tag="${GITHUB_REF_NAME#v}"
+          ver="$(sed -n 's/^version = "\(.*\)"$/\1/p' pyproject.toml)"
+          echo "tag=$tag pyproject=$ver"
+          if [ "$tag" != "$ver" ]; then
+            echo "::error::A tag v$tag não bate com o pyproject ($ver). Faça o commit de release com o número e volte a apontar a tag."
+            exit 1
+          fi
