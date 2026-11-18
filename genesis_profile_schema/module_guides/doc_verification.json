@@ -153,6 +153,31 @@
       }
     },
     {
+      "key": "retention",
+      "level": "essential",
+      "title": {
+        "pt": "Conservação dos casos",
+        "en": "Case retention"
+      },
+      "purpose": {
+        "pt": "Quanto tempo se guardam os casos desta frente (RGPD: o cliente decide). Conta da decisão do caso, ou da última atividade sem decisão; no fim o caso apaga-se inteiro, com aviso no ecrã 30 dias antes e «Reter» por caso.",
+        "en": "How long this front's cases are kept (GDPR: the client decides). Counted from the case decision, or from the last activity without one; at the end the whole case is deleted, with an on-screen notice 30 days before and «Hold» per case."
+      },
+      "essential": [
+        "tools.config.verify_documents.retention_months"
+      ],
+      "when": {
+        "pt": "Antes de o cliente usar o módulo com dados reais. Vazio = nada se apaga (os clientes que já usam o módulo ficam assim até alguém gravar um prazo). Sugestão: 24 meses; o cliente muda-o no backoffice.",
+        "en": "Before the client uses the module with real data. Empty = nothing is deleted (clients already using the module stay so until someone saves a period). Suggestion: 24 months; the client changes it in the backoffice."
+      },
+      "examples": [
+        {
+          "pt": "24 meses: uma candidatura decidida a 1 de março de 2027 apaga-se a 1 de março de 2029, com aviso a partir de 30 de janeiro.",
+          "en": "24 months: an application decided on 1 March 2027 is deleted on 1 March 2029, with a notice from 30 January."
+        }
+      ]
+    },
+    {
       "key": "capacity",
       "level": "advanced",
       "title": {

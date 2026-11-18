@@ -1030,6 +1030,9 @@ EXPOSURE: Dict[str, str] = {
     "tools.config.analyse_cv.prompt_preset": _W,
     "tools.config.analyse_cv.prompt_custom": _W,
     "tools.config.analyse_cv.retention_days": _W,
+    # O prazo de conservação dos casos da VD por frente (18 Nov 2026, decisão do Bruno): é do cliente (RGPD — quem
+    # trata os dados decide quanto tempo os guarda); o GAIBO grava-o no principal e na camada da variante.
+    "tools.config.verify_documents.retention_months": _W,
     "tools.config.analyse_cv.job_templates": _W,
     "tools.config.analyse_cv.job_templates.id": _W,
     "tools.config.analyse_cv.job_templates.title": _W,

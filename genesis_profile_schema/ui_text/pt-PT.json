@@ -2699,6 +2699,10 @@
       "label": "Modelo da verificação",
       "help": "Vazio usa o modelo do assistente."
     },
+    "tools.config.verify_documents.retention_months": {
+      "label": "Prazo de conservação dos casos (meses)",
+      "help": "Conta da decisão (sem decisão, da última atividade); no fim o caso apaga-se inteiro. Aviso 30 dias antes; um caso marcado «Reter» fica. 6 a 120 meses; sugestão: 24. Vazio = nada se apaga."
+    },
     "tools.config.verify_documents.labels": {
       "label": "Nomes no ecrã",
       "help": "Como o módulo se chama para quem o usa nesta variante. Vazio = os nomes neutros do esquema."

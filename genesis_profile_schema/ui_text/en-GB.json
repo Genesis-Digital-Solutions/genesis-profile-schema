@@ -2699,6 +2699,10 @@
       "label": "Verification model",
       "help": "Empty uses the assistant's model."
     },
+    "tools.config.verify_documents.retention_months": {
+      "label": "Case retention period (months)",
+      "help": "Counted from the decision (without one, from the last activity); at the end the whole case is deleted. Notice 30 days before; a case on «Hold» stays. 6 to 120 months; suggestion: 24. Empty = nothing is deleted."
+    },
     "tools.config.verify_documents.labels": {
       "label": "On-screen names",
       "help": "What the module is called for the people using this variant. Empty = the scheme's neutral names."

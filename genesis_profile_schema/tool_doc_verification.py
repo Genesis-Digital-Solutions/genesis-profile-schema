@@ -72,6 +72,10 @@ class DocVerificationLabels(BaseModel):
 SCHEME_PATTERN = r"^[a-z0-9][a-z0-9_.@-]{0,63}$"
 #: Um por documento final de um esquema; a biblioteca tem dois esquemas com um documento cada (3 Nov 2026).
 MAX_DOCUMENT_TEMPLATES = 20
+# O prazo de conservação dos casos (18 Nov 2026): entre 6 meses e 10 anos; o core usa os mesmos números.
+RETENTION_MIN_MONTHS = 6
+RETENTION_MAX_MONTHS = 120
+RETENTION_SUGGESTED_MONTHS = 24
 
 
 class DocVerificationDocumentTemplate(BaseModel):
@@ -211,7 +215,12 @@ class ProfileToolDocVerificationConfig(BaseModel):
       base da Genesis em todos). Voltar ao base = tirar a referência.
     - rules: as regras que o cliente mudou, por esquema base («fem»; a versão fixa «fem@2026.10» usa as do «fem»).
       Vazio = as regras do esquema tal como vêm do core. Cada candidatura fica com as regras do dia em que é
-      processada pela 1.ª vez — mudar isto não mexe nas já analisadas (só com «Aplicar as regras atuais»)."""
+      processada pela 1.ª vez — mudar isto não mexe nas já analisadas (só com «Aplicar as regras atuais»).
+    - retention_months: o prazo de conservação dos casos DESTA frente (18 Nov 2026, decisão do Bruno; RGPD, art. 5.º,
+      n.º 1, e)). Conta da decisão do caso (sem decisão, da última atividade) e o caso apaga-se inteiro no fim
+      (`tools/doc_verification/retention/` do core), com aviso no ecrã 30 dias antes e «Reter» por caso para um
+      processo que tenha de ficar. `None` = nada se apaga (como antes): os clientes que já usam o módulo só perdem
+      casos quando alguém grava um prazo. Sugestão: 24 meses. Escrito pelo cliente (GAIBO), como as `labels`."""
     model_config = ConfigDict(extra="allow")
 
     # A mesma gramática que o core aceita ao criar um caso (`create_case`). Texto
@@ -233,6 +242,10 @@ class ProfileToolDocVerificationConfig(BaseModel):
     # «sem mudanças» (lição de 7 Out: um Optional novo aparece como `null` em toda a frota no save seguinte).
     rules: Dict[Annotated[str, Field(pattern=r"^[a-z0-9][a-z0-9_-]{0,31}$")], DocVerificationSchemeRules] = Field(
         default_factory=dict, max_length=20)
+    # O prazo de conservação dos casos desta frente, em meses (18 Nov 2026). `None` de propósito: um perfil sem o campo
+    # (ou com `null` depois do save seguinte) quer dizer «nada se apaga», nunca um prazo que ninguém escolheu.
+    # 6 a 120 meses; inteiro estrito (um «24.5» ou «"24"» é erro, não um arredondamento em silêncio).
+    retention_months: Optional[StrictInt] = Field(default=None, ge=RETENTION_MIN_MONTHS, le=RETENTION_MAX_MONTHS)
 
     @field_validator("document_templates")
     @classmethod
