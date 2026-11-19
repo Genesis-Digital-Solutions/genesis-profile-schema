@@ -29,8 +29,10 @@ from __future__ import annotations
 
 from typing import Annotated, Dict, List, Literal, Optional, Union
 
-from pydantic import AfterValidator, BaseModel, ConfigDict, Field, StrictFloat, StrictInt, StrictStr, field_validator
+from pydantic import (AfterValidator, BaseModel, ConfigDict, Field, StrictBool, StrictFloat, StrictInt, StrictStr,
+                      field_validator, model_serializer)
 
+from .doc_verification_dossier import NOT_DOSSIER_SCHEMES, DocVerificationDossierOverlay, SafeText
 from .field_definition import I18nHelp
 
 __all__ = ["DocVerificationAddedRule", "DocVerificationDocumentTemplate", "DocVerificationLabels",
@@ -127,11 +129,13 @@ class DocVerificationRuleOverride(BaseModel):
     - source: o artigo de onde vem, quando o regulamento muda."""
     model_config = ConfigDict(extra="forbid")
 
-    enabled: Optional[bool] = None
+    # Estritos (19 Nov 2026, revisão do contrato do dossiê): o perfil guarda o dict que chegou, e um `"false"` em texto
+    # lia-se verdadeiro num `if`; os textos vão para o documento das regras e para o parecer (sem controlos).
+    enabled: Optional[StrictBool] = None
     severity: Optional[Literal["critical", "attention"]] = None
     params: Dict[Annotated[str, Field(pattern=r"^[a-z][a-z0-9_]{0,39}$")], RuleParamValue] = Field(
         default_factory=dict, max_length=20)
-    source: Optional[str] = Field(default=None, min_length=1, max_length=400)
+    source: Optional[SafeText] = None
 
 
 #: Regras que o cliente acrescenta a um esquema (F4, 7 Nov 2026). O FEM tem 21 de origem; com folga.
@@ -145,8 +149,8 @@ class DocVerificationRuleSentence(BaseModel):
     estar entre {from} e {to}»). As duas são obrigatórias (o agente do Studio traduz)."""
     model_config = ConfigDict(extra="forbid")
 
-    pt: str = Field(min_length=1, max_length=MAX_RULE_SENTENCE)
-    en: str = Field(min_length=1, max_length=MAX_RULE_SENTENCE)
+    pt: SafeText
+    en: SafeText
 
 
 class DocVerificationAddedRule(BaseModel):
@@ -170,21 +174,27 @@ class DocVerificationAddedRule(BaseModel):
     params: Dict[Annotated[str, Field(pattern=r"^[a-z][a-z0-9_]{0,39}$")], RuleParamValue] = Field(
         default_factory=dict, max_length=20)
     sentence: DocVerificationRuleSentence
-    source: str = Field(min_length=1, max_length=400)
+    source: SafeText
     criterion: str = Field(pattern=r"^[a-z][a-z0-9_]{0,39}$")
     severity: Literal["critical", "attention"] = "attention"
-    enabled: bool = True
+    enabled: StrictBool = True
 
 
 class DocVerificationSchemeRules(BaseModel):
     """As regras de UM esquema que o cliente mudou (`overrides`, por id da regra do esquema: `fem.territorio`,
     `fem.foto.local`…; uma que o esquema não tem é ignorada pelo core e dita no Studio) e as que acrescentou (`added`,
-    F4). `added` é lista, nunca `None` (o blob gravado traz `[]`)."""
+    F4). `added` é lista, nunca `None` (o blob gravado traz `[]`).
+    `dossier` (v0.1.175, 19 Nov 2026): o overlay de um esquema de DOSSIÊ (`doc_verification_dossier.py`) — o que o
+    município acrescenta ou decide sobre o pack (checklist, equivalências, ficheiros, prazos). Só existe nos esquemas
+    de dossiê; num esquema que não o tem, o core ignora-o e o Studio di-lo."""
     model_config = ConfigDict(extra="forbid")
 
     overrides: Dict[Annotated[str, Field(pattern=r"^[a-z][a-z0-9_.]{1,79}$")], DocVerificationRuleOverride] = Field(
         default_factory=dict, max_length=MAX_RULE_OVERRIDES)
     added: List[DocVerificationAddedRule] = Field(default_factory=list, max_length=MAX_ADDED_RULES)
+    # `None` = sem overlay (o campo ausente). Um `null` ESCRITO é recusado (`_dossier_nunca_null`): o perfil guarda-se
+    # como o dict que chegou, e um `"dossier": null` no blob partia um core com o pin anterior (`extra="forbid"`).
+    dossier: Optional[DocVerificationDossierOverlay] = None
 
     @field_validator("added")
     @classmethod
@@ -195,6 +205,24 @@ class DocVerificationSchemeRules(BaseModel):
                 raise ValueError(f"duas regras acrescentadas com o id {r.id!r}")
             seen.add(r.id)
         return rules
+
+    @field_validator("dossier", mode="before")
+    @classmethod
+    def _dossier_nunca_null(cls, value):
+        # Só corre quando a chave vem escrita (o valor por omissão não passa aqui): ausente = sem overlay.
+        if value is None:
+            raise ValueError("sem overlay, tira-se a chave `dossier` (nunca `null`)")
+        return value
+
+    @model_serializer(mode="wrap")
+    def _dossier_so_com_valor(self, handler):
+        # Para os `model_dump` das rotas do core e do Studio que reconstroem o bloco a partir do modelo: sem overlay,
+        # a chave não sai (as regras do FEM continuam iguais). O blob do perfil guarda o dict que chegou — a garantia
+        # aí é o `_dossier_nunca_null`.
+        dados = handler(self)
+        if isinstance(dados, dict) and dados.get("dossier") is None:
+            dados.pop("dossier", None)
+        return dados
 
 
 class ProfileToolDocVerificationConfig(BaseModel):
@@ -246,6 +274,14 @@ class ProfileToolDocVerificationConfig(BaseModel):
     # (ou com `null` depois do save seguinte) quer dizer «nada se apaga», nunca um prazo que ninguém escolheu.
     # 6 a 120 meses; inteiro estrito (um «24.5» ou «"24"» é erro, não um arredondamento em silêncio).
     retention_months: Optional[StrictInt] = Field(default=None, ge=RETENTION_MIN_MONTHS, le=RETENTION_MAX_MONTHS)
+
+    @field_validator("rules")
+    @classmethod
+    def _dossier_so_em_esquemas_de_dossie(cls, rules):
+        for scheme, block in rules.items():
+            if block.dossier is not None and scheme.split("@")[0] in NOT_DOSSIER_SCHEMES:
+                raise ValueError(f"o esquema {scheme!r} não é de dossiê: não leva `dossier`")
+        return rules
 
     @field_validator("document_templates")
     @classmethod
