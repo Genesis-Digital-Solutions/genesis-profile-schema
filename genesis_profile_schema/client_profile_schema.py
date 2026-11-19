@@ -1385,11 +1385,24 @@ class ProfileMCPSigning(BaseModel):
     enabled: bool = False
 
 
+#: Nomes de servidor RESERVADOS (v0.1.174, passo 6 do épico): `contact` é o das ferramentas nativas do agente
+#: (`contact.ask`/`contact.tell` no passo do agente, no mandato e nas regras de ação) — um servidor MCP com esse nome
+#: confundia as duas coisas (uma regra «permitir» de um dava o outro). Verificado na frota a 19 Nov 2026: nenhum.
+RESERVED_MCP_SERVER_NAMES = frozenset({"contact"})
+
+
 class ProfileMCPServer(BaseModel):
     """Um MCP server configurado no profile do cliente."""
     model_config = ConfigDict(extra="allow")
 
     name: str = Field(..., min_length=1, max_length=50)
+
+    @field_validator("name")
+    @classmethod
+    def _name_not_reserved(cls, v: str) -> str:
+        if str(v or "").strip().lower() in RESERVED_MCP_SERVER_NAMES:
+            raise ValueError("nome reservado: «contact» é o das ferramentas de contacto do agente — escolha outro")
+        return v
     url: str = Field(..., min_length=1)
     auth: ProfileMCPAuth = Field(default_factory=ProfileMCPAuth)
     tool_prefix: Optional[str] = None  # default = name

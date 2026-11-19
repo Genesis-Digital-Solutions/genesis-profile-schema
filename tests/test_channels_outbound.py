@@ -135,3 +135,12 @@ def test_politica_e_do_cliente_e_o_resto_continua_interno():
 def test_hora_com_forma_no_json_schema():
     props = C.OutboundContactHours.model_json_schema()["properties"]
     assert props["start"]["pattern"] == C.HHMM_PATTERN and props["end"]["pattern"] == C.HHMM_PATTERN
+
+
+@pytest.mark.parametrize("name", ["contact", "Contact", " contact "])
+def test_servidor_mcp_contact_e_reservado(name):
+    """Passo 6: `contact.ask`/`contact.tell` são as ferramentas nativas do agente — um servidor com o nome confundia-as."""
+    from genesis_profile_schema.client_profile_schema import ProfileMCPServer
+    with pytest.raises(ValidationError):
+        ProfileMCPServer.model_validate({"name": name, "url": "https://x.pt/mcp"})
+    assert ProfileMCPServer.model_validate({"name": "contacts", "url": "https://x.pt/mcp"}).name == "contacts"
