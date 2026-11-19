@@ -88,6 +88,19 @@ Exposição `internal` (a Genesis liga; o GAIBO só com handoff). Grava-se só
 quando tem tipos: `channels` sem `outbound` relê-se num core com a v0.1.171 e
 num GAIBO com a v0.1.170 (com `outbound`, ambos o recusam — pins primeiro).
 
+POLÍTICA DE CONTACTO (`outbound.contact`, v0.1.174 — passo 6 do épico, decisão do Bruno de 19 Nov 2026: a
+política vive AQUI, não num `agentic.contact`), do cliente (`client_write`):
+  • `hours: {start: "09:00", end: "19:00", business_days_only: true}` — quando o agente pode contactar pessoas,
+    na hora do cliente (`identity.timezone`) e, com `business_days_only`, só nos dias úteis do `calendar` (fim
+    de semana e feriados). Fora da janela, a tarefa do agente que quer perguntar ou informar uma pessoa
+    (`contact.ask`/`contact.tell`) ESPERA pela próxima abertura (nada se agenda na saída). Os tipos
+    transacionais (`document.deliver`) nunca esperam. A janela não atravessa a meia-noite (`start` < `end`).
+    Ausente = sem restrição (o de hoje);
+  • `answer_max_hours` (1–168; ausente = 72) — quanto tempo, no máximo, o agente espera pela resposta de uma
+    pessoa antes de desistir e passar o assunto a alguém da equipa; o agente pode pedir menos, nunca mais.
+Fora das listas de propósito: numa lista a escrita do cliente substituía também os campos internos (`kinds`).
+Grava-se só o que tem valor (um core com a v0.1.173 recusava as chaves novas, mesmo nulas).
+
 ⚠️ ORDEM DE ROLLOUT (a mesma regra do `mcp.servers[].signing`): os modelos são
 `extra="forbid"` e a gramática é fechada, logo um core com ESTE pin recusa um
 `channels` escrito por uma versão futura (um módulo, campo ou operador novo) —
@@ -411,6 +424,43 @@ class OutboundKind(BaseModel):
     language: OutboundLanguage = "person"
 
 
+#: Quanto tempo, no máximo, o agente espera pela resposta de uma pessoa (`contact.ask`).
+ANSWER_MAX_HOURS_CAP = 168
+HHMM_PATTERN = r"^(?:[01][0-9]|2[0-3]):[0-5][0-9]$"
+
+
+class OutboundContactHours(BaseModel):
+    """`channels.outbound.contact.hours` (v0.1.174): quando o agente pode contactar pessoas — ver o topo."""
+    model_config = ConfigDict(extra="forbid")
+
+    start: str = Field(default="09:00", pattern=HHMM_PATTERN)
+    end: str = Field(default="19:00", pattern=HHMM_PATTERN)
+    business_days_only: StrictBool = True
+
+    @model_validator(mode="after")
+    def _janela(self) -> "OutboundContactHours":
+        if self.start >= self.end:
+            raise ValueError("o início tem de ser antes do fim (a janela não atravessa a meia-noite)")
+        return self
+
+
+class OutboundContact(BaseModel):
+    """`channels.outbound.contact` (v0.1.174): a política de contacto do agente — ver o topo."""
+    model_config = ConfigDict(extra="forbid")
+
+    hours: Optional[OutboundContactHours] = None
+    answer_max_hours: Optional[StrictInt] = Field(default=None, ge=1, le=ANSWER_MAX_HOURS_CAP)
+
+    @model_serializer(mode="wrap")
+    def _so_com_valor(self, handler):
+        dados = handler(self)
+        if isinstance(dados, dict):
+            for k in ("hours", "answer_max_hours"):
+                if dados.get(k) is None:
+                    dados.pop(k, None)
+        return dados
+
+
 class ChannelsOutbound(BaseModel):
     """`channels.outbound` (v0.1.172): um interruptor por tipo de saída e as ENTREGAS a sistemas de
     gestão documental (`deliveries`, `channels_deliveries.py`)."""
@@ -418,12 +468,15 @@ class ChannelsOutbound(BaseModel):
 
     kinds: List[OutboundKind] = Field(default_factory=list)
     deliveries: List[OutboundDelivery] = Field(default_factory=list)
+    contact: Optional[OutboundContact] = None
 
     @model_serializer(mode="wrap")
     def _deliveries_so_com_valor(self, handler):
         dados = handler(self)
         if isinstance(dados, dict) and not dados.get("deliveries"):
             dados.pop("deliveries", None)
+        if isinstance(dados, dict) and dados.get("contact") is None:
+            dados.pop("contact", None)
         return dados
 
     @field_validator("deliveries")
@@ -457,7 +510,10 @@ class ProfileChannels(BaseModel):
         dados = handler(self)
         if isinstance(dados, dict):
             out = dados.get("outbound")
-            if out is None or (isinstance(out, dict) and not out.get("kinds") and not out.get("deliveries")):
+            # `contact` por identidade (`is None`), nunca por veracidade: um horário gravado igual ao de
+            # omissão (ou `{}`) é uma restrição — perdê-lo deixava o agente contactar a qualquer hora.
+            if out is None or (isinstance(out, dict) and not out.get("kinds") and not out.get("deliveries")
+                               and out.get("contact") is None):
                 dados.pop("outbound", None)
         return dados
 

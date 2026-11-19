@@ -78,3 +78,60 @@ def test_a_saida_e_da_genesis():
     for path in ("channels.outbound.kinds.kind", "channels.outbound.kinds.enabled",
                  "channels.outbound.kinds.language"):
         assert exposure_of(path) == "internal"
+
+
+# ── v0.1.174 (passo 6 do épico): a política de contacto do agente ─────────────────────────────────
+
+def test_politica_de_contacto_valida_e_regrava():
+    raw = {"kinds": [{"kind": "contact.ask", "enabled": True}],
+           "contact": {"hours": {"start": "08:30", "end": "18:00", "business_days_only": False},
+                       "answer_max_hours": 48}}
+    out = ChannelsOutbound.model_validate(raw)
+    assert out.contact.answer_max_hours == 48 and out.contact.hours.start == "08:30"
+    dumped = out.model_dump(mode="json")
+    assert dumped["contact"] == raw["contact"]
+    assert ChannelsOutbound.model_validate(dumped).model_dump(mode="json") == dumped
+
+
+def test_sem_politica_nada_novo_se_grava():
+    """Um core com a v0.1.173 (`extra="forbid"`) recusava as chaves novas, mesmo nulas."""
+    dumped = ChannelsOutbound.model_validate({"kinds": [{"kind": "contact.ask"}]}).model_dump(mode="json")
+    assert "contact" not in dumped
+    only_deadline = ChannelsOutbound.model_validate({"contact": {"answer_max_hours": 24}}).model_dump(mode="json")
+    assert only_deadline["contact"] == {"answer_max_hours": 24}
+
+
+@pytest.mark.parametrize("kw", [{}, {"exclude_unset": True}, {"exclude_defaults": True}])
+def test_horario_igual_ao_de_omissao_nunca_se_perde(kw):
+    """Revisão: «ausente» = sem restrição — perder um horário gravado deixava o agente contactar a qualquer hora."""
+    for raw in ({"contact": {"hours": {}}}, {"contact": {"hours": {"start": "09:00", "end": "19:00"}}}):
+        dumped = ProfileChannels.model_validate({"outbound": raw}).model_dump(mode="json", **kw)
+        assert "outbound" in dumped and "contact" in dumped["outbound"], (raw, kw)
+    blob = ClientProfile.model_validate({"channels": {"outbound": {"contact": {"hours": {}}}}}).to_blob_dict()
+    assert blob["channels"]["outbound"]["contact"]["hours"]["end"] == "19:00"
+
+
+@pytest.mark.parametrize("hours", [
+    {"start": "19:00", "end": "09:00"}, {"start": "09:00", "end": "09:00"}, {"start": "9:00"},
+    {"start": "24:00"}, {"end": "18:60"}, {"business_days_only": "yes"}, {"extra": 1}, {"start": 900}])
+def test_horario_invalido_recusa(hours):
+    with pytest.raises(ValidationError):
+        ChannelsOutbound.model_validate({"contact": {"hours": hours}})
+
+
+@pytest.mark.parametrize("hours", [0, 169, True, "24", 24.0])
+def test_prazo_dentro_dos_limites(hours):
+    with pytest.raises(ValidationError):
+        ChannelsOutbound.model_validate({"contact": {"answer_max_hours": hours}})
+
+
+def test_politica_e_do_cliente_e_o_resto_continua_interno():
+    for p in ("channels.outbound.contact.hours.start", "channels.outbound.contact.hours.end",
+              "channels.outbound.contact.hours.business_days_only", "channels.outbound.contact.answer_max_hours"):
+        assert exposure_of(p) == "client_write", p
+    assert exposure_of("channels.outbound.kinds.enabled") == "internal"
+
+
+def test_hora_com_forma_no_json_schema():
+    props = C.OutboundContactHours.model_json_schema()["properties"]
+    assert props["start"]["pattern"] == C.HHMM_PATTERN and props["end"]["pattern"] == C.HHMM_PATTERN

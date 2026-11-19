@@ -3358,6 +3358,22 @@
         "front": "Front's language"
       }
     },
+    "channels.outbound.contact.hours.start": {
+      "label": "Contact from",
+      "help": "Time from which the agent may write to a person (client's time, HH:MM). Outside these hours the agent waits for the next opening to send."
+    },
+    "channels.outbound.contact.hours.end": {
+      "label": "Contact until",
+      "help": "Time after which the agent stops writing to people until the next opening (HH:MM, after the start)."
+    },
+    "channels.outbound.contact.hours.business_days_only": {
+      "label": "Business days only",
+      "help": "When on, the agent does not contact people at weekends or on the holidays in the client's calendar."
+    },
+    "channels.outbound.contact.answer_max_hours": {
+      "label": "Answer deadline (hours)",
+      "help": "How long, at most, the agent waits for a person's answer before giving up and handing the matter to a team member. From 1 to 168 hours; empty = 72."
+    },
     "channels.outbound.deliveries.id": {
       "label": "Delivery id",
       "help": "Short identifier of this delivery (lower case, digits, «-» and «_»)."

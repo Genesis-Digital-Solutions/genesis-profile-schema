@@ -764,6 +764,11 @@ EXPOSURE: Dict[str, str] = {
     "channels.outbound.kinds.kind": _I,
     "channels.outbound.kinds.enabled": _I,
     "channels.outbound.kinds.language": _I,
+    # v0.1.174 (passo 6 do épico): a política de contacto do agente é do cliente (fora das listas).
+    "channels.outbound.contact.hours.start": _W,
+    "channels.outbound.contact.hours.end": _W,
+    "channels.outbound.contact.hours.business_days_only": _W,
+    "channels.outbound.contact.answer_max_hours": _W,
     # channels.outbound.deliveries (v0.1.172, C2-mín fase 5): entregas a um GED (o mapeamento do Filedoc da CCDR).
     "channels.outbound.deliveries.id": _I,
     "channels.outbound.deliveries.enabled": _I,

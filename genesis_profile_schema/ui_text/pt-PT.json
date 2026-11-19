@@ -3358,6 +3358,22 @@
         "front": "Língua da frente"
       }
     },
+    "channels.outbound.contact.hours.start": {
+      "label": "Contactar a partir de",
+      "help": "Hora a partir da qual o agente pode escrever a uma pessoa (hora do cliente, HH:MM). Fora do horário, o agente espera pela abertura seguinte para enviar."
+    },
+    "channels.outbound.contact.hours.end": {
+      "label": "Contactar até",
+      "help": "Hora a partir da qual o agente deixa de escrever a pessoas até à abertura seguinte (HH:MM, depois do início)."
+    },
+    "channels.outbound.contact.hours.business_days_only": {
+      "label": "Só em dias úteis",
+      "help": "Ligado, o agente não contacta pessoas ao fim de semana nem nos feriados do calendário do cliente."
+    },
+    "channels.outbound.contact.answer_max_hours": {
+      "label": "Prazo da resposta (horas)",
+      "help": "Quanto tempo, no máximo, o agente espera pela resposta de uma pessoa antes de desistir e passar o assunto a alguém da equipa. De 1 a 168 horas; vazio = 72."
+    },
     "channels.outbound.deliveries.id": {
       "label": "Id da entrega",
       "help": "Identificador curto desta entrega (minúsculas, dígitos, «-» e «_»)."
