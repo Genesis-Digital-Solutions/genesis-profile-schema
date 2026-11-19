@@ -116,6 +116,11 @@ TOO_MANY_PERIOD_LIMITS = "too_many_period_limits"
 INVALID_SENSITIVE_PARAM = "invalid_sensitive_param"
 UNTRUSTED_BLOCKS_WITHOUT_APPROVAL = "untrusted_blocks_without_approval"
 INVALID_UNTRUSTED_MODE = "invalid_untrusted_mode"
+# v0.1.174 (passo 6 do épico «Agente colega»): as ferramentas do agente para contactar pessoas são do servidor
+# reservado `contact` (nunca um servidor MCP — `RESERVED_MCP_SERVER_NAMES`). Mesmo em «permitir», o 1.º contacto com
+# cada pessoa de fora vai SEMPRE a aprovação (decisão D1 do Bruno): sem fila e aprovadores na regra, não sai.
+CONTACT_ACTIONS = ("contact.ask", "contact.tell")
+CONTACT_FIRST_WITHOUT_APPROVERS = "contact_first_without_approvers"
 
 # ── Valores de origem não confiável (v0.1.158, 5 Nov 2026) ──────────────────
 # Defesa contra prompt injection AO NÍVEL DO VALOR (CaMeL/FIDES): quando o
@@ -465,7 +470,7 @@ def action_rules_problems(profile: Mapping[str, Any]) -> List[Dict[str, str]]:
                 add(rid, INVALID_MODE, ERROR)
 
             server = action.split(".", 1)[0] if "." in action else ""
-            if server:
+            if server and action not in CONTACT_ACTIONS:
                 if server not in servers:
                     # Assinalado, nunca apagado: o servidor pode voltar.
                     add(rid, UNKNOWN_SERVER, WARNING)
@@ -494,7 +499,8 @@ def action_rules_problems(profile: Mapping[str, Any]) -> List[Dict[str, str]]:
                                      or any(not _PARAM_PATH.fullmatch(str(p or "").strip()) for p in sens)):
                 add(rid, INVALID_SENSITIVE_PARAM, ERROR)
 
-            uses_approve = rule_uses_approve(raw)
+            # Contactos do agente só correm em automatismos, onde «confirmar» também pede a uma pessoa da fila.
+            uses_approve = rule_uses_approve(raw) or (action in CONTACT_ACTIONS and mode == "confirm")
             appr_cfg = raw.get("approval") if isinstance(raw.get("approval"), Mapping) else {}
             has_approvers = bool(str(appr_cfg.get("queue") or "")) and bool(
                 (appr_cfg.get("roles") or []) or (appr_cfg.get("groups") or []))
@@ -503,6 +509,18 @@ def action_rules_problems(profile: Mapping[str, Any]) -> List[Dict[str, str]]:
                 # Um valor não confiável pede aprovação — sem fila nem aprovadores
                 # nesta regra, a escrita do agente fica BLOQUEADA (falha fechada).
                 add(rid, UNTRUSTED_BLOCKS_WITHOUT_APPROVAL, WARNING)
+            contact_queue = str(appr_cfg.get("queue") or "")
+            if (action in CONTACT_ACTIONS and not uses_approve and contact_queue and mode != "block"
+                    and raw.get("log_only") is not True):
+                if contact_queue not in queues:
+                    add(rid, UNKNOWN_QUEUE, ERROR)
+                elif not approval_queue_shape_ok(queues.get(contact_queue) or {}):
+                    add(rid, APPROVAL_QUEUE_SHAPE, ERROR)
+            if (action in CONTACT_ACTIONS and not uses_approve and not has_approvers and mode != "block"
+                    and raw.get("log_only") is not True):
+                # «permitir» sem quem aprove: os membros da equipa recebem, mas a 1.ª mensagem a cada pessoa de fora
+                # (e o que vai para fora depois de dados dos sistemas) nunca sai.
+                add(rid, CONTACT_FIRST_WITHOUT_APPROVERS, WARNING)
             if uses_approve and not server:
                 add(rid, APPROVE_NATIVE, ERROR)
             elif uses_approve:
