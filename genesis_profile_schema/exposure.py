@@ -357,6 +357,8 @@ EXPOSURE: Dict[str, str] = {
     "frontend.widget.allowed_origins": _W,
     "frontend.widget.bubble_color": _W,
     "frontend.widget.bubble_icon_fit": _W,
+    "frontend.widget.bubble_shape": _W,
+    "frontend.widget.bubble_opacity_pct": _W,
     "frontend.widget.bubble_icon_scale_pct": _W,
     "frontend.widget.bubble_icon_url": _W,
     "frontend.widget.bubble_label": _W,

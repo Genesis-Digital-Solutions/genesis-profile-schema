@@ -1950,7 +1950,11 @@ class ProfileFrontendWidget(BaseModel):
     offset_y_px: int = Field(20, ge=0)
     # None → cai em branding.primaryColor (nunca '' — padrão das cores do schema)
     bubble_color: Optional[str] = Field(None, pattern=r"^#[0-9A-Fa-f]{6}$")
-    bubble_icon_url: str = ""                            # "" → favicon/logoRail do branding;
+    # Teto (20 Nov 2026): o data URI vai no /client-config público, que cada
+    # visitante descarrega em cada página. 200 000 caracteres ≈ 150 KB de
+    # imagem; o maior da frota medido nesse dia tinha 32 634 (nenhum perfil
+    # fica recusado). O Studio avisa e comprime antes de chegar aqui.
+    bubble_icon_url: str = Field("", max_length=200_000)  # "" → favicon/logoRail do branding;
                                                         # aceita URL https ou data URI (o Console
                                                         # redimensiona a imagem anexada antes de gravar)
     # Diâmetro da bolha. 56 é o valor histórico (era hardcoded no CSS do
@@ -1966,6 +1970,16 @@ class ProfileFrontendWidget(BaseModel):
     # bordas (fotos), full=a imagem É a bolha (logos que devem dominar) — a
     # bubble_color fica por baixo para imagens com transparência.
     bubble_icon_fit: Literal["contain", "cover", "full"] = "contain"
+    # Forma da bolha (v0.1.175, 20 Nov 2026): circle = o círculo de sempre;
+    # image = «Imagem livre», a imagem do ícone É o botão, na proporção dela
+    # (altura = bubble_size_px), sem círculo nem cor de fundo — para mascotes
+    # com balão de texto (ex.: avatar + «Em que posso ajudar?»). Sem imagem
+    # (ou se falhar a carregar) volta ao círculo.
+    bubble_shape: Literal["circle", "image"] = "circle"
+    # Opacidade da bolha em repouso (v0.1.175): 100 = opaca (o de sempre);
+    # mínimo 40 para nunca ficar invisível. Ao passar o rato, com o foco do
+    # teclado ou a arrastar volta a 100 (legibilidade e acessibilidade).
+    bubble_opacity_pct: StrictInt = Field(100, ge=40, le=100)
     bubble_label: I18nMap = Field(default_factory=dict)  # pill de texto na bolha (opcional)
     greeting: I18nMap = Field(default_factory=dict)      # balão de saudação proativa (default OFF: vazio)
     greeting_delay_s: int = Field(3, ge=0)

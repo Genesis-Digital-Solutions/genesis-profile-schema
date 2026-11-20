@@ -1605,6 +1605,20 @@
         "full": "The image is the bubble itself"
       }
     },
+    "frontend.widget.bubble_shape": {
+      "label": "Bubble shape",
+      "help": "Circle is the usual bubble. Free image uses the icon image as the button, in its own proportions and with no circle or background colour, for example a mascot with a speech balloon.",
+      "note": "Use an image of your own with a transparent background, cropped close to the figure; the height is the Bubble size and the width follows the proportions. The transparent area of the image also counts as the button. Without an image of your own, or if the image fails to load, the circle stays.",
+      "options": {
+        "circle": "Circle",
+        "image": "Free image"
+      }
+    },
+    "frontend.widget.bubble_opacity_pct": {
+      "label": "Bubble opacity (%)",
+      "help": "Makes the bubble translucent while nobody touches it, so it does not hide the site. On hover, with keyboard focus or while dragging it becomes opaque again. 100 = opaque; minimum 40.",
+      "note": "Applies to the bubble, the text pill and any shape. The greeting and the chat panel always stay opaque."
+    },
     "frontend.widget.bubble_icon_scale_pct": {
       "label": "Icon size (% of the diameter)",
       "help": "54% is the historical proportion. Logos with a lot of padding need 70–90% so they aren’t drowned by the bubble colour."

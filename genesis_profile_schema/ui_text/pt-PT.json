@@ -1605,6 +1605,20 @@
         "full": "A imagem é a própria bolha"
       }
     },
+    "frontend.widget.bubble_shape": {
+      "label": "Forma da bolha",
+      "help": "Círculo é a bolha de sempre. Imagem livre usa a imagem do ícone como botão, na proporção dela e sem círculo nem cor de fundo, por exemplo uma mascote com um balão de texto.",
+      "note": "Usar uma imagem própria com fundo transparente e cortada rente à figura; a altura é o Tamanho da bolha e a largura acompanha a proporção. A área transparente da imagem também conta como botão. Sem imagem própria, ou se a imagem não carregar, fica o círculo.",
+      "options": {
+        "circle": "Círculo",
+        "image": "Imagem livre"
+      }
+    },
+    "frontend.widget.bubble_opacity_pct": {
+      "label": "Opacidade da bolha (%)",
+      "help": "Deixa a bolha translúcida enquanto ninguém lhe toca, para não tapar o site. Ao passar o rato, com o foco do teclado ou a arrastar, volta a ficar opaca. 100 = opaca; mínimo 40.",
+      "note": "Aplica-se à bolha, à pill de texto e a qualquer forma. A saudação e o painel do chat ficam sempre opacos."
+    },
     "frontend.widget.bubble_icon_scale_pct": {
       "label": "Tamanho do ícone (% do diâmetro)",
       "help": "54% é a proporção histórica. Logótipos com muita margem branca precisam de 70 a 90% para não ficarem afogados na cor da bolha."
