@@ -46,7 +46,7 @@ warnings.filterwarnings(
 )
 
 from typing import Annotated, Any, Dict, List, Literal, Optional, Union
-from pydantic import BaseModel, ConfigDict, Field, field_validator, model_serializer, model_validator, StrictInt
+from pydantic import BaseModel, ConfigDict, Field, field_validator, model_serializer, model_validator, StrictBool, StrictInt
 
 
 # ─────────────────────────────────────────────────────────────────────────────
@@ -1984,6 +1984,13 @@ class ProfileFrontendWidget(BaseModel):
     # / panel_height_px passam a ser o tamanho INICIAL. Ligado por omissão;
     # false desliga (o site também pode desligar com data-resizable="0").
     resizable: bool = True
+    # Mover a bolha à mão (v0.1.175, 20 Nov 2026): o visitante arrasta a bolha
+    # (rato ou dedo) e a posição fica no localStorage do site, sempre dentro do
+    # ecrã; largar perto do canto de `position` repõe. DESLIGADO por omissão
+    # (nenhum cliente muda sem decisão); o site liga/desliga com
+    # data-draggable="1"/"0". Sem efeito no modo inline. StrictBool: um "true"
+    # em texto não liga nada às escondidas.
+    draggable: StrictBool = False
     # [] = qualquer site https pode embeber (frame-ancestors https:);
     # não-vazio → o creator escreve frame-ancestors 'self' + estas origens.
     allowed_origins: List[str] = Field(default_factory=list)

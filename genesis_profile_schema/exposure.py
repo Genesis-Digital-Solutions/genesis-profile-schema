@@ -366,6 +366,7 @@ EXPOSURE: Dict[str, str] = {
     "frontend.widget.greeting_delay_s": _W,
     "frontend.widget.mobile_mode": _W,
     "frontend.widget.resizable": _W,
+    "frontend.widget.draggable": _W,
     "frontend.widget.mode": _W,
     "frontend.widget.offset_x_px": _W,
     "frontend.widget.offset_y_px": _W,

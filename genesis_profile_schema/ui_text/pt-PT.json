@@ -1637,6 +1637,11 @@
       "label": "Permitir redimensionar",
       "help": "Quem usa o widget pode alargar o painel arrastando as bordas, dentro de limites; o tamanho fica guardado no browser. A largura e a altura passam a ser o tamanho inicial."
     },
+    "frontend.widget.draggable": {
+      "label": "Permitir mover a bolha",
+      "help": "Quem usa o widget pode arrastar a bolha para outro ponto do ecrã; fica sempre dentro do ecrã e a posição fica guardada no browser de cada pessoa. Largar a bolha perto do canto configurado repõe a posição.",
+      "note": "Desligado por omissão. Funciona com rato e com o dedo; um toque curto continua a abrir o chat. O site pode ligar ou desligar com data-draggable=\"1\"/\"0\" no snippet. Sem efeito no modo inline."
+    },
     "frontend.widget.mobile_mode": {
       "label": "Comportamento em telemóvel",
       "help": "fullscreen = o painel ocupa o ecrã todo; sheet = painel a 95% da altura, deixando o site visível por trás.",

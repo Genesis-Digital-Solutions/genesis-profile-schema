@@ -1637,6 +1637,11 @@
       "label": "Allow resizing",
       "help": "People using the widget can enlarge the panel by dragging its edges, within limits; the size is kept in the browser. Width and height become the initial size."
     },
+    "frontend.widget.draggable": {
+      "label": "Allow moving the bubble",
+      "help": "People using the widget can drag the bubble to another point of the screen; it always stays on screen and its position is kept in each person's browser. Dropping the bubble near the configured corner restores the position.",
+      "note": "Off by default. Works with the mouse and with a finger; a short tap still opens the chat. The site can turn it on or off with data-draggable=\"1\"/\"0\" in the snippet. No effect in inline mode."
+    },
     "frontend.widget.mobile_mode": {
       "label": "Behaviour on mobile",
       "help": "fullscreen = the panel takes the whole screen; sheet = a 95%-height sheet that leaves the site visible behind it.",
