@@ -944,7 +944,7 @@
     },
     "frontend.branding.favicon": {
       "label": "Favicon",
-      "help": "URL no contentor `branding` — carregado pelo Console."
+      "help": "Ícone do separador do browser: endereço https ou ficheiro anexado. Vai em cada página: limite de 220 000 caracteres (cerca de 160 KB)."
     },
     "frontend.branding.darkHeaderLogo": {
       "label": "Logótipo nos cabeçalhos escuros",
@@ -972,15 +972,15 @@
     },
     "frontend.branding.logoDark": {
       "label": "Logótipo (tema escuro)",
-      "help": "URL no contentor `branding` — carregado pelo Console."
+      "help": "Endereço https da imagem ou ficheiro anexado; vazio usa o do tema claro. Vai em cada página do assistente e do widget: limite de 220 000 caracteres (cerca de 160 KB)."
     },
     "frontend.branding.logoLight": {
       "label": "Logótipo (tema claro)",
-      "help": "URL no contentor `branding` — carregado pelo Console."
+      "help": "Endereço https da imagem ou ficheiro anexado. Vai em cada página do assistente e do widget: limite de 220 000 caracteres (cerca de 160 KB)."
     },
     "frontend.branding.logoRail": {
       "label": "Logótipo da barra lateral recolhida",
-      "help": "URL no contentor `branding` — carregado pelo Console.",
+      "help": "Endereço https da imagem ou ficheiro anexado. Vai em cada página do assistente e do widget: limite de 220 000 caracteres (cerca de 160 KB).",
       "note": "Imagem mostrada como avatar nas respostas do assistente. Vazio → usa a inicial do nome. (campo: logoRail)"
     },
     "frontend.branding.primaryColor": {

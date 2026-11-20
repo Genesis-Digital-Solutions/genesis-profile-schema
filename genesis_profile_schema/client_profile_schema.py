@@ -12,7 +12,8 @@ backend (control plane). Auto-contido — só depende de `pydantic` e `typing`.
 Filosofia:
   - 1 modelo único e plano, fiel ao JSON real do Blob.
   - `extra='allow'` em todos os submodels (evolução sem migrações).
-  - Sem max_length em textos livres e sem max_items em listas.
+  - Sem max_length em textos livres e sem max_items em listas (exceção: as
+    imagens do /client-config público, PUBLIC_IMAGE_MAX_CHARS).
   - Sem limites superiores (le) em knobs de qualidade/contexto — na dúvida,
     aumentar; nunca cortar por poupança.
   - Defaults seguros: um perfil vazio validado é um perfil funcional.
@@ -1673,6 +1674,29 @@ class ProfileFrontendTheme(BaseModel):
     dark: ProfileFrontendThemeMode = Field(default_factory=ProfileFrontendThemeMode)
 
 
+# Teto das imagens que viajam no /client-config público (20 Nov 2026):
+# logótipos, favicon e ícone da bolha do widget. Cada visitante descarrega o
+# /client-config em cada página (app e widget), por isso um data URI sem teto
+# pesa em todas as visitas — a DGAEP chegou a 605 KB por página, com um
+# logoLight de 427 298 caracteres. 220 000 caracteres ≈ 160 KB de imagem — o
+# máximo que o GAIBO já aceita no upload (160 KiB descodificados = 218 482
+# caracteres com o prefixo de um SVG), para nada que ele grave hoje dar 422. É a
+# exceção deliberada à regra «sem max_length em textos livres»: não é texto,
+# é peso servido ao público. O Studio comprime e avisa antes de chegar aqui.
+PUBLIC_IMAGE_MAX_CHARS = 220_000
+
+# Formatos aceites nessas imagens (20 Nov 2026, revisão de segurança): vazio,
+# https://, um data URI de imagem em base64 ou um ficheiro do próprio fecore
+# (`assets/…`). Fecha `javascript:`, `http:` (conteúdo misto), `data:text/html` e
+# esquemas estranhos num campo servido ao público. Medido a 20 Nov 2026 (base e
+# variantes da frota v2): só vazio, https e data:image/png|svg+xml — ninguém recusado.
+PUBLIC_IMAGE_REF_PATTERN = (
+    r"^(?:https://[^\s\"'<>]+"
+    r"|data:image/(?:png|jpeg|webp|gif|avif|x-icon|vnd\.microsoft\.icon|svg\+xml);base64,[A-Za-z0-9+/]*={0,2}"
+    r"|assets/[A-Za-z0-9._/-]+)?$"
+)
+
+
 class ProfileFrontendBranding(BaseModel):
     model_config = ConfigDict(extra="allow")
 
@@ -1680,11 +1704,14 @@ class ProfileFrontendBranding(BaseModel):
     subtitle: str = ""
     primaryColor: Optional[str] = Field(default=None, pattern=_HEX_COLOR_REGEX)
     primaryTextColor: Optional[str] = Field(default=None, pattern=_HEX_COLOR_REGEX)
-    # logos/favicon: URL no container `branding` (upload via Console).
-    logoLight: str = ""
-    logoDark: str = ""
-    logoRail: str = ""
-    favicon: str = ""
+    # logos/favicon: URL https ou data URI (o Studio redimensiona e comprime a
+    # imagem anexada). Teto em PUBLIC_IMAGE_MAX_CHARS (v0.1.175): na medição
+    # de 20 Nov 2026 só a DGAEP passava (logoLight 427 298) — recomprimida
+    # pelo Studio antes de o pin subir; o seguinte da frota tinha 74 050.
+    logoLight: str = Field("", max_length=PUBLIC_IMAGE_MAX_CHARS, pattern=PUBLIC_IMAGE_REF_PATTERN)
+    logoDark: str = Field("", max_length=PUBLIC_IMAGE_MAX_CHARS, pattern=PUBLIC_IMAGE_REF_PATTERN)
+    logoRail: str = Field("", max_length=PUBLIC_IMAGE_MAX_CHARS, pattern=PUBLIC_IMAGE_REF_PATTERN)
+    favicon: str = Field("", max_length=PUBLIC_IMAGE_MAX_CHARS, pattern=PUBLIC_IMAGE_REF_PATTERN)
     # Avatar do bot nas mensagens e altura do logo do header. O fecore só
     # injeta as CSS vars quando definidos ("" / 0 = defaults do SCSS —
     # comportamento da frota intacto). shape: round=50%, soft=25%, square=0.
@@ -1951,10 +1978,10 @@ class ProfileFrontendWidget(BaseModel):
     # None → cai em branding.primaryColor (nunca '' — padrão das cores do schema)
     bubble_color: Optional[str] = Field(None, pattern=r"^#[0-9A-Fa-f]{6}$")
     # Teto (20 Nov 2026): o data URI vai no /client-config público, que cada
-    # visitante descarrega em cada página. 200 000 caracteres ≈ 150 KB de
-    # imagem; o maior da frota medido nesse dia tinha 32 634 (nenhum perfil
+    # visitante descarrega em cada página — PUBLIC_IMAGE_MAX_CHARS, o mesmo dos
+    # logótipos; o maior da frota medido nesse dia tinha 32 634 (nenhum perfil
     # fica recusado). O Studio avisa e comprime antes de chegar aqui.
-    bubble_icon_url: str = Field("", max_length=200_000)  # "" → favicon/logoRail do branding;
+    bubble_icon_url: str = Field("", max_length=PUBLIC_IMAGE_MAX_CHARS, pattern=PUBLIC_IMAGE_REF_PATTERN)  # "" → favicon/logoRail do branding;
                                                         # aceita URL https ou data URI (o Console
                                                         # redimensiona a imagem anexada antes de gravar)
     # Diâmetro da bolha. 56 é o valor histórico (era hardcoded no CSS do

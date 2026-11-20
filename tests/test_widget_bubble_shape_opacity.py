@@ -54,7 +54,7 @@ def test_editaveis_pelo_cliente_e_com_texto():
 
 def test_icone_com_teto_de_tamanho():
     """O data URI do ícone vai no /client-config público (cada visitante, cada
-    página): teto de 200 000 caracteres, acima do maior da frota (32 634)."""
+    página): teto de 220 000 caracteres (PUBLIC_IMAGE_MAX_CHARS), acima do maior da frota (32 634)."""
     assert ProfileFrontendWidget(bubble_icon_url="data:image/png;base64," + "A" * 199_000).bubble_icon_url
     with pytest.raises(ValidationError):
-        ProfileFrontendWidget(bubble_icon_url="data:image/png;base64," + "A" * 200_000)
+        ProfileFrontendWidget(bubble_icon_url="data:image/png;base64," + "A" * 220_000)

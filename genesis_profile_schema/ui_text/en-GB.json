@@ -944,7 +944,7 @@
     },
     "frontend.branding.favicon": {
       "label": "Favicon",
-      "help": "A URL in the `branding` container — uploaded via the Console."
+      "help": "Browser tab icon: an https address or an attached file. Sent with every page: limit of 220,000 characters (about 160 KB)."
     },
     "frontend.branding.darkHeaderLogo": {
       "label": "Logo on dark headers",
@@ -972,15 +972,15 @@
     },
     "frontend.branding.logoDark": {
       "label": "Logo (dark theme)",
-      "help": "A URL in the `branding` container — uploaded via the Console."
+      "help": "An https address for the image or an attached file; empty uses the light theme one. Sent with every page of the assistant and the widget: limit of 220,000 characters (about 160 KB)."
     },
     "frontend.branding.logoLight": {
       "label": "Logo (light theme)",
-      "help": "A URL in the `branding` container — uploaded via the Console."
+      "help": "An https address for the image or an attached file. Sent with every page of the assistant and the widget: limit of 220,000 characters (about 160 KB)."
     },
     "frontend.branding.logoRail": {
       "label": "Collapsed sidebar logo",
-      "help": "A URL in the `branding` container — uploaded via the Console.",
+      "help": "An https address for the image or an attached file. Sent with every page of the assistant and the widget: limit of 220,000 characters (about 160 KB).",
       "note": "Image shown as the avatar in the assistant's replies. Empty → uses the name initial. (field: logoRail)"
     },
     "frontend.branding.primaryColor": {
