@@ -1,0 +1,3 @@
+# Every pull request asks Genesis for review before merge (Bruno, 20 Nov 2026).
+# External contributors (e.g. the CMTV implementation) work only through PRs; see docs/cmtv/REVISAO_plano_CMTV_19nov2026.md.
+* @BrunoS-Genesis
