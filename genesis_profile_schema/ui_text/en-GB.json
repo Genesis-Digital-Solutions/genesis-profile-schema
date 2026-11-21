@@ -615,6 +615,21 @@
       "label": "OIDC scope",
       "help": "An OIDC field. Empty uses a safe default in the frontend."
     },
+    "frontend.auth.resource": {
+      "label": "API resource (ADFS)",
+      "help": "Only for OIDC sign-in with ADFS: the API identifier that ADFS puts in the token audience (e.g. https://api.company.com). Leave empty for other providers.",
+      "note": "Sent as the resource parameter on the authorisation, code and refresh requests (customParams* of angular-auth-oidc-client). Public: runtime-config and /client-config. Visible characters only, no spaces, up to 512."
+    },
+    "frontend.auth.redirectPath": {
+      "label": "Sign-in return path",
+      "help": "Path on this site where the identity provider returns after sign-in (e.g. /auth/callback). Empty = the site root. It must match the return address registered in the provider's app.",
+      "note": "Paths only (starts with /; letters, digits, . _ ~ -; no //, . or ..) — the fecore joins them to window.location.origin and validates again; an invalid value falls back to the root. Never another host."
+    },
+    "frontend.auth.postLogoutPath": {
+      "label": "Path after sign-out",
+      "help": "Path on this site where the identity provider returns after signing out. Empty = the site root. It must be registered in the provider's app.",
+      "note": "Same rule as the sign-in return path (paths on this origin only)."
+    },
     "frontend.auth.stepUp": {
       "label": "Ask for sign-in mid-conversation",
       "help": "People chatting without signing in keep chatting; when a question needs the person's account, the assistant asks them to sign in. Only with optional sign-in and a sign-in the assistant can validate."

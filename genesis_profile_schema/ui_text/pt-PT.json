@@ -615,6 +615,21 @@
       "label": "Âmbito OIDC",
       "help": "Campo OIDC. Vazio usa um valor por defeito seguro no frontend."
     },
+    "frontend.auth.resource": {
+      "label": "Recurso da API (ADFS)",
+      "help": "Só para o login OIDC com o ADFS: o identificador da API que o ADFS coloca na audiência do token (ex.: https://api.empresa.pt). Vazio nos outros fornecedores.",
+      "note": "Vai como parâmetro resource no pedido de autorização, de código e de refresh (customParams* do angular-auth-oidc-client). Público: runtime-config e /client-config. Só caracteres visíveis, sem espaços, até 512."
+    },
+    "frontend.auth.redirectPath": {
+      "label": "Caminho de regresso do login",
+      "help": "Caminho deste site para onde o fornecedor de identidade devolve depois do login (ex.: /auth/callback). Vazio = a raiz do site. Tem de coincidir com o endereço de regresso registado na app do fornecedor.",
+      "note": "Só caminhos (começa por /; letras, números, . _ ~ -; sem //, . ou ..) — o fecore junta-os a window.location.origin e volta a validar; um valor inválido cai na raiz. Nunca outro host."
+    },
+    "frontend.auth.postLogoutPath": {
+      "label": "Caminho depois de terminar sessão",
+      "help": "Caminho deste site para onde o fornecedor de identidade devolve depois de terminar a sessão. Vazio = a raiz do site. Tem de estar registado na app do fornecedor.",
+      "note": "Mesma regra do caminho de regresso do login (só caminhos nesta origem)."
+    },
     "frontend.auth.stepUp": {
       "label": "Pedir o login a meio da conversa",
       "help": "Quem conversa sem login continua a conversar; quando uma pergunta precisa da conta da pessoa, o assistente pede para entrar. Só com o login opcional e um login que o assistente consegue validar."

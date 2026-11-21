@@ -2141,6 +2141,22 @@ class ProfileWidgetIdentity(BaseModel):
 #: fecore guarda (2 por emissor Entra).
 MAX_AUTH_PROVIDERS = 64
 
+#: Login com o IdP do cliente (v0.1.176). A MESMA regra no core (`client_config_auth`), no Studio
+#: (`runtime_config_auth`) e no fecore (`auth.providers.ts`): cada um volta a validar o que lê.
+OIDC_PATH_MAX_CHARS = 200
+OIDC_RESOURCE_MAX_CHARS = 512
+OIDC_PATH_RE = re.compile(r"/(?:[A-Za-z0-9._~-]+(?:/[A-Za-z0-9._~-]+)*/?)?")
+OIDC_RESOURCE_RE = re.compile(r"[\x21-\x7e]{1,512}")
+
+
+def is_oidc_return_path(value: Any) -> bool:
+    """Um caminho de regresso do login OIDC: `/` ou `/seg/seg[/]`, sem `.`/`..` como segmento, nunca `//`."""
+    if not isinstance(value, str) or not value or len(value) > OIDC_PATH_MAX_CHARS:
+        return False
+    if not OIDC_PATH_RE.fullmatch(value):
+        return False
+    return all(seg not in (".", "..") for seg in value.split("/"))
+
 
 class ProfileFrontendAuth(BaseModel):
     """
@@ -2171,6 +2187,30 @@ class ProfileFrontendAuth(BaseModel):
     # OIDC genérico (login do FE)
     authority: str = ""                                     # URL do IdP (authority/issuer)
     scope: str = ""                                         # vazio → default seguro no FE
+
+    # Login com o IdP do cliente (L2, v0.1.176, 21 Nov 2026) — só no OIDC, todos públicos (runtime-config e
+    # /client-config). `resource`: o identificador da API que o ADFS põe no `aud` do access token (vai no
+    # pedido de autorização, de código e de refresh). `redirectPath`/`postLogoutPath`: o caminho, NESTA
+    # origem, para onde o IdP devolve depois do login / do logout (vazio = a raiz, o de sempre). Só caminhos
+    # (`/x/y`), nunca outro host: o fecore junta-os a `window.location.origin` e repete esta validação.
+    resource: str = Field(default="", max_length=OIDC_RESOURCE_MAX_CHARS)
+    redirectPath: str = Field(default="", max_length=OIDC_PATH_MAX_CHARS)
+    postLogoutPath: str = Field(default="", max_length=OIDC_PATH_MAX_CHARS)
+
+    @field_validator("resource")
+    @classmethod
+    def _resource_ok(cls, v: str) -> str:
+        if v and not OIDC_RESOURCE_RE.fullmatch(v):
+            raise ValueError("frontend.auth.resource: só caracteres visíveis, sem espaços")
+        return v
+
+    @field_validator("redirectPath", "postLogoutPath")
+    @classmethod
+    def _path_ok(cls, v: str) -> str:
+        if v and not is_oidc_return_path(v):
+            raise ValueError("frontend.auth: o caminho de regresso começa por / e é só um caminho nesta origem "
+                             "(letras, números, . _ ~ -, sem //, . ou ..)")
+        return v
 
     # Pedir o login a meio da conversa (fase H, 17 Out 2026; declarado na
     # v0.1.125): lido SÓ pelo genai-core (`core/agent/step_up/policy.py`) — com

@@ -197,6 +197,9 @@ EXPOSURE: Dict[str, str] = {
     # v0.1.165 (Finding 38): os papéis do Entra deste emissor contam — fronteira de segurança, só a Genesis.
     "frontend.auth.providers.client_directory": _I,
     "frontend.auth.scope": _I,
+    "frontend.auth.resource": _I,                # v0.1.176 (login L2): ADFS, público no runtime-config
+    "frontend.auth.redirectPath": _I,
+    "frontend.auth.postLogoutPath": _I,
     "frontend.auth.stepUp": _I,                  # v0.1.125 (fase H): só a Genesis
     "frontend.auth.tenantId": _I,
     "frontend.auth.tenantMode": _I,
