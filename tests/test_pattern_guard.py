@@ -85,7 +85,7 @@ def test_package_exports_the_guard():
 
 
 def test_pattern_hint_travels_with_the_rule():
-    """O texto do 400 `unsafe_pattern` veio do core (v0.1.177): mesmo texto, números das constantes."""
+    """O texto do 400 `unsafe_pattern` veio do core (v0.1.178): mesmo texto, números das constantes."""
     import genesis_profile_schema as g
     from genesis_profile_schema import pattern_guard
     hint = pattern_guard.PATTERN_HINT

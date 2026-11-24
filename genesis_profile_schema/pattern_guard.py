@@ -57,7 +57,7 @@ TOTAL_COST_MAX = 4096    # somado, todos os padrões do perfil (pior caso medido
 
 #: O texto que acompanha a recusa (`details` do 400 `unsafe_pattern` no core; o GAIBO
 #: pode mostrá-lo antes do save). Veio do core (`config/profile_pattern_guard.py`) na
-#: v0.1.177 para o texto ser o mesmo nos dois lados; os números vêm das constantes acima.
+#: v0.1.178 para o texto ser o mesmo nos dois lados; os números vêm das constantes acima.
 PATTERN_HINT = ("Os padrões de códigos de produto aplicam-se palavra a palavra (sem espaços) e têm de ter "
                 f"custo limitado: até {PATTERN_MAX_CHARS} caracteres e {MAX_CUSTOM_PATTERNS} padrões, sem "
                 "quantificador dentro de quantificador (`(a+)+`), sem alternativas dentro de um quantificador "

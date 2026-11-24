@@ -157,7 +157,7 @@ carregar. Quem escreve é que descarta; quem lê continua a ler tudo.
   estáveis em `REASONS`/`LIST_REASONS`. O core (pin ≥ v0.1.171) delega aqui e recusa o save com 400
   `unsafe_pattern`; a execução palavra a palavra continua no core. Não é validador do
   modelo de propósito (um perfil antigo com um padrão hoje recusado tem de carregar).
-  `PATTERN_HINT` (v0.1.177, veio do core) é o texto que acompanha a recusa (`details` do
+  `PATTERN_HINT` (v0.1.178, veio do core) é o texto que acompanha a recusa (`details` do
   400), com os números tirados das constantes; o core passa a importá-lo daqui quando o pin subir.
 - `looks_like_language_tag()` / `SUGGESTED_LOCALES` — forma BCP-47 e os locales
   com voz de fábrica. Valida a FORMA, nunca a pertença: `language.allowed` aceita

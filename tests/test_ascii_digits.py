@@ -225,7 +225,7 @@ ALLOWED_VALUES = {
     # default mudava o valor dos perfis que ainda não o têm gravado (45 da frota já
     # o têm, 13 Nov 2026), sem ganho.
     r"/(19\d{2}|20\d{2})/",
-    # `pattern_guard.PATTERN_HINT` (v0.1.177, veio do core): PROSA para quem
+    # `pattern_guard.PATTERN_HINT` (v0.1.178, veio do core): PROSA para quem
     # escreve a regex (`\d{4,12}` em vez de `\d+`), nunca compilada. O pedaço
     # literal depois do último `{…}` do f-string é o nó que o canário vê.
     PATTERN_HINT[PATTERN_HINT.index(" padrões, sem quantificador"):],
