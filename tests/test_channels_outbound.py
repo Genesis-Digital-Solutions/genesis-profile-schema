@@ -125,6 +125,19 @@ def test_prazo_dentro_dos_limites(hours):
         ChannelsOutbound.model_validate({"contact": {"answer_max_hours": hours}})
 
 
+def test_from_chat_so_se_grava_com_valor_e_e_interno():
+    """v0.1.177 (peça 3): ausente = desligado; nulo nunca se grava (um core com a v0.1.176 recusava a chave)."""
+    assert "from_chat" not in ChannelsOutbound.model_validate(
+        {"contact": {"answer_max_hours": 24}}).model_dump(mode="json")["contact"]
+    on = ChannelsOutbound.model_validate({"contact": {"from_chat": True}}).model_dump(mode="json")
+    assert on["contact"] == {"from_chat": True}
+    assert ChannelsOutbound.model_validate(on).model_dump(mode="json") == on
+    for bad in ("yes", 1, "true"):
+        with pytest.raises(ValidationError):
+            ChannelsOutbound.model_validate({"contact": {"from_chat": bad}})
+    assert exposure_of("channels.outbound.contact.from_chat") == "internal"
+
+
 def test_politica_e_do_cliente_e_o_resto_continua_interno():
     for p in ("channels.outbound.contact.hours.start", "channels.outbound.contact.hours.end",
               "channels.outbound.contact.hours.business_days_only", "channels.outbound.contact.answer_max_hours"):

@@ -3408,6 +3408,10 @@
       "label": "Prazo da resposta (horas)",
       "help": "Quanto tempo, no máximo, o agente espera pela resposta de uma pessoa antes de desistir e passar o assunto a alguém da equipa. De 1 a 168 horas; vazio = 72."
     },
+    "channels.outbound.contact.from_chat": {
+      "label": "Também no chat da equipa",
+      "help": "Ligado, o agente do chat pode perguntar ou informar um colega da equipa desta frente quando um membro da equipa com login lho pede — nunca num assistente público ou anónimo, nunca pessoas de fora. Precisa também do tipo ligado nas Saídas e de uma regra de ação que o deixe; em «Aprovar», o agente recusa no chat."
+    },
     "channels.outbound.deliveries.id": {
       "label": "Id da entrega",
       "help": "Identificador curto desta entrega (minúsculas, dígitos, «-» e «_»)."

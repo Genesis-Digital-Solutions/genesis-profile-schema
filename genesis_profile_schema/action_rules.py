@@ -499,7 +499,8 @@ def action_rules_problems(profile: Mapping[str, Any]) -> List[Dict[str, str]]:
                                      or any(not _PARAM_PATH.fullmatch(str(p or "").strip()) for p in sens)):
                 add(rid, INVALID_SENSITIVE_PARAM, ERROR)
 
-            # Contactos do agente só correm em automatismos, onde «confirmar» também pede a uma pessoa da fila.
+            # Contactos do agente: nas tarefas da fila «confirmar» pede a uma pessoa da fila (no chat é o «sim» de
+            # quem pede, mas a regra é a mesma e a fila tem de servir as tarefas).
             uses_approve = rule_uses_approve(raw) or (action in CONTACT_ACTIONS and mode == "confirm")
             appr_cfg = raw.get("approval") if isinstance(raw.get("approval"), Mapping) else {}
             has_approvers = bool(str(appr_cfg.get("queue") or "")) and bool(

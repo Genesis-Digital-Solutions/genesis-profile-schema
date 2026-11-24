@@ -775,6 +775,8 @@ EXPOSURE: Dict[str, str] = {
     "channels.outbound.contact.hours.end": _W,
     "channels.outbound.contact.hours.business_days_only": _W,
     "channels.outbound.contact.answer_max_hours": _W,
+    # v0.1.177 (peça 3): ligar o agente do chat a contactar colegas é decisão da Genesis (como os tipos).
+    "channels.outbound.contact.from_chat": _I,
     # channels.outbound.deliveries (v0.1.172, C2-mín fase 5): entregas a um GED (o mapeamento do Filedoc da CCDR).
     "channels.outbound.deliveries.id": _I,
     "channels.outbound.deliveries.enabled": _I,

@@ -98,6 +98,10 @@ política vive AQUI, não num `agentic.contact`), do cliente (`client_write`):
     Ausente = sem restrição (o de hoje);
   • `answer_max_hours` (1–168; ausente = 72) — quanto tempo, no máximo, o agente espera pela resposta de uma
     pessoa antes de desistir e passar o assunto a alguém da equipa; o agente pode pedir menos, nunca mais.
+  • `from_chat` (v0.1.177, passo 6 peça 3; `internal` — a Genesis liga, como os tipos) — o agente do CHAT pode
+    perguntar ou informar um COLEGA da equipa desta frente quando um membro da equipa com login lho pede
+    (nunca num assistente público ou anónimo; nunca pessoas de fora). Ausente ou false = desligado (o de hoje).
+    Precisa também do tipo ligado em `kinds` e de uma regra de ação `contact.ask`/`contact.tell` que deixe.
 Fora das listas de propósito: numa lista a escrita do cliente substituía também os campos internos (`kinds`).
 Grava-se só o que tem valor (um core com a v0.1.173 recusava as chaves novas, mesmo nulas).
 
@@ -450,12 +454,14 @@ class OutboundContact(BaseModel):
 
     hours: Optional[OutboundContactHours] = None
     answer_max_hours: Optional[StrictInt] = Field(default=None, ge=1, le=ANSWER_MAX_HOURS_CAP)
+    #: v0.1.177: o agente do chat contacta colegas a pedido de um membro da equipa com login — ver o topo.
+    from_chat: Optional[StrictBool] = None
 
     @model_serializer(mode="wrap")
     def _so_com_valor(self, handler):
         dados = handler(self)
         if isinstance(dados, dict):
-            for k in ("hours", "answer_max_hours"):
+            for k in ("hours", "answer_max_hours", "from_chat"):
                 if dados.get(k) is None:
                     dados.pop(k, None)
         return dados

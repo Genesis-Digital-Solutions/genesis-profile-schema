@@ -3408,6 +3408,10 @@
       "label": "Answer deadline (hours)",
       "help": "How long, at most, the agent waits for a person's answer before giving up and handing the matter to a team member. From 1 to 168 hours; empty = 72."
     },
+    "channels.outbound.contact.from_chat": {
+      "label": "Also in the team chat",
+      "help": "When on, the chat agent can ask or inform a team colleague of this front when a signed-in team member asks it to — never in a public or anonymous assistant, never people outside the team. It also needs the kind turned on in Outputs and an action rule that allows it; with «Approve», the agent refuses in the chat."
+    },
     "channels.outbound.deliveries.id": {
       "label": "Delivery id",
       "help": "Short identifier of this delivery (lower case, digits, «-» and «_»)."
