@@ -1005,7 +1005,8 @@
       "label": "Cor do texto sobre a cor principal"
     },
     "frontend.branding.productName": {
-      "label": "Nome do produto"
+      "label": "Nome do produto",
+      "help": "O nome mostrado no ecrã de conversa: no separador do navegador, na caixa onde se escreve, no modo de voz e no cabeçalho, se não houver logótipo. Não muda como o assistente se apresenta: isso é o «Nome do assistente», em Identidade."
     },
     "frontend.branding.subtitle": {
       "label": "Subtítulo"
@@ -1792,7 +1793,8 @@
       "note": "Identidade do cliente e do assistente. Estes valores são usados em headers, footers e prompts gerados."
     },
     "identity.assistant_name": {
-      "label": "Nome do assistente"
+      "label": "Nome do assistente",
+      "help": "O nome que o assistente usa para se apresentar nas respostas. Não muda o nome mostrado no ecrã de conversa (separador, caixa de escrita, cabeçalho): isso é o «Nome do produto», em Frontend, secção Marca."
     },
     "identity.assistant_role": {
       "label": "Papel do assistente",

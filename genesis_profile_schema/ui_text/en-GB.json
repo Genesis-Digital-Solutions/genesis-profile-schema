@@ -1005,7 +1005,8 @@
       "label": "Text colour on the primary colour"
     },
     "frontend.branding.productName": {
-      "label": "Product name"
+      "label": "Product name",
+      "help": "The name shown on the chat screen: in the browser tab, in the box where people type, in voice mode, and in the header when there is no logo. It does not change how the assistant introduces itself: that is “Assistant name”, under Identity."
     },
     "frontend.branding.subtitle": {
       "label": "Subtitle"
@@ -1792,7 +1793,8 @@
       "note": "Client and assistant identity. These values appear in headers, footers and generated prompts."
     },
     "identity.assistant_name": {
-      "label": "Assistant name"
+      "label": "Assistant name",
+      "help": "The name the assistant uses for itself in its answers. It does not change the name shown on the chat screen (tab, message box, header): that is “Product name”, under Frontend, Brand section."
     },
     "identity.assistant_role": {
       "label": "Assistant role",

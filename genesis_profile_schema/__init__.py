@@ -28,6 +28,7 @@ from .field_checks import (
     sanitise_csp_sources,
 )
 from .pattern_guard import (
+    PATTERN_HINT,
     find_unsafe_patterns,
     pattern_cost,
     pattern_refusal,
@@ -137,6 +138,7 @@ __all__ = [
     "looks_like_language_tag",
     "regex_risk",
     "regex_risks",
+    "PATTERN_HINT",
     "find_unsafe_patterns",
     "pattern_cost",
     "pattern_refusal",

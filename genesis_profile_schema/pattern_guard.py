@@ -55,6 +55,15 @@ TOKEN_MAX_CHARS = 128
 COST_MAX = 4096          # por padrão
 TOTAL_COST_MAX = 4096    # somado, todos os padrões do perfil (pior caso medido no core: ~0,4 s numa resposta de 40 000)
 
+#: O texto que acompanha a recusa (`details` do 400 `unsafe_pattern` no core; o GAIBO
+#: pode mostrá-lo antes do save). Veio do core (`config/profile_pattern_guard.py`) na
+#: v0.1.177 para o texto ser o mesmo nos dois lados; os números vêm das constantes acima.
+PATTERN_HINT = ("Os padrões de códigos de produto aplicam-se palavra a palavra (sem espaços) e têm de ter "
+                f"custo limitado: até {PATTERN_MAX_CHARS} caracteres e {MAX_CUSTOM_PATTERNS} padrões, sem "
+                "quantificador dentro de quantificador (`(a+)+`), sem alternativas dentro de um quantificador "
+                "(`(a|b)+`), sem `\\1`, e com limites nos quantificadores (`\\d{4,12}` em vez de `\\d+` quando "
+                "há vários seguidos).")
+
 REASONS = ("empty", "not_a_string", "too_long", "invalid_regex", "nested_quantifier",
            "alternation_in_quantifier", "backreference", "whitespace", "too_costly")
 LIST_REASONS = ("not_a_list", "too_many", "too_costly_total")
@@ -183,5 +192,5 @@ def find_unsafe_patterns(doc: Any) -> List[str]:
     return out
 
 
-__all__ = ["COST_MAX", "LIST_REASONS", "MAX_CUSTOM_PATTERNS", "PATTERN_MAX_CHARS", "REASONS",
+__all__ = ["COST_MAX", "LIST_REASONS", "MAX_CUSTOM_PATTERNS", "PATTERN_HINT", "PATTERN_MAX_CHARS", "REASONS",
            "TOKEN_MAX_CHARS", "TOTAL_COST_MAX", "find_unsafe_patterns", "pattern_cost", "pattern_refusal"]

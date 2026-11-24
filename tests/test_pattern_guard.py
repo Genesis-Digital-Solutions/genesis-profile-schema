@@ -82,3 +82,15 @@ def test_a_huge_list_is_capped_and_the_value_never_enters_the_cache():
 def test_package_exports_the_guard():
     import genesis_profile_schema as g
     assert g.pattern_refusal is pattern_refusal and g.find_unsafe_patterns is find_unsafe_patterns
+
+
+def test_pattern_hint_travels_with_the_rule():
+    """O texto do 400 `unsafe_pattern` veio do core (v0.1.177): mesmo texto, números das constantes."""
+    import genesis_profile_schema as g
+    from genesis_profile_schema import pattern_guard
+    hint = pattern_guard.PATTERN_HINT
+    assert g.PATTERN_HINT is hint and "PATTERN_HINT" in pattern_guard.__all__ and "PATTERN_HINT" in g.__all__
+    assert f"até {PATTERN_MAX_CHARS} caracteres e {MAX_CUSTOM_PATTERNS} padrões" in hint
+    assert hint.startswith("Os padrões de códigos de produto aplicam-se palavra a palavra (sem espaços)")
+    for example in ("`(a+)+`", "`(a|b)+`", r"`\1`", r"`\d{4,12}`", r"`\d+`"):
+        assert example in hint

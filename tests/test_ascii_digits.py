@@ -25,6 +25,7 @@ from genesis_profile_schema.custom_instructions_text import playbook_families
 from genesis_profile_schema.digits import ascii_digits, ascii_digits_before
 from genesis_profile_schema.field_values import iso_value
 from genesis_profile_schema.gaibo_index.index_fields import _url_problems
+from genesis_profile_schema.pattern_guard import PATTERN_HINT
 from genesis_profile_schema.intake_schema import (
     IntakeDocumentTemplate, IntakeMethodology, IntakeReferenceCase, MethodologyApproval,
 )
@@ -224,6 +225,10 @@ ALLOWED_VALUES = {
     # default mudava o valor dos perfis que ainda não o têm gravado (45 da frota já
     # o têm, 13 Nov 2026), sem ganho.
     r"/(19\d{2}|20\d{2})/",
+    # `pattern_guard.PATTERN_HINT` (v0.1.177, veio do core): PROSA para quem
+    # escreve a regex (`\d{4,12}` em vez de `\d+`), nunca compilada. O pedaço
+    # literal depois do último `{…}` do f-string é o nó que o canário vê.
+    PATTERN_HINT[PATTERN_HINT.index(" padrões, sem quantificador"):],
 }
 
 
