@@ -138,6 +138,18 @@ def test_from_chat_so_se_grava_com_valor_e_e_interno():
     assert exposure_of("channels.outbound.contact.from_chat") == "internal"
 
 
+def test_reply_source_e_um_id_de_fonte_interno():
+    """v0.1.177 (peça 4): o id de uma fonte de ingestão; nulo nunca se grava; interno."""
+    ok = ChannelsOutbound.model_validate({"contact": {"reply_source": "caixa-geral_1"}}).model_dump(mode="json")
+    assert ok["contact"] == {"reply_source": "caixa-geral_1"}
+    assert "reply_source" not in ChannelsOutbound.model_validate(
+        {"contact": {"answer_max_hours": 24}}).model_dump(mode="json")["contact"]
+    for bad in ("", "a b", "x" * 65, "../x", "caixa@cliente.pt"):
+        with pytest.raises(ValidationError):
+            ChannelsOutbound.model_validate({"contact": {"reply_source": bad}})
+    assert exposure_of("channels.outbound.contact.reply_source") == "internal"
+
+
 def test_politica_e_do_cliente_e_o_resto_continua_interno():
     for p in ("channels.outbound.contact.hours.start", "channels.outbound.contact.hours.end",
               "channels.outbound.contact.hours.business_days_only", "channels.outbound.contact.answer_max_hours"):

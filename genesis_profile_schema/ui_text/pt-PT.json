@@ -3412,6 +3412,10 @@
       "label": "Também no chat da equipa",
       "help": "Ligado, o agente do chat pode perguntar ou informar um colega da equipa desta frente quando um membro da equipa com login lho pede — nunca num assistente público ou anónimo, nunca pessoas de fora. Precisa também do tipo ligado nas Saídas e de uma regra de ação que o deixe; em «Aprovar», o agente recusa no chat."
     },
+    "channels.outbound.contact.reply_source": {
+      "label": "Caixa das respostas por email",
+      "help": "Fonte de ingestão (Microsoft 365) cuja caixa recebe as respostas por email às perguntas do agente: as perguntas levam «responder para» essa caixa e a referência do pedido no assunto. Só conta uma resposta com DMARC válido, vinda da própria pessoa contactada. Vazio = só o link de resposta."
+    },
     "channels.outbound.deliveries.id": {
       "label": "Id da entrega",
       "help": "Identificador curto desta entrega (minúsculas, dígitos, «-» e «_»)."

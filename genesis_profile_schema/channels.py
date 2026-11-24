@@ -102,6 +102,11 @@ política vive AQUI, não num `agentic.contact`), do cliente (`client_write`):
     perguntar ou informar um COLEGA da equipa desta frente quando um membro da equipa com login lho pede
     (nunca num assistente público ou anónimo; nunca pessoas de fora). Ausente ou false = desligado (o de hoje).
     Precisa também do tipo ligado em `kinds` e de uma regra de ação `contact.ask`/`contact.tell` que deixe.
+  • `reply_source` (v0.1.177, passo 6 peça 4; `internal`) — o `id` de uma fonte de `ingest.sources` (Microsoft 365,
+    não IMAP — só aí se mede o DMARC) cuja caixa recebe as RESPOSTAS por email às perguntas do agente: as perguntas
+    levam `Reply-To` para essa caixa e a referência do pedido no assunto; a ingestão casa a resposta (DMARC pass,
+    referência, remetente = a pessoa contactada, pedido à espera) e entrega-a à tarefa com os anexos. Ausente = só
+    o link de resposta (o de hoje). Numa frente, só uma fonte dela ou do principal (nunca a de outro cliente).
 Fora das listas de propósito: numa lista a escrita do cliente substituía também os campos internos (`kinds`).
 Grava-se só o que tem valor (um core com a v0.1.173 recusava as chaves novas, mesmo nulas).
 
@@ -456,12 +461,14 @@ class OutboundContact(BaseModel):
     answer_max_hours: Optional[StrictInt] = Field(default=None, ge=1, le=ANSWER_MAX_HOURS_CAP)
     #: v0.1.177: o agente do chat contacta colegas a pedido de um membro da equipa com login — ver o topo.
     from_chat: Optional[StrictBool] = None
+    #: v0.1.177 (peça 4): a fonte de ingestão cuja caixa recebe as respostas por email — ver o topo.
+    reply_source: Optional[str] = Field(default=None, pattern=r"^[A-Za-z0-9_-]{1,64}$")
 
     @model_serializer(mode="wrap")
     def _so_com_valor(self, handler):
         dados = handler(self)
         if isinstance(dados, dict):
-            for k in ("hours", "answer_max_hours", "from_chat"):
+            for k in ("hours", "answer_max_hours", "from_chat", "reply_source"):
                 if dados.get(k) is None:
                     dados.pop(k, None)
         return dados

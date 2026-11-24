@@ -3412,6 +3412,10 @@
       "label": "Also in the team chat",
       "help": "When on, the chat agent can ask or inform a team colleague of this front when a signed-in team member asks it to — never in a public or anonymous assistant, never people outside the team. It also needs the kind turned on in Outputs and an action rule that allows it; with «Approve», the agent refuses in the chat."
     },
+    "channels.outbound.contact.reply_source": {
+      "label": "Mailbox for email replies",
+      "help": "Ingestion source (Microsoft 365) whose mailbox receives email replies to the agent's questions: questions carry «reply to» that mailbox and the request reference in the subject. Only a reply with valid DMARC, from the contacted person themselves, counts. Empty = only the reply link."
+    },
     "channels.outbound.deliveries.id": {
       "label": "Delivery id",
       "help": "Short identifier of this delivery (lower case, digits, «-» and «_»)."
