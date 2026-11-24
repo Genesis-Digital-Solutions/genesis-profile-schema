@@ -3621,6 +3621,11 @@
       "label": "Deployment de transcrição do munícipe",
       "help": "Nome do deployment Azure (ex.: gpt-4o-transcribe) no recurso de voz do cliente."
     },
+    "voice.transcription.filtered": {
+      "label": "Transcrição filtrada das chamadas sem autorização",
+      "help": "Ligado = sem a autorização escrita do cliente, a chamada fica transcrita com os dados pessoais tapados (nomes, moradas, números) antes de se gravar. Se o filtro falhar, não se guarda texto. Com a autorização vale a completa.",
+      "note": "Nomes e moradas são detetados pelo modelo interno do cliente (muito bom, não infalível); os números ficam sempre tapados por regras em código. Desligado por defeito; nos clientes com GAIBO só depois de fechados os achados G-2/G-3."
+    },
     "voice.recording.enabled": {
       "label": "Gravar o áudio das chamadas",
       "help": "Ainda não disponível (fase 2): enquanto não existir, ligar isto não grava nada. Quando existir, exige a prova da autorização escrita do cliente e o aviso falado."

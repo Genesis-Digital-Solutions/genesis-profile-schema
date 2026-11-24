@@ -3621,6 +3621,11 @@
       "label": "Caller transcription deployment",
       "help": "Azure deployment name (e.g. gpt-4o-transcribe) in the client's voice resource."
     },
+    "voice.transcription.filtered": {
+      "label": "Filtered transcript of calls without authorisation",
+      "help": "On = without the client's written authorisation, the call is transcribed with personal data masked (names, addresses, numbers) before storage. If the filter fails, no text is kept. With the authorisation the full one applies.",
+      "note": "Names and addresses are detected by the client's internal model (very good, not infallible); numbers are always masked by rules in code. Off by default; for clients with GAIBO only after findings G-2/G-3 are closed."
+    },
     "voice.recording.enabled": {
       "label": "Record the call audio",
       "help": "Not available yet (phase 2): until then, turning this on records nothing. Once available, it requires the client's written authorisation proof and the spoken notice."

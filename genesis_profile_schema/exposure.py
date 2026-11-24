@@ -494,6 +494,9 @@ EXPOSURE: Dict[str, str] = {
     # cliente ve o que se capta e por quanto tempo (DPA), quem liga somos nos.
     "voice.transcription.caller": _R,
     "voice.transcription.caller_model": _I,  # deployment Azure
+    # v0.1.177 (24 Nov 2026): transcricao FILTRADA das chamadas sem autorizacao.
+    # Mesma regra do `phone`: o cliente ve (DPA), quem liga somos nos.
+    "voice.transcription.filtered": _R,
     "voice.recording.enabled": _R,
     "voice.recording.retention_days": _R,
     "voice.recording.channels": _I,

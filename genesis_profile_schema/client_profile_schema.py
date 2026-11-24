@@ -2697,6 +2697,16 @@ class ProfileVoiceTranscription(BaseModel):
     # `voice/capture_gate.py`. OFF por defeito.
     caller: bool = False
     caller_model: Optional[str] = None
+    # v0.1.177 (24 Nov 2026, decisão do Bruno): chamadas SEM a autorização do
+    # cliente (sem prova, ou com a captura bloqueada) guardam a transcrição
+    # FILTRADA — as duas partes, com nomes, moradas e números tapados antes de
+    # gravar (modelo interno do cliente + regras em código; se o filtro falhar
+    # não se guarda texto). Com a autorização vale a transcrição completa e
+    # este campo não conta. O munícipe só entra com `caller_model`. Sem prova
+    # nem aviso próprios (como o chat). OFF por defeito: liga-se cliente a
+    # cliente (nos com GAIBO só depois do G-2/G-3). Consumidor: genai-core
+    # `voice/capture_gate.py` + `voice/filtered_transcript/`.
+    filtered: bool = False
 
     @field_validator("caller_model", mode="before")
     @classmethod
