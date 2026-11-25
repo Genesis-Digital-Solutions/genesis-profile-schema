@@ -121,6 +121,17 @@ INVALID_UNTRUSTED_MODE = "invalid_untrusted_mode"
 # cada pessoa de fora vai SEMPRE a aprovação (decisão D1 do Bruno): sem fila e aprovadores na regra, não sai.
 CONTACT_ACTIONS = ("contact.ask", "contact.tell")
 CONTACT_FIRST_WITHOUT_APPROVERS = "contact_first_without_approvers"
+# v0.1.180 (F-S173 do Studio, 25 Nov 2026): «Só nestes assistentes» (`rules[].variants`). Uma frente mal escrita
+# (`lojaa` em vez de `loja`) deixava a regra sem efeito em lado nenhum — FALHA ABERTA: na `loja` a ação ficava sem a
+# aprovação que o cliente pôs. Cada frente é `*` (todas), `_base` (só o principal) ou o slug de uma variante que o
+# cliente TEM (`multiProfile.slugs` + `disabledSlugs` — uma desativada volta a valer ao religar, como no core
+# `correction_target.unknown_front`). Erros: quem grava recusa.
+INVALID_FRONT = "invalid_front"                     # não é `*`, `_base` nem a forma de um slug (ou não é lista)
+UNKNOWN_FRONT = "unknown_front"                     # slug que não é variante deste cliente
+FRONT_ALL = "*"
+FRONT_BASE = "_base"
+# A forma do slug de uma frente — a mesma do `channels.FRONT_RE` (o slug que o core cria).
+_FRONT_SLUG = re.compile(r"^[a-z0-9][a-z0-9-]{0,39}$", re.ASCII)
 
 # ── Valores de origem não confiável (v0.1.158, 5 Nov 2026) ──────────────────
 # Defesa contra prompt injection AO NÍVEL DO VALOR (CaMeL/FIDES): quando o
@@ -426,11 +437,73 @@ def rule_uses_approve(rule: Any) -> bool:
             or any(isinstance(pl, Mapping) and str(pl.get("over") or "block") == "approve" for pl in plimits))
 
 
-def action_rules_problems(profile: Mapping[str, Any]) -> List[Dict[str, str]]:
+def known_fronts_of(profile: Any) -> Optional[List[str]]:
+    """As frentes que o cliente TEM, do bloco `multiProfile` do perfil PRINCIPAL (`slugs` + `disabledSlugs`,
+    normalizadas) — ou None quando o perfil não traz o bloco (a camada de uma variante não o tem: «não sei» nunca
+    vira «não existe»). Nunca levanta."""
+    try:
+        mp = (profile or {}).get("multiProfile") if isinstance(profile, Mapping) else None
+        if not isinstance(mp, Mapping):
+            return None
+        out: List[str] = []
+        for key in ("slugs", "disabledSlugs"):
+            vals = mp.get(key)
+            for v in (vals if isinstance(vals, list) else []):
+                s = str(v or "").strip().lower()
+                if s and s not in out:
+                    out.append(s)
+        return out
+    except Exception:  # noqa: BLE001
+        return None
+
+
+def front_problems(fronts: Any, known: Optional[List[str]], allow_base: bool = True) -> List[str]:
+    """Os códigos de uma lista `rules[].variants` (sem repetidos): `invalid_front` (não é lista, ou um item que não
+    é `*`, `_base` nem a forma de um slug) e `unknown_front` (slug fora de `known`; com `known=None` não se sabe e
+    não se assinala). Vazio/None = todas as frentes (válido). Mesma normalização do core (`fronts_match`).
+    `allow_base=False` (a CAMADA de uma variante): `_base` também é `unknown_front` — lá a regra só corre com o slug
+    da variante, por isso «só o principal» nunca vale."""
+    if fronts is None or fronts == "":
+        return []
+    if not isinstance(fronts, (list, tuple)):
+        return [INVALID_FRONT]            # o core nunca a aplica (falha fechada lá, mas a regra fica sem efeito)
+    codes: List[str] = []
+    known_set = set(known) if known is not None else None
+    for raw in fronts:
+        if not isinstance(raw, str):
+            code = INVALID_FRONT
+        else:
+            f = raw.strip().lower()
+            if not f or f == FRONT_ALL or (f == FRONT_BASE and allow_base):
+                continue
+            if f == FRONT_BASE:
+                code = UNKNOWN_FRONT
+            elif not _FRONT_SLUG.fullmatch(f):
+                code = INVALID_FRONT
+            elif known_set is not None and f not in known_set:
+                code = UNKNOWN_FRONT
+            else:
+                continue
+        if code not in codes:
+            codes.append(code)
+    return codes
+
+
+def action_rules_problems(profile: Mapping[str, Any],
+                          known_fronts: Optional[List[str]] = None,
+                          layer_slug: Optional[str] = None) -> List[Dict[str, str]]:
     """Problemas do bloco `actionRules` à luz do RESTO do perfil.
 
     Devolve `[{"rule_id", "code", "severity"}]` (lista vazia = tudo bem). Nunca
-    levanta. `rule_id` vazio para problemas do bloco inteiro."""
+    levanta. `rule_id` vazio para problemas do bloco inteiro.
+
+    `known_fronts` (v0.1.180): as frentes do cliente para validar `rules[].variants`. Omisso → as do
+    `multiProfile` do próprio perfil (`known_fronts_of`); quem valida a CAMADA de uma variante (sem o bloco) passa as
+    do principal. Sem nenhuma das duas, só se confere a forma.
+
+    `layer_slug`: o perfil é a CAMADA dessa variante (o blob `<cliente>__<slug>.json`). No core a lista
+    `actionRules.rules` da camada SUBSTITUI a do principal e corre só com o slug dela: lá só valem vazio, `*` e o
+    próprio slug (`_base` e as outras frentes nunca se aplicariam). Ganha a `known_fronts`."""
     out: List[Dict[str, str]] = []
 
     def add(rule_id: str, code: str, severity: str) -> None:
@@ -451,6 +524,14 @@ def action_rules_problems(profile: Mapping[str, Any]) -> List[Dict[str, str]]:
         if isinstance(uv, Mapping) and uv.get("mode") is not None and str(uv.get("mode")) not in UNTRUSTED_MODES:
             add("", INVALID_UNTRUSTED_MODE, ERROR)
         untrusted_approve = untrusted_values_mode(block) == "approve"
+        allow_base = True
+        if layer_slug is not None:
+            known = [str(layer_slug).strip().lower()]
+            allow_base = False
+        elif known_fronts is not None:
+            known = [str(k or "").strip().lower() for k in known_fronts if str(k or "").strip()]
+        else:
+            known = known_fronts_of(profile)
         for raw in rules:
             if not isinstance(raw, Mapping):
                 add("", INVALID_ACTION, ERROR)
@@ -468,6 +549,8 @@ def action_rules_problems(profile: Mapping[str, Any]) -> List[Dict[str, str]]:
             mode = str(raw.get("mode") or "confirm")
             if mode not in MODES:
                 add(rid, INVALID_MODE, ERROR)
+            for code in front_problems(raw.get("variants"), known, allow_base):
+                add(rid, code, ERROR)
 
             server = action.split(".", 1)[0] if "." in action else ""
             if server and action not in CONTACT_ACTIONS:

@@ -2495,7 +2495,7 @@
     },
     "actionRules.rules.variants": {
       "label": "Only in these assistants",
-      "help": "Empty = the rule applies to every assistant of this client."
+      "help": "Empty = every assistant of this client. Each value is the address of a variant the client has, «_base» (main profile only) or «*» (all). The Studio refuses an assistant that does not exist: the rule would apply nowhere."
     },
     "actionRules.rules.log_only": {
       "label": "Log only",

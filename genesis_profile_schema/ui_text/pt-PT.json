@@ -2495,7 +2495,7 @@
     },
     "actionRules.rules.variants": {
       "label": "Só nestes assistentes",
-      "help": "Vazio = a regra vale para todos os assistentes deste cliente."
+      "help": "Vazio = todos os assistentes deste cliente. Cada valor é o endereço de uma variante que o cliente tem, «_base» (só o principal) ou «*» (todos). O Studio recusa um assistente que não existe: a regra não valeria em lado nenhum."
     },
     "actionRules.rules.log_only": {
       "label": "Só registar",
