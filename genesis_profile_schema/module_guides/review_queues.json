@@ -208,11 +208,12 @@
         "operatorNotes",
         "numberFields",
         "summaryTables",
-        "summaryTotals"
+        "summaryTotals",
+        "lineAmounts"
       ],
       "when": {
-        "pt": "Sem campos declarados a fila mostra os dados com o nome técnico. Avançado: as observações da equipa (notas internas em cada pedido), as colunas numéricas (convertidas em número ao gravar) e as tabelas-resumo e totais calculados a partir das linhas (ex.: linhas de transporte agrupadas, total da encomenda com o transporte).",
-        "en": "Without declared fields the queue shows the data with technical names. Advanced: team notes (internal notes on each request), numeric columns (converted to numbers on save) and summary tables and totals computed from the lines (e.g. transport lines grouped, order total with transport)."
+        "pt": "Sem campos declarados a fila mostra os dados com o nome técnico. Avançado: as observações da equipa (notas internas em cada pedido), as colunas numéricas (convertidas em número ao gravar), as tabelas-resumo e totais calculados a partir das linhas (ex.: linhas de transporte agrupadas, total da encomenda com o transporte) e o valor de cada linha calculado ao vivo a partir do preço e da quantidade (ex.: 98,93 EUR por 1000 KG × 24 000 KG).",
+        "en": "Without declared fields the queue shows the data with technical names. Advanced: team notes (internal notes on each request), numeric columns (converted to numbers on save), summary tables and totals computed from the lines (e.g. transport lines grouped, order total with transport) and each line's value computed live from its price and quantity (e.g. EUR 98.93 per 1000 KG × 24,000 KG)."
       },
       "examples": [
         {

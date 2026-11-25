@@ -370,6 +370,10 @@ coluna → texto, e com `I18nMap` no nome o `i18n_field_paths` marcava o mapa in
 `ProfileIngest.internal_domains` normaliza como `customer_mapping.internal_domains()` e recusa o que não é
 domínio (`_I`). Campos novos no passo `fields` (avançado) do percurso `review_queues`.
 
+## Valor por linha calculado — `queue_line_amounts.py` (25 Nov 2026, v0.1.179)
+
+`reviewQueues.<fila>.lineAmounts` (Salmon; genérico): a /fila calcula preço × quantidade na coluna `target` de cada linha (core `public_line_amounts` → `queue_options[<fila>].line_amounts` → fecore). Tipado com as regras do core, mas aqui uma entrada partida RECUSA o perfil: até 5 entradas, nomes de coluna ASCII `[A-Za-z0-9][A-Za-z0-9._-]{0,63}`, chaves desconhecidas recusadas, e na MESMA tabela o `target` nunca é uma coluna lida por nenhuma entrada nem se repete. No passo `fields` (avançado) do percurso `review_queues`.
+
 ## Checklist: acrescentar um campo
 
 1. **Modelo** — o campo em `client_profile_schema.py`, com tipo, default seguro
