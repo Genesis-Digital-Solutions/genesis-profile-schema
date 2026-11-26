@@ -740,6 +740,14 @@ EXPOSURE: Dict[str, str] = {
     "agentic.events.sources.enabled": _I,
     "agentic.events.sources.events": _I,
     "agentic.events.sources.ips": _I,
+    # v0.1.182 (passo 8 do épico «Agente colega»): autorizações permanentes das pessoas — só a Genesis abre as
+    # categorias (o que cada uma cobre e o prazo máximo). A pessoa dá e revoga no chat; ver/revogar no GAIBO entra
+    # no handoff único do fim do épico (exposição a rever então).
+    "agentic.user_mandates.enabled": _I,
+    "agentic.user_mandates.categories.id": _I,
+    "agentic.user_mandates.categories.label": _I,
+    "agentic.user_mandates.categories.actions": _I,
+    "agentic.user_mandates.categories.max_days": _I,
     # channels.* (v0.1.163, carril C1a do pack dos canais): as ENTRADAS são da
     # Genesis (caixas, fontes). As ROTAS passaram a client_write na v0.1.164
     # (C1b, decisão do Bruno de 11 Nov 2026): condições, destino, frente,

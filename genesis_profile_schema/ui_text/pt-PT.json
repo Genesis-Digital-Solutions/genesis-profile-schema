@@ -789,6 +789,26 @@
       "label": "Redes de onde a fonte chama",
       "help": "Opcional (ex.: 10.0.0.0/8). Vazio: qualquer rede — a assinatura continua obrigatória."
     },
+    "agentic.user_mandates.enabled": {
+      "label": "Autorizações dos utilizadores",
+      "help": "Deixa cada pessoa autorizar o assistente a agir por ela, numa das categorias abaixo e até uma data. A pessoa dá e revoga a autorização no chat. Nunca alarga as regras das ações: vale só como o «sim» da própria pessoa."
+    },
+    "agentic.user_mandates.categories.id": {
+      "label": "Identificador da categoria",
+      "help": "Minúsculas, dígitos e hífen (ex.: leads-pendentes). Fica no registo de cada autorização."
+    },
+    "agentic.user_mandates.categories.label": {
+      "label": "Nome da categoria",
+      "help": "O que a pessoa lê quando autoriza (ex.: «Tratar das minhas leads pendentes»)."
+    },
+    "agentic.user_mandates.categories.actions": {
+      "label": "Ações que a categoria cobre",
+      "help": "As ações (servidor.ferramenta) que o assistente pode fazer em nome da pessoa, como nas regras das ações. Cada uma continua sujeita às regras do cliente."
+    },
+    "agentic.user_mandates.categories.max_days": {
+      "label": "Prazo máximo (dias)",
+      "help": "Até quantos dias a pessoa pode dar a autorização (1 a 90). Depois disso caduca e tem de a dar outra vez."
+    },
     "channels.inputs.id": {
       "label": "Id da entrada",
       "help": "Minúsculas, dígitos, «-» e «_». As rotas apontam para ele."

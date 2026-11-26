@@ -36,6 +36,16 @@ o que tem de ser verdade antes e como se sabe que acabou; nas tarefas de fundo
 e a linha do tempo e o Relatório mostram o plano × o que aconteceu. Ausente ou
 `false` = desligado (comportamento de antes). O core já o lia do dicionário; fica
 tipado.
+
+v0.1.182 (passo 8 do épico «Agente colega», 26 Nov 2026): `user_mandates` — a
+autorização permanente que uma PESSOA dá ao agente para agir por ela, numa das
+categorias que a Genesis abre aqui (ex.: «tratar das minhas leads pendentes»).
+Cada categoria tem um `id`, um nome nas línguas do cliente (`label`), as ações
+que cobre (`server.tool` ou `contact.ask`/`contact.tell`, as mesmas das regras
+de ação) e o prazo máximo (`max_days`, até 90). A pessoa dá e revoga no chat;
+o Studio vê e revoga. Uma autorização nunca alarga as regras de ação do
+cliente: só faz as vezes do «sim» da própria pessoa (modo «confirmar») numa
+tarefa de fundo que age por ela. Ausente ou `enabled: false` = nada muda.
 """
 
 from __future__ import annotations
@@ -47,6 +57,8 @@ import re
 from typing import List
 
 from pydantic import BaseModel, ConfigDict, Field, field_validator
+
+from .field_definition import I18nText
 
 MAX_STEPS = 200
 MAX_WRITES = 50
@@ -124,6 +136,62 @@ class AgenticEvents(BaseModel):
         return v
 
 
+#: Id de uma categoria de autorização: o mesmo formato das fontes (minúsculas, dígitos, hífen; até 40).
+MANDATE_CATEGORY_RE = SOURCE_ID_RE
+#: Uma ação coberta: `servidor.ferramenta` (o mesmo vocabulário de `actionRules.rules[].action`), com o ponto.
+MANDATE_ACTION_RE = re.compile(r"^[A-Za-z0-9_-]{1,64}\.[A-Za-z0-9_.-]{1,128}$", re.ASCII)
+MAX_MANDATE_DAYS = 90
+MAX_MANDATE_CATEGORIES = 20
+MAX_MANDATE_ACTIONS = 30
+
+
+class AgenticUserMandateCategory(BaseModel):
+    model_config = ConfigDict(extra="allow")
+
+    id: str
+    label: I18nText
+    actions: List[str] = Field(default_factory=list)
+    max_days: int = Field(default=30, ge=1, le=MAX_MANDATE_DAYS)
+
+    @field_validator("id")
+    @classmethod
+    def _id(cls, v: str) -> str:
+        if not MANDATE_CATEGORY_RE.fullmatch(v or ""):
+            raise ValueError("id da categoria: minúsculas e dígitos, separados por um hífen (até 40)")
+        return v
+
+    @field_validator("actions")
+    @classmethod
+    def _actions(cls, v: List[str]) -> List[str]:
+        if not v:
+            raise ValueError("uma categoria cobre pelo menos uma ação")
+        if len(v) > MAX_MANDATE_ACTIONS:
+            raise ValueError(f"no máximo {MAX_MANDATE_ACTIONS} ações por categoria")
+        if len(v) != len(set(v)):
+            raise ValueError("ações repetidas na categoria")
+        for a in v:
+            if not MANDATE_ACTION_RE.fullmatch(str(a or "")):
+                raise ValueError(f"ação inválida (servidor.ferramenta): {str(a)[:60]!r}")
+        return v
+
+
+class AgenticUserMandates(BaseModel):
+    model_config = ConfigDict(extra="allow")
+
+    enabled: bool = False
+    categories: List[AgenticUserMandateCategory] = Field(default_factory=list)
+
+    @field_validator("categories")
+    @classmethod
+    def _unique(cls, v: List[AgenticUserMandateCategory]) -> List[AgenticUserMandateCategory]:
+        if len(v) > MAX_MANDATE_CATEGORIES:
+            raise ValueError(f"no máximo {MAX_MANDATE_CATEGORIES} categorias")
+        ids = [c.id for c in v]
+        if len(ids) != len(set(ids)):
+            raise ValueError("categorias com o mesmo id")
+        return v
+
+
 class ProfileAgentic(BaseModel):
     """`agentic` do perfil. `null`/ausente = desligado."""
     model_config = ConfigDict(extra="allow")
@@ -134,7 +202,10 @@ class ProfileAgentic(BaseModel):
     verify: Optional[bool] = None
     plan_criteria: Optional[bool] = None
     events: Optional[AgenticEvents] = None
+    user_mandates: Optional[AgenticUserMandates] = None
 
 
 __all__ = ["ProfileAgentic", "AgenticBudget", "AgenticEvents", "AgenticEventSource", "SOURCE_ID_RE",
-           "EVENT_NAME_RE", "MAX_STEPS", "MAX_WRITES", "MAX_WALL_CLOCK_HOURS", "MAX_COST_EUR"]
+           "EVENT_NAME_RE", "MAX_STEPS", "MAX_WRITES", "MAX_WALL_CLOCK_HOURS", "MAX_COST_EUR",
+           "AgenticUserMandates", "AgenticUserMandateCategory", "MANDATE_CATEGORY_RE", "MANDATE_ACTION_RE",
+           "MAX_MANDATE_DAYS", "MAX_MANDATE_CATEGORIES", "MAX_MANDATE_ACTIONS"]

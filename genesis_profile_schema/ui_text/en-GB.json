@@ -789,6 +789,26 @@
       "label": "Networks the source calls from",
       "help": "Optional (e.g. 10.0.0.0/8). Empty: any network — the signature is still required."
     },
+    "agentic.user_mandates.enabled": {
+      "label": "User authorisations",
+      "help": "Lets each person authorise the assistant to act for them, in one of the categories below and until a date. The person gives and revokes the authorisation in the chat. It never widens the action rules: it only stands for that person's own «yes»."
+    },
+    "agentic.user_mandates.categories.id": {
+      "label": "Category identifier",
+      "help": "Lower case, digits and hyphens (e.g. pending-leads). It is kept in the record of each authorisation."
+    },
+    "agentic.user_mandates.categories.label": {
+      "label": "Category name",
+      "help": "What the person reads when authorising (e.g. «Handle my pending leads»)."
+    },
+    "agentic.user_mandates.categories.actions": {
+      "label": "Actions the category covers",
+      "help": "The actions (server.tool) the assistant may take on the person's behalf, as in the action rules. Each one is still subject to the client's rules."
+    },
+    "agentic.user_mandates.categories.max_days": {
+      "label": "Maximum period (days)",
+      "help": "For how many days at most the person can give the authorisation (1 to 90). After that it lapses and must be given again."
+    },
     "channels.inputs.id": {
       "label": "Input id",
       "help": "Lowercase, digits, «-» and «_». Routes point to it."
