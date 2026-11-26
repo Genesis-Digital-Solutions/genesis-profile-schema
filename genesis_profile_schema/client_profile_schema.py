@@ -3437,6 +3437,17 @@ class ClientProfileSchema(BaseModel):
     # Bloco frontend — consumido pelo /client-config.
     frontend: ProfileFrontend = Field(default_factory=ProfileFrontend)
 
+    @model_validator(mode="after")
+    def _packages_need_action_rules(self) -> "ClientProfileSchema":
+        """v0.1.183 (A6-c): um pacote de regras aprovado a APLICAR só vale com as Regras das ações ligadas (o core
+        junta-o a elas). Sem elas não aplicava nada e ninguém dava por isso — recusa-se aqui."""
+        pkgs = (self.agentic.packages if self.agentic is not None else None) or []
+        enforcing = [p.ref for p in pkgs if p.status == "approved" and p.mode == "enforce"]
+        if enforcing and not (self.actionRules is not None and self.actionRules.enabled is True):
+            raise ValueError("pacotes de regras a aplicar exigem as Regras das ações ligadas (actionRules.enabled): "
+                             + ", ".join(enforcing[:3]))
+        return self
+
     def to_blob_dict(self) -> dict:
         """Serialização para escrita no Blob. mode='json' garante JSON-safe."""
         return self.model_dump(mode="json")

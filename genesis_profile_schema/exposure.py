@@ -769,6 +769,18 @@ EXPOSURE: Dict[str, str] = {
     "agentic.skills.approved_by": _I,
     "agentic.skills.approved_at": _I,
     "agentic.skills.retired_at": _I,
+    # v0.1.183 (A6-c): pacotes de regras — só a Genesis, pelo ecrã «Pacotes de regras» (importar, rever os
+    # testes e as lacunas, aprovar, retirar). Os emissores de confiança vivem no ambiente do core, nunca aqui.
+    "agentic.packages.ref": _I,
+    "agentic.packages.status": _I,
+    "agentic.packages.mode": _I,
+    "agentic.packages.fronts": _I,
+    "agentic.packages.files": _I,
+    "agentic.packages.imported_by": _I,
+    "agentic.packages.imported_at": _I,
+    "agentic.packages.approved_by": _I,
+    "agentic.packages.approved_at": _I,
+    "agentic.packages.retired_at": _I,
     # A4 (28 Out 2026): fontes do webhook de entrada — só Genesis (segredos e redes).
     "agentic.events.sources.id": _I,
     "agentic.events.sources.enabled": _I,

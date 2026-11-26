@@ -909,6 +909,41 @@
     "agentic.skills.retired_at": {
       "label": "Retired on"
     },
+    "agentic.packages.ref": {
+      "label": "Package",
+      "help": "Issuer, package and version (issuer/id@version), as signed by the issuer."
+    },
+    "agentic.packages.status": {
+      "label": "Status",
+      "help": "To review, approved or retired. Only the approved version applies."
+    },
+    "agentic.packages.mode": {
+      "label": "Mode",
+      "help": "Log only (records what the rules would do, without changing anything) or apply. Start with log only."
+    },
+    "agentic.packages.fronts": {
+      "label": "Assistants where it applies",
+      "help": "The main assistant, the variants, or all (*)."
+    },
+    "agentic.packages.files": {
+      "label": "Package files",
+      "help": "The files exactly as signed by the issuer. The assistant checks the signature again before using them."
+    },
+    "agentic.packages.imported_by": {
+      "label": "Imported by"
+    },
+    "agentic.packages.imported_at": {
+      "label": "Imported on"
+    },
+    "agentic.packages.approved_by": {
+      "label": "Approved by"
+    },
+    "agentic.packages.approved_at": {
+      "label": "Approved on"
+    },
+    "agentic.packages.retired_at": {
+      "label": "Retired on"
+    },
     "channels.inputs.id": {
       "label": "Input id",
       "help": "Lowercase, digits, «-» and «_». Routes point to it."

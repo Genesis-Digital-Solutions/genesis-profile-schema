@@ -909,6 +909,41 @@
     "agentic.skills.retired_at": {
       "label": "Retirado em"
     },
+    "agentic.packages.ref": {
+      "label": "Pacote",
+      "help": "Emissor, pacote e versão (emissor/id@versão), como assinado pelo emissor."
+    },
+    "agentic.packages.status": {
+      "label": "Estado",
+      "help": "Por rever, aprovado ou retirado. Só vale a versão aprovada."
+    },
+    "agentic.packages.mode": {
+      "label": "Modo",
+      "help": "Só registar (regista o que as regras fariam, sem mudar nada) ou aplicar. Comece por só registar."
+    },
+    "agentic.packages.fronts": {
+      "label": "Assistentes onde vale",
+      "help": "O assistente principal, as variantes ou todos (*)."
+    },
+    "agentic.packages.files": {
+      "label": "Ficheiros do pacote",
+      "help": "Os ficheiros tal como assinados pelo emissor. O assistente volta a confirmar a assinatura antes de os usar."
+    },
+    "agentic.packages.imported_by": {
+      "label": "Importado por"
+    },
+    "agentic.packages.imported_at": {
+      "label": "Importado em"
+    },
+    "agentic.packages.approved_by": {
+      "label": "Aprovado por"
+    },
+    "agentic.packages.approved_at": {
+      "label": "Aprovado em"
+    },
+    "agentic.packages.retired_at": {
+      "label": "Retirado em"
+    },
     "channels.inputs.id": {
       "label": "Id da entrada",
       "help": "Minúsculas, dígitos, «-» e «_». As rotas apontam para ele."

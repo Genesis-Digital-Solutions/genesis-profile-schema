@@ -51,6 +51,11 @@ v0.1.182 (passo 15 do épico «Agente colega», A6-b, 26 Nov 2026): `skills` —
 procedimentos do agente em SKILL.md («Procedimentos» no Studio), importados ou
 propostos, cada versão revista e aprovada por uma pessoa antes de valer; o core
 só usa as aprovadas cujo hash bate com o texto. Ver `agentic_skills.py`.
+
+v0.1.183 (A6-c do épico «Agente colega», 26 Nov 2026): `packages` — os pacotes de
+regras subscritos (regras com o artigo, assinadas pelo emissor, com testes), aprovados
+por uma pessoa e por frente; o core volta a verificar a assinatura contra os emissores
+do seu ambiente e só aperta as Regras das ações. Ver `agentic_packages.py`.
 """
 
 from __future__ import annotations
@@ -65,6 +70,7 @@ from pydantic import BaseModel, ConfigDict, Field, field_validator
 
 from .field_definition import I18nText
 from .agentic_skills import AgenticSkill, skills_problems
+from .agentic_packages import AgenticPackage, packages_problems
 
 MAX_STEPS = 200
 MAX_WRITES = 50
@@ -216,6 +222,17 @@ class ProfileAgentic(BaseModel):
     @classmethod
     def _skills(cls, v: Optional[List[AgenticSkill]]) -> Optional[List[AgenticSkill]]:
         found = skills_problems(v or [])
+        if found:
+            raise ValueError("; ".join(found))
+        return v
+
+    # v0.1.183 (A6-c): os pacotes de regras subscritos — `agentic_packages.py`.
+    packages: Optional[List[AgenticPackage]] = None
+
+    @field_validator("packages")
+    @classmethod
+    def _packages(cls, v: Optional[List[AgenticPackage]]) -> Optional[List[AgenticPackage]]:
+        found = packages_problems(v or [])
         if found:
             raise ValueError("; ".join(found))
         return v

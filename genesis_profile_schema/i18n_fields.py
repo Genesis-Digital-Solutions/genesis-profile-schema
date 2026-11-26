@@ -57,6 +57,7 @@ NOT_I18N_STR_MAPS: Dict[str, str] = {
     "voice.transfer_sip_uris": "chave = destino, valor = URI SIP",
     "contacts.attribute_paths": "chave = atributo, valor = caminho no registo",
     "reviewQueues.*.gates.decide": "chave = decisão da tool, valor = consequência",
+    "agentic.packages.files": "chave = nome do ficheiro do pacote, valor = o ficheiro tal como assinado (não é texto)",
 }
 
 # Multilíngues DE FACTO (o Studio traduz-os com o ✨) que não usam o alias: são
