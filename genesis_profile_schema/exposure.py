@@ -784,6 +784,9 @@ EXPOSURE: Dict[str, str] = {
     "channels.outbound.contact.from_chat": _I,
     # v0.1.177 (peça 4): a caixa das respostas por email é infraestrutura da Genesis (como as fontes de ingestão).
     "channels.outbound.contact.reply_source": _I,
+    # v0.1.182 (passo 9): canais do contacto (SMS custa dinheiro) e teto mensal de SMS — a Genesis liga.
+    "channels.outbound.contact.channels": _I,
+    "channels.outbound.contact.sms_per_month": _I,
     # channels.outbound.deliveries (v0.1.172, C2-mín fase 5): entregas a um GED (o mapeamento do Filedoc da CCDR).
     "channels.outbound.deliveries.id": _I,
     "channels.outbound.deliveries.enabled": _I,

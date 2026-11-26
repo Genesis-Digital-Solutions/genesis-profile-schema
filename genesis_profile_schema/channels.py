@@ -107,6 +107,17 @@ política vive AQUI, não num `agentic.contact`), do cliente (`client_write`):
     levam `Reply-To` para essa caixa e a referência do pedido no assunto; a ingestão casa a resposta (DMARC pass,
     referência, remetente = a pessoa contactada, pedido à espera) e entrega-a à tarefa com os anexos. Ausente = só
     o link de resposta (o de hoje). Numa frente, só uma fonte dela ou do principal (nunca a de outro cliente).
+  • `channels` (v0.1.182, passo 9; `internal` — cada SMS custa dinheiro: a Genesis liga) — por que canais o agente
+    pergunta a uma pessoa DE FORA (um contacto), por ordem: `["email"]` (ausente = isto, o de hoje), `["email", "sms"]`
+    (email primeiro; sem resposta a meio do prazo, o mesmo pedido por SMS), `["sms", "email"]` ou `["sms"]`. Usa-se o
+    primeiro canal que a pessoa tem PROVADO (email provado; telemóvel provado — num pedido feito ao telefone, só com
+    o número garantido pelo operador). O SMS leva só texto do sistema: o aviso de IA, uma linha com o nome da empresa,
+    o link de resposta (onde está a pergunta) e a frase para recusar contactos — nunca a pergunta nem dados pessoais.
+    Só perguntas (`contact.ask`): uma informação (`contact.tell`) sai sempre por email. Os membros da equipa nunca
+    recebem SMS (não têm telefone na ficha). Remetente: o `TWILIO-FROM-NUMBER` do cofre do cliente (nome alfanumérico
+    por omissão — só de saída, a recusa faz-se pelo link). Cada SMS conta no consumo (`agent_contact`);
+  • `sms_per_month` (v0.1.182, P21; `internal`, 0–10000) — quantos SMS o agente pode mandar por mês no deployment
+    (todas as frentes; o mês UTC). Ausente = o valor de fábrica do core. 0 = nenhum SMS do agente.
 Fora das listas de propósito: numa lista a escrita do cliente substituía também os campos internos (`kinds`).
 Grava-se só o que tem valor (um core com a v0.1.173 recusava as chaves novas, mesmo nulas).
 
@@ -435,6 +446,11 @@ class OutboundKind(BaseModel):
 
 #: Quanto tempo, no máximo, o agente espera pela resposta de uma pessoa (`contact.ask`).
 ANSWER_MAX_HOURS_CAP = 168
+#: v0.1.182 (passo 9): os canais por onde o agente contacta pessoas de fora (`channels.outbound.contact.channels`).
+CONTACT_CHANNELS: Tuple[str, ...] = ("email", "sms")
+ContactChannel = Literal["email", "sms"]
+#: v0.1.182 (passo 9, P21): o maior teto mensal de SMS do agente que o perfil aceita.
+SMS_PER_MONTH_CAP = 10000
 HHMM_PATTERN = r"^(?:[01][0-9]|2[0-3]):[0-5][0-9]$"
 
 
@@ -463,12 +479,23 @@ class OutboundContact(BaseModel):
     from_chat: Optional[StrictBool] = None
     #: v0.1.177 (peça 4): a fonte de ingestão cuja caixa recebe as respostas por email — ver o topo.
     reply_source: Optional[str] = Field(default=None, pattern=r"^[A-Za-z0-9_-]{1,64}$")
+    #: v0.1.182 (passo 9): por que canais o agente contacta uma pessoa de fora, por ordem — ver o topo.
+    channels: Optional[List[ContactChannel]] = Field(default=None, min_length=1, max_length=len(CONTACT_CHANNELS))
+    #: v0.1.182 (passo 9, P21): teto de SMS do agente por mês no deployment — ver o topo.
+    sms_per_month: Optional[StrictInt] = Field(default=None, ge=0, le=SMS_PER_MONTH_CAP)
+
+    @field_validator("channels")
+    @classmethod
+    def _canais(cls, v: Optional[List[str]]) -> Optional[List[str]]:
+        if v is not None and len(v) != len(set(v)):
+            raise ValueError("o mesmo canal repetido")
+        return v
 
     @model_serializer(mode="wrap")
     def _so_com_valor(self, handler):
         dados = handler(self)
         if isinstance(dados, dict):
-            for k in ("hours", "answer_max_hours", "from_chat", "reply_source"):
+            for k in ("hours", "answer_max_hours", "from_chat", "reply_source", "channels", "sms_per_month"):
                 if dados.get(k) is None:
                     dados.pop(k, None)
         return dados

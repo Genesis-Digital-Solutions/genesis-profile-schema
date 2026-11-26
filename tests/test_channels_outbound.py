@@ -169,3 +169,40 @@ def test_servidor_mcp_contact_e_reservado(name):
     with pytest.raises(ValidationError):
         ProfileMCPServer.model_validate({"name": name, "url": "https://x.pt/mcp"})
     assert ProfileMCPServer.model_validate({"name": "contacts", "url": "https://x.pt/mcp"}).name == "contacts"
+
+
+# ── v0.1.182 (passo 9 do épico): canais do contacto e teto mensal de SMS ─────────────────────────────
+
+@pytest.mark.parametrize("chans", [["email"], ["sms"], ["email", "sms"], ["sms", "email"]])
+def test_canais_do_contacto_por_ordem(chans):
+    out = ChannelsOutbound.model_validate({"contact": {"channels": chans}}).model_dump(mode="json")
+    assert out["contact"] == {"channels": chans}
+    assert ChannelsOutbound.model_validate(out).model_dump(mode="json") == out
+
+
+@pytest.mark.parametrize("bad", [[], ["email", "email"], ["whatsapp"], ["teams"], "email", ["SMS"], [None]])
+def test_canais_do_contacto_recusados(bad):
+    with pytest.raises(ValidationError):
+        ChannelsOutbound.model_validate({"contact": {"channels": bad}})
+
+
+@pytest.mark.parametrize("ok", [0, 1, 100, C.SMS_PER_MONTH_CAP])
+def test_teto_mensal_de_sms(ok):
+    out = ChannelsOutbound.model_validate({"contact": {"sms_per_month": ok}}).model_dump(mode="json")
+    assert out["contact"] == {"sms_per_month": ok}
+
+
+@pytest.mark.parametrize("bad", [-1, C.SMS_PER_MONTH_CAP + 1, True, "10", 10.0])
+def test_teto_mensal_de_sms_recusado(bad):
+    with pytest.raises(ValidationError):
+        ChannelsOutbound.model_validate({"contact": {"sms_per_month": bad}})
+
+
+def test_canais_e_teto_so_com_valor_e_internos():
+    """Ausentes = o de hoje (só email; teto de fábrica): nulos nunca se gravam (um core com a v0.1.181 recusava as
+    chaves); cada SMS custa dinheiro — a Genesis liga, o cliente não."""
+    out = ChannelsOutbound.model_validate({"contact": {"answer_max_hours": 24, "channels": None,
+                                                       "sms_per_month": None}}).model_dump(mode="json")
+    assert out["contact"] == {"answer_max_hours": 24}
+    assert exposure_of("channels.outbound.contact.channels") == "internal"
+    assert exposure_of("channels.outbound.contact.sms_per_month") == "internal"

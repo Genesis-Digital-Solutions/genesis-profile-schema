@@ -3422,6 +3422,14 @@
       "label": "Mailbox for email replies",
       "help": "Ingestion source (Microsoft 365) whose mailbox receives email replies to the agent's questions: questions carry «reply to» that mailbox and the request reference in the subject. Only a reply with valid DMARC, from the contacted person themselves, counts. Empty = only the reply link."
     },
+    "channels.outbound.contact.channels": {
+      "label": "Contact channels (in order)",
+      "help": "Which channels the agent uses to ask a person outside the team, in order: email only (empty = this), email then SMS (no answer by half the deadline: the same request by SMS), SMS then email, or SMS only. The first channel the person has proven is used. The SMS carries only the AI notice, the company name and the reply link — never the question or personal data. Messages that need no answer always go by email; team colleagues never get SMS."
+    },
+    "channels.outbound.contact.sms_per_month": {
+      "label": "Agent SMS per month",
+      "help": "How many SMS the agent may send per month for this client (all fronts). Empty = the factory value; 0 = no agent SMS. Each SMS counts in usage."
+    },
     "channels.outbound.deliveries.id": {
       "label": "Delivery id",
       "help": "Short identifier of this delivery (lower case, digits, «-» and «_»)."

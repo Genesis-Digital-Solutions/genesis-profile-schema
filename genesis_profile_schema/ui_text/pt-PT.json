@@ -3422,6 +3422,14 @@
       "label": "Caixa das respostas por email",
       "help": "Fonte de ingestão (Microsoft 365) cuja caixa recebe as respostas por email às perguntas do agente: as perguntas levam «responder para» essa caixa e a referência do pedido no assunto. Só conta uma resposta com DMARC válido, vinda da própria pessoa contactada. Vazio = só o link de resposta."
     },
+    "channels.outbound.contact.channels": {
+      "label": "Canais do contacto (por ordem)",
+      "help": "Por que canais o agente pergunta a uma pessoa de fora, por ordem: só email (vazio = isto), email e depois SMS (sem resposta a meio do prazo, o mesmo pedido por SMS), SMS e depois email, ou só SMS. Usa-se o primeiro canal que a pessoa tem provado. O SMS leva só o aviso de IA, o nome da empresa e o link de resposta — nunca a pergunta nem dados pessoais. As informações (sem resposta) saem sempre por email; os colegas da equipa nunca recebem SMS."
+    },
+    "channels.outbound.contact.sms_per_month": {
+      "label": "SMS do agente por mês",
+      "help": "Quantos SMS o agente pode mandar por mês neste cliente (todas as frentes). Vazio = o valor de fábrica; 0 = nenhum SMS do agente. Cada SMS conta no consumo."
+    },
     "channels.outbound.deliveries.id": {
       "label": "Id da entrega",
       "help": "Identificador curto desta entrega (minúsculas, dígitos, «-» e «_»)."
