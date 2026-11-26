@@ -27,6 +27,10 @@ from .field_checks import (
     regex_risks,
     sanitise_csp_sources,
 )
+from .team_people_numbers import (
+    people_numbers_on,
+    people_numbers_problems,
+)
 from .pattern_guard import (
     PATTERN_HINT,
     find_unsafe_patterns,
@@ -184,4 +188,6 @@ __all__ = [
     "i18n_field_paths",
     "str_map_field_paths",
     "tool_config_models",
+    "people_numbers_on",
+    "people_numbers_problems",
 ]

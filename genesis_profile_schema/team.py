@@ -29,6 +29,8 @@ from typing import Any, Dict, List, Literal, Mapping, Optional, Tuple
 
 from pydantic import BaseModel, ConfigDict, Field
 
+from .team_people_numbers import TeamPeopleNumbers
+
 # ── Módulos e capacidades ────────────────────────────────────────────────────
 MODULE_TEAM = "team"
 MODULE_APPROVALS = "approvals"
@@ -54,6 +56,12 @@ def _cap(cid: str, module: str, pt: str, en: str, hpt: str, hen: str, target: st
 CAPABILITIES: Tuple[Dict[str, Any], ...] = (
     _cap("team.manage", MODULE_TEAM, "Gerir a equipa", "Manage the team",
          "Convidar pessoas e dar ou tirar papéis.", "Invite people and give or remove roles."),
+    # v0.1.182 (nível 2 da P15, 26 Nov 2026): os números por pessoa dos OUTROS no painel do agente — só com
+    # `team.people_numbers` ligado e a base legal registada (`team_people_numbers.py`). «Todas as frentes»
+    # (prefixo `team.`, como gerir a equipa) e nunca no Agent Tester. Cada pessoa vê sempre os seus, sem papel.
+    _cap("team.people_numbers", MODULE_TEAM, "Ver os números por pessoa da equipa", "See the team's per-person numbers",
+         "Ver as contagens de cada colega no painel do agente (só se o cliente as ligou). Cada consulta fica registada.",
+         "See each colleague's counts in the agent panel (only if the client turned them on). Every view is logged."),
     _cap("variant.enter", MODULE_VARIANT_ACCESS, "Entrar na frente", "Enter the front",
          "Usar o assistente desta frente.", "Use this front's assistant."),
     _cap("actions.approve", MODULE_APPROVALS, "Aprovar ações do assistente", "Approve assistant actions",
@@ -215,6 +223,10 @@ class ProfileTeam(BaseModel):
     # retenções e o texto de transparência; desligado, o core nem regista os
     # acessos negados.
     insights_phase2: bool = False
+    # v0.1.182 (nível 2 da P15 do épico «Agente colega», 26 Nov 2026): números por pessoa no painel do agente.
+    # Desligado por omissão; ligar exige a base legal e a confirmação de que os trabalhadores foram informados
+    # (`team_people_numbers.people_numbers_problems` — o save do core e o do Studio recusam sem elas).
+    people_numbers: TeamPeopleNumbers = Field(default_factory=TeamPeopleNumbers)
 
 
 # ── Papéis prontos (simples de usar) ─────────────────────────────────────────

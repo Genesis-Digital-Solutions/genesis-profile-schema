@@ -709,6 +709,18 @@ EXPOSURE: Dict[str, str] = {
     "team.notify.docver.stale": _W,
     # v0.1.123: fase 2 da «Saúde da equipa» — só a Genesis, depois do DPO.
     "team.insights_phase2": _I,
+    # v0.1.182 (nível 2 da P15): números por pessoa no painel do agente. O cliente LÊ o estado e os registos
+    # (são dele); só a Genesis grava — ligar é uma decisão jurídica do cliente que a Genesis regista no Studio
+    # (como `team.insights_phase2`). A capacidade `team.people_numbers` dos papéis segue `team.roles.capabilities`.
+    "team.people_numbers.enabled": _R,
+    "team.people_numbers.legal_basis.text": _R,
+    "team.people_numbers.legal_basis.date": _R,
+    "team.people_numbers.legal_basis.channel": _R,
+    "team.people_numbers.legal_basis.by": _R,
+    "team.people_numbers.workers_informed.text": _R,
+    "team.people_numbers.workers_informed.date": _R,
+    "team.people_numbers.workers_informed.channel": _R,
+    "team.people_numbers.workers_informed.by": _R,
     # actionLedger.* (v0.1.115): registo das ações — previsto para o cliente;
     # fechado no GAIBO por decisão (§C.3 do handoff de 16 Nov 2026), liga a
     # Genesis no Studio (num cliente de alto risco regista sempre, ligado ou não).

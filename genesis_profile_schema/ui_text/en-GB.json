@@ -657,6 +657,35 @@
       "label": "Team health: phase 2 signals",
       "help": "Turns on invite activation, «rubber-stamp» approvals per rule, separation of duties and denied access (counts, no people). Only after the DPO has validated it. Off, the assistant does not even record denied access."
     },
+    "team.people_numbers.enabled": {
+      "label": "Per-person numbers in the agent panel",
+      "help": "Each person sees their own counts; colleagues' counts only with the «See the team's per-person numbers» role. Never scores or rankings. Only with the legal basis and the workers informed.",
+      "note": "Turning this on means remote performance monitoring (Portuguese Labour Code, art. 20 and 21; CNPD), processing of personal data (GDPR; DPIA) and the duty to inform the workers. It does not replace legal advice."
+    },
+    "team.people_numbers.legal_basis.text": {
+      "label": "Legal basis for per-person numbers"
+    },
+    "team.people_numbers.legal_basis.date": {
+      "label": "Date of the legal basis"
+    },
+    "team.people_numbers.legal_basis.channel": {
+      "label": "Document or means of the legal basis"
+    },
+    "team.people_numbers.legal_basis.by": {
+      "label": "Who recorded the legal basis"
+    },
+    "team.people_numbers.workers_informed.text": {
+      "label": "How the workers were informed"
+    },
+    "team.people_numbers.workers_informed.date": {
+      "label": "Date the workers were informed"
+    },
+    "team.people_numbers.workers_informed.channel": {
+      "label": "Means used to inform the workers"
+    },
+    "team.people_numbers.workers_informed.by": {
+      "label": "Who confirmed the workers were informed"
+    },
     "team.enabled": {
       "label": "Product team and roles",
       "help": "On = who can do what can also come from the product roles (people invited in the backoffice or the Studio). Each module is switched on separately."

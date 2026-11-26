@@ -657,6 +657,35 @@
       "label": "Saúde da equipa: sinais da fase 2",
       "help": "Liga a ativação dos convites, as aprovações «a carimbo» por regra, a separação de funções e os acessos negados (contagens, sem pessoas). Só depois de o DPO validar. Desligado, o assistente nem regista os acessos negados."
     },
+    "team.people_numbers.enabled": {
+      "label": "Números por pessoa no painel do agente",
+      "help": "Cada pessoa vê as suas contagens; as dos colegas só quem tem o papel «Ver os números por pessoa da equipa». Nunca pontuações nem rankings. Só com a base legal e os trabalhadores informados.",
+      "note": "Ligar implica controlo de desempenho à distância (Código do Trabalho, art. 20.º e 21.º; CNPD), tratamento de dados pessoais (RGPD; AIPD) e o dever de informar os trabalhadores. Não substitui um parecer jurídico."
+    },
+    "team.people_numbers.legal_basis.text": {
+      "label": "Base legal dos números por pessoa"
+    },
+    "team.people_numbers.legal_basis.date": {
+      "label": "Data da base legal"
+    },
+    "team.people_numbers.legal_basis.channel": {
+      "label": "Documento ou meio da base legal"
+    },
+    "team.people_numbers.legal_basis.by": {
+      "label": "Quem registou a base legal"
+    },
+    "team.people_numbers.workers_informed.text": {
+      "label": "Como foram informados os trabalhadores"
+    },
+    "team.people_numbers.workers_informed.date": {
+      "label": "Data em que foram informados"
+    },
+    "team.people_numbers.workers_informed.channel": {
+      "label": "Meio da informação aos trabalhadores"
+    },
+    "team.people_numbers.workers_informed.by": {
+      "label": "Quem confirmou a informação aos trabalhadores"
+    },
     "team.enabled": {
       "label": "Equipa e papéis do produto",
       "help": "Ligado = quem pode fazer o quê passa a poder vir dos papéis do produto (pessoas convidadas no GAIBO ou no Studio). Cada módulo liga-se à parte."
