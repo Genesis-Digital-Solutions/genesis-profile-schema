@@ -271,6 +271,8 @@ e ajuda em pt-PT/en-GB. Omissões do core: 20 passos, 3 escritas, 720 h, 0,50 �
 
 **v0.1.182 (26 Nov 2026, passo 8 do épico «Agente colega»):** `user_mandates` (`AgenticUserMandates`) — as categorias em que uma pessoa pode autorizar o agente a agir por ela: `{enabled=false, categories[≤ 20, ids únicos]: {id (minúsculas, dígitos, hífen ≤ 40), label: I18nText, actions: ["servidor.ferramenta"] 1–30 sem repetir, max_days 1–90 (30)}}`. Todo INTERNAL (só a Genesis abre categorias; ver/revogar no GAIBO vai no handoff do fim do épico). O core lê-o como dicionário (`core/agent/mandate/user_mandate.py`). Testes: `tests/test_agentic_user_mandates.py`.
 
+**v0.1.182 (26 Nov 2026, passo 15 do épico «Agente colega», A6-b):** `skills` (`agentic_skills.py`, `AgenticSkill`) — os procedimentos do agente em SKILL.md, uma entrada por versão: `{name (especificação SKILL.md: minúsculas/dígitos, hífen entre eles, ≤ 64), version 1–100000, description 1–1024, body 1–24000, status proposed|approved|retired, source import|learned, fronts [_base ou slugs, nunca «todas», ≤ 30], origin, license, license_accepted, compatibility ≤ 500, allowed_tools (só registado), warnings (códigos), digest, proposed_by/at, approved_by/at, retired_at}`; lista ≤ 40 entradas, soma dos corpos ≤ 200 000, uma aprovada por nome. Uma `approved` exige `digest == skill_digest(name, description, body)` (sha-256 do JSON `[name, description, body]`, o mesmo no core e no Studio, vetor de paridade nos três), quem e quando e, se importada, licença aceite. Todo INTERNAL; só o Studio escreve (ecrã «Procedimentos»). Testes: `tests/test_agentic_skills.py`.
+
 ---
 
 ### 7d. Entradas e encaminhamento — `channels.py` (11 Nov 2026, v0.1.163)

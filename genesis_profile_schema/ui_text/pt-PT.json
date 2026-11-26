@@ -809,6 +809,77 @@
       "label": "Prazo máximo (dias)",
       "help": "Até quantos dias a pessoa pode dar a autorização (1 a 90). Depois disso caduca e tem de a dar outra vez."
     },
+    "agentic.skills.name": {
+      "label": "Nome do procedimento",
+      "help": "Minúsculas, dígitos e hífen (ex.: verificar-fornecedor), como no SKILL.md. É o nome que o assistente vê na lista."
+    },
+    "agentic.skills.version": {
+      "label": "Versão",
+      "help": "Sobe a cada importação nova do mesmo procedimento. Só uma versão aprovada vale de cada vez."
+    },
+    "agentic.skills.description": {
+      "label": "Quando usar",
+      "help": "O que o procedimento faz e quando o assistente o deve abrir. O assistente vê sempre esta frase; o texto completo só quando o abre."
+    },
+    "agentic.skills.body": {
+      "label": "Texto do procedimento",
+      "help": "Os passos, a checklist e os critérios, em Markdown. Até 24 000 carateres."
+    },
+    "agentic.skills.status": {
+      "label": "Estado",
+      "help": "Por rever, aprovado ou retirado. O assistente usa só a versão aprovada."
+    },
+    "agentic.skills.source": {
+      "label": "Origem",
+      "help": "Importado (um ficheiro de fora) ou proposto pelo assistente."
+    },
+    "agentic.skills.fronts": {
+      "label": "Assistentes onde vale",
+      "help": "O principal e/ou as variantes onde o assistente pode usar este procedimento."
+    },
+    "agentic.skills.origin": {
+      "label": "De onde veio",
+      "help": "O nome do ficheiro ou a referência de onde foi importado."
+    },
+    "agentic.skills.license": {
+      "label": "Licença",
+      "help": "A licença do texto importado. Sem licença compatível não se aprova."
+    },
+    "agentic.skills.license_accepted": {
+      "label": "Licença aceite",
+      "help": "Quem aprovou confirmou que a licença permite usar este texto."
+    },
+    "agentic.skills.compatibility": {
+      "label": "Requisitos declarados",
+      "help": "O que o autor do SKILL.md diz que o procedimento precisa. Só informativo."
+    },
+    "agentic.skills.allowed_tools": {
+      "label": "Ferramentas indicadas",
+      "help": "As ferramentas que o SKILL.md indica. Só informativo: um procedimento nunca dá ferramentas nem permissões."
+    },
+    "agentic.skills.warnings": {
+      "label": "Avisos da verificação",
+      "help": "O que a verificação encontrou ao importar (ex.: instruções para ignorar regras, endereços, links). Quem aprova tem de os confirmar."
+    },
+    "agentic.skills.digest": {
+      "label": "Impressão do texto aprovado",
+      "help": "O hash do nome, da descrição e do texto aprovados. Se o texto mudar, a aprovação deixa de valer."
+    },
+    "agentic.skills.proposed_by": {
+      "label": "Importado por"
+    },
+    "agentic.skills.proposed_at": {
+      "label": "Importado em"
+    },
+    "agentic.skills.approved_by": {
+      "label": "Aprovado por"
+    },
+    "agentic.skills.approved_at": {
+      "label": "Aprovado em"
+    },
+    "agentic.skills.retired_at": {
+      "label": "Retirado em"
+    },
     "channels.inputs.id": {
       "label": "Id da entrada",
       "help": "Minúsculas, dígitos, «-» e «_». As rotas apontam para ele."

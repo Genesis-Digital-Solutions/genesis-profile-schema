@@ -735,6 +735,28 @@ EXPOSURE: Dict[str, str] = {
     # Passo 5D (26 Nov 2026): plano com critérios — custa tokens; só a Genesis o liga, por frente.
     "agentic.plan_criteria": _I,
     "agentic.verify": _I,
+    # v0.1.182 (passo 15, A6-b): procedimentos em SKILL.md — só a Genesis, pelo ecrã «Procedimentos»
+    # (importar, rever, aprovar, retirar). O cliente importar e aprovar os dele no GAIBO entra no handoff
+    # único do fim do épico (a área `agentic` está no AREA_FLOOR).
+    "agentic.skills.name": _I,
+    "agentic.skills.version": _I,
+    "agentic.skills.description": _I,
+    "agentic.skills.body": _I,
+    "agentic.skills.status": _I,
+    "agentic.skills.source": _I,
+    "agentic.skills.fronts": _I,
+    "agentic.skills.origin": _I,
+    "agentic.skills.license": _I,
+    "agentic.skills.license_accepted": _I,
+    "agentic.skills.compatibility": _I,
+    "agentic.skills.allowed_tools": _I,
+    "agentic.skills.warnings": _I,
+    "agentic.skills.digest": _I,
+    "agentic.skills.proposed_by": _I,
+    "agentic.skills.proposed_at": _I,
+    "agentic.skills.approved_by": _I,
+    "agentic.skills.approved_at": _I,
+    "agentic.skills.retired_at": _I,
     # A4 (28 Out 2026): fontes do webhook de entrada — só Genesis (segredos e redes).
     "agentic.events.sources.id": _I,
     "agentic.events.sources.enabled": _I,

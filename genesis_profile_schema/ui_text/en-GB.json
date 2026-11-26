@@ -809,6 +809,77 @@
       "label": "Maximum period (days)",
       "help": "For how many days at most the person can give the authorisation (1 to 90). After that it lapses and must be given again."
     },
+    "agentic.skills.name": {
+      "label": "Procedure name",
+      "help": "Lowercase letters, digits and hyphens (e.g. check-supplier), as in SKILL.md. The name the assistant sees in the list."
+    },
+    "agentic.skills.version": {
+      "label": "Version",
+      "help": "Goes up with each new import of the same procedure. Only one approved version applies at a time."
+    },
+    "agentic.skills.description": {
+      "label": "When to use",
+      "help": "What the procedure does and when the assistant should open it. The assistant always sees this sentence; the full text only when it opens it."
+    },
+    "agentic.skills.body": {
+      "label": "Procedure text",
+      "help": "The steps, checklist and criteria, in Markdown. Up to 24,000 characters."
+    },
+    "agentic.skills.status": {
+      "label": "Status",
+      "help": "To review, approved or retired. The assistant only uses the approved version."
+    },
+    "agentic.skills.source": {
+      "label": "Source",
+      "help": "Imported (an outside file) or proposed by the assistant."
+    },
+    "agentic.skills.fronts": {
+      "label": "Assistants where it applies",
+      "help": "The main assistant and/or the variants where the assistant may use this procedure."
+    },
+    "agentic.skills.origin": {
+      "label": "Imported from",
+      "help": "The file name or reference it was imported from."
+    },
+    "agentic.skills.license": {
+      "label": "Licence",
+      "help": "The licence of the imported text. Without a compatible licence it cannot be approved."
+    },
+    "agentic.skills.license_accepted": {
+      "label": "Licence accepted",
+      "help": "The approver confirmed the licence allows this text to be used."
+    },
+    "agentic.skills.compatibility": {
+      "label": "Stated requirements",
+      "help": "What the SKILL.md author says the procedure needs. Informative only."
+    },
+    "agentic.skills.allowed_tools": {
+      "label": "Tools mentioned",
+      "help": "The tools the SKILL.md lists. Informative only: a procedure never grants tools or permissions."
+    },
+    "agentic.skills.warnings": {
+      "label": "Check warnings",
+      "help": "What the check found on import (e.g. instructions to ignore rules, addresses, links). The approver must confirm them."
+    },
+    "agentic.skills.digest": {
+      "label": "Fingerprint of the approved text",
+      "help": "The hash of the approved name, description and text. If the text changes, the approval no longer applies."
+    },
+    "agentic.skills.proposed_by": {
+      "label": "Imported by"
+    },
+    "agentic.skills.proposed_at": {
+      "label": "Imported on"
+    },
+    "agentic.skills.approved_by": {
+      "label": "Approved by"
+    },
+    "agentic.skills.approved_at": {
+      "label": "Approved on"
+    },
+    "agentic.skills.retired_at": {
+      "label": "Retired on"
+    },
     "channels.inputs.id": {
       "label": "Input id",
       "help": "Lowercase, digits, «-» and «_». Routes point to it."

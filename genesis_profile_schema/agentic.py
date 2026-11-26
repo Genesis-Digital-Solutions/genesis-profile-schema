@@ -46,6 +46,11 @@ de ação) e o prazo máximo (`max_days`, até 90). A pessoa dá e revoga no cha
 o Studio vê e revoga. Uma autorização nunca alarga as regras de ação do
 cliente: só faz as vezes do «sim» da própria pessoa (modo «confirmar») numa
 tarefa de fundo que age por ela. Ausente ou `enabled: false` = nada muda.
+
+v0.1.182 (passo 15 do épico «Agente colega», A6-b, 26 Nov 2026): `skills` — os
+procedimentos do agente em SKILL.md («Procedimentos» no Studio), importados ou
+propostos, cada versão revista e aprovada por uma pessoa antes de valer; o core
+só usa as aprovadas cujo hash bate com o texto. Ver `agentic_skills.py`.
 """
 
 from __future__ import annotations
@@ -59,6 +64,7 @@ from typing import List
 from pydantic import BaseModel, ConfigDict, Field, field_validator
 
 from .field_definition import I18nText
+from .agentic_skills import AgenticSkill, skills_problems
 
 MAX_STEPS = 200
 MAX_WRITES = 50
@@ -203,6 +209,16 @@ class ProfileAgentic(BaseModel):
     plan_criteria: Optional[bool] = None
     events: Optional[AgenticEvents] = None
     user_mandates: Optional[AgenticUserMandates] = None
+    # v0.1.182 (passo 15, A6-b): os procedimentos (SKILL.md) — `agentic_skills.py`.
+    skills: Optional[List[AgenticSkill]] = None
+
+    @field_validator("skills")
+    @classmethod
+    def _skills(cls, v: Optional[List[AgenticSkill]]) -> Optional[List[AgenticSkill]]:
+        found = skills_problems(v or [])
+        if found:
+            raise ValueError("; ".join(found))
+        return v
 
 
 __all__ = ["ProfileAgentic", "AgenticBudget", "AgenticEvents", "AgenticEventSource", "SOURCE_ID_RE",
