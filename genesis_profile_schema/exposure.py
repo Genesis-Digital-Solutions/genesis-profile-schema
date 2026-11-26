@@ -732,6 +732,8 @@ EXPOSURE: Dict[str, str] = {
     # releitura depois das escritas — também só a Genesis.
     "agentic.budget.cost_eur": _I,
     "agentic.plan_visible": _I,
+    # Passo 5D (26 Nov 2026): plano com critérios — custa tokens; só a Genesis o liga, por frente.
+    "agentic.plan_criteria": _I,
     "agentic.verify": _I,
     # A4 (28 Out 2026): fontes do webhook de entrada — só Genesis (segredos e redes).
     "agentic.events.sources.id": _I,

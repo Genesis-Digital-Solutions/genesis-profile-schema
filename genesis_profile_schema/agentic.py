@@ -28,6 +28,14 @@ no core). Cada fonte: `id` (minúsculas, dígitos, hífen; dá o nome do segredo
 chamar; vazio = qualquer uma, a assinatura continua obrigatória) e `enabled`.
 O passo `agent` dos triggers das filas fica na lista `do` (não tipada, como os
 outros passos).
+
+v0.1.181 (passo 5D do épico «Agente colega», 26 Nov 2026): `plan_criteria` — o
+plano com critérios. No chat, cada passo da lista pode dizer de que passos depende,
+o que tem de ser verdade antes e como se sabe que acabou; nas tarefas de fundo
+(passo `agent` de um trigger), o agente escreve esse plano antes da 1.ª ferramenta,
+e a linha do tempo e o Relatório mostram o plano × o que aconteceu. Ausente ou
+`false` = desligado (comportamento de antes). O core já o lia do dicionário; fica
+tipado.
 """
 
 from __future__ import annotations
@@ -124,6 +132,7 @@ class ProfileAgentic(BaseModel):
     budget: Optional[AgenticBudget] = None
     plan_visible: Optional[bool] = None
     verify: Optional[bool] = None
+    plan_criteria: Optional[bool] = None
     events: Optional[AgenticEvents] = None
 
 

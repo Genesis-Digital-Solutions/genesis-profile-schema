@@ -765,6 +765,10 @@
       "label": "Show the step list in the chat",
       "help": "On a request with several steps, the assistant shows the list of what it will do and ticks each step as it goes; whoever asked can stop it. Off: the assistant still uses the list and the ceilings, but the person only sees the notice when the task stops."
     },
+    "agentic.plan_criteria": {
+      "label": "Plan with criteria",
+      "help": "Each step of the plan also says which steps it depends on, what must be true before it starts and how you know it is finished. In the automatic tasks of the queues, the agent writes that plan before using any tool and marks each step done with the evidence. The task's timeline and Report show the plan next to what happened. It costs more tokens per task: turn it on per assistant, after measuring."
+    },
     "agentic.verify": {
       "label": "Confirm in the system after each action",
       "help": "After each action in a client system, the assistant reads the system again to confirm it was done; what does not confirm is flagged and never repeated. Off: no re-read."

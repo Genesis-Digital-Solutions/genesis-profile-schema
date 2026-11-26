@@ -765,6 +765,10 @@
       "label": "Mostrar a lista de passos no chat",
       "help": "Num pedido com vários passos, o assistente mostra a lista do que vai fazer e marca cada passo à medida que o cumpre; quem pediu pode parar. Desligado: o assistente usa a lista e os tetos na mesma, mas a pessoa só vê o aviso quando a tarefa para."
     },
+    "agentic.plan_criteria": {
+      "label": "Plano com critérios",
+      "help": "Cada passo do plano passa a dizer de que passos depende, o que tem de ser verdade antes de começar e como se sabe que acabou. Nas tarefas automáticas das filas, o agente escreve esse plano antes de usar qualquer ferramenta e marca cada passo como feito com a evidência. A linha do tempo e o Relatório da tarefa mostram o plano ao lado do que aconteceu. Custa mais tokens por tarefa: ligar por assistente, depois de medir."
+    },
     "agentic.verify": {
       "label": "Confirmar no sistema depois de cada ação",
       "help": "Depois de cada ação num sistema do cliente, o assistente volta a ler o sistema para confirmar que ficou feita; o que não se confirma fica marcado e nunca se repete. Desligado: não relê."

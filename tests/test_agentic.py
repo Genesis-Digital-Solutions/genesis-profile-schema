@@ -67,3 +67,16 @@ def test_event_sources_are_internal():
     from genesis_profile_schema.exposure import EXPOSURE, INTERNAL
     for leaf in ("id", "enabled", "events", "ips"):
         assert EXPOSURE[f"agentic.events.sources.{leaf}"] == INTERNAL
+
+
+def test_v0_1_181_plan_criteria():
+    """Passo 5D (26 Nov 2026): o plano com critérios — opcional, booleano, interno."""
+    import pytest
+    from pydantic import ValidationError
+    from genesis_profile_schema.exposure import exposure_of
+    assert ClientProfileSchema.model_validate({"agentic": {"enabled": True}}).agentic.plan_criteria is None
+    p = ClientProfileSchema.model_validate({"agentic": {"enabled": True, "plan_criteria": True}})
+    assert p.agentic.plan_criteria is True
+    with pytest.raises(ValidationError):
+        ClientProfileSchema.model_validate({"agentic": {"plan_criteria": "talvez"}})
+    assert exposure_of("agentic.plan_criteria") == "internal"
