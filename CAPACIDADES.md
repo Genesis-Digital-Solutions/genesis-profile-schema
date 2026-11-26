@@ -736,8 +736,9 @@ um campo removido do modelo continua a viver no blob sem dar erro.
   argumento `known_fronts`; sem nenhum, só a forma. `layer_slug` = o perfil é a CAMADA dessa variante: no core a
   lista `rules` da camada substitui a do principal e corre só com o slug dela, por isso lá só valem vazio, `*` e o
   próprio slug (`_base` e outras frentes = `unknown_front`). `front_problems(fronts, known, allow_base)` é a regra
-  pública. ⚠️ O save do core NÃO chama `action_rules_problems`: quem trava são o editor e a trava de escrita do
-  Studio; o GAIBO tem `actionRules` no `AREA_FLOOR` (o cliente não escreve o bloco).
+  pública. Quem trava: o editor e a trava de escrita do Studio e, desde 26 Nov 2026, o save do core
+  (`core/handlers/action_rule_fronts_save_guard.py`, os mesmos códigos do Studio, com `front_problems`/`known_fronts_of`
+  quando o pin os tem); o GAIBO tem `actionRules` no `AREA_FLOOR` (o cliente não escreve o bloco).
 - **Valores de origem não confiável (v0.1.158, 5 Nov 2026, contrato 222)** — `actionRules.untrusted_values.mode` (`off`|`log`|`approve`, `_R`; ausente/null = `log`, desconhecido = `approve`: `untrusted_values_mode`) e `actionRules.rules[].sensitive_params` (≤ 20 caminhos, `_W`; `sensitive_params_of`). Problemas: `invalid_sensitive_param`, `invalid_untrusted_mode` (erros) e `untrusted_blocks_without_approval` (aviso: com `approve`, uma regra de conector permitir/confirmar sem fila e aprovadores bloqueia a escrita do agente com um valor não confiável). O core usa a fila e os aprovadores da regra mesmo com modo «permitir».
 - **Mensagens de suporte do GAIBO (v0.1.141, `gaibo_index/support_messages.py`)** — `SupportMessage` (GAIBO, em
   `support-messages/`, escrita uma vez: remetente com email = Reply-To e `kind` membro/Suporte Genesis, `locale`,
