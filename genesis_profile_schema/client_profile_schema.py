@@ -677,6 +677,7 @@ from genesis_profile_schema.queue_fields import QueueFields  # noqa: E402
 from genesis_profile_schema.queue_summaries import (  # noqa: E402
     QueueSummaryTables, QueueSummaryTotals, check_summary_references)
 from genesis_profile_schema.queue_line_amounts import QueueLineAmounts  # noqa: E402
+from genesis_profile_schema.queue_column_display import QueueColumnPlaceholders, QueueLeadColumns  # noqa: E402
 from genesis_profile_schema.intake_schema import ProfileIntake  # noqa: E402
 from genesis_profile_schema.action_rules import ProfileActionRules  # noqa: E402
 from genesis_profile_schema.team import ProfileTeam  # noqa: E402
@@ -3136,6 +3137,11 @@ class ProfileReviewQueue(BaseModel):
     # Valor por linha (preço × quantidade) calculado ao vivo pelo fecore
     # (v0.1.179; ver queue_line_amounts.py). Null/ausente = nenhum.
     lineAmounts: Optional[QueueLineAmounts] = None
+    # Apresentação das colunas das tabelas na /fila (v0.1.184; ver
+    # queue_column_display.py): exemplo nas células vazias e colunas que abrem a
+    # tabela. Só ecrã. Null/ausente = como hoje.
+    columnPlaceholders: Optional[QueueColumnPlaceholders] = None
+    leadColumns: Optional[QueueLeadColumns] = None
 
     @model_validator(mode="after")
     def _summary_refs(self):

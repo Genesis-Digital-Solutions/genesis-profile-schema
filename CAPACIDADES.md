@@ -380,6 +380,10 @@ domínio (`_I`). Campos novos no passo `fields` (avançado) do percurso `review_
 
 `reviewQueues.<fila>.lineAmounts` (Salmon; genérico): a /fila calcula preço × quantidade na coluna `target` de cada linha (core `public_line_amounts` → `queue_options[<fila>].line_amounts` → fecore). Tipado com as regras do core, mas aqui uma entrada partida RECUSA o perfil: até 5 entradas, nomes de coluna ASCII `[A-Za-z0-9][A-Za-z0-9._-]{0,63}`, chaves desconhecidas recusadas, e na MESMA tabela o `target` nunca é uma coluna lida por nenhuma entrada nem se repete. No passo `fields` (avançado) do percurso `review_queues`.
 
+## Apresentação das colunas na /fila — `queue_column_display.py` (27 Nov 2026, v0.1.184)
+
+`reviewQueues.<fila>.columnPlaceholders` (`{tabela: {coluna: texto | {língua: texto}}}`: exemplo de formato nas células vazias e editáveis, ex.: «1000 KG» na unidade do preço) e `reviewQueues.<fila>.leadColumns` (`{tabela: [colunas]}`: as colunas que abrem a tabela quando existem, a 1.ª fixa no scroll). Só ecrã, nunca valor nem gravação; ausentes = como hoje. Produtor: core `public_column_placeholders`/`public_lead_columns` → `queue_options[<fila>].column_placeholders`/`lead_columns` → fecore. Mesmas regras do core, mas aqui RECUSAM o perfil: até 5 tabelas; nomes ASCII `[A-Za-z0-9][A-Za-z0-9._-]{0,63}` (nunca `_…`); exemplos até 30 colunas × 10 línguas, texto 1–40 caracteres sem controlo nem invisíveis; `leadColumns` 1–10 colunas sem repetidas. No passo `fields` (avançado) do percurso `review_queues`.
+
 ## Checklist: acrescentar um campo
 
 1. **Modelo** — o campo em `client_profile_schema.py`, com tipo, default seguro
