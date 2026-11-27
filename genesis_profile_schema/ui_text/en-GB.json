@@ -1487,6 +1487,11 @@
       "label": "Export to PDF",
       "help": "Lets people save the conversation as a PDF."
     },
+    "frontend.features.enableHome": {
+      "label": "Home page with the client's areas",
+      "help": "Shows signed-in people a «Home» screen with the areas they can open (the main assistant and the shared variants). With a single area, they go straight into it. When off, everything stays as before.",
+      "note": "Only the main profile counts. The genai-core decides who sees each area (the front's access and the «Enter the front» role); the areas also appear in the sidebar. Phase 1: no Separate variants and no GAIBO."
+    },
     "frontend.features.showFeedbackResolution": {
       "label": "Tell people the answer was corrected",
       "help": "When someone flags an answer with 👎 and the team corrects it (linking the report to a correction), on coming back to the conversation that person sees «We corrected this answer after your report»."
@@ -2896,7 +2901,8 @@
     },
     "tools.config.verify_documents.retention_months": {
       "label": "Case retention period (months)",
-      "help": "Counted from the decision (without one, from the last activity); at the end the whole case is deleted. Notice 30 days before; a case on «Hold» stays. 6 to 120 months; suggestion: 24. Empty = nothing is deleted."
+      "help": "Counted from the decision (without one, from the last activity); then the case is deleted, with what the assistant quoted from it in chats. Notice 30 days before; a case on «Hold» stays. 6–120 months; suggested 24. Empty = never deleted.",
+      "note": "The assistant's answers and excerpts that came from the case leave the conversations; the technical diagnostic record of those turns follows its own 180-day period (D4b, 27 Nov 2026)."
     },
     "tools.config.verify_documents.labels": {
       "label": "On-screen names",

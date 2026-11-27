@@ -1487,6 +1487,11 @@
       "label": "Exportar para PDF",
       "help": "Permite guardar a conversa em PDF."
     },
+    "frontend.features.enableHome": {
+      "label": "Início com as áreas do cliente",
+      "help": "Mostra a quem entra um ecrã «Início» com as áreas que pode abrir (o assistente principal e as variantes partilhadas). Com uma só área, entra diretamente nela. Desligado, tudo fica como antes.",
+      "note": "Só conta no perfil principal. Quem vê cada área decide o genai-core (o acesso da frente e o papel «Entrar na frente»); as áreas também aparecem na barra lateral. Fase 1: sem variantes Separadas nem GAIBO."
+    },
     "frontend.features.showFeedbackResolution": {
       "label": "Avisar que a resposta foi corrigida",
       "help": "Quando alguém assinala uma resposta com 👎 e a equipa a corrige (ligando o relatório a uma correção), ao voltar à conversa essa pessoa vê «Corrigimos esta resposta depois do seu aviso»."
@@ -2896,7 +2901,8 @@
     },
     "tools.config.verify_documents.retention_months": {
       "label": "Prazo de conservação dos casos (meses)",
-      "help": "Conta da decisão (sem decisão, da última atividade); no fim o caso apaga-se inteiro. Aviso 30 dias antes; um caso marcado «Reter» fica. 6 a 120 meses; sugestão: 24. Vazio = nada se apaga."
+      "help": "Conta da decisão (sem decisão, da última atividade); no fim apaga-se o caso inteiro e o que o assistente citou dele nas conversas. Aviso 30 dias antes; um caso «Reter» fica. 6 a 120 meses; sugestão: 24. Vazio = nada se apaga.",
+      "note": "Saem das conversas as respostas e os excertos do assistente que vieram do caso; o registo técnico de diagnóstico desses turnos segue o seu prazo de 180 dias (D4b, 27 Nov 2026)."
     },
     "tools.config.verify_documents.labels": {
       "label": "Nomes no ecrã",

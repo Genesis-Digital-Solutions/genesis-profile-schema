@@ -304,6 +304,7 @@ EXPOSURE: Dict[str, str] = {
     "frontend.features.enablePdfExport": _W,
     "frontend.features.enableDataExport": _W,
     "frontend.features.showFeedbackResolution": _W,
+    "frontend.features.enableHome": _R,   # só a Genesis liga (Bruno, 27 Nov 2026); o cliente vê
     "frontend.features.enablePipelineTrace": _R,
     "frontend.features.enableShare": _W,
     "frontend.features.shareAccess": _R,   # só a Genesis muda (decisão 3 Out) — como o auth.mode

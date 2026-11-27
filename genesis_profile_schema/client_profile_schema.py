@@ -1905,6 +1905,14 @@ class ProfileFrontendFeatures(BaseModel):
     # perfil SEM a chave recebia o layout dedicado ao ligar a tool (foi o que
     # aconteceu até à v0.1.69). Formalizado v0.1.43; default corrigido v0.1.69.
     toolWorkspace: bool = False
+    # Início do cliente (v0.1.186, 27 Nov 2026; EPICO_Plataforma_de_Modulos §4.1):
+    # o site mostra a quem entrou as frentes (principal e variantes Partilhadas)
+    # que pode abrir, num ecrã «Início» e na barra lateral. Só o perfil BASE
+    # conta — o genai-core lê-o do base em `GET /me/fronts` e ignora o valor de
+    # uma variante. Desligado por omissão: nada muda na frota. QUEM vê cada frente
+    # decide o core (o `access` da frente e o papel «Entrar na frente»); o Início
+    # é conveniência, nunca autorização.
+    enableHome: bool = False
     # REMOVIDOS (campos mortos, nenhum componente os lia):
     #   showQuestionsMenu, enableFollowupSuggestions
     # REMOVIDO enableFeedback: feedback é sempre-on no frontend, sem flag.
