@@ -243,6 +243,59 @@ def test_canario_fonte_csp_com_query_ou_fragmento_e_recusada(token):
     assert not any("?" in a or "#" in a for a in aceites)
 
 
+@pytest.mark.parametrize("token", [
+    # O `?`/`#` percent-codificado (revisão de 27 Nov 2026): o `sig=` ficava em claro.
+    "https://acct.blob.core.windows.net/c/doc.pdf%3Fsv=2024-01-01&sig=SEGREDO",
+    "https://acct.blob.core.windows.net/c/doc.pdf%3fsig=SEGREDO",
+    "https://cliente.pt/embed%23access_token",
+    "https://*.blob.core.windows.net/c/%3Fsig=S",
+    "localhost:4200/%3Fsig",
+    "https://cliente.pt/a%253Fsig",                 # codificado duas vezes
+    # Sem `?` nenhum, a SAS continua a ser `chave=valor&chave=valor`.
+    "https://acct.blob.core.windows.net/c/doc.pdf/sv=2024&sig=SEGREDO",
+    # Não-ASCII e controlo no caminho (iam para o cabeçalho tal e qual).
+    "https://acct.blob.core.windows.net/c/doc.pdf？sv=1",
+    "https://cliente.pt/a＃b",
+    "https://cliente.pt/a\x00b",
+    "https://cliente.pt/a\x7fb",
+    "https://cliente.pt/a​b",
+    "https://cliente.pt/caminho-com-ç",
+])
+def test_canario_caminho_so_com_a_allowlist(token):
+    assert not fc.is_valid_csp_source(token), repr(token)
+
+
+@pytest.mark.parametrize("token", [
+    "https://cliente.pt/embed/widget",
+    "https://cliente.pt/a%20b",                     # outras codificações continuam
+    "https://cliente.pt/~user/a_b.c-d",
+    "https://www.dgaep.gov.pt/vitor",               # da frota (27 Nov 2026)
+])
+def test_caminhos_legitimos_continuam_a_passar(token):
+    assert fc.is_valid_csp_source(token), token
+
+
+def test_a_gramatica_do_caminho_exclui_query_e_fragmento_sozinha():
+    """As duas camadas (a recusa explícita e a allowlist do caminho) não podem
+    depender uma da outra: reverter só uma tem de partir esta suite."""
+    for t in (SAS, "https://cliente.pt/embed#x", "https://cliente.pt/a%3Fb"):
+        assert not fc._WITH_SCHEME.fullmatch(t), t
+        assert not fc._NO_SCHEME.fullmatch(t.split("://", 1)[1]), t
+
+
+def test_a_recusa_explicita_vale_mesmo_com_uma_gramatica_larga(monkeypatch):
+    """A outra camada: mesmo que uma regex futura aceite tudo, `?`, `#` e as
+    suas formas codificadas continuam recusados antes de a gramática ser lida."""
+    import re
+    tudo = re.compile(r".*")
+    for nome in ("_WITH_SCHEME", "_NO_SCHEME", "_LOCAL", "_APP"):
+        monkeypatch.setattr(fc, nome, tudo)
+    for t in (SAS, "https://cliente.pt/#x", "https://cliente.pt/a%3fb", "https://cliente.pt/a%23b",
+              "https://cliente.pt/a%253Fb"):
+        assert not fc.is_valid_csp_source(t), t
+    assert fc.is_valid_csp_source("https://cliente.pt/qualquer")
+
+
 def test_a_sas_nao_passa_nem_dentro_de_uma_entrada_com_varias_origens():
     aceites, recusados = fc.sanitise_csp_sources([f"https://a.pt {SAS} https://b.pt"])
     assert aceites == ["https://a.pt", "https://b.pt"]

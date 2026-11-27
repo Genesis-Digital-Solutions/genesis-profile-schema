@@ -146,8 +146,9 @@ carregar. Quem escreve é que descarta; quem lê continua a ler tudo.
   (`PORT_SUFFIX`, também no URL do core do `GaiboSettings`; v0.1.168).
   Aceita também origens de app móvel híbrida (`capacitor://host`, `ionic://host`,
   sem caminho nem wildcard; v0.1.151) e `is_app_origin()` separa-as das web.
-  Recusa qualquer token com `?` ou `#` (v0.1.185, F-S186: uma SAS colada ia para o
-  cabeçalho público). Quem recusa no SAVE é o gate do GAIBO (só
+  Recusa qualquer token com `?` ou `#`, também codificados (`%3F`/`%23`/`%25`), e o
+  caminho passou a allowlist de ASCII de segmento sem `=` nem `&` (v0.1.185, F-S186:
+  uma SAS colada ia para o cabeçalho público). Quem recusa no SAVE é o gate do GAIBO (só
   `widget.allowed_origins`, o único editável pelo cliente), que usa esta função; o
   editor do Studio não a chama ao gravar — só o deploy filtra.
 - `regex_risk()` — AVISO de editor para as regex de `product_identification.patterns`

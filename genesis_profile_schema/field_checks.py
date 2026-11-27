@@ -10,7 +10,8 @@ não arranca é pior do que o problema que se queria resolver.
 Por isso estas funções nunca levantam nem rejeitam sozinhas. Devolvem o que é
 seguro e o que não é, e quem chama decide:
   - o Studio, ao ESCREVER o cabeçalho, descarta o que não passa e regista;
-  - o editor e o backoffice avisam quem está a escrever, antes de gravar;
+  - o backoffice (GAIBO) recusa no save o `widget.allowed_origins` que não
+    passa; o editor do Studio ainda não verifica ao gravar (F-S187);
   - o core continua a carregar tudo, como sempre carregou.
 
 ─────────────────────────────────────────────────────────────────────────────
@@ -62,10 +63,17 @@ _PORT = PORT_SUFFIX
 # Caminho opcional. É gramática válida de CSP (source com caminho) e o
 # `frame-ancestors` ignora-o — recusá-lo tirava a autorização a quem tivesse
 # colado um URL completo. Os caracteres perigosos já foram barrados antes.
-# Sem `?` nem `#` (v0.1.185, F-S186): a gramática das fontes CSP não tem query
-# nem fragmento, e uma SAS colada (`…/doc.pdf?sv=…&sig=…`) ia parar ao cabeçalho
-# público do site com a assinatura.
-_PATH = r"(?:/[^\s;'\"<>`\\?#]*)?"
+# ALLOWLIST dos caracteres do caminho (v0.1.185, F-S186), em vez da lista de
+# proibidos que havia: só ASCII imprimível de segmento de URL, sem `?` nem `#`
+# (a gramática das fontes CSP não tem query nem fragmento), sem `=` nem `&` (uma
+# SAS colada — `…/doc.pdf?sv=…&sig=…` — ia parar ao cabeçalho público com a
+# assinatura) e sem `%3F`/`%23`/`%25` (o mesmo `?`/`#` codificado, ou codificado
+# duas vezes). Caracteres de controlo e não-ASCII também ficam de fora: no
+# cabeçalho não servem a nenhum browser e a imagem nginx do light não arrancava.
+_PATH_CHAR = r"(?:[A-Za-z0-9._~!$()*+:@/-]|%(?!3[Ff]|2[35])[0-9A-Fa-f]{2})"
+_PATH = rf"(?:/{_PATH_CHAR}*)?"
+# O mesmo `?`/`#` percent-codificado, recusado em qualquer sítio do token.
+_ENCODED_QUERY_OR_FRAGMENT = re.compile(r"%(?:3f|23|25)", re.IGNORECASE)
 
 # COM esquema, um host de rótulo único é legítimo (`https://intranet`).
 # SEM esquema, exige-se um ponto — é o que impede `script-src` ou
@@ -108,7 +116,8 @@ def is_valid_csp_source(token: str) -> bool:
 
     Recusa por omissão: palavras-chave entre plicas (`'self'`, `'unsafe-inline'`),
     esquemas soltos (`data:`, `blob:`, `javascript:`), o wildcard nu (`*`), e
-    tudo o que traga `;`, plicas, espaços, `?` ou `#`. O que o cabeçalho precisa de ter
+    tudo o que traga `;`, plicas, espaços, `?`, `#` (também codificados) ou, no
+    caminho, algo fora da allowlist (`=`, `&`, não-ASCII, controlo). O que o cabeçalho precisa de ter
     de fixo é o código do Studio que o põe lá — nunca um campo de perfil.
     """
     if not isinstance(token, str) or not token:
@@ -118,7 +127,7 @@ def is_valid_csp_source(token: str) -> bool:
     # Query e fragmento não existem numa fonte CSP; uma SAS (`?sv=…&sig=…`) ou um
     # token depois de `#` acabava publicado no cabeçalho (v0.1.185, F-S186).
     # Recusado antes da gramática, para não depender de cada regex o excluir.
-    if "?" in token or "#" in token:
+    if "?" in token or "#" in token or _ENCODED_QUERY_OR_FRAGMENT.search(token):
         return False
     if _APP_LOCALHOST.fullmatch(token):      # a origem de TODAS as apps desse tipo
         return False
