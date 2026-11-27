@@ -83,7 +83,7 @@ def _check_placeholders(v: Dict[str, Dict[str, Union[str, Dict[str, str]]]]):
                              f"colunas (recebidas {len(cols)})")
         good: Dict[str, Union[str, Dict[str, str]]] = {}
         for col, text in cols.items():
-            w = f"{where}.{table}.{_col(where, col)}"
+            w = f"{where}.{table}.{_col(f'{where}.{table}', col)}"
             if isinstance(text, str):
                 good[col] = _text(w, text)
                 continue

@@ -39,8 +39,8 @@ def test_texto_sem_espacos_nas_pontas():
     {"t": {}},                                 # sem colunas
     {"t": {"a": "   "}},                       # vazio
     {"t": {"a": "x" * (PLACEHOLDER_MAX_TEXT + 1)}},
-    {"t": {"a": "E​UR"}},                 # invisível
-    {"t": {"a": "E‮UR"}},                 # bidi
+    {"t": {"a": "E\u200bUR"}},                 # invisível
+    {"t": {"a": "E\u202eUR"}},                 # bidi
     {"t": {"a": "EUR\n"}},                     # controlo
     {"t": {"a": 6.5}},                         # tem de ser texto
     {"t": {"a": ["EUR"]}},
