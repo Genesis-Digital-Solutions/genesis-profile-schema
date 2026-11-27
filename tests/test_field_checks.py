@@ -218,6 +218,37 @@ def test_sugestoes_batem_certo_com_as_vozes_de_fabrica():
     assert set(fc.SUGGESTED_LOCALES) == set(ProfileVoices().by_locale)
 
 
+SAS = "https://acct.blob.core.windows.net/c/doc.pdf?sv=2024-01-01&sig=SEGREDO"
+
+
+@pytest.mark.parametrize("token", [
+    SAS,                                          # o caso medido a 27 Nov 2026 (F-S186)
+    "https://cliente.pt/?token=abc",
+    "https://cliente.pt?x=1",                     # query sem caminho
+    "https://cliente.pt/embed#access_token=abc",  # fragmento
+    "https://cliente.pt#x",
+    "cliente.pt/a?b",                             # sem esquema
+    "localhost:4200/?x",
+    "capacitor://app.cliente.pt/?x",
+    "https://cliente.pt/?",                       # `?` vazio também
+    "https://cliente.pt/#",
+])
+def test_canario_fonte_csp_com_query_ou_fragmento_e_recusada(token):
+    """F-S186 (v0.1.185): uma SAS colada numa fonte da CSP ia para o cabeçalho
+    público do site. A gramática das fontes CSP não tem `?` nem `#`."""
+    assert not fc.is_valid_csp_source(token), token
+    aceites, recusados = fc.sanitise_csp_sources(["https://www.cliente.pt", token])
+    assert aceites == ["https://www.cliente.pt"]
+    assert recusados == [token]
+    assert not any("?" in a or "#" in a for a in aceites)
+
+
+def test_a_sas_nao_passa_nem_dentro_de_uma_entrada_com_varias_origens():
+    aceites, recusados = fc.sanitise_csp_sources([f"https://a.pt {SAS} https://b.pt"])
+    assert aceites == ["https://a.pt", "https://b.pt"]
+    assert recusados == [SAS]
+
+
 def test_o_caminho_nao_abre_porta_a_injeccao():
     """Aceitar caminhos foi para nao perder origens legitimas. O `;` continua
     barrado antes de a gramatica ser consultada."""
