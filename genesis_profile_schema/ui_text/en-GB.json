@@ -2904,6 +2904,15 @@
       "help": "Counted from the decision (without one, from the last activity); then the case is deleted, with what the assistant quoted from it in chats. Notice 30 days before; a case on «Hold» stays. 6–120 months; suggested 24. Empty = never deleted.",
       "note": "The assistant's answers and excerpts that came from the case leave the conversations; the technical diagnostic record of those turns follows its own 180-day period (D4b, 27 Nov 2026)."
     },
+    "tools.config.workspace": {
+      "label": "Assistant outside the workspaces",
+      "help": "What this profile's chat looks up in the workspaces with no item open."
+    },
+    "tools.config.workspace.chat_doc_verification": {
+      "label": "Document verification cases in the chat",
+      "help": "On, this profile's chat answers about the document verification cases each person may see (status, list, search and detail), signed-in users only. Off, cases are only in the verification's own assistant.",
+      "note": "Core: the `workspace` tool is registered in this profile even without `verify_documents` in `tools.enabled` and joins turns with no `workspace` in the body (\"chat\" scope). Document verification authorisation on every call (`visible_here` + the case front's `access` + read roles + visibility); never anonymous/guests; no reading of document text (H2). A Shared variant inherits it from the main profile. The document verification index is never attached as a KB."
+    },
     "tools.config.verify_documents.labels": {
       "label": "On-screen names",
       "help": "What the module is called for the people using this variant. Empty = the scheme's neutral names."

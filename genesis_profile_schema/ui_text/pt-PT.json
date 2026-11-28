@@ -2904,6 +2904,15 @@
       "help": "Conta da decisão (sem decisão, da última atividade); no fim apaga-se o caso inteiro e o que o assistente citou dele nas conversas. Aviso 30 dias antes; um caso «Reter» fica. 6 a 120 meses; sugestão: 24. Vazio = nada se apaga.",
       "note": "Saem das conversas as respostas e os excertos do assistente que vieram do caso; o registo técnico de diagnóstico desses turnos segue o seu prazo de 180 dias (D4b, 27 Nov 2026)."
     },
+    "tools.config.workspace": {
+      "label": "Assistente fora dos workspaces",
+      "help": "O que o chat deste perfil consulta dos workspaces sem nenhum item aberto."
+    },
+    "tools.config.workspace.chat_doc_verification": {
+      "label": "Casos da verificação documental no chat",
+      "help": "Ligado, o chat deste perfil responde sobre os casos da verificação documental que cada pessoa pode ver (situação, lista, pesquisa e detalhe), só com sessão iniciada. Desligado, os casos só no assistente da própria verificação.",
+      "note": "Core: a tool `workspace` regista-se neste perfil mesmo sem `verify_documents` em `tools.enabled` e entra nos turnos sem `workspace` no corpo (âmbito «chat»). Autorização da VD a cada chamada (`visible_here` + `access` da frente do caso + papéis de leitura + visibilidade); nunca anónimos/convidados; sem leitura do texto das peças (H2). Numa Partilhada herda-se do principal. O índice da VD nunca se liga como KB."
+    },
     "tools.config.verify_documents.labels": {
       "label": "Nomes no ecrã",
       "help": "Como o módulo se chama para quem o usa nesta variante. Vazio = os nomes neutros do esquema."
